@@ -14,7 +14,8 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
 {
     /// <inheritdoc />
     public Task<CustomerResponse?> GetCustomerAsync(int id, CancellationToken cancellationToken) =>
-        CustomerQuery().SingleOrDefaultAsync(customer => customer.Id == id, cancellationToken);
+        Project(dbContext.Customers.AsNoTracking().Where(customer => customer.Id == id))
+            .SingleOrDefaultAsync(cancellationToken);
 
     /// <inheritdoc />
     public Task<CustomerResponse?> GetCustomerByEmailAsync(string email, CancellationToken cancellationToken) =>
@@ -210,8 +211,6 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     /// <inheritdoc />
     public async Task<bool> DeleteCompanyAsync(int id, CancellationToken cancellationToken) =>
         await dbContext.Companies.Where(value => value.Id == id).ExecuteDeleteAsync(cancellationToken) == 1;
-
-    private IQueryable<CustomerResponse> CustomerQuery() => Project(dbContext.Customers.AsNoTracking());
 
     private static IQueryable<CustomerResponse> Project(IQueryable<Customer> query) => query.Select(customer => new CustomerResponse(
         customer.Id, customer.FirstName, customer.LastName, customer.FullName, customer.Telephone, customer.Mobile, customer.Fax,
