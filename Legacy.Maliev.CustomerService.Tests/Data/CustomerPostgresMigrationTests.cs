@@ -55,6 +55,40 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
             .SingleAsync());
     }
 
+    [Fact]
+    public async Task GetCustomerAsync_FiltersBeforeProjectingNestedLegacyRelations()
+    {
+        await using var dbContext = CreateDbContext();
+        await dbContext.Database.MigrateAsync();
+
+        var address = new Address { AddressLine1 = "1 Profile Road", CountryId = 764 };
+        var company = new Company { Name = "Analytical Engines" };
+        dbContext.AddRange(address, company);
+        await dbContext.SaveChangesAsync();
+
+        var entity = new Customer
+        {
+            FirstName = "Ada",
+            LastName = "Lovelace",
+            Email = "ada.profile@example.com",
+            BillingAddressId = address.Id,
+            ShippingAddressId = address.Id,
+            CompanyId = company.Id,
+        };
+        dbContext.Add(entity);
+        await dbContext.SaveChangesAsync();
+        dbContext.ChangeTracker.Clear();
+
+        var repository = new CustomerRepository(dbContext, TimeProvider.System);
+
+        var customer = await repository.GetCustomerAsync(entity.Id, CancellationToken.None);
+
+        Assert.NotNull(customer);
+        Assert.Equal("Analytical Engines", customer.Company?.Name);
+        Assert.Equal("1 Profile Road", customer.BillingAddress?.AddressLine1);
+        Assert.Equal("1 Profile Road", customer.ShippingAddress?.AddressLine1);
+    }
+
     private CustomerDbContext CreateDbContext()
     {
         var options = new DbContextOptionsBuilder<CustomerDbContext>()
