@@ -1,6 +1,5 @@
 using System.Reflection;
 using Legacy.Maliev.CustomerService.Api.Controllers;
-using Legacy.Maliev.CustomerService.Application.Models;
 using Maliev.Aspire.ServiceDefaults.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,37 +23,25 @@ public sealed class CustomerControllerContractTests
     [Fact]
     public void CustomerActions_PreserveAllLegacyTemplates()
     {
-        AssertAction<CustomersController>(nameof(CustomersController.ValidateUserCredentialsAsync), "v1/validate", typeof(HttpPostAttribute));
         AssertAction<CustomersController>(nameof(CustomersController.CreateCustomerAsync), null, typeof(HttpPostAttribute));
         AssertAction<CustomersController>(nameof(CustomersController.DeleteCustomerAsync), "{id:int}", typeof(HttpDeleteAttribute));
         AssertAction<CustomersController>(nameof(CustomersController.GetCustomerAsync), "{id:int}", typeof(HttpGetAttribute));
         AssertAction<CustomersController>(nameof(CustomersController.GetPaginatedAsync), null, typeof(HttpGetAttribute));
         AssertAction<CustomersController>(nameof(CustomersController.UpdateCustomerAsync), "{id:int}", typeof(HttpPutAttribute));
-        AssertAction<CustomersController>(nameof(CustomersController.CreateIdentityAsync), "{id:int}/identity/{password?}", typeof(HttpPostAttribute));
-        AssertAction<CustomersController>(nameof(CustomersController.GetIdentityAsync), "{id:int}/identity", typeof(HttpGetAttribute));
-        AssertAction<CustomersController>(nameof(CustomersController.UpdateIdentityAsync), "{id:int}/identity", typeof(HttpPutAttribute));
-        AssertAction<CustomersController>(nameof(CustomersController.DeleteIdentityAsync), "{id:int}/identity", typeof(HttpDeleteAttribute));
     }
 
     [Fact]
-    public void CredentialValidation_IsNoLongerAnonymousAndRequiresLiveCriticalPermission()
+    public void CustomerApi_DoesNotExposeIdentityOrCredentialOperations()
     {
-        var method = typeof(CustomersController).GetMethod(nameof(CustomersController.ValidateUserCredentialsAsync))!;
-        Assert.Null(method.GetCustomAttribute<AllowAnonymousAttribute>());
-        var permission = Assert.Single(method.GetCustomAttributes<RequirePermissionAttribute>());
-        Assert.True(permission.RequireLiveCheck);
-        Assert.True(permission.IsCritical);
-    }
+        var actions = typeof(CustomersController).GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
 
-    [Fact]
-    public void IdentityCompatibilityDto_DoesNotExposeCredentialSecrets()
-    {
-        var names = typeof(CustomerIdentityResponse).GetProperties().Select(property => property.Name).ToHashSet(StringComparer.Ordinal);
-        Assert.DoesNotContain("PasswordHash", names);
-        Assert.DoesNotContain("SecurityStamp", names);
-        Assert.DoesNotContain("AuthenticatorKey", names);
-        Assert.Contains("DatabaseID", names);
-        Assert.Contains("Email", names);
+        Assert.DoesNotContain(actions, method =>
+            method.Name.Contains("Identity", StringComparison.OrdinalIgnoreCase)
+            || method.Name.Contains("Credential", StringComparison.OrdinalIgnoreCase)
+            || method.GetCustomAttributes<HttpMethodAttribute>().Any(attribute =>
+                attribute.Template?.Contains("identity", StringComparison.OrdinalIgnoreCase) == true
+                || attribute.Template?.Contains("password", StringComparison.OrdinalIgnoreCase) == true
+                || attribute.Template?.Contains("validate", StringComparison.OrdinalIgnoreCase) == true));
     }
 
     private static void AssertAction<TController>(string methodName, string? template, Type attributeType)

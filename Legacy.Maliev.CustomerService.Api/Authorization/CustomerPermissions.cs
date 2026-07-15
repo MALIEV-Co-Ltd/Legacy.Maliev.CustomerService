@@ -45,12 +45,4 @@ public static class CustomerPermissions
     /// <summary>Allows deleting a company record from the legacy customer domain.</summary>
     public const string CompaniesDelete = "legacy-customer.companies.delete";
 
-    /// <summary>Allows reading the authentication identity linked to a customer.</summary>
-    public const string IdentitiesRead = "legacy-customer.identities.read";
-
-    /// <summary>Allows creating, changing, or deleting customer identity links.</summary>
-    public const string IdentitiesManage = "legacy-customer.identities.manage";
-
-    /// <summary>Allows performing a live validation of legacy customer credentials.</summary>
-    public const string CredentialsValidate = "legacy-customer.credentials.validate";
 }

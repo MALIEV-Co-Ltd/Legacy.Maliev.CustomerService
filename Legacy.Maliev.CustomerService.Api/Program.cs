@@ -15,7 +15,7 @@ builder.AddJwtAuthentication();
 builder.AddStandardMiddleware(options => options.EnableRequestLogging = true);
 builder.AddStandardOpenApi(
     title: "Legacy MALIEV Customer Service API",
-    description: "Temporary .NET 10 compatibility service preserving legacy customer, company, address, and identity-proxy contracts.");
+    description: "Temporary .NET 10 compatibility service preserving legacy customer, company, address, and email contracts.");
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -24,12 +24,6 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.DictionaryKeyPolicy = null;
 });
 builder.Services.AddSingleton(TimeProvider.System);
-builder.Services.AddHttpClient<ICustomerIdentityDirectory, AuthServiceCustomerIdentityDirectory>(client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["AuthService:LegacyCustomerIdentityBaseUrl"]
-        ?? "http://authservice/auth/v1/legacy/customers/");
-    client.Timeout = TimeSpan.FromSeconds(15);
-}).AddStandardResilienceHandler();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<ICustomerCache, DistributedCustomerCache>();
 builder.Services.AddScoped<ICustomerService, CustomerApplicationService>();
