@@ -3,11 +3,10 @@ using Legacy.Maliev.CustomerService.Application.Models;
 
 namespace Legacy.Maliev.CustomerService.Application.Services;
 
-/// <summary>Coordinates customer persistence, cache invalidation, and AuthService identity ownership.</summary>
+/// <summary>Coordinates customer profile persistence and cache invalidation.</summary>
 public sealed class CustomerApplicationService(
     ICustomerRepository repository,
-    ICustomerCache cache,
-    ICustomerIdentityDirectory identities) : ICustomerService
+    ICustomerCache cache) : ICustomerService
 {
     /// <inheritdoc />
     public async Task<CustomerResponse?> GetCustomerAsync(int id, CancellationToken cancellationToken)
@@ -158,43 +157,4 @@ public sealed class CustomerApplicationService(
     private Task InvalidateCustomersAsync(IReadOnlyList<int> customerIds, CancellationToken cancellationToken) =>
         Task.WhenAll(customerIds.Select(customerId => cache.RemoveAsync(customerId, cancellationToken)));
 
-    /// <inheritdoc />
-    public Task<IdentityOperationResult> ValidateCredentialsAsync(UserValidationRequest request, CancellationToken cancellationToken) =>
-        identities.ValidateCredentialsAsync(request, cancellationToken);
-
-    /// <inheritdoc />
-    public async Task<IdentityOperationResult> CreateIdentityAsync(
-        int customerId,
-        CustomerIdentityRequest request,
-        string? legacyPassword,
-        CancellationToken cancellationToken)
-    {
-        return await repository.GetCustomerAsync(customerId, cancellationToken) is null
-            ? new IdentityOperationResult(false, Errors: ["Customer not found"])
-            : await identities.CreateAsync(customerId, request, legacyPassword, cancellationToken);
-    }
-
-    /// <inheritdoc />
-    public async Task<CustomerIdentityResponse?> GetIdentityAsync(int customerId, CancellationToken cancellationToken)
-    {
-        return await repository.GetCustomerAsync(customerId, cancellationToken) is null
-            ? null
-            : await identities.GetAsync(customerId, cancellationToken);
-    }
-
-    /// <inheritdoc />
-    public async Task<IdentityOperationResult> UpdateIdentityAsync(int customerId, CustomerIdentityRequest request, CancellationToken cancellationToken)
-    {
-        return await repository.GetCustomerAsync(customerId, cancellationToken) is null
-            ? new IdentityOperationResult(false, Errors: ["Customer not found"])
-            : await identities.UpdateAsync(customerId, request, cancellationToken);
-    }
-
-    /// <inheritdoc />
-    public async Task<IdentityOperationResult> DeleteIdentityAsync(int customerId, CancellationToken cancellationToken)
-    {
-        return await repository.GetCustomerAsync(customerId, cancellationToken) is null
-            ? new IdentityOperationResult(false, Errors: ["Customer not found"])
-            : await identities.DeleteAsync(customerId, cancellationToken);
-    }
 }

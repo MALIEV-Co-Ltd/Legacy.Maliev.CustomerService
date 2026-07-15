@@ -89,34 +89,6 @@ public interface ICustomerService
     /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
     /// <returns><see langword="true"/> when the company was deleted; otherwise, <see langword="false"/>.</returns>
     Task<bool> DeleteCompanyAsync(int id, CancellationToken cancellationToken);
-    /// <summary>Validates customer credentials through the identity-service compatibility boundary.</summary>
-    /// <param name="request">The username and password submitted for validation.</param>
-    /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
-    /// <returns>The non-enumerating validation result returned by the identity service.</returns>
-    Task<IdentityOperationResult> ValidateCredentialsAsync(UserValidationRequest request, CancellationToken cancellationToken);
-    /// <summary>Creates an identity for an existing legacy customer.</summary>
-    /// <param name="customerId">The legacy customer identifier associated with the identity.</param>
-    /// <param name="request">The safe identity fields to create.</param>
-    /// <param name="legacyPassword">The optional legacy password supplied only during controlled migration.</param>
-    /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
-    /// <returns>The identity operation result, including validation errors when creation fails.</returns>
-    Task<IdentityOperationResult> CreateIdentityAsync(int customerId, CustomerIdentityRequest request, string? legacyPassword, CancellationToken cancellationToken);
-    /// <summary>Retrieves the identity associated with an existing legacy customer.</summary>
-    /// <param name="customerId">The legacy customer identifier associated with the identity.</param>
-    /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
-    /// <returns>The safe identity representation if both customer and identity exist; otherwise, <see langword="null"/>.</returns>
-    Task<CustomerIdentityResponse?> GetIdentityAsync(int customerId, CancellationToken cancellationToken);
-    /// <summary>Updates the identity associated with an existing legacy customer.</summary>
-    /// <param name="customerId">The legacy customer identifier associated with the identity.</param>
-    /// <param name="request">The replacement safe identity fields.</param>
-    /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
-    /// <returns>The identity operation result, including validation errors when the update fails.</returns>
-    Task<IdentityOperationResult> UpdateIdentityAsync(int customerId, CustomerIdentityRequest request, CancellationToken cancellationToken);
-    /// <summary>Deletes the identity associated with an existing legacy customer.</summary>
-    /// <param name="customerId">The legacy customer identifier associated with the identity.</param>
-    /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
-    /// <returns>The identity operation result, including an error when the customer does not exist.</returns>
-    Task<IdentityOperationResult> DeleteIdentityAsync(int customerId, CancellationToken cancellationToken);
 }
 
 /// <summary>Customer PostgreSQL boundary.</summary>
@@ -235,37 +207,4 @@ public interface ICustomerCache
     /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
     /// <returns>A task representing the asynchronous cache removal.</returns>
     Task RemoveAsync(int id, CancellationToken cancellationToken);
-}
-
-/// <summary>AuthService-owned identity operations.</summary>
-public interface ICustomerIdentityDirectory
-{
-    /// <summary>Validates customer credentials without exposing whether an account exists.</summary>
-    /// <param name="request">The username and password submitted for validation.</param>
-    /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
-    /// <returns>The non-enumerating validation result from AuthService.</returns>
-    Task<IdentityOperationResult> ValidateCredentialsAsync(UserValidationRequest request, CancellationToken cancellationToken);
-    /// <summary>Creates an AuthService-owned identity for a legacy customer.</summary>
-    /// <param name="customerId">The legacy customer identifier associated with the identity.</param>
-    /// <param name="request">The safe identity fields to create.</param>
-    /// <param name="legacyPassword">The optional legacy password supplied only during controlled migration.</param>
-    /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
-    /// <returns>The AuthService identity operation result.</returns>
-    Task<IdentityOperationResult> CreateAsync(int customerId, CustomerIdentityRequest request, string? legacyPassword, CancellationToken cancellationToken);
-    /// <summary>Retrieves the AuthService-owned identity for a legacy customer.</summary>
-    /// <param name="customerId">The legacy customer identifier associated with the identity.</param>
-    /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
-    /// <returns>The safe identity representation if found; otherwise, <see langword="null"/>.</returns>
-    Task<CustomerIdentityResponse?> GetAsync(int customerId, CancellationToken cancellationToken);
-    /// <summary>Updates the AuthService-owned identity for a legacy customer.</summary>
-    /// <param name="customerId">The legacy customer identifier associated with the identity.</param>
-    /// <param name="request">The replacement safe identity fields.</param>
-    /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
-    /// <returns>The AuthService identity operation result.</returns>
-    Task<IdentityOperationResult> UpdateAsync(int customerId, CustomerIdentityRequest request, CancellationToken cancellationToken);
-    /// <summary>Deletes the AuthService-owned identity for a legacy customer.</summary>
-    /// <param name="customerId">The legacy customer identifier associated with the identity.</param>
-    /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
-    /// <returns>The AuthService identity operation result.</returns>
-    Task<IdentityOperationResult> DeleteAsync(int customerId, CancellationToken cancellationToken);
 }
