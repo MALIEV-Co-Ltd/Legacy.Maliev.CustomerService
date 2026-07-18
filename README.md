@@ -10,7 +10,9 @@ is completed independently.
 Dependency direction is `Api -> Application -> Domain`; PostgreSQL and Redis
 adapters live in `Data`. Scalar/OpenAPI, JWT validation, standard
 middleware, health endpoints, and structured logging come from
-`Maliev.Aspire.ServiceDefaults`.
+the public `Legacy.Maliev.ServiceDefaults` package/repository. CI source builds also pin the public
+`Legacy.Maliev.CompatibilityContracts` repository. Compatibility namespaces remain unchanged, so
+this isolation does not alter customer, address, company, permission, DTO, or JSON contracts.
 
 CustomerService neither opens, migrates, nor proxies `CustomerIdentity`. Passwords,
 password hashes, security stamps, authenticator keys, recovery material, sessions,
