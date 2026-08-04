@@ -89,6 +89,48 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
         Assert.Equal("1 Profile Road", customer.ShippingAddress?.AddressLine1);
     }
 
+    [Fact]
+    public async Task GetCustomersAsync_SearchesMigratedNondeterministicCollations()
+    {
+        await using var dbContext = CreateDbContext();
+        await dbContext.Database.MigrateAsync();
+        await dbContext.Database.ExecuteSqlRawAsync(
+            """
+            CREATE COLLATION customer_search_nondeterministic
+                (provider = icu, locale = 'und-u-ks-level2', deterministic = false);
+            ALTER TABLE "Company"
+                ALTER COLUMN "Name" TYPE character varying(256)
+                COLLATE customer_search_nondeterministic;
+            """);
+
+        var company = new Company { Name = "บริษัท มาลีฟ จำกัด" };
+        dbContext.Add(company);
+        await dbContext.SaveChangesAsync();
+        dbContext.Add(new Customer
+        {
+            FirstName = "ธีระ",
+            LastName = "ทิพอาสน์",
+            Email = "customer-search@example.com",
+            CompanyId = company.Id,
+        });
+        await dbContext.SaveChangesAsync();
+        dbContext.ChangeTracker.Clear();
+
+        var repository = new CustomerRepository(dbContext, TimeProvider.System);
+
+        var result = await repository.GetCustomersAsync(
+            CustomerSortType.CustomerId_Descending,
+            "มาลีฟ",
+            pageIndex: 1,
+            pageSize: 25,
+            CancellationToken.None);
+
+        Assert.NotNull(result);
+        var customer = Assert.Single(result.Items);
+        Assert.Equal("customer-search@example.com", customer.Email);
+        Assert.Equal("บริษัท มาลีฟ จำกัด", customer.Company?.Name);
+    }
+
     private CustomerDbContext CreateDbContext()
     {
         var options = new DbContextOptionsBuilder<CustomerDbContext>()

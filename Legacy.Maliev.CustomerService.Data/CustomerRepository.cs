@@ -38,13 +38,13 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
             var pattern = $"%{value}%";
             query = query.Where(customer =>
                 (numeric && customer.Id == id) ||
-                EF.Functions.ILike(customer.FirstName, pattern) ||
-                EF.Functions.ILike(customer.LastName, pattern) ||
-                EF.Functions.ILike(customer.FullName, pattern) ||
-                EF.Functions.ILike(customer.Email, pattern) ||
-                (customer.Mobile != null && EF.Functions.ILike(customer.Mobile, pattern)) ||
-                (customer.Telephone != null && EF.Functions.ILike(customer.Telephone, pattern)) ||
-                (customer.Company != null && EF.Functions.ILike(customer.Company.Name, pattern)));
+                EF.Functions.ILike(EF.Functions.Collate(customer.FirstName, "C"), pattern) ||
+                EF.Functions.ILike(EF.Functions.Collate(customer.LastName, "C"), pattern) ||
+                EF.Functions.ILike(EF.Functions.Collate(customer.FullName, "C"), pattern) ||
+                EF.Functions.ILike(EF.Functions.Collate(customer.Email, "C"), pattern) ||
+                (customer.Mobile != null && EF.Functions.ILike(EF.Functions.Collate(customer.Mobile, "C"), pattern)) ||
+                (customer.Telephone != null && EF.Functions.ILike(EF.Functions.Collate(customer.Telephone, "C"), pattern)) ||
+                (customer.Company != null && EF.Functions.ILike(EF.Functions.Collate(customer.Company.Name, "C"), pattern)));
         }
 
         query = sort switch
