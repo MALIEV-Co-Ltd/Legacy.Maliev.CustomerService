@@ -151,8 +151,17 @@ public sealed class CustomerApplicationService(
     }
 
     /// <inheritdoc />
-    public Task<bool> DeleteCompanyAsync(int id, CancellationToken cancellationToken) =>
-        repository.DeleteCompanyAsync(id, cancellationToken);
+    public async Task<bool> DeleteCompanyAsync(int id, CancellationToken cancellationToken)
+    {
+        var customerIds = await repository.GetCustomerIdsForCompanyAsync(id, cancellationToken);
+        var deleted = await repository.DeleteCompanyAsync(id, cancellationToken);
+        if (deleted)
+        {
+            await InvalidateCustomersAsync(customerIds, cancellationToken);
+        }
+
+        return deleted;
+    }
 
     private Task InvalidateCustomersAsync(IReadOnlyList<int> customerIds, CancellationToken cancellationToken) =>
         Task.WhenAll(customerIds.Select(customerId => cache.RemoveAsync(customerId, cancellationToken)));
