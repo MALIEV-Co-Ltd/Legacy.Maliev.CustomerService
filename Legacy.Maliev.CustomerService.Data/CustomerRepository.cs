@@ -77,7 +77,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     /// <inheritdoc />
     public async Task<Customer> CreateCustomerAsync(UpsertCustomerRequest request, CancellationToken cancellationToken)
     {
-        var now = timeProvider.GetUtcNow().UtcDateTime;
+        var now = UtcWallClockNow();
         var entity = new Customer
         {
             FirstName = request.FirstName.Trim(),
@@ -106,7 +106,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
         entity.FirstName = request.FirstName.Trim(); entity.LastName = request.LastName.Trim(); entity.Email = request.Email.Trim();
         entity.Telephone = request.Telephone; entity.Mobile = request.Mobile; entity.Fax = request.Fax; entity.DateOfBirth = request.DateOfBirth;
         entity.CompanyId = request.CompanyId; entity.BillingAddressId = request.BillingAddressId; entity.ShippingAddressId = request.ShippingAddressId;
-        entity.ModifiedDate = timeProvider.GetUtcNow().UtcDateTime;
+        entity.ModifiedDate = UtcWallClockNow();
         await dbContext.SaveChangesAsync(cancellationToken);
         return true;
     }
@@ -133,7 +133,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     public async Task<Address?> CreateAddressAsync(int customerId, UpsertAddressRequest request, CancellationToken cancellationToken)
     {
         if (!await dbContext.Customers.AnyAsync(value => value.Id == customerId, cancellationToken)) return null;
-        var now = timeProvider.GetUtcNow().UtcDateTime;
+        var now = UtcWallClockNow();
         var entity = new Address
         {
             Building = request.Building,
@@ -158,7 +158,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
         if (entity is null) return false;
         entity.Building = request.Building; entity.AddressLine1 = request.AddressLine1.Trim(); entity.AddressLine2 = request.AddressLine2;
         entity.City = request.City; entity.State = request.State; entity.PostalCode = request.PostalCode; entity.CountryId = request.CountryId;
-        entity.ModifiedDate = timeProvider.GetUtcNow().UtcDateTime;
+        entity.ModifiedDate = UtcWallClockNow();
         await dbContext.SaveChangesAsync(cancellationToken);
         return true;
     }
@@ -188,7 +188,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     /// <inheritdoc />
     public async Task<Company> CreateCompanyAsync(UpsertCompanyRequest request, CancellationToken cancellationToken)
     {
-        var now = timeProvider.GetUtcNow().UtcDateTime;
+        var now = UtcWallClockNow();
         var entity = new Company { Name = request.Name.Trim(), TaxNumber = request.TaxNumber, Registrar = request.Registrar, CreatedDate = now, ModifiedDate = now };
         dbContext.Companies.Add(entity); await dbContext.SaveChangesAsync(cancellationToken); return entity;
     }
@@ -198,7 +198,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     {
         var entity = await dbContext.Companies.FindAsync([id], cancellationToken); if (entity is null) return false;
         entity.Name = request.Name.Trim(); entity.TaxNumber = request.TaxNumber; entity.Registrar = request.Registrar;
-        entity.ModifiedDate = timeProvider.GetUtcNow().UtcDateTime; await dbContext.SaveChangesAsync(cancellationToken); return true;
+        entity.ModifiedDate = UtcWallClockNow(); await dbContext.SaveChangesAsync(cancellationToken); return true;
     }
 
     /// <inheritdoc />
@@ -211,6 +211,12 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     /// <inheritdoc />
     public async Task<bool> DeleteCompanyAsync(int id, CancellationToken cancellationToken) =>
         await dbContext.Companies.Where(value => value.Id == id).ExecuteDeleteAsync(cancellationToken) == 1;
+
+    // The migrated legacy schema stores audit timestamps as UTC wall-clock values
+    // in timestamp-without-time-zone columns. Npgsql rejects DateTimeKind.Utc for
+    // those columns, so keep the instant while removing the provider timezone kind.
+    private DateTime UtcWallClockNow() =>
+        DateTime.SpecifyKind(timeProvider.GetUtcNow().UtcDateTime, DateTimeKind.Unspecified);
 
     private static IQueryable<CustomerResponse> Project(IQueryable<Customer> query) => query.Select(customer => new CustomerResponse(
         customer.Id, customer.FirstName, customer.LastName, customer.FullName, customer.Telephone, customer.Mobile, customer.Fax,

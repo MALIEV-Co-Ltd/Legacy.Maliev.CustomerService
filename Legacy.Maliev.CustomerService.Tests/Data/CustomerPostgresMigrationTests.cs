@@ -131,6 +131,24 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
         Assert.Equal("บริษัท มาลีฟ จำกัด", customer.Company?.Name);
     }
 
+    [Fact]
+    public async Task CreateCompanyAsync_UsesUtcWallClockForTimestampWithoutTimeZoneColumns()
+    {
+        await using var dbContext = CreateDbContext();
+        await dbContext.Database.MigrateAsync();
+
+        var repository = new CustomerRepository(dbContext, TimeProvider.System);
+
+        var company = await repository.CreateCompanyAsync(
+            new UpsertCompanyRequest("UTC wall-clock company", null, null),
+            CancellationToken.None);
+
+        Assert.NotNull(company.CreatedDate);
+        Assert.NotNull(company.ModifiedDate);
+        Assert.Equal(DateTimeKind.Unspecified, company.CreatedDate.Value.Kind);
+        Assert.Equal(DateTimeKind.Unspecified, company.ModifiedDate.Value.Kind);
+    }
+
     private CustomerDbContext CreateDbContext()
     {
         var options = new DbContextOptionsBuilder<CustomerDbContext>()
