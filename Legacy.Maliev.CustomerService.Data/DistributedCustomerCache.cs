@@ -28,7 +28,7 @@ public sealed class DistributedCustomerCache(IDistributedCache cache, ILogger<Di
             var bytes = await cache.GetAsync(Key(id), cancellationToken);
             return bytes is null ? null : JsonSerializer.Deserialize<CustomerResponse>(bytes, JsonOptions);
         }
-        catch (Exception exception)
+        catch (Exception exception) when (exception is not OperationCanceledException)
         {
             logger.LogWarning(exception, "Customer cache read failed; using PostgreSQL");
             return null;
@@ -42,7 +42,7 @@ public sealed class DistributedCustomerCache(IDistributedCache cache, ILogger<Di
         {
             await cache.SetAsync(Key(customer.Id), JsonSerializer.SerializeToUtf8Bytes(customer, JsonOptions), EntryOptions, cancellationToken);
         }
-        catch (Exception exception)
+        catch (Exception exception) when (exception is not OperationCanceledException)
         {
             logger.LogWarning(exception, "Customer cache write failed; continuing without cache");
         }
@@ -55,7 +55,7 @@ public sealed class DistributedCustomerCache(IDistributedCache cache, ILogger<Di
         {
             await cache.RemoveAsync(Key(id), cancellationToken);
         }
-        catch (Exception exception)
+        catch (Exception exception) when (exception is not OperationCanceledException)
         {
             logger.LogWarning(exception, "Customer cache invalidation failed");
         }
