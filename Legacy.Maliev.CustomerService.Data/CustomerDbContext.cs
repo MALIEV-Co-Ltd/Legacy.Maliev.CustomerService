@@ -88,7 +88,7 @@ public sealed class CustomerDbContext(DbContextOptions<CustomerDbContext> option
     private static void ConfigureDates<TEntity>(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<TEntity> entity)
         where TEntity : class
     {
-        // Legacy SQL Server datetime values are stored as UTC wall-clock values in
+        // Legacy imported datetime values are stored as UTC wall-clock values in
         // PostgreSQL timestamp-without-time-zone columns. Keep the conversion explicit
         // for every customer-owned table so Npgsql accepts the repository's UTC-boundary
         // DateTime values and new rows use the same representation.
