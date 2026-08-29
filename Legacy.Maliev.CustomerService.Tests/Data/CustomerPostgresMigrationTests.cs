@@ -149,6 +149,137 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
         Assert.Equal(DateTimeKind.Unspecified, company.ModifiedDate.Value.Kind);
     }
 
+    [Fact]
+    public async Task ProvisionInstantQuotationProfile_NewGuest_CommitsCompleteShipToBillingProfileAtomically()
+    {
+        await using var dbContext = CreateDbContext();
+        await dbContext.Database.MigrateAsync();
+        var repository = new CustomerRepository(dbContext, TimeProvider.System);
+        var request = new InstantQuotationCustomerProfileRequest(
+            " Ada ",
+            " Lovelace ",
+            " Ada.IQ@Example.com ",
+            "02-123-4567",
+            "081-234-5678",
+            " Analytical Engines ",
+            "0115562011815 (สำนักงานใหญ่)",
+            new InstantQuotationAddressInput("Engine House", "1 Billing Road", null, "Bangkok", "Bangkok", "10110", 764),
+            Shipping: null,
+            ShipToBillingAddress: true);
+
+        var result = await repository.ProvisionInstantQuotationProfileAsync(request, CancellationToken.None);
+        dbContext.ChangeTracker.Clear();
+        var persisted = await repository.GetCustomerAsync(result.CustomerId, CancellationToken.None);
+
+        Assert.True(result.CustomerCreated);
+        Assert.NotNull(persisted);
+        Assert.Equal("Ada", persisted.FirstName);
+        Assert.Equal("ada.iq@example.com", persisted.Email, ignoreCase: true);
+        Assert.Equal("081-234-5678", persisted.Mobile);
+        Assert.Equal(persisted.BillingAddressId, persisted.ShippingAddressId);
+        Assert.Equal("1 Billing Road", persisted.BillingAddress?.AddressLine1);
+        Assert.Equal("Analytical Engines", persisted.Company?.Name);
+        Assert.Equal("0115562011815 (สำนักงานใหญ่)", persisted.Company?.TaxNumber);
+        Assert.Equal(1, await dbContext.Customers.CountAsync());
+        Assert.Equal(1, await dbContext.Addresses.CountAsync());
+        Assert.Equal(1, await dbContext.Companies.CountAsync());
+    }
+
+    [Fact]
+    public async Task ProvisionInstantQuotationProfile_ConcurrentSameEmail_ReturnsOneDeterministicCustomer()
+    {
+        await using var setup = CreateDbContext();
+        await setup.Database.MigrateAsync();
+        var request = new InstantQuotationCustomerProfileRequest(
+            "Grace",
+            "Hopper",
+            "concurrent.iq@example.com",
+            null,
+            "0890000000",
+            null,
+            null,
+            new InstantQuotationAddressInput(null, "1 Billing Road", null, "Bangkok", "Bangkok", "10110", 764),
+            null,
+            true);
+
+        await using var firstContext = CreateDbContext();
+        await using var secondContext = CreateDbContext();
+        var firstRepository = new CustomerRepository(firstContext, TimeProvider.System);
+        var secondRepository = new CustomerRepository(secondContext, TimeProvider.System);
+        var results = await Task.WhenAll(
+            firstRepository.ProvisionInstantQuotationProfileAsync(request, CancellationToken.None),
+            secondRepository.ProvisionInstantQuotationProfileAsync(request, CancellationToken.None));
+
+        Assert.Equal(results[0].CustomerId, results[1].CustomerId);
+        Assert.Single(results, result => result.CustomerCreated);
+        Assert.Single(results, result => !result.CustomerCreated);
+        await using var verification = CreateDbContext();
+        Assert.Equal(1, await verification.Customers.CountAsync(customer => customer.Email.ToLower() == "concurrent.iq@example.com"));
+        Assert.Equal(1, await verification.Addresses.CountAsync());
+    }
+
+    [Fact]
+    public async Task ProvisionInstantQuotationProfile_LegacyDuplicateEmail_SelectsLowestIdWithoutCreatingResources()
+    {
+        await using var dbContext = CreateDbContext();
+        await dbContext.Database.MigrateAsync();
+        dbContext.Customers.AddRange(
+            new Customer { Id = 91, FirstName = "Later", LastName = "Import", Email = "DUPLICATE.IQ@example.com" },
+            new Customer { Id = 17, FirstName = "Earlier", LastName = "Import", Email = "duplicate.iq@example.com" });
+        await dbContext.SaveChangesAsync();
+        var repository = new CustomerRepository(dbContext, TimeProvider.System);
+
+        var result = await repository.ProvisionInstantQuotationProfileAsync(
+            new InstantQuotationCustomerProfileRequest(
+                "Ignored",
+                "Input",
+                " duplicate.iq@EXAMPLE.com ",
+                null,
+                null,
+                null,
+                null,
+                new InstantQuotationAddressInput(null, "1 Should Not Persist", null, null, null, null, 764),
+                null,
+                true),
+            CancellationToken.None);
+
+        Assert.Equal(17, result.CustomerId);
+        Assert.False(result.CustomerCreated);
+        Assert.Equal(2, await dbContext.Customers.CountAsync());
+        Assert.Empty(await dbContext.Addresses.ToListAsync());
+        Assert.Empty(await dbContext.Companies.ToListAsync());
+    }
+
+    [Fact]
+    public async Task ProvisionInstantQuotationProfile_SeparateShipping_PersistsTwoLinkedAddresses()
+    {
+        await using var dbContext = CreateDbContext();
+        await dbContext.Database.MigrateAsync();
+        var repository = new CustomerRepository(dbContext, TimeProvider.System);
+
+        var result = await repository.ProvisionInstantQuotationProfileAsync(
+            new InstantQuotationCustomerProfileRequest(
+                "Katherine",
+                "Johnson",
+                "katherine.iq@example.com",
+                null,
+                "081-000-0000",
+                null,
+                null,
+                new InstantQuotationAddressInput(null, "1 Billing Road", null, "Bangkok", "Bangkok", "10110", 764),
+                new InstantQuotationAddressInput(null, "2 Shipping Road", null, "Nonthaburi", "Nonthaburi", "11000", 764),
+                false),
+            CancellationToken.None);
+        dbContext.ChangeTracker.Clear();
+        var persisted = await repository.GetCustomerAsync(result.CustomerId, CancellationToken.None);
+
+        Assert.NotNull(persisted);
+        Assert.NotEqual(persisted.BillingAddressId, persisted.ShippingAddressId);
+        Assert.Equal("1 Billing Road", persisted.BillingAddress?.AddressLine1);
+        Assert.Equal("2 Shipping Road", persisted.ShippingAddress?.AddressLine1);
+        Assert.Equal(2, await dbContext.Addresses.CountAsync());
+    }
+
     private CustomerDbContext CreateDbContext()
     {
         var options = new DbContextOptionsBuilder<CustomerDbContext>()

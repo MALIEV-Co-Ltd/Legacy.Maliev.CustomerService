@@ -19,8 +19,10 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
 
     /// <inheritdoc />
     public Task<CustomerResponse?> GetCustomerByEmailAsync(string email, CancellationToken cancellationToken) =>
-        Project(dbContext.Customers.AsNoTracking().Where(customer => customer.Email.ToLower() == email.ToLower()))
-            .SingleOrDefaultAsync(cancellationToken);
+        Project(dbContext.Customers.AsNoTracking()
+            .Where(customer => customer.Email.ToLower() == email.ToLower())
+            .OrderBy(customer => customer.Id))
+            .FirstOrDefaultAsync(cancellationToken);
 
     /// <inheritdoc />
     public async Task<PaginatedResponse<CustomerResponse>?> GetCustomersAsync(
@@ -96,6 +98,67 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
         dbContext.Customers.Add(entity);
         await dbContext.SaveChangesAsync(cancellationToken);
         return entity;
+    }
+
+    /// <inheritdoc />
+    public async Task<InstantQuotationCustomerProfileResult> ProvisionInstantQuotationProfileAsync(
+        InstantQuotationCustomerProfileRequest request,
+        CancellationToken cancellationToken)
+    {
+        var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+        await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
+
+        // Imported legacy data does not have a unique normalized-email constraint. A
+        // transaction-scoped advisory lock prevents two independent Web submissions
+        // from provisioning duplicate customer graphs without changing that schema.
+        await dbContext.Database.ExecuteSqlInterpolatedAsync(
+            $"SELECT pg_advisory_xact_lock(hashtextextended({normalizedEmail}, 0))",
+            cancellationToken);
+
+        var existingCustomerId = await dbContext.Customers
+            .AsNoTracking()
+            .Where(customer => customer.Email.ToLower() == normalizedEmail)
+            .OrderBy(customer => customer.Id)
+            .Select(customer => (int?)customer.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+        if (existingCustomerId.HasValue)
+        {
+            await transaction.CommitAsync(cancellationToken);
+            return new InstantQuotationCustomerProfileResult(existingCustomerId.Value, CustomerCreated: false);
+        }
+
+        var now = UtcWallClockNow();
+        var billing = CreateAddress(request.Billing, now);
+        var shipping = request.ShipToBillingAddress
+            ? billing
+            : CreateAddress(request.Shipping!, now);
+        var company = string.IsNullOrWhiteSpace(request.Company)
+            ? null
+            : new Company
+            {
+                Name = request.Company.Trim(),
+                TaxNumber = TrimOrNull(request.TaxNumber),
+                CreatedDate = now,
+                ModifiedDate = now,
+            };
+        var customer = new Customer
+        {
+            FirstName = request.FirstName.Trim(),
+            LastName = request.LastName.Trim(),
+            Email = request.Email.Trim(),
+            Telephone = TrimOrNull(request.Telephone),
+            Mobile = TrimOrNull(request.Mobile),
+            BillingAddress = billing,
+            ShippingAddress = shipping,
+            Company = company,
+            CreatedDate = now,
+            ModifiedDate = now,
+        };
+
+        dbContext.Customers.Add(customer);
+        await dbContext.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+        return new InstantQuotationCustomerProfileResult(customer.Id, CustomerCreated: true);
     }
 
     /// <inheritdoc />
@@ -217,6 +280,22 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     // those columns, so keep the instant while removing the provider timezone kind.
     private DateTime UtcWallClockNow() =>
         DateTime.SpecifyKind(timeProvider.GetUtcNow().UtcDateTime, DateTimeKind.Unspecified);
+
+    private static Address CreateAddress(InstantQuotationAddressInput request, DateTime now) => new()
+    {
+        Building = TrimOrNull(request.Building),
+        AddressLine1 = request.AddressLine1.Trim(),
+        AddressLine2 = TrimOrNull(request.AddressLine2),
+        City = TrimOrNull(request.City),
+        State = TrimOrNull(request.State),
+        PostalCode = TrimOrNull(request.PostalCode),
+        CountryId = request.CountryId,
+        CreatedDate = now,
+        ModifiedDate = now,
+    };
+
+    private static string? TrimOrNull(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
     private static IQueryable<CustomerResponse> Project(IQueryable<Customer> query) => query.Select(customer => new CustomerResponse(
         customer.Id, customer.FirstName, customer.LastName, customer.FullName, customer.Telephone, customer.Mobile, customer.Fax,

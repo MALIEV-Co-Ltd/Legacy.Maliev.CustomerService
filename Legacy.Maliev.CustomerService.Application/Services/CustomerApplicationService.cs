@@ -47,6 +47,12 @@ public sealed class CustomerApplicationService(
     }
 
     /// <inheritdoc />
+    public Task<InstantQuotationCustomerProfileResult> ProvisionInstantQuotationProfileAsync(
+        InstantQuotationCustomerProfileRequest request,
+        CancellationToken cancellationToken) =>
+        repository.ProvisionInstantQuotationProfileAsync(request, cancellationToken);
+
+    /// <inheritdoc />
     public async Task<bool> UpdateCustomerAsync(int id, UpsertCustomerRequest request, CancellationToken cancellationToken)
     {
         var updated = await repository.UpdateCustomerAsync(id, request, cancellationToken);

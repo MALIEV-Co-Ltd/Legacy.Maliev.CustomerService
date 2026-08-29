@@ -29,6 +29,13 @@ public interface ICustomerService
     /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
     /// <returns>The newly created customer profile.</returns>
     Task<CustomerResponse> CreateCustomerAsync(UpsertCustomerRequest request, CancellationToken cancellationToken);
+    /// <summary>Atomically selects or provisions the complete profile needed by instant-quotation fulfillment.</summary>
+    /// <param name="request">The normalized customer, company, and address details.</param>
+    /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
+    /// <returns>The selected customer identifier and whether this call created it.</returns>
+    Task<InstantQuotationCustomerProfileResult> ProvisionInstantQuotationProfileAsync(
+        InstantQuotationCustomerProfileRequest request,
+        CancellationToken cancellationToken);
     /// <summary>Updates an existing customer profile and invalidates its cached representation.</summary>
     /// <param name="id">The legacy customer identifier.</param>
     /// <param name="request">The replacement customer details.</param>
@@ -117,6 +124,13 @@ public interface ICustomerRepository
     /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
     /// <returns>The persisted customer entity with its assigned identifier.</returns>
     Task<Customer> CreateCustomerAsync(UpsertCustomerRequest request, CancellationToken cancellationToken);
+    /// <summary>Atomically selects or provisions the complete profile needed by instant-quotation fulfillment.</summary>
+    /// <param name="request">The normalized customer, company, and address details.</param>
+    /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
+    /// <returns>The selected customer identifier and whether this call created it.</returns>
+    Task<InstantQuotationCustomerProfileResult> ProvisionInstantQuotationProfileAsync(
+        InstantQuotationCustomerProfileRequest request,
+        CancellationToken cancellationToken);
     /// <summary>Persists replacement details for an existing customer.</summary>
     /// <param name="id">The legacy customer identifier.</param>
     /// <param name="request">The replacement customer details.</param>
