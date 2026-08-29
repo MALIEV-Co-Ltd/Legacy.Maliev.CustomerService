@@ -78,6 +78,24 @@ public sealed class CustomerApplicationServiceTests
         cache.Verify(value => value.RemoveAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
+    [Fact]
+    public async Task DeleteCompanyAsync_Success_InvalidatesEveryReferencingCustomer()
+    {
+        var repository = new Mock<ICustomerRepository>();
+        repository.Setup(value => value.GetCustomerIdsForCompanyAsync(21, It.IsAny<CancellationToken>()))
+            .ReturnsAsync([7, 8]);
+        repository.Setup(value => value.DeleteCompanyAsync(21, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+        var cache = new Mock<ICustomerCache>();
+        var service = new CustomerApplicationService(repository.Object, cache.Object);
+
+        var result = await service.DeleteCompanyAsync(21, CancellationToken.None);
+
+        Assert.True(result);
+        cache.Verify(value => value.RemoveAsync(7, It.IsAny<CancellationToken>()), Times.Once);
+        cache.Verify(value => value.RemoveAsync(8, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
     private static CustomerResponse SampleCustomer() => new(7, "Ada", "Lovelace", "Ada Lovelace", null, null, null, "ada@example.com", null, null, null, null, null, null, null, null, null);
     private static UpsertCustomerRequest SampleRequest() => new("Ada", "Lovelace", null, null, null, "ada@example.com", null, null, null, null);
 }

@@ -26,5 +26,32 @@ public sealed class CustomerModelCompatibilityTests
         Assert.Equal("FK_Customer_Address", customer.GetForeignKeys().Single(key => key.Properties.Single().Name == nameof(Customer.BillingAddressId)).GetConstraintName());
         Assert.Equal("FK_Customer_Address1", customer.GetForeignKeys().Single(key => key.Properties.Single().Name == nameof(Customer.ShippingAddressId)).GetConstraintName());
         Assert.Equal("FK_Customer_Company", customer.GetForeignKeys().Single(key => key.Properties.Single().Name == nameof(Customer.CompanyId)).GetConstraintName());
+
+        foreach (var entityType in context.Model.GetEntityTypes().Where(entity =>
+                     entity.ClrType == typeof(Address)
+                     || entity.ClrType == typeof(Company)
+                     || entity.ClrType == typeof(Customer)))
+        {
+            var created = entityType.FindProperty(nameof(Customer.CreatedDate))!;
+            var modified = entityType.FindProperty(nameof(Customer.ModifiedDate))!;
+            Assert.Equal("timestamp without time zone", created.GetColumnType());
+            Assert.Equal("timestamp without time zone", modified.GetColumnType());
+            Assert.Equal("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'", created.GetDefaultValueSql());
+            Assert.Equal("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'", modified.GetDefaultValueSql());
+        }
+    }
+
+    [Fact]
+    public void TimestampMigration_UsesExplicitUtcConversions()
+    {
+        var migration = Path.Combine(
+            Path.GetDirectoryName(typeof(CustomerModelCompatibilityTests).Assembly.Location)!,
+            "..", "..", "..", "..", "Legacy.Maliev.CustomerService.Data", "Migrations",
+            "20260807140250_AlignUtcTimestampColumns.cs");
+        var source = File.ReadAllText(Path.GetFullPath(migration));
+
+        Assert.Contains("ALTER TABLE \"Customer\"", source, StringComparison.Ordinal);
+        Assert.Contains("USING \"CreatedDate\" AT TIME ZONE 'UTC'", source, StringComparison.Ordinal);
+        Assert.Contains("USING \"ModifiedDate\" AT TIME ZONE 'UTC'", source, StringComparison.Ordinal);
     }
 }

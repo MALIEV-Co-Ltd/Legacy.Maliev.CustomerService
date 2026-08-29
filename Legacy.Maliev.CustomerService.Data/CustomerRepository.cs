@@ -19,8 +19,10 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
 
     /// <inheritdoc />
     public Task<CustomerResponse?> GetCustomerByEmailAsync(string email, CancellationToken cancellationToken) =>
-        Project(dbContext.Customers.AsNoTracking().Where(customer => customer.Email.ToLower() == email.ToLower()))
-            .SingleOrDefaultAsync(cancellationToken);
+        Project(dbContext.Customers.AsNoTracking()
+            .Where(customer => customer.Email.ToLower() == email.ToLower())
+            .OrderBy(customer => customer.Id))
+            .FirstOrDefaultAsync(cancellationToken);
 
     /// <inheritdoc />
     public async Task<PaginatedResponse<CustomerResponse>?> GetCustomersAsync(
@@ -38,13 +40,13 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
             var pattern = $"%{value}%";
             query = query.Where(customer =>
                 (numeric && customer.Id == id) ||
-                EF.Functions.ILike(customer.FirstName, pattern) ||
-                EF.Functions.ILike(customer.LastName, pattern) ||
-                EF.Functions.ILike(customer.FullName, pattern) ||
-                EF.Functions.ILike(customer.Email, pattern) ||
-                (customer.Mobile != null && EF.Functions.ILike(customer.Mobile, pattern)) ||
-                (customer.Telephone != null && EF.Functions.ILike(customer.Telephone, pattern)) ||
-                (customer.Company != null && EF.Functions.ILike(customer.Company.Name, pattern)));
+                EF.Functions.ILike(EF.Functions.Collate(customer.FirstName, "C"), pattern) ||
+                EF.Functions.ILike(EF.Functions.Collate(customer.LastName, "C"), pattern) ||
+                EF.Functions.ILike(EF.Functions.Collate(customer.FullName, "C"), pattern) ||
+                EF.Functions.ILike(EF.Functions.Collate(customer.Email, "C"), pattern) ||
+                (customer.Mobile != null && EF.Functions.ILike(EF.Functions.Collate(customer.Mobile, "C"), pattern)) ||
+                (customer.Telephone != null && EF.Functions.ILike(EF.Functions.Collate(customer.Telephone, "C"), pattern)) ||
+                (customer.Company != null && EF.Functions.ILike(EF.Functions.Collate(customer.Company.Name, "C"), pattern)));
         }
 
         query = sort switch
@@ -77,7 +79,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     /// <inheritdoc />
     public async Task<Customer> CreateCustomerAsync(UpsertCustomerRequest request, CancellationToken cancellationToken)
     {
-        var now = timeProvider.GetUtcNow().UtcDateTime;
+        var now = UtcWallClockNow();
         var entity = new Customer
         {
             FirstName = request.FirstName.Trim(),
@@ -99,6 +101,67 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     }
 
     /// <inheritdoc />
+    public async Task<InstantQuotationCustomerProfileResult> ProvisionInstantQuotationProfileAsync(
+        InstantQuotationCustomerProfileRequest request,
+        CancellationToken cancellationToken)
+    {
+        var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+        await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
+
+        // Imported legacy data does not have a unique normalized-email constraint. A
+        // transaction-scoped advisory lock prevents two independent Web submissions
+        // from provisioning duplicate customer graphs without changing that schema.
+        await dbContext.Database.ExecuteSqlInterpolatedAsync(
+            $"SELECT pg_advisory_xact_lock(hashtextextended({normalizedEmail}, 0))",
+            cancellationToken);
+
+        var existingCustomerId = await dbContext.Customers
+            .AsNoTracking()
+            .Where(customer => customer.Email.ToLower() == normalizedEmail)
+            .OrderBy(customer => customer.Id)
+            .Select(customer => (int?)customer.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+        if (existingCustomerId.HasValue)
+        {
+            await transaction.CommitAsync(cancellationToken);
+            return new InstantQuotationCustomerProfileResult(existingCustomerId.Value, CustomerCreated: false);
+        }
+
+        var now = UtcWallClockNow();
+        var billing = CreateAddress(request.Billing, now);
+        var shipping = request.ShipToBillingAddress
+            ? billing
+            : CreateAddress(request.Shipping!, now);
+        var company = string.IsNullOrWhiteSpace(request.Company)
+            ? null
+            : new Company
+            {
+                Name = request.Company.Trim(),
+                TaxNumber = TrimOrNull(request.TaxNumber),
+                CreatedDate = now,
+                ModifiedDate = now,
+            };
+        var customer = new Customer
+        {
+            FirstName = request.FirstName.Trim(),
+            LastName = request.LastName.Trim(),
+            Email = request.Email.Trim(),
+            Telephone = TrimOrNull(request.Telephone),
+            Mobile = TrimOrNull(request.Mobile),
+            BillingAddress = billing,
+            ShippingAddress = shipping,
+            Company = company,
+            CreatedDate = now,
+            ModifiedDate = now,
+        };
+
+        dbContext.Customers.Add(customer);
+        await dbContext.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+        return new InstantQuotationCustomerProfileResult(customer.Id, CustomerCreated: true);
+    }
+
+    /// <inheritdoc />
     public async Task<bool> UpdateCustomerAsync(int id, UpsertCustomerRequest request, CancellationToken cancellationToken)
     {
         var entity = await dbContext.Customers.FindAsync([id], cancellationToken);
@@ -106,7 +169,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
         entity.FirstName = request.FirstName.Trim(); entity.LastName = request.LastName.Trim(); entity.Email = request.Email.Trim();
         entity.Telephone = request.Telephone; entity.Mobile = request.Mobile; entity.Fax = request.Fax; entity.DateOfBirth = request.DateOfBirth;
         entity.CompanyId = request.CompanyId; entity.BillingAddressId = request.BillingAddressId; entity.ShippingAddressId = request.ShippingAddressId;
-        entity.ModifiedDate = timeProvider.GetUtcNow().UtcDateTime;
+        entity.ModifiedDate = UtcWallClockNow();
         await dbContext.SaveChangesAsync(cancellationToken);
         return true;
     }
@@ -133,7 +196,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     public async Task<Address?> CreateAddressAsync(int customerId, UpsertAddressRequest request, CancellationToken cancellationToken)
     {
         if (!await dbContext.Customers.AnyAsync(value => value.Id == customerId, cancellationToken)) return null;
-        var now = timeProvider.GetUtcNow().UtcDateTime;
+        var now = UtcWallClockNow();
         var entity = new Address
         {
             Building = request.Building,
@@ -158,7 +221,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
         if (entity is null) return false;
         entity.Building = request.Building; entity.AddressLine1 = request.AddressLine1.Trim(); entity.AddressLine2 = request.AddressLine2;
         entity.City = request.City; entity.State = request.State; entity.PostalCode = request.PostalCode; entity.CountryId = request.CountryId;
-        entity.ModifiedDate = timeProvider.GetUtcNow().UtcDateTime;
+        entity.ModifiedDate = UtcWallClockNow();
         await dbContext.SaveChangesAsync(cancellationToken);
         return true;
     }
@@ -188,7 +251,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     /// <inheritdoc />
     public async Task<Company> CreateCompanyAsync(UpsertCompanyRequest request, CancellationToken cancellationToken)
     {
-        var now = timeProvider.GetUtcNow().UtcDateTime;
+        var now = UtcWallClockNow();
         var entity = new Company { Name = request.Name.Trim(), TaxNumber = request.TaxNumber, Registrar = request.Registrar, CreatedDate = now, ModifiedDate = now };
         dbContext.Companies.Add(entity); await dbContext.SaveChangesAsync(cancellationToken); return entity;
     }
@@ -198,7 +261,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     {
         var entity = await dbContext.Companies.FindAsync([id], cancellationToken); if (entity is null) return false;
         entity.Name = request.Name.Trim(); entity.TaxNumber = request.TaxNumber; entity.Registrar = request.Registrar;
-        entity.ModifiedDate = timeProvider.GetUtcNow().UtcDateTime; await dbContext.SaveChangesAsync(cancellationToken); return true;
+        entity.ModifiedDate = UtcWallClockNow(); await dbContext.SaveChangesAsync(cancellationToken); return true;
     }
 
     /// <inheritdoc />
@@ -211,6 +274,28 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     /// <inheritdoc />
     public async Task<bool> DeleteCompanyAsync(int id, CancellationToken cancellationToken) =>
         await dbContext.Companies.Where(value => value.Id == id).ExecuteDeleteAsync(cancellationToken) == 1;
+
+    // The migrated legacy schema stores audit timestamps as UTC wall-clock values
+    // in timestamp-without-time-zone columns. Npgsql rejects DateTimeKind.Utc for
+    // those columns, so keep the instant while removing the provider timezone kind.
+    private DateTime UtcWallClockNow() =>
+        DateTime.SpecifyKind(timeProvider.GetUtcNow().UtcDateTime, DateTimeKind.Unspecified);
+
+    private static Address CreateAddress(InstantQuotationAddressInput request, DateTime now) => new()
+    {
+        Building = TrimOrNull(request.Building),
+        AddressLine1 = request.AddressLine1.Trim(),
+        AddressLine2 = TrimOrNull(request.AddressLine2),
+        City = TrimOrNull(request.City),
+        State = TrimOrNull(request.State),
+        PostalCode = TrimOrNull(request.PostalCode),
+        CountryId = request.CountryId,
+        CreatedDate = now,
+        ModifiedDate = now,
+    };
+
+    private static string? TrimOrNull(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
     private static IQueryable<CustomerResponse> Project(IQueryable<Customer> query) => query.Select(customer => new CustomerResponse(
         customer.Id, customer.FirstName, customer.LastName, customer.FullName, customer.Telephone, customer.Mobile, customer.Fax,

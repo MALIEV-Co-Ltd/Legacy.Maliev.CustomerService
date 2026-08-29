@@ -29,6 +29,24 @@ public sealed class CustomersController(ICustomerService service) : ControllerBa
         return CreatedAtRoute("GetCustomer", new { id = customer.Id }, customer);
     }
 
+    /// <summary>Atomically selects or creates the complete customer profile used by instant quotation fulfillment.</summary>
+    /// <param name="request">The customer, company, and billing/shipping details.</param>
+    /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
+    /// <returns>The selected customer identifier and whether a new profile was created.</returns>
+    [HttpPost("instant-quotation-profile")]
+    [RequirePermission(CustomerPermissions.CustomersCreate)]
+    public async Task<ActionResult<InstantQuotationCustomerProfileResult>> ProvisionInstantQuotationProfileAsync(
+        InstantQuotationCustomerProfileRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (!Valid(request))
+        {
+            return BadRequest("Complete instant-quotation customer and billing data is required");
+        }
+
+        return await service.ProvisionInstantQuotationProfileAsync(request, cancellationToken);
+    }
+
     /// <summary>
     /// Deletes a legacy customer profile by its identifier.
     /// </summary>
@@ -94,4 +112,14 @@ public sealed class CustomersController(ICustomerService service) : ControllerBa
     private static bool Valid(UpsertCustomerRequest request) =>
         !string.IsNullOrWhiteSpace(request.FirstName) && !string.IsNullOrWhiteSpace(request.LastName) &&
         !string.IsNullOrWhiteSpace(request.Email) && request.Email.Contains('@', StringComparison.Ordinal);
+
+    private static bool Valid(InstantQuotationCustomerProfileRequest request) =>
+        !string.IsNullOrWhiteSpace(request.FirstName) &&
+        !string.IsNullOrWhiteSpace(request.LastName) &&
+        !string.IsNullOrWhiteSpace(request.Email) &&
+        request.Email.Contains('@', StringComparison.Ordinal) &&
+        !string.IsNullOrWhiteSpace(request.Billing.AddressLine1) &&
+        request.Billing.CountryId > 0 &&
+        (request.ShipToBillingAddress ||
+            request.Shipping is { CountryId: > 0 } && !string.IsNullOrWhiteSpace(request.Shipping.AddressLine1));
 }

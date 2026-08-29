@@ -24,6 +24,7 @@ public sealed class CustomerControllerContractTests
     public void CustomerActions_PreserveAllLegacyTemplates()
     {
         AssertAction<CustomersController>(nameof(CustomersController.CreateCustomerAsync), null, typeof(HttpPostAttribute));
+        AssertAction<CustomersController>(nameof(CustomersController.ProvisionInstantQuotationProfileAsync), "instant-quotation-profile", typeof(HttpPostAttribute));
         AssertAction<CustomersController>(nameof(CustomersController.DeleteCustomerAsync), "{id:int}", typeof(HttpDeleteAttribute));
         AssertAction<CustomersController>(nameof(CustomersController.GetCustomerAsync), "{id:int}", typeof(HttpGetAttribute));
         AssertAction<CustomersController>(nameof(CustomersController.GetPaginatedAsync), null, typeof(HttpGetAttribute));

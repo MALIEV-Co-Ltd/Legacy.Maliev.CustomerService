@@ -62,6 +62,34 @@ public sealed record UpsertAddressRequest(
     string? PostalCode,
     int CountryId);
 
+/// <summary>Address details captured for an instant-quotation customer profile.</summary>
+public sealed record InstantQuotationAddressInput(
+    string? Building,
+    string AddressLine1,
+    string? AddressLine2,
+    string? City,
+    string? State,
+    string? PostalCode,
+    int CountryId);
+
+/// <summary>
+/// Complete customer-owned profile data required before an instant quotation can create orders.
+/// </summary>
+public sealed record InstantQuotationCustomerProfileRequest(
+    string FirstName,
+    string LastName,
+    string Email,
+    string? Telephone,
+    string? Mobile,
+    string? Company,
+    string? TaxNumber,
+    InstantQuotationAddressInput Billing,
+    InstantQuotationAddressInput? Shipping,
+    bool ShipToBillingAddress);
+
+/// <summary>Identifies the deterministic customer selected or atomically created for a quotation.</summary>
+public sealed record InstantQuotationCustomerProfileResult(int CustomerId, bool CustomerCreated);
+
 /// <summary>Preserves the legacy paginated response shape.</summary>
 public sealed record PaginatedResponse<T>(IReadOnlyList<T> Items, int PageIndex, int TotalPages, int TotalRecords)
 {

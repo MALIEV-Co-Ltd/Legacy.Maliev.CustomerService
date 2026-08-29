@@ -37,4 +37,48 @@ public sealed class DistributedCustomerCacheTests
 
         Assert.Equal(customer, result);
     }
+
+    [Fact]
+    public async Task GetAsync_WhenRedisCancels_PropagatesCancellation()
+    {
+        using var cancellation = new CancellationTokenSource();
+        var distributed = new Mock<IDistributedCache>();
+        distributed.Setup(value => value.GetAsync(It.IsAny<string>(), cancellation.Token))
+            .ThrowsAsync(new OperationCanceledException(cancellation.Token));
+        var cache = new DistributedCustomerCache(distributed.Object, NullLogger<DistributedCustomerCache>.Instance);
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
+            cache.GetAsync(42, cancellation.Token));
+    }
+
+    [Fact]
+    public async Task SetAsync_WhenRedisCancels_PropagatesCancellation()
+    {
+        using var cancellation = new CancellationTokenSource();
+        var distributed = new Mock<IDistributedCache>();
+        distributed.Setup(value => value.SetAsync(
+                It.IsAny<string>(),
+                It.IsAny<byte[]>(),
+                It.IsAny<DistributedCacheEntryOptions>(),
+                cancellation.Token))
+            .ThrowsAsync(new OperationCanceledException(cancellation.Token));
+        var cache = new DistributedCustomerCache(distributed.Object, NullLogger<DistributedCustomerCache>.Instance);
+        var customer = new CustomerResponse(42, "Ada", "Lovelace", "Ada Lovelace", null, null, null, "ada@example.com", null, null, null, null, null, null, null, null, null);
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
+            cache.SetAsync(customer, cancellation.Token));
+    }
+
+    [Fact]
+    public async Task RemoveAsync_WhenRedisCancels_PropagatesCancellation()
+    {
+        using var cancellation = new CancellationTokenSource();
+        var distributed = new Mock<IDistributedCache>();
+        distributed.Setup(value => value.RemoveAsync(It.IsAny<string>(), cancellation.Token))
+            .ThrowsAsync(new OperationCanceledException(cancellation.Token));
+        var cache = new DistributedCustomerCache(distributed.Object, NullLogger<DistributedCustomerCache>.Instance);
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
+            cache.RemoveAsync(42, cancellation.Token));
+    }
 }
