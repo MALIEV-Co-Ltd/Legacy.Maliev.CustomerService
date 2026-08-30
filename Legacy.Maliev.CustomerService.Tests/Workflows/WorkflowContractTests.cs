@@ -10,6 +10,8 @@ public sealed class WorkflowContractTests
     private static readonly string Workflow = File.ReadAllText(FindRepositoryFile(".github", "workflows", "_build-and-test.yml"));
     private static readonly string ApiProject = File.ReadAllText(
         FindRepositoryFile("Legacy.Maliev.CustomerService.Api", "Legacy.Maliev.CustomerService.Api.csproj"));
+    private static readonly string DataProject = File.ReadAllText(
+        FindRepositoryFile("Legacy.Maliev.CustomerService.Data", "Legacy.Maliev.CustomerService.Data.csproj"));
 
     [Fact]
     public void BuildAndTest_SatisfiesStructuralContract()
@@ -29,8 +31,8 @@ public sealed class WorkflowContractTests
     public void BuildAndTest_RejectsCommentedDependencySha()
     {
         AssertMutationRejected(
-            "ref: 2833d30c492d9c40869d9bfac30e1ce9bdc11f84",
-            "ref: main # 2833d30c492d9c40869d9bfac30e1ce9bdc11f84");
+            "ref: 3152a9612d8514597192a98eae31277aef8102ff",
+            "ref: main # 3152a9612d8514597192a98eae31277aef8102ff");
     }
 
     [Fact]
@@ -39,6 +41,13 @@ public sealed class WorkflowContractTests
         Assert.Contains("Legacy.Maliev.ServiceDefaults", ApiProject, StringComparison.Ordinal);
         Assert.DoesNotContain("Maliev.Aspire\\Maliev.Aspire.ServiceDefaults", ApiProject, StringComparison.Ordinal);
         Assert.DoesNotContain("Include=\"Maliev.Aspire.ServiceDefaults\"", ApiProject, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void EfDesignDependency_IsOwnedByDataProjectOnly()
+    {
+        Assert.DoesNotContain("Microsoft.EntityFrameworkCore.Design", ApiProject, StringComparison.Ordinal);
+        Assert.Contains("Microsoft.EntityFrameworkCore.Design", DataProject, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -184,7 +193,7 @@ internal static partial class WorkflowContractValidator
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 ["repository"] = "MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults",
-                ["ref"] = "2833d30c492d9c40869d9bfac30e1ce9bdc11f84",
+                ["ref"] = "3152a9612d8514597192a98eae31277aef8102ff",
                 ["path"] = ".dependencies/Legacy.Maliev.ServiceDefaults",
                 ["persist-credentials"] = "false",
             });
