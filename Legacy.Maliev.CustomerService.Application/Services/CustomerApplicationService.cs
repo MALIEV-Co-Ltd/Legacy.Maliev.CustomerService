@@ -31,6 +31,10 @@ public sealed class CustomerApplicationService(
         repository.GetCustomerByEmailAsync(email.Trim(), cancellationToken);
 
     /// <inheritdoc />
+    public Task<CustomerInternalRemarkResponse?> GetInternalRemarkAsync(int id, CancellationToken cancellationToken) =>
+        repository.GetInternalRemarkAsync(id, cancellationToken);
+
+    /// <inheritdoc />
     public Task<PaginatedResponse<CustomerResponse>?> GetCustomersAsync(
         CustomerSortType? sort,
         string? search,
@@ -56,6 +60,21 @@ public sealed class CustomerApplicationService(
     public async Task<bool> UpdateCustomerAsync(int id, UpsertCustomerRequest request, CancellationToken cancellationToken)
     {
         var updated = await repository.UpdateCustomerAsync(id, request, cancellationToken);
+        if (updated)
+        {
+            await cache.RemoveAsync(id, cancellationToken);
+        }
+
+        return updated;
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> UpdateInternalRemarkAsync(
+        int id,
+        UpdateCustomerInternalRemarkRequest request,
+        CancellationToken cancellationToken)
+    {
+        var updated = await repository.UpdateInternalRemarkAsync(id, request, cancellationToken);
         if (updated)
         {
             await cache.RemoveAsync(id, cancellationToken);

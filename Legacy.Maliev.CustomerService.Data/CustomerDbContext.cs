@@ -64,6 +64,7 @@ public sealed class CustomerDbContext(DbContextOptions<CustomerDbContext> option
             .HasMaxLength(513)
             .HasComputedColumnSql("btrim(\"FirstName\" || ' ' || \"LastName\")", stored: true);
         customer.Property(value => value.LastName).HasMaxLength(256).IsRequired();
+        customer.Property(value => value.InternalRemark).HasMaxLength(4000);
         customer.Property(value => value.Mobile).HasMaxLength(256);
         customer.Property(value => value.Telephone).HasMaxLength(256);
         ConfigureDates(customer);

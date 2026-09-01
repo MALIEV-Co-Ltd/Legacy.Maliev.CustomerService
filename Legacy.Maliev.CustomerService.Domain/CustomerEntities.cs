@@ -21,6 +21,8 @@ public sealed class Customer
     public string Email { get; set; } = string.Empty;
     /// <summary>The customer's date of birth, when collected.</summary>
     public DateTime? DateOfBirth { get; set; }
+    /// <summary>Employee-only operational context that is never included in public customer projections.</summary>
+    public string? InternalRemark { get; set; }
     /// <summary>The associated company identifier, when the customer represents a company.</summary>
     public int? CompanyId { get; set; }
     /// <summary>The selected billing address identifier.</summary>

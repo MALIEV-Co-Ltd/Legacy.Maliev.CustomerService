@@ -72,6 +72,20 @@ public sealed class CustomersController(ICustomerService service) : ControllerBa
         return customer is null ? NotFound() : customer;
     }
 
+    /// <summary>Retrieves the employee-only remark for one legacy customer.</summary>
+    /// <param name="id">The unique identifier of the customer.</param>
+    /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
+    /// <returns>The private remark projection, or not found when the customer does not exist.</returns>
+    [HttpGet("{id:int}/internal-remark")]
+    [RequirePermission(CustomerPermissions.CustomersRead, ResourcePathTemplate = "/customers/{id}")]
+    public async Task<ActionResult<CustomerInternalRemarkResponse>> GetInternalRemarkAsync(
+        int id,
+        CancellationToken cancellationToken)
+    {
+        var remark = await service.GetInternalRemarkAsync(id, cancellationToken);
+        return remark is null ? NotFound() : remark;
+    }
+
     /// <summary>
     /// Searches and pages through legacy customer profiles.
     /// </summary>
@@ -108,6 +122,19 @@ public sealed class CustomersController(ICustomerService service) : ControllerBa
         if (!Valid(request)) return BadRequest();
         return await service.UpdateCustomerAsync(id, request, cancellationToken) ? NoContent() : NotFound();
     }
+
+    /// <summary>Replaces the employee-only remark for one legacy customer.</summary>
+    /// <param name="id">The unique identifier of the customer.</param>
+    /// <param name="request">The bounded private remark replacement.</param>
+    /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
+    /// <returns>No content on success, or not found when the customer does not exist.</returns>
+    [HttpPut("{id:int}/internal-remark")]
+    [RequirePermission(CustomerPermissions.CustomersUpdate, ResourcePathTemplate = "/customers/{id}")]
+    public async Task<ActionResult> UpdateInternalRemarkAsync(
+        int id,
+        UpdateCustomerInternalRemarkRequest request,
+        CancellationToken cancellationToken) =>
+        await service.UpdateInternalRemarkAsync(id, request, cancellationToken) ? NoContent() : NotFound();
 
     private static bool Valid(UpsertCustomerRequest request) =>
         !string.IsNullOrWhiteSpace(request.FirstName) && !string.IsNullOrWhiteSpace(request.LastName) &&

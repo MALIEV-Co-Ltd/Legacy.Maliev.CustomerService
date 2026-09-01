@@ -25,6 +25,13 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
             .FirstOrDefaultAsync(cancellationToken);
 
     /// <inheritdoc />
+    public Task<CustomerInternalRemarkResponse?> GetInternalRemarkAsync(int id, CancellationToken cancellationToken) =>
+        dbContext.Customers.AsNoTracking()
+            .Where(customer => customer.Id == id)
+            .Select(customer => new CustomerInternalRemarkResponse(customer.Id, customer.InternalRemark))
+            .SingleOrDefaultAsync(cancellationToken);
+
+    /// <inheritdoc />
     public async Task<PaginatedResponse<CustomerResponse>?> GetCustomersAsync(
         CustomerSortType? sort,
         string? search,
@@ -169,6 +176,20 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
         entity.FirstName = request.FirstName.Trim(); entity.LastName = request.LastName.Trim(); entity.Email = request.Email.Trim();
         entity.Telephone = request.Telephone; entity.Mobile = request.Mobile; entity.Fax = request.Fax; entity.DateOfBirth = request.DateOfBirth;
         entity.CompanyId = request.CompanyId; entity.BillingAddressId = request.BillingAddressId; entity.ShippingAddressId = request.ShippingAddressId;
+        entity.ModifiedDate = UtcWallClockNow();
+        await dbContext.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> UpdateInternalRemarkAsync(
+        int id,
+        UpdateCustomerInternalRemarkRequest request,
+        CancellationToken cancellationToken)
+    {
+        var entity = await dbContext.Customers.FindAsync([id], cancellationToken);
+        if (entity is null) return false;
+        entity.InternalRemark = TrimOrNull(request.InternalRemark);
         entity.ModifiedDate = UtcWallClockNow();
         await dbContext.SaveChangesAsync(cancellationToken);
         return true;

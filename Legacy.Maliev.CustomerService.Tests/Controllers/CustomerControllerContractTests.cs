@@ -1,5 +1,6 @@
 using System.Reflection;
 using Legacy.Maliev.CustomerService.Api.Controllers;
+using Legacy.Maliev.CustomerService.Api.Authorization;
 using Maliev.Aspire.ServiceDefaults.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,8 +28,10 @@ public sealed class CustomerControllerContractTests
         AssertAction<CustomersController>(nameof(CustomersController.ProvisionInstantQuotationProfileAsync), "instant-quotation-profile", typeof(HttpPostAttribute));
         AssertAction<CustomersController>(nameof(CustomersController.DeleteCustomerAsync), "{id:int}", typeof(HttpDeleteAttribute));
         AssertAction<CustomersController>(nameof(CustomersController.GetCustomerAsync), "{id:int}", typeof(HttpGetAttribute));
+        AssertAction<CustomersController>("GetInternalRemarkAsync", "{id:int}/internal-remark", typeof(HttpGetAttribute));
         AssertAction<CustomersController>(nameof(CustomersController.GetPaginatedAsync), null, typeof(HttpGetAttribute));
         AssertAction<CustomersController>(nameof(CustomersController.UpdateCustomerAsync), "{id:int}", typeof(HttpPutAttribute));
+        AssertAction<CustomersController>("UpdateInternalRemarkAsync", "{id:int}/internal-remark", typeof(HttpPutAttribute));
     }
 
     [Fact]
@@ -45,11 +48,28 @@ public sealed class CustomerControllerContractTests
                 || attribute.Template?.Contains("validate", StringComparison.OrdinalIgnoreCase) == true));
     }
 
+    [Fact]
+    public void InternalRemarkActions_ReuseResourceScopedCustomerReadAndUpdatePermissions()
+    {
+        AssertPermission("GetInternalRemarkAsync", CustomerPermissions.CustomersRead);
+        AssertPermission("UpdateInternalRemarkAsync", CustomerPermissions.CustomersUpdate);
+    }
+
     private static void AssertAction<TController>(string methodName, string? template, Type attributeType)
     {
-        var method = typeof(TController).GetMethod(methodName)!;
+        var method = typeof(TController).GetMethod(methodName);
+        Assert.NotNull(method);
         var attribute = Assert.Single(method.GetCustomAttributes(), attributeType.IsInstanceOfType);
         Assert.Equal(template, ((HttpMethodAttribute)attribute).Template);
         Assert.Single(method.GetCustomAttributes<RequirePermissionAttribute>());
+    }
+
+    private static void AssertPermission(string methodName, string expectedPermission)
+    {
+        var method = typeof(CustomersController).GetMethod(methodName);
+        Assert.NotNull(method);
+        var permission = Assert.Single(method.GetCustomAttributes<RequirePermissionAttribute>());
+        Assert.Equal(expectedPermission, permission.Permission);
+        Assert.Equal("/customers/{id}", permission.ResourcePathTemplate);
     }
 }
