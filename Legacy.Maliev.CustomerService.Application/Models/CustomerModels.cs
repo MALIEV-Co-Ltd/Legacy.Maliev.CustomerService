@@ -56,7 +56,7 @@ public sealed record CustomerInternalRemarkResponse(int CustomerId, string? Inte
 
 /// <summary>Bounded employee-only remark replacement.</summary>
 public sealed record UpdateCustomerInternalRemarkRequest(
-    [property: StringLength(4000)] string? InternalRemark);
+    [StringLength(4000)] string? InternalRemark);
 
 /// <summary>Company create/update request.</summary>
 public sealed record UpsertCompanyRequest(string Name, string? TaxNumber, string? Registrar);
