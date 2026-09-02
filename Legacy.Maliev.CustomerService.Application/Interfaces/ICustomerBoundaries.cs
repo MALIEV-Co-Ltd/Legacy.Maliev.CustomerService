@@ -16,6 +16,11 @@ public interface ICustomerService
     /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
     /// <returns>The matching customer profile if found; otherwise, <see langword="null"/>.</returns>
     Task<CustomerResponse?> GetCustomerByEmailAsync(string email, CancellationToken cancellationToken);
+    /// <summary>Retrieves the employee-only remark for one customer.</summary>
+    /// <param name="id">The legacy customer identifier.</param>
+    /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
+    /// <returns>The private remark projection when the customer exists; otherwise, <see langword="null"/>.</returns>
+    Task<CustomerInternalRemarkResponse?> GetInternalRemarkAsync(int id, CancellationToken cancellationToken);
     /// <summary>Searches and sorts customer profiles using the legacy pagination contract.</summary>
     /// <param name="sort">The optional legacy sort mode.</param>
     /// <param name="search">The optional customer search text.</param>
@@ -42,6 +47,12 @@ public interface ICustomerService
     /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
     /// <returns><see langword="true"/> when the customer was updated; otherwise, <see langword="false"/>.</returns>
     Task<bool> UpdateCustomerAsync(int id, UpsertCustomerRequest request, CancellationToken cancellationToken);
+    /// <summary>Replaces the employee-only remark and invalidates the public profile cache timestamp.</summary>
+    /// <param name="id">The legacy customer identifier.</param>
+    /// <param name="request">The bounded private remark replacement.</param>
+    /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
+    /// <returns><see langword="true"/> when the customer was updated; otherwise, <see langword="false"/>.</returns>
+    Task<bool> UpdateInternalRemarkAsync(int id, UpdateCustomerInternalRemarkRequest request, CancellationToken cancellationToken);
     /// <summary>Deletes a customer profile and invalidates its cached representation.</summary>
     /// <param name="id">The legacy customer identifier.</param>
     /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
@@ -111,6 +122,11 @@ public interface ICustomerRepository
     /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
     /// <returns>The matching customer projection if found; otherwise, <see langword="null"/>.</returns>
     Task<CustomerResponse?> GetCustomerByEmailAsync(string email, CancellationToken cancellationToken);
+    /// <summary>Loads only the employee-only remark for a legacy customer.</summary>
+    /// <param name="id">The legacy customer identifier.</param>
+    /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
+    /// <returns>The private remark projection when found; otherwise, <see langword="null"/>.</returns>
+    Task<CustomerInternalRemarkResponse?> GetInternalRemarkAsync(int id, CancellationToken cancellationToken);
     /// <summary>Queries customer projections with legacy sorting, searching, and pagination.</summary>
     /// <param name="sort">The optional legacy sort mode.</param>
     /// <param name="search">The optional customer search text.</param>
@@ -137,6 +153,12 @@ public interface ICustomerRepository
     /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
     /// <returns><see langword="true"/> when a customer was updated; otherwise, <see langword="false"/>.</returns>
     Task<bool> UpdateCustomerAsync(int id, UpsertCustomerRequest request, CancellationToken cancellationToken);
+    /// <summary>Persists a bounded employee-only customer remark.</summary>
+    /// <param name="id">The legacy customer identifier.</param>
+    /// <param name="request">The private remark replacement.</param>
+    /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
+    /// <returns><see langword="true"/> when a customer was updated; otherwise, <see langword="false"/>.</returns>
+    Task<bool> UpdateInternalRemarkAsync(int id, UpdateCustomerInternalRemarkRequest request, CancellationToken cancellationToken);
     /// <summary>Removes a customer record from persistence.</summary>
     /// <param name="id">The legacy customer identifier.</param>
     /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>

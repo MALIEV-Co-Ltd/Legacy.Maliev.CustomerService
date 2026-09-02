@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Legacy.Maliev.CustomerService.Application.Models;
 
 /// <summary>Legacy customer response with related records.</summary>
@@ -48,6 +50,13 @@ public sealed record UpsertCustomerRequest(
     int? CompanyId,
     int? BillingAddressId,
     int? ShippingAddressId);
+
+/// <summary>Employee-only remark projection kept separate from public customer responses.</summary>
+public sealed record CustomerInternalRemarkResponse(int CustomerId, string? InternalRemark);
+
+/// <summary>Bounded employee-only remark replacement.</summary>
+public sealed record UpdateCustomerInternalRemarkRequest(
+    [StringLength(4000)] string? InternalRemark);
 
 /// <summary>Company create/update request.</summary>
 public sealed record UpsertCompanyRequest(string Name, string? TaxNumber, string? Registrar);

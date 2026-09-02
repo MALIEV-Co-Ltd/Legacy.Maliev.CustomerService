@@ -56,6 +56,60 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task LatestMigration_AddsNullableBoundedInternalRemarkColumn()
+    {
+        await using var dbContext = CreateDbContext();
+        await dbContext.Database.MigrateAsync();
+
+        var column = await dbContext.Database.SqlQueryRaw<InternalRemarkColumn>(
+            """
+            SELECT
+                column_name AS "ColumnName",
+                character_maximum_length::int AS "MaximumLength",
+                is_nullable AS "IsNullable"
+            FROM information_schema.columns
+            WHERE table_schema = 'public'
+              AND table_name = 'Customer'
+              AND column_name = 'InternalRemark'
+            """).SingleOrDefaultAsync();
+
+        Assert.NotNull(column);
+        Assert.Equal("InternalRemark", column.ColumnName);
+        Assert.Equal(4000, column.MaximumLength);
+        Assert.Equal("YES", column.IsNullable);
+    }
+
+    [Fact]
+    public async Task InternalRemark_RoundTripsSeparatelyFromPublicCustomerProjection()
+    {
+        await using var dbContext = CreateDbContext();
+        await dbContext.Database.MigrateAsync();
+        var customer = new Customer
+        {
+            FirstName = "Ada",
+            LastName = "Lovelace",
+            Email = "ada.internal@example.com",
+        };
+        dbContext.Customers.Add(customer);
+        await dbContext.SaveChangesAsync();
+        var repository = new CustomerRepository(dbContext, TimeProvider.System);
+
+        var updated = await repository.UpdateInternalRemarkAsync(
+            customer.Id,
+            new UpdateCustomerInternalRemarkRequest("  Confirm billing contact.  "),
+            CancellationToken.None);
+        dbContext.ChangeTracker.Clear();
+        var remark = await repository.GetInternalRemarkAsync(customer.Id, CancellationToken.None);
+        var publicProfile = await repository.GetCustomerAsync(customer.Id, CancellationToken.None);
+
+        Assert.True(updated);
+        Assert.Equal("Confirm billing contact.", remark?.InternalRemark);
+        Assert.NotNull(publicProfile);
+        Assert.DoesNotContain(publicProfile.GetType().GetProperties(), property =>
+            property.Name.Contains("Remark", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
     public async Task GetCustomerAsync_FiltersBeforeProjectingNestedLegacyRelations()
     {
         await using var dbContext = CreateDbContext();
@@ -287,4 +341,6 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
             .Options;
         return new CustomerDbContext(options);
     }
+
+    private sealed record InternalRemarkColumn(string ColumnName, int MaximumLength, string IsNullable);
 }

@@ -38,6 +38,27 @@ public sealed class CustomerApplicationServiceTests
     }
 
     [Fact]
+    public async Task UpdateInternalRemarkAsync_Success_InvalidatesCustomerCache()
+    {
+        var repository = new Mock<ICustomerRepository>();
+        repository.Setup(value => value.UpdateInternalRemarkAsync(
+                7,
+                It.IsAny<UpdateCustomerInternalRemarkRequest>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+        var cache = new Mock<ICustomerCache>();
+        var service = new CustomerApplicationService(repository.Object, cache.Object);
+
+        var result = await service.UpdateInternalRemarkAsync(
+            7,
+            new UpdateCustomerInternalRemarkRequest("Employee only"),
+            CancellationToken.None);
+
+        Assert.True(result);
+        cache.Verify(value => value.RemoveAsync(7, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
     public async Task UpdateAddressAsync_Success_InvalidatesEveryReferencingCustomer()
     {
         var repository = new Mock<ICustomerRepository>();

@@ -1,4 +1,5 @@
 using Legacy.Maliev.CustomerService.Data;
+using Legacy.Maliev.CustomerService.Application.Models;
 using Legacy.Maliev.CustomerService.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -21,6 +22,11 @@ public sealed class CustomerModelCompatibilityTests
         Assert.Equal("ShippingAddressID", customer.FindProperty(nameof(Customer.ShippingAddressId))!.GetColumnName(customerTable));
         Assert.Equal("CompanyID", customer.FindProperty(nameof(Customer.CompanyId))!.GetColumnName(customerTable));
         Assert.Equal(513, customer.FindProperty(nameof(Customer.FullName))!.GetMaxLength());
+        var internalRemark = customer.FindProperty("InternalRemark");
+        Assert.NotNull(internalRemark);
+        Assert.Equal("InternalRemark", internalRemark.GetColumnName(customerTable));
+        Assert.Equal(4000, internalRemark.GetMaxLength());
+        Assert.True(internalRemark.IsNullable);
         Assert.Null(customer.FindProperty("xmin"));
 
         Assert.Equal("FK_Customer_Address", customer.GetForeignKeys().Single(key => key.Properties.Single().Name == nameof(Customer.BillingAddressId)).GetConstraintName());
@@ -39,6 +45,15 @@ public sealed class CustomerModelCompatibilityTests
             Assert.Equal("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'", created.GetDefaultValueSql());
             Assert.Equal("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'", modified.GetDefaultValueSql());
         }
+    }
+
+    [Fact]
+    public void PublicCustomerContracts_DoNotExposeInternalRemark()
+    {
+        Assert.DoesNotContain(typeof(CustomerResponse).GetProperties(), property =>
+            property.Name.Contains("Remark", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(typeof(UpsertCustomerRequest).GetProperties(), property =>
+            property.Name.Contains("Remark", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
