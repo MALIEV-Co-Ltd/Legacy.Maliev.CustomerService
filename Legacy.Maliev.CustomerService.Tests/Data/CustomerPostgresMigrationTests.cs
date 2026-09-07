@@ -343,4 +343,32 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
     }
 
     private sealed record InternalRemarkColumn(string ColumnName, int MaximumLength, string IsNullable);
+
+    [Fact]
+    public async Task TaxOnlyCompany_ExistingSchemaPreservesBlankNameAndCustomerRelation()
+    {
+        await using var dbContext = CreateDbContext();
+        await dbContext.Database.MigrateAsync();
+        var repository = new CustomerRepository(dbContext, TimeProvider.System);
+        var company = await repository.CreateCompanyAsync(new("  ", "0100000000000", null), CancellationToken.None);
+        dbContext.Customers.Add(new Customer { FirstName = "ทดสอบ", LastName = "ตัวอย่าง", CompanyId = company.Id });
+        await dbContext.SaveChangesAsync();
+        var customerId = await dbContext.Customers.Select(value => value.Id).SingleAsync();
+        dbContext.ChangeTracker.Clear();
+        var loaded = await repository.GetCompanyAsync(company.Id, CancellationToken.None);
+        Assert.NotNull(loaded);
+        Assert.Equal("", loaded.Name);
+        Assert.Equal("0100000000000", loaded.TaxNumber);
+        Assert.NotNull(loaded.CreatedDate);
+        Assert.True(await repository.UpdateCompanyAsync(company.Id, new("", "0200000000000", null), CancellationToken.None));
+        dbContext.ChangeTracker.Clear();
+        var customer = await repository.GetCustomerAsync(customerId, CancellationToken.None);
+        Assert.NotNull(customer?.Company);
+        Assert.Equal("", customer.Company.Name);
+        Assert.Equal("0200000000000", customer.Company.TaxNumber);
+        Assert.Equal([customerId], await repository.GetCustomerIdsForCompanyAsync(company.Id, CancellationToken.None));
+        Assert.Equal("NO", await dbContext.Database.SqlQueryRaw<string>(
+            "SELECT is_nullable AS \"Value\" FROM information_schema.columns WHERE table_name = 'Company' AND column_name = 'Name'").SingleAsync());
+        Assert.False(dbContext.Database.HasPendingModelChanges());
+    }
 }
