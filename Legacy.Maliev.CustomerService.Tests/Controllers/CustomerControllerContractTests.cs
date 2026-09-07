@@ -11,6 +11,16 @@ namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 public sealed class CustomerControllerContractTests
 {
     [Theory]
+    [InlineData(nameof(CompaniesController.CreateCompanyAsync), CustomerPermissions.CompaniesCreate, null)]
+    [InlineData(nameof(CompaniesController.UpdateCompanyAsync), CustomerPermissions.CompaniesUpdate, "/companies/{id}")]
+    public void CompanyMutations_PreservePermissionResourceScope(string methodName, string expected, string? resource)
+    {
+        var permission = Assert.Single(typeof(CompaniesController).GetMethod(methodName)!.GetCustomAttributes<RequirePermissionAttribute>());
+        Assert.Equal(expected, permission.Permission);
+        Assert.Equal(resource, permission.ResourcePathTemplate);
+    }
+
+    [Theory]
     [InlineData(typeof(CustomersController), "customers")]
     [InlineData(typeof(AddressesController), "customers/[controller]")]
     [InlineData(typeof(CompaniesController), "customers/[controller]")]

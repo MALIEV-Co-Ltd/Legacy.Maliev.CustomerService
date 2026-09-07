@@ -26,7 +26,7 @@ public sealed class CompaniesController(ICustomerService service) : ControllerBa
     [RequirePermission(CustomerPermissions.CompaniesCreate)]
     public async Task<ActionResult> CreateCompanyAsync(UpsertCompanyRequest item, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(item.Name)) return BadRequest();
+        if (!HasCompanyDetails(item)) return BadRequest();
         var company = await service.CreateCompanyAsync(item, cancellationToken);
         return CreatedAtRoute("GetCompany", new { id = company.Id }, company);
     }
@@ -67,7 +67,11 @@ public sealed class CompaniesController(ICustomerService service) : ControllerBa
     [RequirePermission(CustomerPermissions.CompaniesUpdate, ResourcePathTemplate = "/companies/{id}")]
     public async Task<ActionResult> UpdateCompanyAsync(int id, UpsertCompanyRequest item, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(item.Name)) return BadRequest();
+        if (!HasCompanyDetails(item)) return BadRequest();
         return await service.UpdateCompanyAsync(id, item, cancellationToken) ? NoContent() : NotFound();
     }
+
+    private static bool HasCompanyDetails(UpsertCompanyRequest item) =>
+        item.Name is not null &&
+        (!string.IsNullOrWhiteSpace(item.Name) || !string.IsNullOrWhiteSpace(item.TaxNumber));
 }

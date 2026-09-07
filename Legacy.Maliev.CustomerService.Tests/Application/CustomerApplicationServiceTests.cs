@@ -9,6 +9,22 @@ namespace Legacy.Maliev.CustomerService.Tests.Application;
 public sealed class CustomerApplicationServiceTests
 {
     [Fact]
+    public async Task UpdateCompanyAsync_TaxOnlyCompany_InvalidatesAllReferencingCustomers()
+    {
+        var request = new UpsertCompanyRequest("", "0100000000000", null);
+        var repository = new Mock<ICustomerRepository>(MockBehavior.Strict);
+        repository.Setup(value => value.GetCustomerIdsForCompanyAsync(23, It.IsAny<CancellationToken>())).ReturnsAsync([7, 8]);
+        repository.Setup(value => value.UpdateCompanyAsync(23, request, It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        var cache = new Mock<ICustomerCache>();
+        var service = new CustomerApplicationService(repository.Object, cache.Object);
+        Assert.True(await service.UpdateCompanyAsync(23, request, CancellationToken.None));
+        cache.Verify(value => value.RemoveAsync(7, It.IsAny<CancellationToken>()), Times.Once);
+        cache.Verify(value => value.RemoveAsync(8, It.IsAny<CancellationToken>()), Times.Once);
+        cache.VerifyNoOtherCalls();
+        repository.VerifyAll();
+    }
+
+    [Fact]
     public async Task GetCustomerAsync_CacheHit_DoesNotQueryPostgreSql()
     {
         var cached = SampleCustomer();
