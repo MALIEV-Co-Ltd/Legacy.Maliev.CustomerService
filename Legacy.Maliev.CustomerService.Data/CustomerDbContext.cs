@@ -24,6 +24,9 @@ public sealed class CustomerDbContext(DbContextOptions<CustomerDbContext> option
     /// </summary>
     public DbSet<Address> Addresses => Set<Address>();
 
+    /// <summary>Durable results for explicitly keyed customer-create requests.</summary>
+    public DbSet<CustomerCreateOperation> CustomerCreateOperations => Set<CustomerCreateOperation>();
+
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -84,6 +87,14 @@ public sealed class CustomerDbContext(DbContextOptions<CustomerDbContext> option
             .OnDelete(DeleteBehavior.NoAction)
             .HasConstraintName("FK_Customer_Address1");
         customer.HasIndex(value => value.Email).HasDatabaseName("IX_Customer_Email");
+
+        var createOperation = modelBuilder.Entity<CustomerCreateOperation>();
+        createOperation.ToTable("CustomerCreateOperation");
+        createOperation.HasKey(value => value.Key);
+        createOperation.Property(value => value.ActorHash).HasMaxLength(64).IsRequired();
+        createOperation.Property(value => value.RequestHash).HasMaxLength(64).IsRequired();
+        createOperation.Property(value => value.ResponseJson).HasColumnType("jsonb").IsRequired();
+        createOperation.Property(value => value.CreatedAt).HasColumnType("timestamp with time zone");
     }
 
     private static void ConfigureDates<TEntity>(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<TEntity> entity)
