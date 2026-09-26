@@ -27,6 +27,7 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<ICustomerCache, DistributedCustomerCache>();
 builder.Services.AddScoped<ICustomerService, CustomerApplicationService>();
+builder.Services.AddScoped<Legacy.Maliev.CustomerService.Api.CustomerCreateReplayService>();
 
 var app = builder.Build();
 

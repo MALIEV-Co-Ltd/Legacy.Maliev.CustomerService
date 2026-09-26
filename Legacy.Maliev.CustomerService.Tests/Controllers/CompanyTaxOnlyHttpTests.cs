@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -112,11 +113,23 @@ public sealed class CompanyTaxOnlyHttpTests
     private static StringContent Body(string name, string? tax) =>
         new(JsonSerializer.Serialize(new { Name = name, TaxNumber = tax }), Encoding.UTF8, "application/json");
 
-    internal static async Task<WebApplication> StartAsync(ICustomerService service)
+    internal static async Task<WebApplication> StartAsync(ICustomerService? service = null, string? customerConnectionString = null)
     {
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
-        builder.Services.AddSingleton(service);
+        if (service is not null)
+        {
+            builder.Services.AddSingleton(service);
+        }
+        else if (customerConnectionString is not null)
+        {
+            builder.Services.AddDbContext<Legacy.Maliev.CustomerService.Data.CustomerDbContext>(options => options.UseNpgsql(customerConnectionString));
+            builder.Services.AddSingleton(TimeProvider.System);
+            builder.Services.AddScoped<Legacy.Maliev.CustomerService.Application.Interfaces.ICustomerRepository, Legacy.Maliev.CustomerService.Data.CustomerRepository>();
+            builder.Services.AddScoped<Legacy.Maliev.CustomerService.Application.Interfaces.ICustomerCache, NoOpCustomerCache>();
+            builder.Services.AddScoped<ICustomerService, Legacy.Maliev.CustomerService.Application.Services.CustomerApplicationService>();
+            builder.Services.AddScoped<Legacy.Maliev.CustomerService.Api.CustomerCreateReplayService>();
+        }
         builder.Services.AddControllers().AddApplicationPart(typeof(CompaniesController).Assembly).AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.PropertyNamingPolicy = null;
@@ -145,7 +158,14 @@ public sealed class CompanyTaxOnlyHttpTests
             var identity = Request.Headers["Test-Identity"].ToString();
             return Task.FromResult(string.IsNullOrEmpty(identity) ? AuthenticateResult.NoResult() :
                 AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(new ClaimsIdentity(
-                    [new Claim("test-access", identity)], Scheme.Name)), Scheme.Name)));
+                    [new Claim("test-access", identity), new Claim(ClaimTypes.NameIdentifier, "test-employee")], Scheme.Name)), Scheme.Name)));
         }
+    }
+
+    private sealed class NoOpCustomerCache : ICustomerCache
+    {
+        public Task<CustomerResponse?> GetAsync(int id, CancellationToken cancellationToken) => Task.FromResult<CustomerResponse?>(null);
+        public Task SetAsync(CustomerResponse customer, CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task RemoveAsync(int id, CancellationToken cancellationToken) => Task.CompletedTask;
     }
 }

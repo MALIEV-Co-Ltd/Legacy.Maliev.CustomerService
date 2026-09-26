@@ -1,6 +1,9 @@
 using Legacy.Maliev.CustomerService.Api.Authorization;
 using Legacy.Maliev.CustomerService.Application.Interfaces;
 using Legacy.Maliev.CustomerService.Application.Models;
+using Legacy.Maliev.CustomerService.Api;
+using System.Security.Claims;
+using Microsoft.Extensions.DependencyInjection;
 using Maliev.Aspire.ServiceDefaults.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +28,24 @@ public sealed class CustomersController(ICustomerService service) : ControllerBa
     public async Task<IActionResult> CreateCustomerAsync(UpsertCustomerRequest request, CancellationToken cancellationToken)
     {
         if (!Valid(request)) return BadRequest("Customer data is required");
+        if (Request.Headers.TryGetValue("Idempotency-Key", out var header))
+        {
+            if (header.Count != 1 || !Guid.TryParse(header[0], out var key) || key == Guid.Empty)
+            {
+                return BadRequest("A single non-empty GUID Idempotency-Key is required");
+            }
+
+            var actorClaim = User.FindFirst(ClaimTypes.NameIdentifier)
+                ?? User.FindFirst("sub")
+                ?? User.FindFirst("client_id");
+            if (actorClaim is null || string.IsNullOrWhiteSpace(actorClaim.Value)) return Forbid();
+
+            var result = await HttpContext.RequestServices.GetRequiredService<CustomerCreateReplayService>()
+                .CreateAsync(key, $"{actorClaim.Issuer}:{actorClaim.Value}", request, cancellationToken);
+            if (result.ConflictingKey) return Conflict("Idempotency-Key was already used for a different request");
+            return CreatedAtRoute("GetCustomer", new { id = result.Customer!.Id }, result.Customer);
+        }
+
         var customer = await service.CreateCustomerAsync(request, cancellationToken);
         return CreatedAtRoute("GetCustomer", new { id = customer.Id }, customer);
     }
