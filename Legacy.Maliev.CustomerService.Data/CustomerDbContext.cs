@@ -67,6 +67,8 @@ public sealed class CustomerDbContext(DbContextOptions<CustomerDbContext> option
             .HasMaxLength(513)
             .HasComputedColumnSql("btrim(\"FirstName\" || ' ' || \"LastName\")", stored: true);
         customer.Property(value => value.LastName).HasMaxLength(256).IsRequired();
+        // Only the opt-in versioned route compares xmin. Legacy PUT remains unconditional.
+        customer.Property<uint>("xmin").HasColumnType("xid").ValueGeneratedOnAddOrUpdate();
         customer.Property(value => value.InternalRemark).HasMaxLength(4000);
         customer.Property(value => value.Mobile).HasMaxLength(256);
         customer.Property(value => value.Telephone).HasMaxLength(256);

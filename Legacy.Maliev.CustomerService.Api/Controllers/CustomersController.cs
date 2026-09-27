@@ -3,6 +3,7 @@ using Legacy.Maliev.CustomerService.Application.Interfaces;
 using Legacy.Maliev.CustomerService.Application.Models;
 using Legacy.Maliev.CustomerService.Api;
 using System.Security.Claims;
+using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
 using Maliev.Aspire.ServiceDefaults.Authorization;
 using Microsoft.AspNetCore.Authorization;
@@ -93,6 +94,18 @@ public sealed class CustomersController(ICustomerService service) : ControllerBa
         return customer is null ? NotFound() : customer;
     }
 
+    /// <summary>Retrieves an uncached profile and its opaque edit revision in one database projection.</summary>
+    [HttpGet("{id:int}/versioned")]
+    [RequirePermission(CustomerPermissions.CustomersRead, ResourcePathTemplate = "/customers/{id}")]
+    public async Task<ActionResult<CustomerResponse>> GetCustomerVersionedAsync(int id, CancellationToken cancellationToken)
+    {
+        var customer = await service.GetCustomerVersionedAsync(id, cancellationToken);
+        if (customer is null) return NotFound();
+        Response.Headers.ETag = $"\"{customer.Revision:x8}\"";
+        Response.Headers.CacheControl = "no-store";
+        return customer.Customer;
+    }
+
     /// <summary>Retrieves the employee-only remark for one legacy customer.</summary>
     /// <param name="id">The unique identifier of the customer.</param>
     /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
@@ -142,6 +155,29 @@ public sealed class CustomersController(ICustomerService service) : ControllerBa
     {
         if (!Valid(request)) return BadRequest();
         return await service.UpdateCustomerAsync(id, request, cancellationToken) ? NoContent() : NotFound();
+    }
+
+    /// <summary>Replaces a profile only when the versioned-read ETag still matches.</summary>
+    [HttpPut("{id:int}/versioned")]
+    [RequirePermission(CustomerPermissions.CustomersUpdate, ResourcePathTemplate = "/customers/{id}")]
+    public async Task<ActionResult> UpdateCustomerVersionedAsync(int id, UpsertCustomerRequest request, CancellationToken cancellationToken)
+    {
+        if (!Valid(request)) return BadRequest();
+        if (!Request.Headers.TryGetValue("If-Match", out var header)) return StatusCode(428);
+        if (header.Count != 1 || header[0] is not { Length: 10 } value ||
+            value[0] != '"' || value[^1] != '"' ||
+            !uint.TryParse(value.AsSpan(1, 8), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out var revision))
+        {
+            return BadRequest("A single strong customer ETag is required");
+        }
+
+        var result = await service.UpdateCustomerIfRevisionAsync(id, request, revision, cancellationToken);
+        return result switch
+        {
+            CustomerRevisionUpdateResult.Updated => NoContent(),
+            CustomerRevisionUpdateResult.NotFound => NotFound(),
+            _ => StatusCode(412),
+        };
     }
 
     /// <summary>Replaces the employee-only remark for one legacy customer.</summary>

@@ -11,6 +11,8 @@ public interface ICustomerService
     /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
     /// <returns>The customer profile if found; otherwise, <see langword="null"/>.</returns>
     Task<CustomerResponse?> GetCustomerAsync(int id, CancellationToken cancellationToken);
+    /// <summary>Loads a fresh, atomically projected customer body and PostgreSQL revision.</summary>
+    Task<CustomerVersionedResponse?> GetCustomerVersionedAsync(int id, CancellationToken cancellationToken);
     /// <summary>Retrieves a customer profile by its normalized email address.</summary>
     /// <param name="email">The customer email address to locate.</param>
     /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
@@ -47,6 +49,8 @@ public interface ICustomerService
     /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
     /// <returns><see langword="true"/> when the customer was updated; otherwise, <see langword="false"/>.</returns>
     Task<bool> UpdateCustomerAsync(int id, UpsertCustomerRequest request, CancellationToken cancellationToken);
+    /// <summary>Replaces a profile only when its persisted revision still matches.</summary>
+    Task<CustomerRevisionUpdateResult> UpdateCustomerIfRevisionAsync(int id, UpsertCustomerRequest request, uint revision, CancellationToken cancellationToken);
     /// <summary>Replaces the employee-only remark and invalidates the public profile cache timestamp.</summary>
     /// <param name="id">The legacy customer identifier.</param>
     /// <param name="request">The bounded private remark replacement.</param>
@@ -117,6 +121,8 @@ public interface ICustomerRepository
     /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
     /// <returns>The customer projection if found; otherwise, <see langword="null"/>.</returns>
     Task<CustomerResponse?> GetCustomerAsync(int id, CancellationToken cancellationToken);
+    /// <summary>Loads a fresh, atomically projected customer body and PostgreSQL revision.</summary>
+    Task<CustomerVersionedResponse?> GetCustomerVersionedAsync(int id, CancellationToken cancellationToken);
     /// <summary>Loads a customer projection by its normalized email address.</summary>
     /// <param name="email">The customer email address to locate.</param>
     /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
@@ -153,6 +159,8 @@ public interface ICustomerRepository
     /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
     /// <returns><see langword="true"/> when a customer was updated; otherwise, <see langword="false"/>.</returns>
     Task<bool> UpdateCustomerAsync(int id, UpsertCustomerRequest request, CancellationToken cancellationToken);
+    /// <summary>Replaces a profile only when its persisted revision still matches.</summary>
+    Task<CustomerRevisionUpdateResult> UpdateCustomerIfRevisionAsync(int id, UpsertCustomerRequest request, uint revision, CancellationToken cancellationToken);
     /// <summary>Persists a bounded employee-only customer remark.</summary>
     /// <param name="id">The legacy customer identifier.</param>
     /// <param name="request">The private remark replacement.</param>
