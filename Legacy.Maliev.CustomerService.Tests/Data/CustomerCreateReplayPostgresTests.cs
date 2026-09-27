@@ -129,6 +129,39 @@ public sealed class CustomerCreateReplayPostgresTests : IAsyncLifetime
         Assert.Single(await db.Customers.ToListAsync());
     }
 
+    [Fact]
+    public async Task CommittedKeyReplay_StillRequiresAuthenticationAndCreatePermission()
+    {
+        await using var app = await CompanyTaxOnlyHttpTests.StartAsync(customerConnectionString: postgres.GetConnectionString());
+        using var client = app.GetTestClient();
+        var key = Guid.NewGuid();
+
+        client.DefaultRequestHeaders.Add("Test-Identity", "allowed");
+        using var created = await PostAsync(client, key, Request());
+        Assert.Equal(HttpStatusCode.Created, created.StatusCode);
+        var originalBody = await created.Content.ReadAsStringAsync();
+        var originalLocation = created.Headers.Location;
+
+        client.DefaultRequestHeaders.Remove("Test-Identity");
+        using var anonymousReplay = await PostAsync(client, key, Request());
+        Assert.Equal(HttpStatusCode.Unauthorized, anonymousReplay.StatusCode);
+
+        client.DefaultRequestHeaders.Add("Test-Identity", "denied");
+        using var restrictedReplay = await PostAsync(client, key, Request());
+        Assert.Equal(HttpStatusCode.Forbidden, restrictedReplay.StatusCode);
+
+        client.DefaultRequestHeaders.Remove("Test-Identity");
+        client.DefaultRequestHeaders.Add("Test-Identity", "allowed");
+        using var authorizedReplay = await PostAsync(client, key, Request());
+        Assert.Equal(HttpStatusCode.Created, authorizedReplay.StatusCode);
+        Assert.Equal(originalLocation, authorizedReplay.Headers.Location);
+        Assert.Equal(originalBody, await authorizedReplay.Content.ReadAsStringAsync());
+
+        await using var db = CreateDb();
+        Assert.Single(await db.Customers.ToListAsync());
+        Assert.Single(await db.CustomerCreateOperations.ToListAsync());
+    }
+
     private static async Task<HttpResponseMessage> PostAsync(HttpClient client, Guid key, UpsertCustomerRequest request)
     {
         using var message = new HttpRequestMessage(HttpMethod.Post, "/customers")
