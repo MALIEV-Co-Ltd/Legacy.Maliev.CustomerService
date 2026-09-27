@@ -53,6 +53,29 @@ public sealed class CustomerApplicationServiceTests
         cache.Verify(value => value.RemoveAsync(7, It.IsAny<CancellationToken>()), Times.Once);
     }
 
+    [Theory]
+    [InlineData(CustomerRevisionUpdateResult.Updated, 1)]
+    [InlineData(CustomerRevisionUpdateResult.Stale, 0)]
+    [InlineData(CustomerRevisionUpdateResult.NotFound, 0)]
+    public async Task VersionedUpdate_InvalidatesCacheOnlyAfterPersistedWrite(
+        CustomerRevisionUpdateResult outcome, int invalidations)
+    {
+        var repository = new Mock<ICustomerRepository>(MockBehavior.Strict);
+        repository.Setup(value => value.UpdateCustomerIfRevisionAsync(7, SampleRequest(), 42, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(outcome);
+        var cache = new Mock<ICustomerCache>(MockBehavior.Strict);
+        if (invalidations == 1)
+        {
+            cache.Setup(value => value.RemoveAsync(7, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+        }
+
+        var service = new CustomerApplicationService(repository.Object, cache.Object);
+        Assert.Equal(outcome, await service.UpdateCustomerIfRevisionAsync(7, SampleRequest(), 42, CancellationToken.None));
+        cache.Verify(value => value.RemoveAsync(7, It.IsAny<CancellationToken>()), Times.Exactly(invalidations));
+        repository.VerifyAll();
+        cache.VerifyNoOtherCalls();
+    }
+
     [Fact]
     public async Task UpdateInternalRemarkAsync_Success_InvalidatesCustomerCache()
     {

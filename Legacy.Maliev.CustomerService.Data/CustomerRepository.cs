@@ -18,6 +18,11 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
             .SingleOrDefaultAsync(cancellationToken);
 
     /// <inheritdoc />
+    public Task<CustomerVersionedResponse?> GetCustomerVersionedAsync(int id, CancellationToken cancellationToken) =>
+        ProjectVersioned(dbContext.Customers.AsNoTracking().Where(customer => customer.Id == id))
+            .SingleOrDefaultAsync(cancellationToken);
+
+    /// <inheritdoc />
     public Task<CustomerResponse?> GetCustomerByEmailAsync(string email, CancellationToken cancellationToken) =>
         Project(dbContext.Customers.AsNoTracking()
             .Where(customer => customer.Email.ToLower() == email.ToLower())
@@ -182,6 +187,30 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     }
 
     /// <inheritdoc />
+    public async Task<CustomerRevisionUpdateResult> UpdateCustomerIfRevisionAsync(
+        int id, UpsertCustomerRequest request, uint revision, CancellationToken cancellationToken)
+    {
+        var affected = await dbContext.Customers
+            .Where(value => value.Id == id && EF.Property<uint>(value, "xmin") == revision)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(value => value.FirstName, request.FirstName.Trim())
+                .SetProperty(value => value.LastName, request.LastName.Trim())
+                .SetProperty(value => value.Email, request.Email.Trim())
+                .SetProperty(value => value.Telephone, request.Telephone)
+                .SetProperty(value => value.Mobile, request.Mobile)
+                .SetProperty(value => value.Fax, request.Fax)
+                .SetProperty(value => value.DateOfBirth, request.DateOfBirth)
+                .SetProperty(value => value.CompanyId, request.CompanyId)
+                .SetProperty(value => value.BillingAddressId, request.BillingAddressId)
+                .SetProperty(value => value.ShippingAddressId, request.ShippingAddressId)
+                .SetProperty(value => value.ModifiedDate, UtcWallClockNow()), cancellationToken);
+        if (affected == 1) return CustomerRevisionUpdateResult.Updated;
+        return await dbContext.Customers.AnyAsync(value => value.Id == id, cancellationToken)
+            ? CustomerRevisionUpdateResult.Stale
+            : CustomerRevisionUpdateResult.NotFound;
+    }
+
+    /// <inheritdoc />
     public async Task<bool> UpdateInternalRemarkAsync(
         int id,
         UpdateCustomerInternalRemarkRequest request,
@@ -318,13 +347,18 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     private static string? TrimOrNull(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
-    private static IQueryable<CustomerResponse> Project(IQueryable<Customer> query) => query.Select(customer => new CustomerResponse(
+    private static IQueryable<CustomerResponse> Project(IQueryable<Customer> query) =>
+        ProjectVersioned(query).Select(value => value.Customer);
+
+    private static IQueryable<CustomerVersionedResponse> ProjectVersioned(IQueryable<Customer> query) =>
+        query.Select(customer => new CustomerVersionedResponse(new CustomerResponse(
         customer.Id, customer.FirstName, customer.LastName, customer.FullName, customer.Telephone, customer.Mobile, customer.Fax,
         customer.Email, customer.DateOfBirth, customer.CompanyId, customer.BillingAddressId, customer.ShippingAddressId,
         customer.CreatedDate, customer.ModifiedDate,
         customer.BillingAddress == null ? null : new AddressResponse(customer.BillingAddress.Id, customer.BillingAddress.Building, customer.BillingAddress.AddressLine1, customer.BillingAddress.AddressLine2, customer.BillingAddress.City, customer.BillingAddress.State, customer.BillingAddress.PostalCode, customer.BillingAddress.CountryId, customer.BillingAddress.CreatedDate, customer.BillingAddress.ModifiedDate),
         customer.Company == null ? null : new CompanyResponse(customer.Company.Id, customer.Company.Name, customer.Company.TaxNumber, customer.Company.Registrar, customer.Company.CreatedDate, customer.Company.ModifiedDate),
-        customer.ShippingAddress == null ? null : new AddressResponse(customer.ShippingAddress.Id, customer.ShippingAddress.Building, customer.ShippingAddress.AddressLine1, customer.ShippingAddress.AddressLine2, customer.ShippingAddress.City, customer.ShippingAddress.State, customer.ShippingAddress.PostalCode, customer.ShippingAddress.CountryId, customer.ShippingAddress.CreatedDate, customer.ShippingAddress.ModifiedDate)));
+        customer.ShippingAddress == null ? null : new AddressResponse(customer.ShippingAddress.Id, customer.ShippingAddress.Building, customer.ShippingAddress.AddressLine1, customer.ShippingAddress.AddressLine2, customer.ShippingAddress.City, customer.ShippingAddress.State, customer.ShippingAddress.PostalCode, customer.ShippingAddress.CountryId, customer.ShippingAddress.CreatedDate, customer.ShippingAddress.ModifiedDate)),
+        EF.Property<uint>(customer, "xmin")));
 
     private static System.Linq.Expressions.Expression<Func<Address, AddressResponse>> ToAddress() => address => new AddressResponse(
         address.Id, address.Building, address.AddressLine1, address.AddressLine2, address.City, address.State, address.PostalCode,

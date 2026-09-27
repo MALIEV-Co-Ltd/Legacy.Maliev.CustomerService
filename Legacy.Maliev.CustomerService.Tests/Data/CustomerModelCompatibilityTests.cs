@@ -27,7 +27,10 @@ public sealed class CustomerModelCompatibilityTests
         Assert.Equal("InternalRemark", internalRemark.GetColumnName(customerTable));
         Assert.Equal(4000, internalRemark.GetMaxLength());
         Assert.True(internalRemark.IsNullable);
-        Assert.Null(customer.FindProperty("xmin"));
+        var revision = customer.FindProperty("xmin");
+        Assert.NotNull(revision);
+        Assert.True(revision.IsShadowProperty());
+        Assert.Equal("xid", revision.GetColumnType());
 
         Assert.Equal("FK_Customer_Address", customer.GetForeignKeys().Single(key => key.Properties.Single().Name == nameof(Customer.BillingAddressId)).GetConstraintName());
         Assert.Equal("FK_Customer_Address1", customer.GetForeignKeys().Single(key => key.Properties.Single().Name == nameof(Customer.ShippingAddressId)).GetConstraintName());

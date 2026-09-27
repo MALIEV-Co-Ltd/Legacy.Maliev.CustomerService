@@ -22,6 +22,20 @@ public sealed record CustomerResponse(
     CompanyResponse? Company,
     AddressResponse? ShippingAddress);
 
+/// <summary>Fresh customer projection paired with its PostgreSQL row revision.</summary>
+public sealed record CustomerVersionedResponse(CustomerResponse Customer, uint Revision);
+
+/// <summary>Outcome of an atomic revision-guarded profile replacement.</summary>
+public enum CustomerRevisionUpdateResult
+{
+    /// <summary>The revision matched and the profile was replaced.</summary>
+    Updated,
+    /// <summary>No profile exists for the requested identifier.</summary>
+    NotFound,
+    /// <summary>The profile exists but its revision has changed.</summary>
+    Stale,
+}
+
 /// <summary>Legacy company response.</summary>
 public sealed record CompanyResponse(int Id, string Name, string? TaxNumber, string? Registrar, DateTime? CreatedDate, DateTime? ModifiedDate);
 

@@ -27,6 +27,10 @@ public sealed class CustomerApplicationService(
     }
 
     /// <inheritdoc />
+    public Task<CustomerVersionedResponse?> GetCustomerVersionedAsync(int id, CancellationToken cancellationToken) =>
+        repository.GetCustomerVersionedAsync(id, cancellationToken);
+
+    /// <inheritdoc />
     public Task<CustomerResponse?> GetCustomerByEmailAsync(string email, CancellationToken cancellationToken) =>
         repository.GetCustomerByEmailAsync(email.Trim(), cancellationToken);
 
@@ -66,6 +70,19 @@ public sealed class CustomerApplicationService(
         }
 
         return updated;
+    }
+
+    /// <inheritdoc />
+    public async Task<CustomerRevisionUpdateResult> UpdateCustomerIfRevisionAsync(
+        int id, UpsertCustomerRequest request, uint revision, CancellationToken cancellationToken)
+    {
+        var result = await repository.UpdateCustomerIfRevisionAsync(id, request, revision, cancellationToken);
+        if (result == CustomerRevisionUpdateResult.Updated)
+        {
+            await cache.RemoveAsync(id, cancellationToken);
+        }
+
+        return result;
     }
 
     /// <inheritdoc />
