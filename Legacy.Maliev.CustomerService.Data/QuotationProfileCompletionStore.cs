@@ -11,6 +11,47 @@ namespace Legacy.Maliev.CustomerService.Data;
 /// <summary>Atomic graph reads, fill-missing mutations, and durable owner-bound replay.</summary>
 public sealed class QuotationProfileCompletionStore(CustomerDbContext db)
 {
+    /// <summary>Proves the receipt shape, immediate conflict key and current-role access using bounded read-only metadata.</summary>
+    public async Task<bool> IsReadyAsync(CancellationToken cancellationToken)
+    {
+        using var bounded = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        bounded.CancelAfter(TimeSpan.FromSeconds(5));
+        try
+        {
+            return await db.Database.SqlQuery<bool>($"""
+                WITH target AS (
+                  SELECT c.oid, n.oid AS schema_oid FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+                  WHERE n.nspname = current_schema() AND c.relname = 'QuotationProfileCompletionOperation' AND c.relkind = 'r'
+                  AND NOT c.relrowsecurity AND NOT c.relforcerowsecurity
+                ), expected(name, type) AS (VALUES
+                  ('CustomerId', 'integer'), ('Key', 'uuid'), ('ActorHash', 'character varying(64)'),
+                  ('RequestHash', 'character varying(64)'), ('CompletionId', 'uuid'), ('Changed', 'boolean'), ('CreatedAt', 'timestamp with time zone'))
+                SELECT EXISTS (SELECT 1 FROM target t WHERE
+                  has_schema_privilege(t.schema_oid, 'USAGE') AND has_table_privilege(t.oid, 'SELECT')
+                  AND has_table_privilege(t.oid, 'INSERT') AND has_table_privilege(t.oid, 'UPDATE')
+                  AND NOT EXISTS (SELECT 1 FROM expected e WHERE NOT EXISTS (
+                    SELECT 1 FROM pg_attribute a WHERE a.attrelid = t.oid AND a.attname = e.name
+                    AND a.attnum > 0 AND NOT a.attisdropped AND a.attnotnull AND a.attgenerated = '' AND a.attidentity = ''
+                    AND format_type(a.atttypid, a.atttypmod) = e.type))
+                  AND NOT EXISTS (SELECT 1 FROM pg_attribute a WHERE a.attrelid = t.oid AND a.attnum > 0 AND NOT a.attisdropped
+                    AND a.attnotnull AND NOT a.atthasdef AND a.attidentity = '' AND NOT EXISTS (SELECT 1 FROM expected e WHERE e.name = a.attname))
+                  AND NOT EXISTS (SELECT 1 FROM pg_constraint c WHERE c.conrelid = t.oid AND c.contype NOT IN ('p', 'n'))
+                  AND NOT EXISTS (SELECT 1 FROM pg_index i WHERE i.indrelid = t.oid AND i.indisunique AND NOT i.indisprimary)
+                  AND NOT EXISTS (SELECT 1 FROM pg_trigger g WHERE g.tgrelid = t.oid AND NOT g.tgisinternal)
+                  AND NOT EXISTS (SELECT 1 FROM pg_rewrite r WHERE r.ev_class = t.oid)
+                  AND EXISTS (SELECT 1 FROM pg_index i WHERE i.indrelid = t.oid AND i.indisprimary AND i.indisunique AND i.indisvalid
+                    AND i.indimmediate AND i.indpred IS NULL AND i.indexprs IS NULL AND i.indnkeyatts = 2
+                    AND ARRAY(SELECT a.attname::text FROM unnest(i.indkey) WITH ORDINALITY AS k(number, position)
+                      JOIN pg_attribute a ON a.attrelid = t.oid AND a.attnum = k.number WHERE k.position <= 2 ORDER BY a.attname)
+                      = ARRAY['CustomerId', 'Key'])) AS "Value"
+                """).SingleAsync(bounded.Token);
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return false;
+        }
+    }
+
     /// <summary>Reads a consistent uncached graph and aggregate revision.</summary>
     public async Task<QuotationProfileCompletionGraph?> ReadAsync(int id, CancellationToken cancellationToken)
     {
@@ -26,17 +67,34 @@ public sealed class QuotationProfileCompletionStore(CustomerDbContext db)
 
     /// <summary>Commits completion and receipt together; retries return the original receipt before revision checking.</summary>
     public async Task<QuotationProfileCompletionResult> CompleteAsync(int id, string actor, Guid key, string revision,
-        QuotationProfileCompletionRequest request, CancellationToken cancellationToken)
+        QuotationProfileCompletionRequest request, CancellationToken cancellationToken, string? trustedEmail = null)
     {
         request = Normalize(request);
         var actorHash = Hash(actor);
-        var requestHash = Hash(JsonSerializer.Serialize(request));
+        // Freeze PR #30's exact property order/null representation. Optional
+        // wire fields never silently alter old receipt meaning; branch folds into TaxNumber.
+        var projection = new
+        {
+            request.FirstName,
+            request.LastName,
+            request.Telephone,
+            request.Mobile,
+            request.Company,
+            request.TaxNumber,
+            request.Billing,
+            request.Shipping,
+            request.ShipToBillingAddress
+        };
+        var legacyHash = Hash(JsonSerializer.Serialize(projection));
+        var requestHash = trustedEmail is null ? legacyHash : Hash(JsonSerializer.Serialize(new { Version = 2, Request = projection, TrustedEmail = trustedEmail }));
         await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
         var inserted = await db.Database.ExecuteSqlInterpolatedAsync($"INSERT INTO \"QuotationProfileCompletionOperation\" (\"CustomerId\", \"Key\", \"ActorHash\", \"RequestHash\", \"CompletionId\", \"Changed\", \"CreatedAt\") VALUES ({id}, {key}, {actorHash}, {requestHash}, {Guid.NewGuid()}, {false}, {DateTime.UtcNow}) ON CONFLICT (\"CustomerId\", \"Key\") DO NOTHING", cancellationToken);
         if (inserted == 0)
         {
             var previous = await db.QuotationProfileCompletionOperations.AsNoTracking().SingleAsync(x => x.CustomerId == id && x.Key == key, cancellationToken);
-            return previous.ActorHash == actorHash && previous.RequestHash == requestHash
+            // Old matching receipts can only be returned, before graph mutation. They
+            // do not authorize adding email after the old operation was already committed.
+            return previous.ActorHash == actorHash && (previous.RequestHash == requestHash || previous.RequestHash == legacyHash)
                 ? new(200, new(id, previous.CompletionId, previous.Changed)) : new(409, null);
         }
 
@@ -55,6 +113,7 @@ public sealed class QuotationProfileCompletionStore(CustomerDbContext db)
         customer.LastName = Fill(customer.LastName, request.LastName) ?? string.Empty;
         customer.Telephone = Fill(customer.Telephone, request.Telephone);
         customer.Mobile = Fill(customer.Mobile, request.Mobile);
+        if (trustedEmail is not null) customer.Email = Fill(customer.Email, trustedEmail) ?? string.Empty;
         if (customer.Company is null && (request.Company is not null || request.TaxNumber is not null))
             customer.Company = new Company { Name = request.Company ?? string.Empty, TaxNumber = request.TaxNumber };
         else if (customer.Company is not null)
@@ -153,7 +212,19 @@ public sealed class QuotationProfileCompletionStore(CustomerDbContext db)
     private static QuotationProfileCompletionAddress? NormalizeAddress(QuotationProfileCompletionAddress? value) => value is null ? null : value with
     { Building = Clean(value.Building), AddressLine1 = Clean(value.AddressLine1), AddressLine2 = Clean(value.AddressLine2), City = Clean(value.City), State = Clean(value.State), PostalCode = Clean(value.PostalCode) };
     private static QuotationProfileCompletionRequest Normalize(QuotationProfileCompletionRequest value) => value with
-    { FirstName = Clean(value.FirstName), LastName = Clean(value.LastName), Telephone = Clean(value.Telephone), Mobile = Clean(value.Mobile), Company = Clean(value.Company), TaxNumber = Clean(value.TaxNumber), Billing = NormalizeAddress(value.Billing), Shipping = NormalizeAddress(value.Shipping) };
+    {
+        FirstName = Clean(value.FirstName),
+        LastName = Clean(value.LastName),
+        Telephone = Clean(value.Telephone),
+        Mobile = Clean(value.Mobile),
+        Company = Clean(value.Company),
+        TaxNumber = Clean(value.TaxNumber) is not { } tax ? null : string.Equals(Clean(value.TaxBranch), "head-office", StringComparison.OrdinalIgnoreCase)
+            ? $"{tax} (สำนักงานใหญ่)" : string.Equals(Clean(value.TaxBranch), "branch", StringComparison.OrdinalIgnoreCase) ? $"{tax} (สาขาที่ {value.TaxBranchCode})" : tax,
+        TaxBranch = null,
+        TaxBranchCode = null,
+        Billing = NormalizeAddress(value.Billing),
+        Shipping = NormalizeAddress(value.Shipping)
+    };
 }
 
 /// <summary>Uncached consistent customer graph and strong aggregate ETag.</summary>

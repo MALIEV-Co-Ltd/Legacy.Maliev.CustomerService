@@ -32,7 +32,7 @@ POST requires that exact `If-Match` and a nonzero UUID in canonical D format as
 ```json
 {
   "FirstName": "", "LastName": "", "Telephone": "", "Mobile": "",
-  "Company": "", "TaxNumber": "",
+  "Company": "", "TaxNumber": "", "TaxBranch": null, "TaxBranchCode": null,
   "Billing": {"Building": "", "AddressLine1": "", "AddressLine2": "", "City": "", "State": "", "PostalCode": "", "CountryId": 764},
   "Shipping": {"Building": "", "AddressLine1": "", "AddressLine2": "", "City": "", "State": "", "PostalCode": "", "CountryId": 764},
   "ShipToBillingAddress": true
@@ -45,6 +45,70 @@ phone and company maximum length is 50; address text maximum is 256 (postal code
 no mutation authority. Existing nonblank values always win. A newly linked
 address requires address line 1, city, state, postal code, and a positive country
 ID. Existing incomplete addresses can be filled incrementally.
+
+### Contract 2 readiness and optional source parity
+
+CustomerService#31 extends this producer without changing the GET graph, ETag,
+receipt JSON or existing plain-13 tax behavior. An authorized owner GET emits
+exactly `X-Quotation-Profile-Completion-Contract: 2` only after the receipt journal
+has its seven required nonnull columns/types, an immediate usable unique key for
+`(CustomerId, Key)`, and current-role schema USAGE plus table SELECT/INSERT/UPDATE.
+Unexpected required columns without defaults also fail readiness. The probe
+rejects generated/identity receipt columns and receipt-table row-level
+security, whose INSERT/replay semantics cannot be inferred from role grants.
+Unexpected CHECK/foreign-key/exclusion/unique constraints or extra unique indexes,
+user triggers and rewrite rules are outside the supported PR #30 journal envelope
+and also fail closed. Native not-null constraints and ordinary nonunique
+performance indexes remain allowed. This does not execute custom database logic
+to infer its safety or claim arbitrary-schema write guarantees.
+The read-only
+catalog query has a five-second cancellation bound and performs no DDL. A missing
+or incompatible journal/privilege returns PII-free 503 with no capability header
+before graph access. Valid POST repeats this gate before mutation; malformed
+preconditions retain their existing 400/428 behavior. Owner and email-claim checks
+precede the metadata probe. Successful POST does not require or emit the GET-only
+header. Capability proves code/schema readiness, not full production parity.
+
+The consumer must keep enablement false by default and require the exact unique
+GET header `2` before quotation persistence. Old producers cannot advertise this
+support, and configuration alone is not proof of schema readiness. Deployment or
+persistent migration application is not authorized by this producer change.
+
+Optional `TaxBranch` accepts `head-office` or `branch`, case-insensitively after
+bounded outer trimming (maximum 20 characters). With `head-office`, omit the code;
+with `branch`, supply exactly five ASCII digits in `TaxBranchCode`. Both require
+the existing 13-ASCII-digit `TaxNumber`. Head office stores
+`<13> (สำนักงานใหญ่)`; branch stores `<13> (สาขาที่ <5>)`. Omit both branch fields
+when no tax ID exists. Omitted branch fields still store plain13, never invent a
+designation. Arbitrary Thai/English suffix strings, orphan branch fields, wrong
+codes and oversized candidates are 400 with no mutation or receipt. Historical
+stored raw IDs or suffixes (including one-to-five-digit branch codes) remain
+unchanged and authoritative; consumer parsing may left-pad those codes for display
+and subsequent typed input. No schema extension is needed: source and producer
+Company.TaxNumber columns already allow 256 characters.
+
+The actual Auth issuer emits `email` without inbound claim mapping. After the
+existing unique customer-kind/subject/database-owner checks, exactly one plain,
+valid email claim of at most 256 characters may fill a blank stored email.
+Posted `Email`/identity data never supplies authority; no Auth identity lookup or
+token minting is performed. No claim means no fallback and preserves existing
+client behavior (including blank stored text). Duplicate, blank, display-name,
+malformed, control/whitespace-bearing or oversized claims produce 403 before
+database/cache/receipt access. A nonblank stored email always wins, including when
+the token carries a different valid email. This copies a validated identity claim,
+not a claim of current email verification or recovery policy.
+
+Replay hashes preserve PR #30's exact nine-field normalized JSON projection,
+property order and null representation; new optional null keys do not change old
+hashes. Typed branch folds into canonical TaxNumber before hashing. New operations
+with trusted email hash an explicit version-2 projection containing that email,
+so changing it under the same key conflicts (409). A matching legacy digest can
+only return its unchanged original receipt before graph mutation: replay never
+retroactively adds email to an old committed operation. A later intended email
+completion requires a fresh graph/key. This keeps old receipts valid without
+reinterpretation, receipt rewriting or a migration. Same normalized designation
+and request remain replay-equivalent. A frozen PR #30 digest HTTP regression and
+an isolated actual PR #30 binary-to-new-binary PostgreSQL run verify this boundary.
 
 Stored distinct shipping is preserved regardless of `ShipToBillingAddress`.
 Stored billing/shipping alias remains an alias. Only missing shipping can select
