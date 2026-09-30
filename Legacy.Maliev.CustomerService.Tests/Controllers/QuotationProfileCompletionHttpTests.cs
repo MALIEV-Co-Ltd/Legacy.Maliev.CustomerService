@@ -535,7 +535,12 @@ public sealed class QuotationProfileCompletionHttpTests : IAsyncLifetime
     private async Task<WebApplication> Start(RSA? rsa = null, string? connectionString = null)
     {
         var builder = WebApplication.CreateBuilder(); builder.WebHost.UseTestServer();
-        builder.Services.AddDbContext<CustomerDbContext>(x => x.UseNpgsql(connectionString ?? postgres.GetConnectionString()));
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["ConnectionStrings:CustomerDbContext"] = connectionString ?? postgres.GetConnectionString()
+        });
+        // Exercise the same retry-enabled PostgreSQL registration as the real Program.
+        builder.AddPostgresDbContext<CustomerDbContext>(connectionName: "CustomerDbContext");
         builder.Services.AddSingleton(cache.Object);
         builder.Services.AddControllers().AddApplicationPart(typeof(CustomersController).Assembly).AddJsonOptions(x =>
         {

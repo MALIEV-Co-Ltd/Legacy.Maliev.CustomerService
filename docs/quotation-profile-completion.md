@@ -131,6 +131,16 @@ requests have one commit. A changed receipt invalidates only the owner's cache
 after commit, including on replay. Cache failure may return an error after a
 durable commit: retry the same key/body, not a fresh operation.
 
+Both the repeatable-read graph snapshot and the entire completion transaction run
+under the normal PostgreSQL execution strategy configured by ServiceDefaults.
+Each retry uses a fresh context, so rolled-back tracked graph/relationship changes
+cannot leak into the next attempt. The durable owner/key receipt resolves a lost
+commit acknowledgement without applying a second mutation or checking the now-stale
+ETag first. Cancellation remains bounded by the caller token. Regression tests use
+the same retry-enabled host registration as Program and real disposable PostgreSQL
+faults before commit, after commit, and during the snapshot query. No shared retry
+policy, runtime provider, wire shape, receipt hash or persistent schema is changed.
+
 ## Consumer ordering and rollout
 
 The Web consumer must read this trusted graph on GET and reread/merge on POST,
