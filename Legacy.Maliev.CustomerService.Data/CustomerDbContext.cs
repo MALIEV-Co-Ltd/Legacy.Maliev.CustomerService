@@ -27,6 +27,9 @@ public sealed class CustomerDbContext(DbContextOptions<CustomerDbContext> option
     /// <summary>Durable results for explicitly keyed customer-create requests.</summary>
     public DbSet<CustomerCreateOperation> CustomerCreateOperations => Set<CustomerCreateOperation>();
 
+    /// <summary>Durable authenticated quotation profile completion receipts without raw subject or profile payloads.</summary>
+    public DbSet<QuotationProfileCompletionOperation> QuotationProfileCompletionOperations => Set<QuotationProfileCompletionOperation>();
+
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -97,6 +100,13 @@ public sealed class CustomerDbContext(DbContextOptions<CustomerDbContext> option
         createOperation.Property(value => value.RequestHash).HasMaxLength(64).IsRequired();
         createOperation.Property(value => value.ResponseJson).HasColumnType("jsonb").IsRequired();
         createOperation.Property(value => value.CreatedAt).HasColumnType("timestamp with time zone");
+
+        var completion = modelBuilder.Entity<QuotationProfileCompletionOperation>();
+        completion.ToTable("QuotationProfileCompletionOperation");
+        completion.HasKey(value => new { value.CustomerId, value.Key });
+        completion.Property(value => value.ActorHash).HasMaxLength(64).IsRequired();
+        completion.Property(value => value.RequestHash).HasMaxLength(64).IsRequired();
+        completion.Property(value => value.CreatedAt).HasColumnType("timestamp with time zone");
     }
 
     private static void ConfigureDates<TEntity>(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<TEntity> entity)
