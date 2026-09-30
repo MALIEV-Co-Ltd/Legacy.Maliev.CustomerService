@@ -5,6 +5,7 @@ using System.Text.Json;
 using Legacy.Maliev.CustomerService.Application.Models;
 using Legacy.Maliev.CustomerService.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Legacy.Maliev.CustomerService.Data;
 
@@ -55,6 +56,15 @@ public sealed class QuotationProfileCompletionStore(CustomerDbContext db)
     /// <summary>Reads a consistent uncached graph and aggregate revision.</summary>
     public async Task<QuotationProfileCompletionGraph?> ReadAsync(int id, CancellationToken cancellationToken)
     {
+        return await db.Database.CreateExecutionStrategy().ExecuteAsync(async token =>
+        {
+            await using var attempt = NewAttempt();
+            return await new QuotationProfileCompletionStore(attempt).ReadOnceAsync(id, token);
+        }, cancellationToken);
+    }
+
+    private async Task<QuotationProfileCompletionGraph?> ReadOnceAsync(int id, CancellationToken cancellationToken)
+    {
         await using var transaction = await db.Database.BeginTransactionAsync(IsolationLevel.RepeatableRead, cancellationToken);
         var revision = await RevisionAsync(id, cancellationToken);
         var customer = await Graph(id).SingleOrDefaultAsync(cancellationToken);
@@ -68,6 +78,21 @@ public sealed class QuotationProfileCompletionStore(CustomerDbContext db)
     /// <summary>Commits completion and receipt together; retries return the original receipt before revision checking.</summary>
     public async Task<QuotationProfileCompletionResult> CompleteAsync(int id, string actor, Guid key, string revision,
         QuotationProfileCompletionRequest request, CancellationToken cancellationToken, string? trustedEmail = null)
+    {
+        return await db.Database.CreateExecutionStrategy().ExecuteAsync(async token =>
+        {
+            // Rollback cannot undo EF's in-memory graph changes. Each retry owns a
+            // fresh context; a lost commit acknowledgement replays the durable key.
+            await using var attempt = NewAttempt();
+            return await new QuotationProfileCompletionStore(attempt).CompleteOnceAsync(
+                id, actor, key, revision, request, token, trustedEmail);
+        }, cancellationToken);
+    }
+
+    private CustomerDbContext NewAttempt() => new((DbContextOptions<CustomerDbContext>)db.GetService<IDbContextOptions>());
+
+    private async Task<QuotationProfileCompletionResult> CompleteOnceAsync(int id, string actor, Guid key, string revision,
+        QuotationProfileCompletionRequest request, CancellationToken cancellationToken, string? trustedEmail)
     {
         request = Normalize(request);
         var actorHash = Hash(actor);
