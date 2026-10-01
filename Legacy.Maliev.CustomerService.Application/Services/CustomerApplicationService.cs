@@ -9,22 +9,8 @@ public sealed class CustomerApplicationService(
     ICustomerCache cache) : ICustomerService
 {
     /// <inheritdoc />
-    public async Task<CustomerResponse?> GetCustomerAsync(int id, CancellationToken cancellationToken)
-    {
-        var cached = await cache.GetAsync(id, cancellationToken);
-        if (cached is not null)
-        {
-            return cached;
-        }
-
-        var customer = await repository.GetCustomerAsync(id, cancellationToken);
-        if (customer is not null)
-        {
-            await cache.SetAsync(customer, cancellationToken);
-        }
-
-        return customer;
-    }
+    public Task<CustomerResponse?> GetCustomerAsync(int id, CancellationToken cancellationToken) =>
+        repository.GetCustomerAsync(id, cancellationToken);
 
     /// <inheritdoc />
     public Task<CustomerVersionedResponse?> GetCustomerVersionedAsync(int id, CancellationToken cancellationToken) =>

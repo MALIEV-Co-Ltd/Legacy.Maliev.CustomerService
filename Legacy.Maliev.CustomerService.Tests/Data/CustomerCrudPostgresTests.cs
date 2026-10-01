@@ -35,7 +35,8 @@ public sealed class CustomerCrudPostgresTests(CustomerCrudPostgresFixture fixtur
         Assert.Equal(company.Id, customer.Company?.Id);
         Assert.Equal(customer.Id, (await service.GetCustomerByEmailAsync(" SAMPLE@EXAMPLE.TEST ", cancellation))?.Id);
         Assert.Equal(customer.Id, (await service.GetCustomerAsync(customer.Id, cancellation))?.Id);
-        cache.Verify(value => value.SetAsync(It.Is<CustomerResponse>(result => result.Id == customer.Id), cancellation), Times.Once);
+        cache.Verify(value => value.GetAsync(It.IsAny<int>(), cancellation), Times.Never);
+        cache.Verify(value => value.SetAsync(It.IsAny<CustomerResponse>(), cancellation), Times.Never);
         Assert.Null(await service.GetCustomerAsync(int.MaxValue, cancellation));
         Assert.Null(await service.GetCustomerByEmailAsync("missing@example.test", cancellation));
 
