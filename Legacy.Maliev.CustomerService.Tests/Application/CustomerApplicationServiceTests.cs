@@ -25,18 +25,24 @@ public sealed class CustomerApplicationServiceTests
     }
 
     [Fact]
-    public async Task GetCustomerAsync_CacheHit_DoesNotQueryPostgreSql()
+    public async Task GetCustomerAsync_StaleCacheCannotOverrideCurrentPostgreSqlProjection()
     {
-        var cached = SampleCustomer();
+        var cached = SampleCustomer() with { FirstName = "Old" };
+        var current = SampleCustomer() with { FirstName = "Current" };
         var repository = new Mock<ICustomerRepository>(MockBehavior.Strict);
+        repository.Setup(value => value.GetCustomerAsync(7, It.IsAny<CancellationToken>())).ReturnsAsync(current);
         var cache = new Mock<ICustomerCache>();
         cache.Setup(value => value.GetAsync(7, It.IsAny<CancellationToken>())).ReturnsAsync(cached);
         var service = new CustomerApplicationService(repository.Object, cache.Object);
 
         var result = await service.GetCustomerAsync(7, CancellationToken.None);
 
-        Assert.Same(cached, result);
+        Assert.Same(current, result);
+        Assert.NotSame(cached, result);
+        repository.Verify(value => value.GetCustomerAsync(7, It.IsAny<CancellationToken>()), Times.Once);
         repository.VerifyNoOtherCalls();
+        cache.Verify(value => value.GetAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
+        cache.Verify(value => value.SetAsync(It.IsAny<CustomerResponse>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
