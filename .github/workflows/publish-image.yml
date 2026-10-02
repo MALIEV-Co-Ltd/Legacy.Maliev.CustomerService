@@ -31,7 +31,7 @@ jobs:
       image: ${{ vars.LEGACY_ARTIFACT_REGISTRY }}/legacy-maliev-customer-service
       dockerfile: Legacy.Maliev.CustomerService.Api/Dockerfile
       context: .
-      legacy-service-defaults-ref: 8f4f5f27b226ffe406c4c79b1903742e8c2e7dd3
+      legacy-service-defaults-ref: 086760fa0aae976a799dbcda1960d5c0981248cb
       compatibility-contracts-ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
       environment: legacy-production
       workload-identity-provider: ${{ vars.LEGACY_WORKLOAD_IDENTITY_PROVIDER }}
