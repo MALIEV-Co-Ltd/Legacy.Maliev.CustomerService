@@ -23,11 +23,20 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
             .SingleOrDefaultAsync(cancellationToken);
 
     /// <inheritdoc />
-    public Task<CustomerResponse?> GetCustomerByEmailAsync(string email, CancellationToken cancellationToken) =>
-        Project(dbContext.Customers.AsNoTracking()
+    public async Task<CustomerResponse?> GetCustomerByEmailAsync(string email, CancellationToken cancellationToken)
+    {
+        var matches = await Project(dbContext.Customers.AsNoTracking()
             .Where(customer => customer.Email.ToLower() == email.ToLower())
             .OrderBy(customer => customer.Id))
-            .FirstOrDefaultAsync(cancellationToken);
+            .Take(2)
+            .ToListAsync(cancellationToken);
+        if (matches.Count > 1)
+        {
+            throw new System.Data.DataException("Customer email lookup is ambiguous.");
+        }
+
+        return matches.SingleOrDefault();
+    }
 
     /// <inheritdoc />
     public Task<CustomerInternalRemarkResponse?> GetInternalRemarkAsync(int id, CancellationToken cancellationToken) =>
@@ -49,16 +58,19 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
         {
             var value = search.Trim();
             var numeric = int.TryParse(value, out var id);
-            var pattern = $"%{value}%";
+            var escaped = value.Replace("\\", "\\\\", StringComparison.Ordinal)
+                .Replace("%", "\\%", StringComparison.Ordinal)
+                .Replace("_", "\\_", StringComparison.Ordinal);
+            var pattern = $"%{escaped}%";
             query = query.Where(customer =>
                 (numeric && customer.Id == id) ||
-                EF.Functions.ILike(EF.Functions.Collate(customer.FirstName, "C"), pattern) ||
-                EF.Functions.ILike(EF.Functions.Collate(customer.LastName, "C"), pattern) ||
-                EF.Functions.ILike(EF.Functions.Collate(customer.FullName, "C"), pattern) ||
-                EF.Functions.ILike(EF.Functions.Collate(customer.Email, "C"), pattern) ||
-                (customer.Mobile != null && EF.Functions.ILike(EF.Functions.Collate(customer.Mobile, "C"), pattern)) ||
-                (customer.Telephone != null && EF.Functions.ILike(EF.Functions.Collate(customer.Telephone, "C"), pattern)) ||
-                (customer.Company != null && EF.Functions.ILike(EF.Functions.Collate(customer.Company.Name, "C"), pattern)));
+                EF.Functions.ILike(EF.Functions.Collate(customer.FirstName, "C"), pattern, "\\") ||
+                EF.Functions.ILike(EF.Functions.Collate(customer.LastName, "C"), pattern, "\\") ||
+                EF.Functions.ILike(EF.Functions.Collate(customer.FullName, "C"), pattern, "\\") ||
+                EF.Functions.ILike(EF.Functions.Collate(customer.Email, "C"), pattern, "\\") ||
+                (customer.Mobile != null && EF.Functions.ILike(EF.Functions.Collate(customer.Mobile, "C"), pattern, "\\")) ||
+                (customer.Telephone != null && EF.Functions.ILike(EF.Functions.Collate(customer.Telephone, "C"), pattern, "\\")) ||
+                (customer.Company != null && EF.Functions.ILike(EF.Functions.Collate(customer.Company.Name, "C"), pattern, "\\")));
         }
 
         query = sort switch
@@ -85,6 +97,11 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
+        if (items.Count == 0)
+        {
+            return null;
+        }
+
         return new PaginatedResponse<CustomerResponse>(items, pageIndex, (int)Math.Ceiling(total / (double)pageSize), total);
     }
 
