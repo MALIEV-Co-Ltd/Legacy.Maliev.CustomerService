@@ -83,8 +83,12 @@ public sealed class CustomerVersionedAuthorityHttpTests(CustomerDetailAuthorityF
         {
             Content = new StringContent(JsonSerializer.Serialize(new
             {
-                FirstName = firstName, LastName = "Customer", Email = "detail@example.test",
-                CompanyId = 1, BillingAddressId = 1, ShippingAddressId = 1
+                FirstName = firstName,
+                LastName = "Customer",
+                Email = "detail@example.test",
+                CompanyId = 1,
+                BillingAddressId = 1,
+                ShippingAddressId = 1
             }), Encoding.UTF8, "application/json")
         };
         if (revision is not null) request.Headers.TryAddWithoutValidation("If-Match", revision);

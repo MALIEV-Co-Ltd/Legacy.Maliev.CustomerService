@@ -118,8 +118,18 @@ public sealed class CustomerEmailAmbiguityHttpTests(CustomerDetailAuthorityFixtu
         return JsonSerializer.Serialize(new
         {
             Customers = await db.Customers.AsNoTracking().OrderBy(row => row.Id)
-                .Select(row => new { row.Id, row.FirstName, row.LastName, row.Email, row.CompanyId,
-                    row.BillingAddressId, row.ShippingAddressId, row.InternalRemark, row.ModifiedDate }).ToArrayAsync(),
+                .Select(row => new
+                {
+                    row.Id,
+                    row.FirstName,
+                    row.LastName,
+                    row.Email,
+                    row.CompanyId,
+                    row.BillingAddressId,
+                    row.ShippingAddressId,
+                    row.InternalRemark,
+                    row.ModifiedDate
+                }).ToArrayAsync(),
             Companies = await db.Companies.AsNoTracking().OrderBy(row => row.Id)
                 .Select(row => new { row.Id, row.Name, row.TaxNumber, row.ModifiedDate }).ToArrayAsync(),
             Addresses = await db.Addresses.AsNoTracking().OrderBy(row => row.Id)
