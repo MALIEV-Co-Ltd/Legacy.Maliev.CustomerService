@@ -29,7 +29,7 @@ public sealed class CustomerProfileLifecycleHttpTests(CustomerDetailAuthorityFix
         using var created = await client.PostAsJsonAsync("/customers/", new
         {
             Id = 999,
-            FirstName = "สมชาย",
+            FirstName = "à¸ªà¸¡à¸Šà¸²à¸¢",
             LastName = "Fixture",
             Email = "profile@example.test",
             Telephone = related ? "020000000" : null,
@@ -50,9 +50,9 @@ public sealed class CustomerProfileLifecycleHttpTests(CustomerDetailAuthorityFix
         Assert.NotEqual(999, id);
         Assert.EndsWith($"/customers/{id}", created.Headers.Location!.ToString(), StringComparison.OrdinalIgnoreCase);
         var beforeUpdate = await db.Customers.AsNoTracking().SingleAsync(row => row.Id == id);
-        Assert.Equal("สมชาย", beforeUpdate.FirstName);
+        Assert.Equal("à¸ªà¸¡à¸Šà¸²à¸¢", beforeUpdate.FirstName);
         Assert.Equal("Fixture", beforeUpdate.LastName);
-        Assert.Equal("สมชาย Fixture", beforeUpdate.FullName);
+        Assert.Equal("à¸ªà¸¡à¸Šà¸²à¸¢ Fixture", beforeUpdate.FullName);
         Assert.Equal("profile@example.test", beforeUpdate.Email);
         Assert.Equal(related ? "020000000" : null, beforeUpdate.Telephone);
         Assert.Equal(related ? "0800000000" : null, beforeUpdate.Mobile);
@@ -66,7 +66,7 @@ public sealed class CustomerProfileLifecycleHttpTests(CustomerDetailAuthorityFix
         using var read = await client.GetAsync(created.Headers.Location);
         Assert.Equal(HttpStatusCode.OK, read.StatusCode);
         using var json = JsonDocument.Parse(await read.Content.ReadAsStringAsync());
-        Assert.Equal("สมชาย Fixture", json.RootElement.GetProperty("FullName").GetString());
+        Assert.Equal("à¸ªà¸¡à¸Šà¸²à¸¢ Fixture", json.RootElement.GetProperty("FullName").GetString());
         Assert.False(json.RootElement.TryGetProperty("firstName", out _));
         Assert.False(json.RootElement.TryGetProperty("InternalRemark", out _));
         if (related)
@@ -82,10 +82,18 @@ public sealed class CustomerProfileLifecycleHttpTests(CustomerDetailAuthorityFix
         }
         using var updated = await client.PutAsJsonAsync($"/customers/{id}/", new
         {
-            FirstName = "Updated", LastName = "Profile", Email = "updated-profile@example.test",
-            Telephone = "030000000", Mobile = "0900000000", Fax = "030000001",
-            DateOfBirth = new DateTime(1990, 2, 3), CompanyId = 1, BillingAddressId = 1, ShippingAddressId = 1,
-            CreatedDate = new DateTime(1900, 1, 1), InternalRemark = "forged update"
+            FirstName = "Updated",
+            LastName = "Profile",
+            Email = "updated-profile@example.test",
+            Telephone = "030000000",
+            Mobile = "0900000000",
+            Fax = "030000001",
+            DateOfBirth = new DateTime(1990, 2, 3),
+            CompanyId = 1,
+            BillingAddressId = 1,
+            ShippingAddressId = 1,
+            CreatedDate = new DateTime(1900, 1, 1),
+            InternalRemark = "forged update"
         });
         Assert.Equal(HttpStatusCode.NoContent, updated.StatusCode);
         var afterUpdate = await db.Customers.AsNoTracking().SingleAsync(row => row.Id == id);
