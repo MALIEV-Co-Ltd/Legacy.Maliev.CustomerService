@@ -112,6 +112,7 @@ public sealed class CustomerDetailAuthorityFixture : IAsyncLifetime
         if (authority == "directory") permissions = [.. permissions, "legacy-customer.customers.list"];
         if (authority == "address-lifecycle") permissions = [.. permissions, "legacy-customer.addresses.create", "legacy-customer.addresses.read"];
         if (authority == "company-lifecycle") permissions = [.. permissions, "legacy-customer.companies.create", "legacy-customer.companies.read", "legacy-customer.companies.delete"];
+        if (authority == "customer-lifecycle") permissions = [.. permissions, "legacy-customer.customers.create", "legacy-customer.customers.delete"];
         using var other = RSA.Create(2048);
         var now = DateTime.UtcNow;
         var token = new JwtSecurityToken("customer-detail-fixture", "customer-detail-fixture",
