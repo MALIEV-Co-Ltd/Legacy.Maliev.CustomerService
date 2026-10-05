@@ -48,6 +48,9 @@ public sealed class CustomerAddressAttachmentLifecycleHttpTests(CustomerDetailAu
         Assert.Equal(before.ShippingAddressId, unbound.ShippingAddressId);
         using var unattachedRead = await client.GetAsync(created.Headers.Location);
         Assert.Equal(HttpStatusCode.NotFound, unattachedRead.StatusCode);
+        Assert.False(await fixture.CacheExistsAsync());
+        await fixture.SeedOldAsync(host);
+        Assert.True(await fixture.CacheExistsAsync());
         using var attached = await client.PutAsJsonAsync("/customers/1/", new
         {
             before.FirstName,
