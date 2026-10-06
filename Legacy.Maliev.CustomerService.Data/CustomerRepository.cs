@@ -76,14 +76,14 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
         query = sort switch
         {
             CustomerSortType.CustomerId_Descending => query.OrderByDescending(value => value.Id),
-            CustomerSortType.CustomerCompany_Ascending => query.OrderBy(value => value.Company!.Name),
-            CustomerSortType.CustomerCompany_Descending => query.OrderByDescending(value => value.Company!.Name),
+            CustomerSortType.CustomerCompany_Ascending => query.OrderBy(value => value.Company!.Name != null).ThenBy(value => value.Company!.Name),
+            CustomerSortType.CustomerCompany_Descending => query.OrderBy(value => value.Company!.Name == null).ThenByDescending(value => value.Company!.Name),
             CustomerSortType.CustomerEmail_Ascending => query.OrderBy(value => value.Email),
             CustomerSortType.CustomerEmail_Descending => query.OrderByDescending(value => value.Email),
-            CustomerSortType.CustomerCreatedDate_Ascending => query.OrderBy(value => value.CreatedDate),
-            CustomerSortType.CustomerCreatedDate_Descending => query.OrderByDescending(value => value.CreatedDate),
-            CustomerSortType.CustomerModifiedDate_Ascending => query.OrderBy(value => value.ModifiedDate),
-            CustomerSortType.CustomerModifiedDate_Descending => query.OrderByDescending(value => value.ModifiedDate),
+            CustomerSortType.CustomerCreatedDate_Ascending => query.OrderBy(value => value.CreatedDate != null).ThenBy(value => value.CreatedDate),
+            CustomerSortType.CustomerCreatedDate_Descending => query.OrderBy(value => value.CreatedDate == null).ThenByDescending(value => value.CreatedDate),
+            CustomerSortType.CustomerModifiedDate_Ascending => query.OrderBy(value => value.ModifiedDate != null).ThenBy(value => value.ModifiedDate),
+            CustomerSortType.CustomerModifiedDate_Descending => query.OrderBy(value => value.ModifiedDate == null).ThenByDescending(value => value.ModifiedDate),
             _ => query.OrderBy(value => value.Id),
         };
 
