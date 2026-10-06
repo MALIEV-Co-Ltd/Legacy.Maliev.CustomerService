@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using Legacy.Maliev.CustomerService.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
@@ -45,11 +46,11 @@ public sealed class CustomerSignificantSearchHttpTests(CustomerDetailAuthorityFi
         }
         await using var host = fixture.Start();
         using var client = fixture.Client(host, "directory");
-        var before = await fixture.SnapshotAsync();
+        var before = await SnapshotAsync();
         using var response = await client.GetAsync(Path(Literal));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         await AssertPageAsync(response, [targetId]);
-        Assert.Equal(before, await fixture.SnapshotAsync());
+        Assert.Equal(before, await SnapshotAsync());
     }
 
     [Theory]
@@ -61,10 +62,10 @@ public sealed class CustomerSignificantSearchHttpTests(CustomerDetailAuthorityFi
         await fixture.ResetAsync();
         await using var host = fixture.Start();
         using var client = fixture.Client(host, "directory");
-        var before = await fixture.SnapshotAsync();
+        var before = await SnapshotAsync();
         using var response = await client.GetAsync(Path(search));
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        Assert.Equal(before, await fixture.SnapshotAsync());
+        Assert.Equal(before, await SnapshotAsync());
     }
 
     [Fact]
@@ -80,11 +81,12 @@ public sealed class CustomerSignificantSearchHttpTests(CustomerDetailAuthorityFi
             decoy.Mobile = Literal.Trim();
             db.Customers.AddRange(target, decoy);
             await db.SaveChangesAsync();
-            targetId = target.Id; decoyId = decoy.Id;
+            targetId = target.Id;
+            decoyId = decoy.Id;
         }
         await using var host = fixture.Start();
         using var client = fixture.Client(host, "directory");
-        var before = await fixture.SnapshotAsync();
+        var before = await SnapshotAsync();
         foreach (var search in new[] { Literal, Literal.Trim(), Literal })
         {
             using var response = await client.GetAsync(Path(search));
@@ -93,7 +95,7 @@ public sealed class CustomerSignificantSearchHttpTests(CustomerDetailAuthorityFi
         }
         using var absentPage = await client.GetAsync(Path(Literal) + "&index=2&size=1");
         Assert.Equal(HttpStatusCode.NotFound, absentPage.StatusCode);
-        Assert.Equal(before, await fixture.SnapshotAsync());
+        Assert.Equal(before, await SnapshotAsync());
     }
 
     [Fact]
@@ -113,11 +115,11 @@ public sealed class CustomerSignificantSearchHttpTests(CustomerDetailAuthorityFi
         }
         await using var host = fixture.Start();
         using var client = fixture.Client(host, "directory");
-        var before = await fixture.SnapshotAsync();
+        var before = await SnapshotAsync();
         using var response = await client.GetAsync(Path(" 1 "));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         await AssertPageAsync(response, [1, literalId]);
-        Assert.Equal(before, await fixture.SnapshotAsync());
+        Assert.Equal(before, await SnapshotAsync());
     }
 
     [Theory]
@@ -128,10 +130,33 @@ public sealed class CustomerSignificantSearchHttpTests(CustomerDetailAuthorityFi
         await fixture.ResetAsync();
         await using var host = fixture.Start();
         using var client = fixture.Client(host, authority);
-        var before = await fixture.SnapshotAsync();
+        var before = await SnapshotAsync();
         using var response = await client.GetAsync(Path(Literal));
         Assert.Equal(status, response.StatusCode);
-        Assert.Equal(before, await fixture.SnapshotAsync());
+        Assert.Equal(before, await SnapshotAsync());
+    }
+
+    private async Task<string> SnapshotAsync()
+    {
+        await using var db = fixture.Context();
+        return JsonSerializer.Serialize(new
+        {
+            Customers = await db.Customers.AsNoTracking().OrderBy(row => row.Id).Select(row => new
+            {
+                row.Id, row.FirstName, row.LastName, row.FullName, row.Email, row.Mobile, row.Telephone, row.Fax,
+                row.DateOfBirth, row.InternalRemark, row.CompanyId, row.BillingAddressId, row.ShippingAddressId,
+                row.CreatedDate, row.ModifiedDate
+            }).ToArrayAsync(),
+            Companies = await db.Companies.AsNoTracking().OrderBy(row => row.Id).Select(row => new
+            {
+                row.Id, row.Name, row.TaxNumber, row.Registrar, row.CreatedDate, row.ModifiedDate
+            }).ToArrayAsync(),
+            Addresses = await db.Addresses.AsNoTracking().OrderBy(row => row.Id).Select(row => new
+            {
+                row.Id, row.Building, row.AddressLine1, row.AddressLine2, row.City, row.State, row.PostalCode,
+                row.CountryId, row.CreatedDate, row.ModifiedDate
+            }).ToArrayAsync()
+        });
     }
 
     private static string Path(string search) => "/customers?search=" + Uri.EscapeDataString(search);
