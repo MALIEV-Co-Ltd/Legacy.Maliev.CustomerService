@@ -136,6 +136,114 @@ public sealed class CustomerSignificantSearchHttpTests(CustomerDetailAuthorityFi
         Assert.Equal(before, await SnapshotAsync());
     }
 
+    [Theory]
+    [InlineData("Company", "CustomerCompany_Ascending", false)]
+    [InlineData("Company", "CustomerCompany_Descending", true)]
+    [InlineData("CreatedDate", "CustomerCreatedDate_Ascending", false)]
+    [InlineData("CreatedDate", "CustomerCreatedDate_Descending", true)]
+    [InlineData("ModifiedDate", "CustomerModifiedDate_Ascending", false)]
+    [InlineData("ModifiedDate", "CustomerModifiedDate_Descending", true)]
+    public async Task NullableSort_RetainsSourceNullPlacementAcrossListAndPages(string field, string sort, bool descending)
+    {
+        await fixture.ResetAsync();
+        const string cohort = "NullSortFixture";
+        var firstDate = new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Unspecified);
+        int[] ids;
+        await using (var db = fixture.Context())
+        {
+            var customers = Enumerable.Range(0, 4)
+                .Select(index => Customer(cohort + index, $"null-sort-{index}@example.test"))
+                .ToArray();
+            for (var index = 0; index < customers.Length; index++)
+            {
+                customers[index].CreatedDate = firstDate.AddDays(index);
+                customers[index].ModifiedDate = firstDate.AddDays(index);
+                if (index > 0)
+                {
+                    customers[index].Company = new Company { Name = new[] { "Alpha", "Bravo", "Charlie" }[index - 1] };
+                }
+            }
+            db.Customers.AddRange(customers);
+            await db.SaveChangesAsync();
+            ids = customers.Select(customer => customer.Id).ToArray();
+            var nullableCustomer = db.Customers.Where(customer => customer.Id == ids[0]);
+            if (field == "CreatedDate")
+            {
+                Assert.Equal(1, await nullableCustomer.ExecuteUpdateAsync(setters => setters.SetProperty(customer => customer.CreatedDate, (DateTime?)null)));
+            }
+            else if (field == "ModifiedDate")
+            {
+                Assert.Equal(1, await nullableCustomer.ExecuteUpdateAsync(setters => setters.SetProperty(customer => customer.ModifiedDate, (DateTime?)null)));
+            }
+        }
+        await using (var readback = fixture.Context())
+        {
+            var storedRows = await readback.Customers.AsNoTracking().Where(customer => ids.Contains(customer.Id))
+                .Select(customer => new
+                {
+                    customer.Id,
+                    customer.CompanyId,
+                    CompanyName = customer.Company == null ? null : customer.Company.Name,
+                    customer.CreatedDate,
+                    customer.ModifiedDate
+                }).ToArrayAsync();
+            Assert.Equal(ids.OrderBy(id => id), storedRows.Select(customer => customer.Id).OrderBy(id => id));
+            var rowsById = storedRows.ToDictionary(customer => customer.Id);
+            var stored = ids.Select(id => rowsById[id]).ToArray();
+            Assert.Null(stored[0].CompanyId);
+            Assert.Equal(new string?[] { null, "Alpha", "Bravo", "Charlie" }, stored.Select(customer => customer.CompanyName).ToArray());
+            Assert.Equal(Enumerable.Range(0, 4).Select(index => field == "CreatedDate" && index == 0 ? (DateTime?)null : firstDate.AddDays(index)).ToArray(),
+                stored.Select(customer => customer.CreatedDate).ToArray());
+            Assert.Equal(Enumerable.Range(0, 4).Select(index => field == "ModifiedDate" && index == 0 ? (DateTime?)null : firstDate.AddDays(index)).ToArray(),
+                stored.Select(customer => customer.ModifiedDate).ToArray());
+            Assert.True(await readback.Customers.AsNoTracking().AnyAsync(customer => customer.Id == 1));
+        }
+        var expected = descending ? ids.Reverse().ToArray() : ids;
+        await using var host = fixture.Start();
+        using var client = fixture.Client(host, "directory");
+        var before = await SnapshotAsync();
+        var path = Path(cohort) + "&sort=" + sort;
+        using (var response = await client.GetAsync(path))
+        {
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            await AssertNullSortPageAsync(response, expected, 1, 1, ids[0], field);
+        }
+        for (var index = 1; index <= expected.Length; index++)
+        {
+            using var response = await client.GetAsync(path + $"&index={index}&size=1");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            await AssertNullSortPageAsync(response, [expected[index - 1]], index, 4, ids[0], field);
+        }
+        using var absentPage = await client.GetAsync(path + "&index=5&size=1");
+        Assert.Equal(HttpStatusCode.NotFound, absentPage.StatusCode);
+        Assert.Equal(before, await SnapshotAsync());
+    }
+
+    private static async Task AssertNullSortPageAsync(HttpResponseMessage response, int[] ids, int index, int pages, int nullId, string field)
+    {
+        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var page = json.RootElement;
+        Assert.Equal(4, page.GetProperty("TotalRecords").GetInt32());
+        Assert.Equal(index, page.GetProperty("PageIndex").GetInt32());
+        Assert.Equal(pages, page.GetProperty("TotalPages").GetInt32());
+        Assert.Equal(index < pages, page.GetProperty("HasNextPage").GetBoolean());
+        Assert.Equal(index > 1, page.GetProperty("HasPreviousPage").GetBoolean());
+        Assert.False(page.TryGetProperty("items", out _));
+        var items = page.GetProperty("Items").EnumerateArray().ToArray();
+        Assert.Equal(ids, items.Select(item => item.GetProperty("Id").GetInt32()).ToArray());
+        foreach (var item in items)
+        {
+            Assert.False(item.TryGetProperty("id", out _));
+            Assert.False(item.TryGetProperty("InternalRemark", out _));
+            Assert.False(item.TryGetProperty("PasswordHash", out _));
+            if (item.GetProperty("Id").GetInt32() == nullId)
+            {
+                Assert.False(item.TryGetProperty(field, out _));
+                if (field == "Company") Assert.False(item.TryGetProperty("CompanyId", out _));
+            }
+        }
+    }
+
     private async Task<string> SnapshotAsync()
     {
         await using var db = fixture.Context();
