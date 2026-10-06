@@ -56,7 +56,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
         IQueryable<Customer> query = dbContext.Customers.AsNoTracking();
         if (!string.IsNullOrWhiteSpace(search))
         {
-            var value = search.Trim();
+            var value = search;
             var numeric = int.TryParse(value, out var id);
             var escaped = value.Replace("\\", "\\\\", StringComparison.Ordinal)
                 .Replace("%", "\\%", StringComparison.Ordinal)
