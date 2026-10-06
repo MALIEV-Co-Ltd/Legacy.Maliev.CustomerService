@@ -46,6 +46,18 @@ identity and credential operations from this domain boundary.
   invalidated on customer/address mutations. Cache failure falls back to PostgreSQL.
 - Source SQL Server and `CustomerIdentity` remain unchanged throughout extraction.
 
+## External scaffold preview
+
+`Legacy.Maliev.CustomerService.Data/ScaffoldCustomerContext.ps1` accepts a new
+absolute output directory outside this repository and resolves the externally
+configured named Customer connection. It restricts generation to Customer,
+Company and Address, keeps caller options, and never overwrites runtime sources.
+The API excludes EF Design by default; `EnableCustomerScaffoldDesignTime=true`
+opts into its private exact reference for an isolated prebuilt Release graph.
+The hosted regression checks actual generation, generated preview compilation
+and linked queries using its existing disposable fixture. See
+`docs/customer-actual-scaffold-proof-20261006.md` for scope and pending validation.
+
 ## Deployment gate
 
 No deployment is performed during service extraction. Cutover requires a dedicated
