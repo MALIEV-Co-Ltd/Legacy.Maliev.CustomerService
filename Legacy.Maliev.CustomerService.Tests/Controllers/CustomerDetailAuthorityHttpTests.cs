@@ -4,8 +4,16 @@ using System.Text.Json;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+[Collection("Customer scaffold runtime")]
 public sealed class CustomerDetailAuthorityHttpTests(CustomerDetailAuthorityFixture fixture) : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    [Fact]
+    public async Task Scaffold_ActualEfPreviewBuildAndGeneratedQueriesPreserveMigratedOwnedGraph()
+    {
+        await fixture.ResetAsync();
+        await CustomerScaffoldRuntimeProof.RunAsync(fixture);
+    }
+
     [Theory]
     [InlineData("customer", "After customer")]
     [InlineData("company", "After company")]
