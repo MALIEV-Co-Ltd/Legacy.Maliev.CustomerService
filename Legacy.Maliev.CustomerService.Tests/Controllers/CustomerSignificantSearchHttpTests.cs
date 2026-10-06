@@ -143,18 +143,43 @@ public sealed class CustomerSignificantSearchHttpTests(CustomerDetailAuthorityFi
         {
             Customers = await db.Customers.AsNoTracking().OrderBy(row => row.Id).Select(row => new
             {
-                row.Id, row.FirstName, row.LastName, row.FullName, row.Email, row.Mobile, row.Telephone, row.Fax,
-                row.DateOfBirth, row.InternalRemark, row.CompanyId, row.BillingAddressId, row.ShippingAddressId,
-                row.CreatedDate, row.ModifiedDate
+                row.Id,
+                row.FirstName,
+                row.LastName,
+                row.FullName,
+                row.Email,
+                row.Mobile,
+                row.Telephone,
+                row.Fax,
+                row.DateOfBirth,
+                row.InternalRemark,
+                row.CompanyId,
+                row.BillingAddressId,
+                row.ShippingAddressId,
+                row.CreatedDate,
+                row.ModifiedDate
             }).ToArrayAsync(),
             Companies = await db.Companies.AsNoTracking().OrderBy(row => row.Id).Select(row => new
             {
-                row.Id, row.Name, row.TaxNumber, row.Registrar, row.CreatedDate, row.ModifiedDate
+                row.Id,
+                row.Name,
+                row.TaxNumber,
+                row.Registrar,
+                row.CreatedDate,
+                row.ModifiedDate
             }).ToArrayAsync(),
             Addresses = await db.Addresses.AsNoTracking().OrderBy(row => row.Id).Select(row => new
             {
-                row.Id, row.Building, row.AddressLine1, row.AddressLine2, row.City, row.State, row.PostalCode,
-                row.CountryId, row.CreatedDate, row.ModifiedDate
+                row.Id,
+                row.Building,
+                row.AddressLine1,
+                row.AddressLine2,
+                row.City,
+                row.State,
+                row.PostalCode,
+                row.CountryId,
+                row.CreatedDate,
+                row.ModifiedDate
             }).ToArrayAsync()
         });
     }
