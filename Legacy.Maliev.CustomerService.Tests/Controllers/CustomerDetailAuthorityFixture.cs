@@ -80,7 +80,7 @@ public sealed class CustomerDetailAuthorityFixture : IAsyncLifetime
             new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) });
     }
 
-    public WebApplicationFactory<Program> Start(bool restricted = false, CustomerDetailSaveBarrier? barrier = null)
+    public WebApplicationFactory<Program> Start(bool restricted = false, CustomerDetailSaveBarrier? barrier = null, IInterceptor? interceptor = null)
     {
         var host = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
         {
@@ -98,6 +98,8 @@ public sealed class CustomerDetailAuthorityFixture : IAsyncLifetime
             }) builder.UseSetting(setting.Key, setting.Value);
             if (barrier is not null) builder.ConfigureServices(services =>
                 services.ConfigureDbContext<CustomerDbContext>(options => options.AddInterceptors(barrier)));
+            if (interceptor is not null) builder.ConfigureServices(services =>
+                services.ConfigureDbContext<CustomerDbContext>(options => options.AddInterceptors(interceptor)));
         });
         Assert.Equal("Production", host.Services.GetRequiredService<IWebHostEnvironment>().EnvironmentName);
         return host;
@@ -114,6 +116,12 @@ public sealed class CustomerDetailAuthorityFixture : IAsyncLifetime
         if (authority == "company-lifecycle") permissions = [.. permissions, "legacy-customer.companies.create", "legacy-customer.companies.read", "legacy-customer.companies.delete"];
         if (authority == "customer-lifecycle") permissions = [.. permissions, "legacy-customer.customers.create", "legacy-customer.customers.delete"];
         if (authority == "shared-relationship") permissions = [.. permissions, "legacy-customer.companies.delete", "legacy-customer.addresses.delete"];
+        if (authority.StartsWith("relation-", StringComparison.Ordinal))
+        {
+            permissions = [.. permissions, "legacy-customer.companies.create", "legacy-customer.companies.read", "legacy-customer.addresses.create", "legacy-customer.addresses.read"];
+            if (authority == "relation-no-customer-update") permissions = permissions.Where(value => value != "legacy-customer.customers.update").ToArray();
+            if (authority == "relation-no-metadata-update") permissions = permissions.Where(value => value is not ("legacy-customer.companies.update" or "legacy-customer.addresses.update")).ToArray();
+        }
         using var other = RSA.Create(2048);
         var now = DateTime.UtcNow;
         var token = new JwtSecurityToken("customer-detail-fixture", "customer-detail-fixture",
