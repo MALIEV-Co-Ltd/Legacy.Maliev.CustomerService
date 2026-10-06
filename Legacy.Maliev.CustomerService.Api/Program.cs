@@ -44,6 +44,8 @@ static async Task RunHostAsync(string[] startupArgs)
     builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
     builder.Services.AddScoped<ICustomerCache, DistributedCustomerCache>();
     builder.Services.AddScoped<ICustomerService, CustomerApplicationService>();
+    builder.Services.AddScoped<ICustomerRelationRepository, CustomerRelationRepository>();
+    builder.Services.AddScoped<ICustomerRelationService, CustomerRelationService>();
     builder.Services.AddScoped<Legacy.Maliev.CustomerService.Api.CustomerCreateReplayService>();
 
     var app = builder.Build();
