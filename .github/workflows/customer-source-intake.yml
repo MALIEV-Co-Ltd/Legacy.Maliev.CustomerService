@@ -1,0 +1,102 @@
+name: Customer sealed source intake
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/customer_source_intake.py'
+      - 'scripts/test_customer_source_intake.py'
+      - 'scripts/customer-candidate-policy.json'
+      - 'scripts/sealed_source_capsule.py'
+      - '.github/workflows/customer-source-intake.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: customer-source-intake-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  source-controls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      CUSTOMER_SOURCE_OWNER: ${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: Check out source transport
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Parse transport and run pure intake controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          ulimit -v 262144
+          ulimit -t 90
+          python3 -B -c 'import ast; from pathlib import Path; paths = [Path("scripts") / name for name in ("customer_source_intake.py", "test_customer_source_intake.py", "sealed_source_capsule.py")]; [ast.parse(path.read_bytes(), filename=str(path)) for path in paths]; print("Parsed 3 source transport modules")'
+          cd scripts
+          timeout --signal=TERM --kill-after=5s 45s python3 -B -m unittest test_customer_source_intake.IntakeControls -v 2>&1 | tee "$RUNNER_TEMP/customer-intake-controls.log"
+      - name: Create private disposable source parent
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e /work
+          sudo install -d -m 0700 -o "$(id -u)" -g "$(id -g)" /work
+          printf '%s' "$CUSTOMER_SOURCE_OWNER" > /work/.customer-source-owner
+      - name: Fetch exact own-repository blobs and materialize raw sources
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          ulimit -v 262144
+          ulimit -t 90
+          timeout --signal=TERM --kill-after=5s 90s python3 -B scripts/customer_source_intake.py fetch-materialize | tee "$RUNNER_TEMP/customer-source-intake.log"
+      - name: Parse frozen provider sources and run pure controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          ulimit -v 262144
+          ulimit -t 90
+          cd /work/customer-source/envelope
+          python3 -B -c 'import ast; from pathlib import Path; paths = list(Path(".").glob("*.py")); assert len(paths) == 10; [ast.parse(path.read_bytes(), filename=str(path)) for path in paths]; print("Parsed 10 frozen provider source modules")'
+          timeout --signal=TERM --kill-after=5s 45s python3 -B -m unittest discover -p 'test_*.py' -v 2>&1 | tee "$RUNNER_TEMP/customer-provider-controls.log"
+      - name: Preserve actual source evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: customer-source-intake-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            /work/customer-source/metadata/intake-receipt.json
+            ${{ runner.temp }}/customer-intake-controls.log
+            ${{ runner.temp }}/customer-source-intake.log
+            ${{ runner.temp }}/customer-provider-controls.log
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Release only this job's disposable raw source
+        if: always()
+        shell: bash
+        run: |
+          python3 -B - <<'PY'
+          import os
+          from pathlib import Path
+          import shutil
+          import subprocess
+          parent = Path('/work')
+          marker = parent / '.customer-source-owner'
+          if marker.is_file() and not marker.is_symlink() and marker.read_text() == os.environ['CUSTOMER_SOURCE_OWNER']:
+              target = parent / 'customer-source'
+              assert parent.resolve() == Path('/work') and not parent.is_symlink()
+              assert target.resolve() == Path('/work/customer-source') and not target.is_symlink()
+              if target.exists():
+                  shutil.rmtree(target)
+              assert not target.exists()
+              marker.unlink()
+              assert parent.resolve() == Path('/work') and not parent.is_symlink() and not list(parent.iterdir())
+              subprocess.run(['sudo', 'rmdir', '--', '/work'], check=True, timeout=10)
+              assert not parent.exists()
+              print('Owned raw source released; no SDK or providers started')
+          PY
