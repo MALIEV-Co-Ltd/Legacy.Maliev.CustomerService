@@ -84,6 +84,7 @@ jobs:
           import os
           from pathlib import Path
           import shutil
+          import subprocess
           parent = Path('/work')
           marker = parent / '.customer-source-owner'
           if marker.is_file() and not marker.is_symlink() and marker.read_text() == os.environ['CUSTOMER_SOURCE_OWNER']:
@@ -94,6 +95,8 @@ jobs:
                   shutil.rmtree(target)
               assert not target.exists()
               marker.unlink()
-              parent.rmdir()
+              assert parent.resolve() == Path('/work') and not parent.is_symlink() and not list(parent.iterdir())
+              subprocess.run(['sudo', 'rmdir', '--', '/work'], check=True, timeout=10)
+              assert not parent.exists()
               print('Owned raw source released; no SDK or providers started')
           PY
