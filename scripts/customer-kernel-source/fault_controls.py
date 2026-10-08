@@ -30,9 +30,28 @@ class Child:
             self.code = -sig
 
 
+class MockOutsideCustody:
+    """Fixture-only custody witness. Never authorizes a real process or transfer."""
+    def __init__(self):
+        self.observations = []
+    def verify_before_spawn(self, records):
+        self.observations.append(('before', len(records)))
+        return {'mockOnly': True}
+    def verify_after_spawn(self, records):
+        self.observations.append(('after', len(records)))
+        return {'mockOnly': True}
+    def remaining_authority_seconds(self):
+        return 600
+    def verify_cleanup_transfer(self, records):
+        raise owned.OwnershipError('Fixture does not grant a cleanup transfer')
+
+
 class Controls(unittest.TestCase):
     def setUp(self):
-        # Supply the Linux signal enum in this Windows-only synthetic control run.
+        platform = patch.object(owned.sys, 'platform', 'linux')
+        platform.start()
+        self.addCleanup(platform.stop)
+        # Supply the Linux signal enum on every host; no native calls are permitted.
         kill = patch.object(signal, 'SIGKILL', 9, create=True)
         kill.start()
         self.addCleanup(kill.stop)
@@ -44,12 +63,22 @@ class Controls(unittest.TestCase):
         def send(fd, sig, _info, _flags):
             self.fd_signals.append((fd, sig))
             child.send_signal(sig)
+        self.outside = MockOutsideCustody()
         self.owner = owned.ProcessCustody(identity or (lambda pid: {'pid': pid, 'start': 99}),
             lambda _: True, writer or self.rows.append,
             popen=popen or (lambda *_args, **_kw: child),
             pidfd_open=pidfd or (lambda _pid, _flags: 9), pidfd_signal=send,
-            close_fd=self.closed.append, child_binding=binding or (lambda _: True))
+            close_fd=self.closed.append, child_binding=binding or (lambda _: True), external_owner=self.outside)
         return self.owner
+
+    def test_linux_fixture_supplies_custody_before_and_after_mocked_popen(self):
+        owner = self.setup_owner()
+        self.assertEqual('linux', owned.sys.platform)
+        self.assertIs(owner.external_owner, self.outside)
+        owner.spawn(['mock'])
+        self.assertEqual([('before', 0), ('after', 1)], self.outside.observations)
+        owner.cleanup()
+        self.assertTrue(owner.closed)
 
     def test_normal_acquires_native_handle_before_identity(self):
         owner = self.setup_owner()
@@ -204,6 +233,11 @@ class Controls(unittest.TestCase):
 
 
 class OuterRunControls(unittest.TestCase):
+    def setUp(self):
+        platform = patch.object(owned.sys, 'platform', 'linux')
+        platform.start()
+        self.addCleanup(platform.stop)
+
     def exercise(self, mode):
         import kernel_only as kernel
         primary = OSError('exact original acquisition object')
@@ -326,7 +360,7 @@ class OuterRunControls(unittest.TestCase):
                         'invocationId':'c'*32,'ownedLivePids':[r['process'].pid for r in records if r['process'].poll() is None],
                         'freshActualObservation':'MOCK-ONLY-NO-NATIVE'}
                     return self.witness
-            outside=Outside() if mode=='identity-external-handoff' else None
+            outside=Outside()
             fake_process = SimpleNamespace(identity=identity,alive=lambda ident:children[ident['pid']].poll() is None)
             with patch.object(kernel,'admission',return_value={'freePhysicalKiB':4194304}), \
                  patch.object(kernel,'authority',return_value={'TEST_ONLY':True}), \
