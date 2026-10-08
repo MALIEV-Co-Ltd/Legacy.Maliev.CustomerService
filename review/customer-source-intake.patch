@@ -1,0 +1,129 @@
+--- a/.github/workflows/customer-source-intake.yml
++++ b/.github/workflows/customer-source-intake.yml
+@@ -9,7 +9,25 @@
+       - 'scripts/customer-candidate-policy.json'
+       - 'scripts/sealed_source_capsule.py'
+       - '.github/workflows/customer-source-intake.yml'
++      - 'scripts/kernel_root_route.py'
++      - 'scripts/publisher_recipe.py'
++      - 'scripts/test_kernel_root_route.py'
++      - 'scripts/external_unit_owner.py'
++      - 'scripts/test_external_unit_owner.py'
++      - 'scripts/customer-source-intake.*'
++      - 'scripts/customer-kernel-source/**'
++      - 'scripts/customer-kernel-packet/**'
+   workflow_dispatch:
++    inputs:
++      source_mode:
++        description: Source controls or explicitly authorized kernel-only allocation
++        type: choice
++        options: [source, kernel-only]
++        default: source
++      root_dispatch_nonce:
++        description: External Root dispatch nonce (exact32 lowercase hex; kernel-only)
++        type: string
++        default: ''
+ 
+ permissions:
+   contents: read
+@@ -20,6 +38,7 @@
+ 
+ jobs:
+   source-controls:
++    if: github.event_name != 'workflow_dispatch' || inputs.source_mode != 'kernel-only'
+     runs-on: ubuntu-latest
+     timeout-minutes: 5
+     env:
+@@ -39,6 +58,18 @@
+           python3 -B -c 'import ast; from pathlib import Path; paths = [Path("scripts") / name for name in ("customer_source_intake.py", "test_customer_source_intake.py", "sealed_source_capsule.py")]; [ast.parse(path.read_bytes(), filename=str(path)) for path in paths]; print("Parsed 3 source transport modules")'
+           cd scripts
+           timeout --signal=TERM --kill-after=5s 45s python3 -B -m unittest test_customer_source_intake.IntakeControls -v 2>&1 | tee "$RUNNER_TEMP/customer-intake-controls.log"
++      - name: Compile route and captured R7; run only mocked pure controls
++        shell: bash
++        run: |
++          set -euo pipefail
++          ulimit -v 262144
++          ulimit -t 25
++          test ! -e outputs
++          mkdir -p outputs/customer-native-lifecycle-qualification-20261008-r7
++          trap 'rmdir -- outputs/customer-native-lifecycle-qualification-20261008-r7 outputs' EXIT
++          timeout --signal=TERM --kill-after=5s 20s python3 -B -c 'from pathlib import Path; paths = [Path("scripts") / name for name in ("kernel_root_route.py", "publisher_recipe.py", "test_kernel_root_route.py", "external_unit_owner.py", "test_external_unit_owner.py")] + sorted(Path("scripts/customer-kernel-source").glob("*.py")); assert len(paths) == 11; [compile(path.read_bytes(), str(path), "exec") for path in paths]; print("Compiled route and six captured R7 Python modules")' 2>&1 | tee "$RUNNER_TEMP/customer-kernel-compile.log"
++          (cd scripts && timeout --signal=TERM --kill-after=5s 20s python3 -B -m unittest test_kernel_root_route test_external_unit_owner -v) 2>&1 | tee "$RUNNER_TEMP/customer-kernel-route-controls.log"
++          (cd scripts/customer-kernel-source && timeout --signal=TERM --kill-after=5s 20s python3 -B -m unittest fault_controls -v) 2>&1 | tee "$RUNNER_TEMP/customer-kernel-r7-mocked-controls.log"
+       - name: Create private disposable source parent
+         shell: bash
+         run: |
+@@ -74,6 +105,9 @@
+             ${{ runner.temp }}/customer-intake-controls.log
+             ${{ runner.temp }}/customer-source-intake.log
+             ${{ runner.temp }}/customer-provider-controls.log
++            ${{ runner.temp }}/customer-kernel-compile.log
++            ${{ runner.temp }}/customer-kernel-route-controls.log
++            ${{ runner.temp }}/customer-kernel-r7-mocked-controls.log
+           if-no-files-found: warn
+           retention-days: 7
+       - name: Release only this job's disposable raw source
+@@ -100,3 +134,63 @@
+               assert not parent.exists()
+               print('Owned raw source released; no SDK or providers started')
+           PY
++
++  kernel-only-same-allocation:
++    if: github.event_name == 'workflow_dispatch' && inputs.source_mode == 'kernel-only'
++    runs-on: ubuntu-latest
++    timeout-minutes: 14
++    permissions:
++      contents: read
++      statuses: read
++    env:
++      PYTHONDONTWRITEBYTECODE: '1'
++      ROOT_DISPATCH_NONCE: ${{ inputs.root_dispatch_nonce }}
++    steps:
++      - name: Check out exact source workflow allocation
++        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
++        with:
++          persist-credentials: false
++      - name: Observe actual same-job worker and readonly API permission
++        shell: bash
++        run: |
++          set -euo pipefail
++          ulimit -v 262144
++          ulimit -t 25
++          timeout --signal=TERM --kill-after=5s 30s python3 -B scripts/kernel_root_route.py observe --nonce "$ROOT_DISPATCH_NONCE" --packet scripts/customer-kernel-packet --output "$RUNNER_TEMP/customer-kernel-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
++      - name: Publish immutable machine observation for external Root review
++        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
++        with:
++          name: customer-kernel-observation-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
++          path: |
++            ${{ runner.temp }}/customer-kernel-${{ github.run_id }}-${{ github.run_attempt }}/observation.json
++            ${{ runner.temp }}/customer-kernel-${{ github.run_id }}-${{ github.run_attempt }}/read-permission-probe.json
++          if-no-files-found: error
++          retention-days: 1
++      - name: Same-allocation finite Root publication wait and kernel-only call
++        shell: bash
++        run: |
++          set -euo pipefail
++          ulimit -v 262144
++          ulimit -t 25
++          timeout --signal=TERM --kill-after=5s 600s python3 -B scripts/kernel_root_route.py receive --nonce "$ROOT_DISPATCH_NONCE" --observation "$RUNNER_TEMP/customer-kernel-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/observation.json" --packet scripts/customer-kernel-packet --harness scripts/customer-kernel-source/kernel_only.py --output "$RUNNER_TEMP/customer-kernel-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
++      - name: Independently settle only the exact external kernel invocation
++        if: always()
++        shell: bash
++        run: |
++          set -euo pipefail
++          ulimit -v 262144
++          ulimit -t 25
++          owner="$RUNNER_TEMP/customer-kernel-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/external-owner"
++          if test -f "$owner/external-owner-dispatch.json"; then
++            timeout --signal=TERM --kill-after=5s 120s python3 -B scripts/external_unit_owner.py settle --directory "$owner"
++          else
++            echo 'No durable dispatch receipt; kernel qualification unavailable; no manager operation performed'
++          fi
++      - name: Preserve actual authority/kernel/cleanup evidence
++        if: always()
++        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
++        with:
++          name: customer-kernel-evidence-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
++          path: ${{ runner.temp }}/customer-kernel-${{ github.run_id }}-${{ github.run_attempt }}/
++          if-no-files-found: warn
++          retention-days: 7

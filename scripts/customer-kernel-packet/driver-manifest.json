@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "stage": "customer-literal-build-first",
+  "nativeExecutionGranted": false,
+  "applicationCandidateAccepted": false,
+  "transportMain": "33b25d31e672b591f6869bbca33a9023e525473e",
+  "stageCanonicalSha256": "0be2f2a57a3f1a2e02d78fa8e4f679cb2200225cd1f556c220b53f5a73637ad8",
+  "files": [
+    {
+      "path": "build-stage.json",
+      "bytes": 6601,
+      "sha256": "0b7f79cb13cc25ec2a87f6eb4cc28ccc6f94a245596f0ed4ebe5cc8fe20c5d05"
+    },
+    {
+      "path": "customer_build_admission.py",
+      "bytes": 11722,
+      "sha256": "67d6b6c0dd9027c4e926c6148919c6182bdce293f3bdfd6cec5c826c8ac4bb96"
+    },
+    {
+      "path": "customer_build_guardian.py",
+      "bytes": 18111,
+      "sha256": "b6b4efc9416b6c416d35ad312d2c06eb15dc70b3fbbe230fba96093e76f204b2"
+    },
+    {
+      "path": "customer_guardian_process.py",
+      "bytes": 13051,
+      "sha256": "b4c1aa5ccf7e44a920d63bd68d23a3645876171c0599bfb57bf1fc4c704c7489"
+    },
+    {
+      "path": "customer_native_build_driver.py",
+      "bytes": 17415,
+      "sha256": "0c32b97c3a21200fcb78729a3d39dd970456fc08e3a3b60ca55fbf211be836c6"
+    },
+    {
+      "path": "customer_owned_build.py",
+      "bytes": 31901,
+      "sha256": "ead09deb55bf1f6fa7a1076781070f612900a37899c36c2bb48fcd3c43724408"
+    },
+    {
+      "path": "input/customer-candidate-policy.json",
+      "bytes": 250519,
+      "sha256": "ad4d2c21a3ad7c2dff819d04bac6913874d61db0bc2b410454169a583527655a"
+    },
+    {
+      "path": "input/customer_source_intake.py",
+      "bytes": 14434,
+      "sha256": "da3b1299a8f971db03eb712322f70b43647e8589b1fcb181c943b053eb7a42f8"
+    },
+    {
+      "path": "input/sealed_source_capsule.py",
+      "bytes": 12296,
+      "sha256": "44a8a5accac9da11422d606be02fe28487642215df511b5f1c4284296a453ee2"
+    },
+    {
+      "path": "README.md",
+      "bytes": 7676,
+      "sha256": "1b0e6e88f2624af3bfc2cc1b29d5c569c30cdae5ad80a8ae31541e47ce864be0"
+    },
+    {
+      "path": "supervisor.sh",
+      "bytes": 1285,
+      "sha256": "af6754f42357c98a4278a0f20b025e7f55cdf53500f92600b1062815d565be20"
+    },
+    {
+      "path": "test_customer_build_admission.py",
+      "bytes": 10314,
+      "sha256": "111523a93b56167e8adbe091f9744e0704ebc461766d48798bea626025db30d7"
+    },
+    {
+      "path": "test_customer_build_guardian.py",
+      "bytes": 17318,
+      "sha256": "eb714363f66956fc6263b91ea3b62e4b9f8afefad4d44122da68fd6223493d72"
+    },
+    {
+      "path": "test_customer_guardian_process.py",
+      "bytes": 11198,
+      "sha256": "b4884b65047259108d0acc788bebc3b46c2ee785390bcea0d9704946cebfaeb9"
+    },
+    {
+      "path": "test_customer_native_build_driver.py",
+      "bytes": 12488,
+      "sha256": "eb7352a13ff56507d6cea7a0d62079e4c9361be809c1cf6d09e78bf3f2860e15"
+    },
+    {
+      "path": "test_customer_owned_build.py",
+      "bytes": 27419,
+      "sha256": "9ab66de45593728560cbac901055eb38bc3fa66963e292888a34210a516744e3"
+    },
+    {
+      "path": "test_customer_packet_seals.py",
+      "bytes": 3264,
+      "sha256": "d5edc69051ef8e59e080cc627fc9163f315f933e0a6d046ae63e08e288abddd7"
+    }
+  ]
+}
