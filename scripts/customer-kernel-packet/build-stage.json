@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "stage": "customer-literal-build-first",
+  "status": "source-preparation-only",
+  "nativeExecutionGranted": false,
+  "rootThread": "019fc21e-50f0-7112-834f-9fb3b35b9dfe",
+  "owner": "CRM-Customer",
+  "transportMain": "33b25d31e672b591f6869bbca33a9023e525473e",
+  "sourcePolicySha256": "ad4d2c21a3ad7c2dff819d04bac6913874d61db0bc2b410454169a583527655a",
+  "providerPlanSha256": "388882ef0c625783eb05731fec8608979420effa41520272011c8cd393ac7cdb",
+  "candidateBase": "dd36b868f538d5d8f0d97cc20b3a676fc6ef3d01",
+  "sourceCounts": {
+    "source": 118,
+    "dependencies": 141,
+    "validation": 16
+  },
+  "sourceDirectory": "/work/customer-source",
+  "daemonSocket": "/var/run/docker.sock",
+  "minimumPhysicalKiB": 4194304,
+  "maxGrantSeconds": 1800,
+  "maxEvidenceAgeSeconds": 120,
+  "phaseSeconds": 600,
+  "cleanupSeconds": 120,
+  "minimumRemainingSeconds": 630,
+  "sdkImage": {
+    "reference": "mcr.microsoft.com/dotnet/sdk@sha256:0eeb52c76e35a5431ca707ad2bc75e38006a05393045d8532ae44c15d9474523",
+    "imageId": "sha256:4df5db956df7e072bd410b3f1b69b60194ab4cdd163e8d0f44bdb0d57446371d"
+  },
+  "command": [
+    "dotnet",
+    "build",
+    "Legacy.Maliev.CustomerService.slnx",
+    "-c",
+    "Release",
+    "--disable-build-servers",
+    "-m:1",
+    "/nr:false",
+    "/p:UseSharedCompilation=false",
+    "/p:UseLocalMalievDependencies=true",
+    "/warnaserror"
+  ],
+  "workingDirectory": "/work/repo",
+  "hostConfig": {
+    "Memory": 2147483648,
+    "MemorySwap": 2147483648,
+    "NanoCpus": 1000000000,
+    "PidsLimit": 256,
+    "NetworkMode": "bridge",
+    "PortBindings": {},
+    "Privileged": false,
+    "AutoRemove": false,
+    "ReadonlyRootfs": true,
+    "Tmpfs": {
+      "/work": "rw,nosuid,nodev,size=1610612736",
+      "/tmp": "rw,noexec,nosuid,nodev,size=67108864"
+    },
+    "LogConfig": {
+      "Type": "json-file",
+      "Config": {
+        "max-size": "1m",
+        "max-file": "2"
+      }
+    },
+    "CapDrop": [
+      "ALL"
+    ],
+    "SecurityOpt": [
+      "no-new-privileges:true"
+    ],
+    "PidMode": "",
+    "IpcMode": "private",
+    "PublishAllPorts": false
+  },
+  "environment": [
+    "MalievWorkspaceRoot=/work/dependencies",
+    "DOTNET_CLI_HOME=/work/.home",
+    "NUGET_PACKAGES=/work/.nuget",
+    "DOTNET_CLI_TELEMETRY_OPTOUT=1",
+    "DOTNET_NOLOGO=1",
+    "DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1",
+    "HOME=/work/.home",
+    "CUSTOMER_CONTROL_DIRECTORY=/work/.control"
+  ],
+  "providersPermitted": [],
+  "portsPermitted": [],
+  "volumesPermitted": [],
+  "bindsPermitted": [],
+  "sdkRawSocketPermitted": false,
+  "persistentDataPermitted": false,
+  "admissionContract": {
+    "externalRootGrantOnly": true,
+    "expectedGrantDigestFromTrustedRoot": true,
+    "sourcePacketIsNotGrant": true,
+    "actualFinitePredecessorHandoffs": [
+      "RootTracking",
+      "Intranet",
+      "Workflows"
+    ],
+    "freshMemoryAndHostNativeCensusEachNativeMutation": true,
+    "freshDaemonAndImagePinsRequired": true,
+    "absenceAloneGrantsAdmission": false,
+    "noRootGrantCreationMode": true
+  },
+  "acceptance": [
+    "actualExit0",
+    "exact final build summary zero warnings/errors",
+    "verified exact SDK removal and empty owned resource ledger"
+  ],
+  "full403Accepted": false,
+  "nextRuntimeStages": [
+    "focused regressions",
+    "full403",
+    "raw4coverage",
+    "scaffold nestedAuth"
+  ],
+  "setupCompilerDependencyTimeoutIsBehavioralRed": false,
+  "sourceArchive": {
+    "sha256": "96d5ebfd4284d55417df55701e5804b0ab85fce0d56dd7fc42cc3d933e7eccd7",
+    "bytes": 2160640,
+    "rawFiles": 275,
+    "rawGraphSha256": "7038b2c6bf19f5197075e009d8a1bb24bb18294a8ac5735dbfd35771f1005bae"
+  },
+  "supervisorScript": "set -eu\n[ \"$#\" -ge 5 ] || exit 78\ndeadline=\"$1\"; phase=\"$2\"; token=\"$3\"; builddir=\"$4\"; shift 4\ncase \"$deadline:$phase\" in *[!0-9:]*) exit 78;; esac\n[ \"${#token}\" -eq 64 ] || exit 78\ncase \"$token\" in *[!a-f0-9]*) exit 78;; esac\n[ \"$builddir\" = /work/repo ] || exit 78\nfor tool in timeout date cat mkdir sleep; do command -v \"$tool\" >/dev/null || exit 78; done\nnow=$(date -u +%s); remaining=$((deadline-now))\n[ \"$remaining\" -gt 0 ] || exit 124\nexport CUSTOMER_ABSOLUTE_DEADLINE=\"$deadline\" CUSTOMER_PHASE_SECONDS=\"$phase\" CUSTOMER_READY_TOKEN=\"$token\" CUSTOMER_BUILD_DIRECTORY=\"$builddir\"\nexec timeout --signal=TERM --kill-after=5s \"${remaining}s\" /bin/sh -c '\nset -eu\ncontrol=\"${CUSTOMER_CONTROL_DIRECTORY:?}\"\nmkdir -p \"$control\"\nwhile [ ! -f \"$control/build.ready\" ]; do\n    [ \"$(date -u +%s)\" -lt \"$CUSTOMER_ABSOLUTE_DEADLINE\" ] || exit 124\n    sleep 0.1\ndone\n[ ! -L \"$control/build.ready\" ] || exit 78\n[ \"$(cat \"$control/build.ready\")\" = \"$CUSTOMER_READY_TOKEN\" ] || exit 78\nnow=$(date -u +%s); remaining=$((CUSTOMER_ABSOLUTE_DEADLINE-now))\n[ \"$remaining\" -gt 0 ] || exit 124\nbudget=\"$CUSTOMER_PHASE_SECONDS\"\n[ \"$remaining\" -ge \"$budget\" ] || budget=\"$remaining\"\ncd \"$CUSTOMER_BUILD_DIRECTORY\"\nexec timeout --signal=TERM --kill-after=5s \"${budget}s\" \"$@\"\n' customer-build-gate \"$@\"\n",
+  "supervisorScriptSha256": "af6754f42357c98a4278a0f20b025e7f55cdf53500f92600b1062815d565be20",
+  "containerWorkingDirectory": "/",
+  "sourceStaging": "Start independently expiring gated SDK supervisor; PUT all275 raw files into live /work tmpfs; verify actual SDK archive against complete policy; refresh Root admission then publish exact readiness token; only then strict BUILD starts",
+  "acceptedBuildEvidence": "Persisted bounded Docker logs plus actual exitCode/OOMKilled observation; tmpfs binaries disappear on SDK exit, no native-test reuse claimed",
+  "startupDeadlineEnforcedIndependently": true,
+  "maximumIndependentOverrunSeconds": 10,
+  "supervisorReadinessPath": "/work/.control/build.ready",
+  "supervisorInitialCommand": "Cmd=[/bin/sh,-c,sealedScript,customer-build-supervisor,expiryUnixSeconds,phaseSeconds,readyToken,workingDirectory,*sealedBuildArgv], Entrypoint=null, initialWorkingDir=/",
+  "supervisorReadinessContent": "SHA256(externallyVerifiedRootGrantSHA256 + sourceArchiveSHA256 + runId), ASCII hex plus LF",
+  "hostRecoveryGuardian": {
+    "required": true,
+    "hostHelperOnly": true,
+    "containerCount": 0,
+    "lease": "Root expiry plus120-second cleanup",
+    "registrationSeconds": 10,
+    "cleanupSeconds": 120,
+    "requestSeconds": 10,
+    "memoryBytes": 268435456,
+    "cpuSeconds": 30,
+    "custody": "Independent session owns actualCREATE response or actual causalCREATEevent before workerSTART; fullID/config/Created custody; uncertain identity neveradopted frominventory; retainedcleanup retriedfinite"
+  }
+}
