@@ -18,6 +18,30 @@ public sealed class WorkflowContractTests
     public void BuildAndTest_SatisfiesStructuralContract()
     {
         WorkflowContractValidator.Validate(Workflow);
+
+        // Exercise the exact opt-in step without changing the original suite identities.
+        AssertMutationRejected("if: inputs.customer-consumer-custody != ''", "if: always()");
+        AssertMutationRejected("timeout-minutes: 30", "timeout-minutes: 31");
+        AssertMutationRejected("type: string", "type: boolean");
+        AssertMutationRejected("default: ''", "default: 'UNREVIEWED'");
+        AssertMutationRejected("required: false", "required: true");
+        AssertMutationRejected("customer-consumer-custody-sha256:", "unreviewed-sha256:");
+        AssertMutationRejected("${{ inputs.customer-consumer-custody-sha256 }}", "${{ inputs.customer-consumer-custody }}");
+        AssertMutationRejected("--consumer-custody-sha256 \"$CUSTOMER_CONSUMER_CUSTODY_SHA256\"", "--consumer-custody-sha256 \"UNBOUND\"");
+        AssertMutationRejected("--source-directory /work/customer-source", "--source-directory /work/foreign-source");
+        AssertMutationRejected("1800s python3", "1801s python3");
+        AssertMutationRejected("scripts/kernel_root_route.py consumer-phases", "scripts/kernel_root_route.py source-check");
+        AssertMutationRejected("            ${{ runner.temp }}/customer-consumer-phases", "            /work/discarded-results");
+        AssertMutationRejected("dotnet-validate@e5732037fe94b7ed6e5be2cd4c23dbf6ef5e2617", "dotnet-validate@e3a6093324a24968876782153286f52db8b29fd8");
+        AssertMutationRejected("ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7", "ref: main");
+
+        var consumer = ReadWorkflowStep("Run exact separately admitted Customer consumer phases", "Validate safe scaffold orchestration");
+        var scaffold = ReadWorkflowStep("Validate safe scaffold orchestration", "Gate owned production coverage");
+        var action = ReadWorkflowStep("Validate .NET solution", "Run exact separately admitted Customer consumer phases");
+        AssertMutationRejected(consumer, string.Empty);
+        AssertMutationRejected(consumer, consumer + consumer);
+        AssertMutationRejected(consumer + scaffold, scaffold + consumer);
+        AssertMutationRejected(action, action + action);
     }
 
     [Theory]
@@ -33,8 +57,8 @@ public sealed class WorkflowContractTests
     public void BuildAndTest_RejectsSharedActionMainWithPinnedShaComment()
     {
         AssertMutationRejected(
-            "MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e3a6093324a24968876782153286f52db8b29fd8",
-            "MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@main # e3a6093324a24968876782153286f52db8b29fd8");
+            "MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e5732037fe94b7ed6e5be2cd4c23dbf6ef5e2617",
+            "MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@main # e5732037fe94b7ed6e5be2cd4c23dbf6ef5e2617");
     }
 
     [Fact]
@@ -118,6 +142,15 @@ public sealed class WorkflowContractTests
             "          use-local-maliev-dependencies: 'true'\n        env:\n          GITHUB_ACTIONS: 'false'\n");
     }
 
+    private static string ReadWorkflowStep(string name, string nextName)
+    {
+        var start = Workflow.IndexOf($"      - name: {name}\n", StringComparison.Ordinal);
+        Assert.True(start >= 0, $"Missing workflow step '{name}'.");
+        var end = Workflow.IndexOf($"      - name: {nextName}\n", start + 1, StringComparison.Ordinal);
+        Assert.True(end > start, $"Missing following workflow step '{nextName}'.");
+        return Workflow[start..end];
+    }
+
     private static void AssertMutationRejected(string original, string replacement)
     {
         Assert.Contains(original, Workflow, StringComparison.Ordinal);
@@ -148,7 +181,7 @@ public sealed class WorkflowContractTests
 internal static partial class WorkflowContractValidator
 {
     private const string CheckoutAction = "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1";
-    private const string SharedValidationAction = "MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e3a6093324a24968876782153286f52db8b29fd8";
+    private const string SharedValidationAction = "MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e5732037fe94b7ed6e5be2cd4c23dbf6ef5e2617";
 
     public static void Validate(string workflow)
     {
@@ -193,10 +226,13 @@ internal static partial class WorkflowContractValidator
         RejectDuplicatedValidationActionsAndCommands(jobs);
 
         var steps = RequireSequence(validateJob, "steps");
-        if (steps.Children.Count != 7)
+        if (steps.Children.Count != 8)
         {
-            throw new InvalidOperationException("Validate job must contain four validation, one scaffold guard, and two evidence steps.");
+            throw new InvalidOperationException("Validate job must contain four validation, one optional custody caller, one scaffold guard, and two evidence steps.");
         }
+
+        ValidateConsumerInputs(root);
+        ValidateConsumerCaller(steps.Children[4]);
 
         var environment = RequireMapping(validateJob, "env");
         if (environment.Children.Count != 4)
@@ -209,7 +245,7 @@ internal static partial class WorkflowContractValidator
         RequireScalarValue(environment, "VSTestLogger", "trx");
         RequireScalarValue(environment, "VSTestResultsDirectory", "${{ github.workspace }}/runner-results");
 
-        var scaffold = RequireMapping(steps.Children[4], "scaffold guard");
+        var scaffold = RequireMapping(steps.Children[5], "scaffold guard");
         if (scaffold.Children.Count != 3)
         {
             throw new InvalidOperationException("Scaffold guard must contain only name, shell, and run.");
@@ -218,7 +254,7 @@ internal static partial class WorkflowContractValidator
         RequireScalarValue(scaffold, "name", "Validate safe scaffold orchestration");
         RequireScalarValue(scaffold, "shell", "pwsh");
         RequireScalarValue(scaffold, "run", "./tooling/Test-CustomerScaffoldContract.ps1 -EvidencePath ./runner-results/customer-scaffold-orchestration.json");
-        var gate = RequireMapping(steps.Children[5], "coverage gate");
+        var gate = RequireMapping(steps.Children[6], "coverage gate");
         if (gate.Children.Count != 2)
         {
             throw new InvalidOperationException("Coverage gate must contain only name and run.");
@@ -226,7 +262,7 @@ internal static partial class WorkflowContractValidator
 
         RequireScalarValue(gate, "name", "Gate owned production coverage");
         RequireScalarValue(gate, "run", "python3 scripts/verify-runner-coverage.py runner-results");
-        var evidence = RequireMapping(steps.Children[6], "evidence upload");
+        var evidence = RequireMapping(steps.Children[7], "evidence upload");
         if (evidence.Children.Count != 4)
         {
             throw new InvalidOperationException("Evidence upload must contain exactly name, if, uses and with.");
@@ -242,7 +278,11 @@ internal static partial class WorkflowContractValidator
         }
 
         RequireScalarValue(evidenceInputs, "name", "customer-validation-${{ github.sha }}");
-        RequireScalarValue(evidenceInputs, "path", "runner-results");
+        var evidencePaths = RequireScalar(GetRequired(evidenceInputs, "path")).TrimEnd('\r', '\n');
+        if (!string.Equals(evidencePaths, "runner-results\n${{ runner.temp }}/customer-consumer-phases", StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException("Evidence upload must retain exactly validation and consumer phase results.");
+        }
         RequireScalarValue(evidenceInputs, "if-no-files-found", "warn");
         RequireScalarValue(evidenceInputs, "retention-days", "7");
 
@@ -281,6 +321,58 @@ internal static partial class WorkflowContractValidator
                 ["solution"] = "Legacy.Maliev.CustomerService.slnx",
                 ["use-local-maliev-dependencies"] = "true",
             });
+    }
+
+    private static void ValidateConsumerInputs(YamlMappingNode root)
+    {
+        var triggers = RequireMapping(root, "on");
+        var call = RequireMapping(triggers, "workflow_call");
+        var inputs = RequireMapping(call, "inputs");
+        if (triggers.Children.Count != 1 || call.Children.Count != 1 || inputs.Children.Count != 2)
+        {
+            throw new InvalidOperationException("Only the two default-empty consumer custody inputs are permitted.");
+        }
+
+        foreach (var key in new[] { "customer-consumer-custody", "customer-consumer-custody-sha256" })
+        {
+            var input = RequireMapping(inputs, key);
+            if (input.Children.Count != 4)
+            {
+                throw new InvalidOperationException("Consumer custody input must contain exactly description, type, required, and default.");
+            }
+
+            _ = RequireScalar(GetRequired(input, "description"));
+            RequireScalarValue(input, "type", "string");
+            RequireScalarValue(input, "required", "false");
+            RequireScalarValue(input, "default", string.Empty);
+        }
+    }
+
+    private static void ValidateConsumerCaller(YamlNode node)
+    {
+        var caller = RequireMapping(node, "consumer custody caller");
+        if (caller.Children.Count != 5)
+        {
+            throw new InvalidOperationException("Consumer caller must contain exactly name, if, timeout-minutes, env, and run.");
+        }
+
+        RequireScalarValue(caller, "name", "Run exact separately admitted Customer consumer phases");
+        RequireScalarValue(caller, "if", "inputs.customer-consumer-custody != ''");
+        RequireScalarValue(caller, "timeout-minutes", "30");
+        var environment = RequireMapping(caller, "env");
+        if (environment.Children.Count != 2)
+        {
+            throw new InvalidOperationException("Consumer caller must bind exactly the original custody path and independent SHA.");
+        }
+
+        RequireScalarValue(environment, "CUSTOMER_CONSUMER_CUSTODY", "${{ inputs.customer-consumer-custody }}");
+        RequireScalarValue(environment, "CUSTOMER_CONSUMER_CUSTODY_SHA256", "${{ inputs.customer-consumer-custody-sha256 }}");
+        var command = RequireScalar(GetRequired(caller, "run")).TrimEnd('\r', '\n');
+        const string expectedCommand = "timeout --signal=TERM --kill-after=5s 1800s python3 -B scripts/kernel_root_route.py consumer-phases --packet scripts/customer-kernel-packet --source-directory /work/customer-source --consumer-custody \"$CUSTOMER_CONSUMER_CUSTODY\" --consumer-custody-sha256 \"$CUSTOMER_CONSUMER_CUSTODY_SHA256\" --output \"$RUNNER_TEMP/customer-consumer-phases\"";
+        if (!string.Equals(command, expectedCommand, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException("Consumer caller must use the exact bounded original dispatcher command.");
+        }
     }
 
     private static IReadOnlyList<string> RequireExactReadOnlyPermissions(YamlMappingNode permissions, string scope)
