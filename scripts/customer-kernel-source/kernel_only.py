@@ -13,7 +13,7 @@ import sys
 import time
 from types import SimpleNamespace
 
-MANIFEST_SHA = 'a647b1593f712317288547f39b1a5367c25d3180af4577aa250f4bca403f38cf'
+MANIFEST_SHA = 'eccc5ddac7342c0297c177945030426fabca183455901021463d084d2eefe079'
 SYNTHETIC_SHA = '0' * 64
 OWNER = '/root/contact_scaffold_source_review/customer-kernel-only-lifecycle-r7'
 OWNER_MODULE_SHA = '834cbb4f0380ef4460c9ff71b9632a952ab5a662d79074b6d35ff54484e8ce07'
@@ -67,8 +67,8 @@ def sealed(packet, trusted):
     raw = regular(packet / 'driver-manifest.json')
     need(digest(raw) == trusted, 'Manifest seal differs')
     manifest = parse(raw)
-    need(manifest.get('nativeExecutionGranted') is False and len(manifest['files']) == 17,
-         'Exact source-only17-file packet required')
+    need(manifest.get('nativeExecutionGranted') is False and len(manifest['files']) == 18,
+         'Exact source-only18-file packet required')
     captured = {}
     for row in manifest['files']:
         name = row['path']
@@ -78,6 +78,12 @@ def sealed(packet, trusted):
         data = regular(packet / name, 8388608)
         need(digest(data) == row['sha256'] and len(data) == row['bytes'], 'Packet source seal differs')
         captured[name] = data
+    driver = module('kernel_captured_driver', packet / 'customer_native_build_driver.py',
+                    captured['customer_native_build_driver.py'])
+    joined = driver.load_packet(packet, trusted)
+    need(joined[1]['candidateBase'] == 'b50e12d66cf0c3d4211a41febe3b01ca265a0c15'
+         and joined[1]['sourceArchive']['rawFiles'] == 324,
+         'Closed current-base eighteen-member/324-stage join required')
     return captured
 
 
@@ -379,7 +385,10 @@ def main():
     args = parser.parse_args()
     if args.source_controls:
         ast.parse(Path(__file__).read_bytes())
-        need(MANIFEST_SHA == 'a647b1593f712317288547f39b1a5367c25d3180af4577aa250f4bca403f38cf', 'Seal constant changed')
+        need(MANIFEST_SHA == 'eccc5ddac7342c0297c177945030426fabca183455901021463d084d2eefe079', 'Seal constant changed')
+        need(args.packet and args.manifest_sha256 == MANIFEST_SHA,
+             'Source controls require the exact closed current eighteen-member packet')
+        sealed(Path(args.packet), args.manifest_sha256)
         if sys.platform != 'linux':
             try:
                 admission()

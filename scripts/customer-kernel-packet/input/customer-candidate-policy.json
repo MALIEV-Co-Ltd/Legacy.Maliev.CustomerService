@@ -1,17 +1,16 @@
 {
   "schemaVersion": 1,
   "repository": "MALIEV-Co-Ltd/Legacy.Maliev.CustomerService",
-  "baseCommit": "dd36b868f538d5d8f0d97cc20b3a676fc6ef3d01",
+  "baseCommit": "b50e12d66cf0c3d4211a41febe3b01ca265a0c15",
   "acceptedModuleSha256": "44a8a5accac9da11422d606be02fe28487642215df511b5f1c4284296a453ee2",
   "nativeExecutionGranted": false,
-  "forecastCases": 403,
+  "forecastCases": 400,
   "forecastBaselineCases": 387,
-  "forecastNewLiteralCases": 16,
   "capsules": {
     "source": {
-      "oid": "0dc05f993aa3f8e850b99be661c29312ff50288e",
-      "sha256": "94d918a6b565d9a2b3d4df89f044061b37a66c777a5270e132e2e301f201a645",
-      "bytes": 224270,
+      "oid": "5b59051942f797f3f1d2ef38bc32d39d88c54202",
+      "sha256": "148a14dca78ea7ce17fbafa9747fcd91574c5bb0451b604e8576850e58e58052",
+      "bytes": 460845,
       "rows": [
         {
           "path": "repo/.dockerignore",
@@ -26,7 +25,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -45,7 +44,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -64,7 +63,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -83,7 +82,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -102,7 +101,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -121,7 +120,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -140,7 +139,26 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/.github/workflows/customer-source-intake.yml",
+          "bytes": 10161,
+          "sha256": "4924f2e52d4c692c249d5d0fd43cb82f76bfe4422171bae2cccc686811e7e618",
+          "compressedBytes": 2579,
+          "crc32": 4171345503,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
             0,
             0,
             0
@@ -159,7 +177,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -178,7 +196,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -197,7 +215,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -216,7 +234,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -235,7 +253,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -254,7 +272,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -262,10 +280,10 @@
         },
         {
           "path": "repo/Legacy.Maliev.CustomerService.Api/Controllers/AddressesController.cs",
-          "bytes": 5397,
-          "sha256": "48c843d7395fac0589716464dd049e870312428f9abae9bdef0844c6fd811f84",
-          "compressedBytes": 1215,
-          "crc32": 2019424553,
+          "bytes": 5679,
+          "sha256": "184000b189cd467410493a294a5258e66e66d9912345a7b1323c89035d86ce1c",
+          "compressedBytes": 1256,
+          "crc32": 3639067343,
           "createSystem": 3,
           "externalAttributes": 2175008768,
           "flags": 0,
@@ -273,7 +291,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -281,10 +299,10 @@
         },
         {
           "path": "repo/Legacy.Maliev.CustomerService.Api/Controllers/CompaniesController.cs",
-          "bytes": 4109,
-          "sha256": "287e77e449e68253d226582056ca9e0240407dfb662f8c9b455e84e96d5adadd",
-          "compressedBytes": 1087,
-          "crc32": 1942943565,
+          "bytes": 4138,
+          "sha256": "839d26fb10f1503073155832b3846a5aa1d5c563d557616190e1d1ab7fce9225",
+          "compressedBytes": 1091,
+          "crc32": 52827780,
           "createSystem": 3,
           "externalAttributes": 2175008768,
           "flags": 0,
@@ -292,7 +310,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -311,7 +329,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -330,7 +348,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -349,7 +367,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -368,7 +386,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -387,7 +405,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -406,7 +424,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -425,7 +443,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -444,7 +462,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -463,7 +481,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -482,7 +500,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -501,7 +519,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -520,7 +538,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -539,7 +557,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -558,7 +576,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -577,7 +595,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -596,7 +614,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -615,7 +633,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -634,7 +652,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -653,7 +671,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -672,7 +690,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -691,7 +709,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -710,7 +728,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -729,7 +747,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -737,10 +755,10 @@
         },
         {
           "path": "repo/Legacy.Maliev.CustomerService.Data/CustomerRepository.cs",
-          "bytes": 20787,
-          "sha256": "12d2336d7cc76cb7b921d4a6b715fb6a5fac889b6779299ee928340a83e4ea1d",
-          "compressedBytes": 3776,
-          "crc32": 1629521134,
+          "bytes": 20801,
+          "sha256": "b85de58727a19d2862c6b90a832f90dcd3004a2faedeef2f793526730dfa2009",
+          "compressedBytes": 3777,
+          "crc32": 794186863,
           "createSystem": 3,
           "externalAttributes": 2175008768,
           "flags": 0,
@@ -748,7 +766,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -767,7 +785,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -786,7 +804,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -805,7 +823,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -824,7 +842,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -843,7 +861,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -862,7 +880,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -881,7 +899,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -900,7 +918,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -919,7 +937,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -938,7 +956,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -957,7 +975,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -976,7 +994,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -995,7 +1013,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1014,7 +1032,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1033,7 +1051,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1052,7 +1070,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1071,7 +1089,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1090,7 +1108,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1109,7 +1127,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1128,7 +1146,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1147,7 +1165,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1166,7 +1184,26 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOriginalNullBoundaryTests.cs",
+          "bytes": 3039,
+          "sha256": "9af8f3322645dac2ac5415210157e1ee6c404448b2c120268605e59a1df69c40",
+          "compressedBytes": 980,
+          "crc32": 378751111,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
             0,
             0,
             0
@@ -1185,7 +1222,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1204,7 +1241,26 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressOriginalNullBoundaryTests.cs",
+          "bytes": 3795,
+          "sha256": "6da0b0d6d491c3a11be405e4006b8d5824b3280c35ed0c9358665628c57128b2",
+          "compressedBytes": 1167,
+          "crc32": 3849284270,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
             0,
             0,
             0
@@ -1223,7 +1279,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1231,10 +1287,10 @@
         },
         {
           "path": "repo/Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLifecycleHttpTests.cs",
-          "bytes": 14593,
-          "sha256": "2a95f552cc7392b81e80a528b17b40e79367457c9e5f1d7d6668220d8ca73186",
-          "compressedBytes": 2438,
-          "crc32": 2108043028,
+          "bytes": 7238,
+          "sha256": "4a384a1cf8b7c27d2f3f4420224761f8e95524ec5fd4670870eb509e65fd9575",
+          "compressedBytes": 1653,
+          "crc32": 366324014,
           "createSystem": 3,
           "externalAttributes": 2175008768,
           "flags": 0,
@@ -1242,7 +1298,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1261,7 +1317,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1280,7 +1336,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1299,7 +1355,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1318,7 +1374,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1337,7 +1393,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1356,7 +1412,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1375,7 +1431,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1394,7 +1450,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1413,7 +1469,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1432,7 +1488,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1451,7 +1507,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1470,7 +1526,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1489,7 +1545,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1497,10 +1553,10 @@
         },
         {
           "path": "repo/Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScopedRelationEditHttpTests.cs",
-          "bytes": 39757,
-          "sha256": "8b1ba58b73ab529c2d7aaf9c84d3b291d15a7f212557e7b8a9672666d5469176",
-          "compressedBytes": 6672,
-          "crc32": 1914255082,
+          "bytes": 37093,
+          "sha256": "d42e132193acc74b06888fe3bcc837807fa532f7106f162bc06f0c65799171bb",
+          "compressedBytes": 6297,
+          "crc32": 2236925588,
           "createSystem": 3,
           "externalAttributes": 2175008768,
           "flags": 0,
@@ -1508,7 +1564,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1527,7 +1583,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1546,7 +1602,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1565,7 +1621,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1584,7 +1640,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1603,7 +1659,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1622,7 +1678,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1641,7 +1697,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1660,7 +1716,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1668,10 +1724,10 @@
         },
         {
           "path": "repo/Legacy.Maliev.CustomerService.Tests/Data/CustomerCrudPostgresTests.cs",
-          "bytes": 9260,
-          "sha256": "a9f724f7ae32aa39dfac257b16ec030cde821dee2e1bccd2439d586f63ad61b1",
+          "bytes": 9258,
+          "sha256": "3013fe18acce7cd0a63d0bd9a3f571d9074043bd88be747f89ba47886e700849",
           "compressedBytes": 2201,
-          "crc32": 557302967,
+          "crc32": 3407053595,
           "createSystem": 3,
           "externalAttributes": 2175008768,
           "flags": 0,
@@ -1679,7 +1735,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1698,7 +1754,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1706,10 +1762,10 @@
         },
         {
           "path": "repo/Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs",
-          "bytes": 16913,
-          "sha256": "95754ad29bd5e3e94392024d647c7ea98c3e0c67eb38a8eac93db07666fc953b",
-          "compressedBytes": 3420,
-          "crc32": 456416858,
+          "bytes": 16911,
+          "sha256": "8dc10c77699ca87ac1f9bc39961d863b69eb6381260062592098ea6cba2159ef",
+          "compressedBytes": 3421,
+          "crc32": 1671587693,
           "createSystem": 3,
           "externalAttributes": 2175008768,
           "flags": 0,
@@ -1717,7 +1773,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1736,7 +1792,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1755,7 +1811,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1774,7 +1830,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1793,7 +1849,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1812,7 +1868,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1831,7 +1887,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1850,7 +1906,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1869,7 +1925,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1888,7 +1944,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1907,7 +1963,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1926,7 +1982,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1945,7 +2001,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1964,7 +2020,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -1983,26 +2039,7 @@
           "dateTime": [
             2026,
             10,
-            8,
-            0,
-            0,
-            0
-          ]
-        },
-        {
-          "path": "repo/docs/company-literal-name-source-candidate.md",
-          "bytes": 2386,
-          "sha256": "a4d95e6bae651b1427ce9ce2f723c96389a63a4208001575e196852cf2450f39",
-          "compressedBytes": 1202,
-          "crc32": 2066695463,
-          "createSystem": 3,
-          "externalAttributes": 2175008768,
-          "flags": 0,
-          "compression": 8,
-          "dateTime": [
-            2026,
             10,
-            8,
             0,
             0,
             0
@@ -2021,7 +2058,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -2040,7 +2077,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -2059,7 +2096,26 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/docs/customer-kernel-route.md",
+          "bytes": 6518,
+          "sha256": "7ae7cd86827a106f56a48e8f71d15dbfa780140c6736dcf9b8d67b60e2497275",
+          "compressedBytes": 3087,
+          "crc32": 902712698,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
             0,
             0,
             0
@@ -2078,7 +2134,26 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/docs/customer-sealed-source-intake.md",
+          "bytes": 3619,
+          "sha256": "7bf2d1d4bee6edca98e246ddaf2bfc49cb75a65dbb51afc635588d8a5e31fd76",
+          "compressedBytes": 1851,
+          "crc32": 1973359059,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
             0,
             0,
             0
@@ -2097,7 +2172,45 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/docs/original-native-logging-source-cohort.json",
+          "bytes": 12064,
+          "sha256": "7ed08fa93fcfdb5df571d250c26cd4c35a8ccddb7702c0cfa4a6b0e1fde99b81",
+          "compressedBytes": 1674,
+          "crc32": 452724497,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/docs/original-native-logging-source-cohort.md",
+          "bytes": 801,
+          "sha256": "30497becc0fa95d788cdbeb036016e4c71ce63285fd20f90cc94df0f17e0de5f",
+          "compressedBytes": 429,
+          "crc32": 812681858,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
             0,
             0,
             0
@@ -2116,7 +2229,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -2135,7 +2248,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -2154,7 +2267,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -2173,7 +2286,729 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/review/customer-source-intake.patch",
+          "bytes": 7176,
+          "sha256": "3e754d067c1b0a4493df46dfc7610be1d4cff95259fcc1cb30d1d5fbc025738a",
+          "compressedBytes": 2028,
+          "crc32": 3325067036,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/review/customer-source-intake.preimage.yml",
+          "bytes": 4622,
+          "sha256": "2fa0a51f9bf6d1273790e50c195df40527a32d3e166f2fca219ad293d3c9b741",
+          "compressedBytes": 1560,
+          "crc32": 160269935,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-candidate-policy.json",
+          "bytes": 250519,
+          "sha256": "ad4d2c21a3ad7c2dff819d04bac6913874d61db0bc2b410454169a583527655a",
+          "compressedBytes": 36914,
+          "crc32": 2514324921,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-packet/README.md",
+          "bytes": 7676,
+          "sha256": "1b0e6e88f2624af3bfc2cc1b29d5c569c30cdae5ad80a8ae31541e47ce864be0",
+          "compressedBytes": 3665,
+          "crc32": 3218057217,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-packet/build-stage.json",
+          "bytes": 6601,
+          "sha256": "0b7f79cb13cc25ec2a87f6eb4cc28ccc6f94a245596f0ed4ebe5cc8fe20c5d05",
+          "compressedBytes": 3095,
+          "crc32": 3052647205,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-packet/customer_build_admission.py",
+          "bytes": 11722,
+          "sha256": "67d6b6c0dd9027c4e926c6148919c6182bdce293f3bdfd6cec5c826c8ac4bb96",
+          "compressedBytes": 4017,
+          "crc32": 527372303,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-packet/customer_build_guardian.py",
+          "bytes": 18111,
+          "sha256": "b6b4efc9416b6c416d35ad312d2c06eb15dc70b3fbbe230fba96093e76f204b2",
+          "compressedBytes": 4823,
+          "crc32": 4210171775,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-packet/customer_guardian_process.py",
+          "bytes": 13051,
+          "sha256": "b4c1aa5ccf7e44a920d63bd68d23a3645876171c0599bfb57bf1fc4c704c7489",
+          "compressedBytes": 3942,
+          "crc32": 435978891,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-packet/customer_native_build_driver.py",
+          "bytes": 17415,
+          "sha256": "0c32b97c3a21200fcb78729a3d39dd970456fc08e3a3b60ca55fbf211be836c6",
+          "compressedBytes": 5610,
+          "crc32": 3210142149,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-packet/customer_owned_build.py",
+          "bytes": 31901,
+          "sha256": "ead09deb55bf1f6fa7a1076781070f612900a37899c36c2bb48fcd3c43724408",
+          "compressedBytes": 8271,
+          "crc32": 3206696612,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-packet/driver-manifest.json",
+          "bytes": 3086,
+          "sha256": "a647b1593f712317288547f39b1a5367c25d3180af4577aa250f4bca403f38cf",
+          "compressedBytes": 1160,
+          "crc32": 2441990308,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-packet/input/customer-candidate-policy.json",
+          "bytes": 250519,
+          "sha256": "ad4d2c21a3ad7c2dff819d04bac6913874d61db0bc2b410454169a583527655a",
+          "compressedBytes": 36914,
+          "crc32": 2514324921,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-packet/input/customer_source_intake.py",
+          "bytes": 14434,
+          "sha256": "da3b1299a8f971db03eb712322f70b43647e8589b1fcb181c943b053eb7a42f8",
+          "compressedBytes": 4994,
+          "crc32": 1411294582,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-packet/input/sealed_source_capsule.py",
+          "bytes": 12296,
+          "sha256": "44a8a5accac9da11422d606be02fe28487642215df511b5f1c4284296a453ee2",
+          "compressedBytes": 4026,
+          "crc32": 2344782746,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-packet/supervisor.sh",
+          "bytes": 1285,
+          "sha256": "af6754f42357c98a4278a0f20b025e7f55cdf53500f92600b1062815d565be20",
+          "compressedBytes": 580,
+          "crc32": 329514408,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-packet/test_customer_build_admission.py",
+          "bytes": 10314,
+          "sha256": "111523a93b56167e8adbe091f9744e0704ebc461766d48798bea626025db30d7",
+          "compressedBytes": 2909,
+          "crc32": 2350232777,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-packet/test_customer_build_guardian.py",
+          "bytes": 17318,
+          "sha256": "eb714363f66956fc6263b91ea3b62e4b9f8afefad4d44122da68fd6223493d72",
+          "compressedBytes": 3893,
+          "crc32": 2966531402,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-packet/test_customer_guardian_process.py",
+          "bytes": 11198,
+          "sha256": "b4884b65047259108d0acc788bebc3b46c2ee785390bcea0d9704946cebfaeb9",
+          "compressedBytes": 3020,
+          "crc32": 2048863996,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-packet/test_customer_native_build_driver.py",
+          "bytes": 12488,
+          "sha256": "eb7352a13ff56507d6cea7a0d62079e4c9361be809c1cf6d09e78bf3f2860e15",
+          "compressedBytes": 3742,
+          "crc32": 3929259296,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-packet/test_customer_owned_build.py",
+          "bytes": 27419,
+          "sha256": "9ab66de45593728560cbac901055eb38bc3fa66963e292888a34210a516744e3",
+          "compressedBytes": 5730,
+          "crc32": 88055712,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-packet/test_customer_packet_seals.py",
+          "bytes": 3264,
+          "sha256": "d5edc69051ef8e59e080cc627fc9163f315f933e0a6d046ae63e08e288abddd7",
+          "compressedBytes": 959,
+          "crc32": 702469916,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-source/README.md",
+          "bytes": 11781,
+          "sha256": "af5837ea57b72a0488c623ea0db7dfe1368931a2cb9402c169b6c36ec2060f3a",
+          "compressedBytes": 5238,
+          "crc32": 1951130838,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-source/fault_controls.py",
+          "bytes": 38156,
+          "sha256": "92c4da3890901bc6b09b97905e2d70f34289fc245c2ac5e92253c9079867e4ae",
+          "compressedBytes": 8483,
+          "crc32": 3500928100,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-source/kernel_only.py",
+          "bytes": 22802,
+          "sha256": "e75d185dd21d5e3142f969b76a06682d08329e2a2ddbf0d59bf8355be7424f3d",
+          "compressedBytes": 6631,
+          "crc32": 2383517808,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-source/owned_process.py",
+          "bytes": 30161,
+          "sha256": "834cbb4f0380ef4460c9ff71b9632a952ab5a662d79074b6d35ff54484e8ce07",
+          "compressedBytes": 8341,
+          "crc32": 1239265153,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-source/prepare_handoff.py",
+          "bytes": 9016,
+          "sha256": "025c28c2aa5d53e0c5da24a99f081a2ed8fb5b64e69c4f558ce3fe9f6d46a32d",
+          "compressedBytes": 3660,
+          "crc32": 3426938127,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-source/repro_r3.py",
+          "bytes": 1040,
+          "sha256": "a3394cc60bd6cac5875622db2b87b9bcb35272283715c84817cc7fc8127281a7",
+          "compressedBytes": 550,
+          "crc32": 992005828,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-kernel-source/run_source_controls.py",
+          "bytes": 2526,
+          "sha256": "afd44069abbbe3403783f448b7ebc9bcb8323c5d6f068c037dda4c790c17d561",
+          "compressedBytes": 1129,
+          "crc32": 128307500,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-source-intake.draft.yml",
+          "bytes": 10161,
+          "sha256": "4924f2e52d4c692c249d5d0fd43cb82f76bfe4422171bae2cccc686811e7e618",
+          "compressedBytes": 2579,
+          "crc32": 4171345503,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer-source-intake.preimage.yml",
+          "bytes": 4622,
+          "sha256": "2fa0a51f9bf6d1273790e50c195df40527a32d3e166f2fca219ad293d3c9b741",
+          "compressedBytes": 1560,
+          "crc32": 160269935,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/customer_source_intake.py",
+          "bytes": 14434,
+          "sha256": "da3b1299a8f971db03eb712322f70b43647e8589b1fcb181c943b053eb7a42f8",
+          "compressedBytes": 4994,
+          "crc32": 1411294582,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/external_unit_owner.py",
+          "bytes": 27097,
+          "sha256": "9b1f9278beb9f9fbc6ae20fff2d356f6b588b8ebcfe905fc0faa867ef9f35162",
+          "compressedBytes": 7267,
+          "crc32": 2766544972,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/kernel_root_route.py",
+          "bytes": 26064,
+          "sha256": "1ab1b24ddda662ea1200d9a2b13acb18df4c9c76e32d28c28fbbfe6449d7995c",
+          "compressedBytes": 8745,
+          "crc32": 1898508467,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/publisher_recipe.py",
+          "bytes": 782,
+          "sha256": "466855f61134730f041d2e868ff4c24603e76a20c1769a76e49a8c66ab53defb",
+          "compressedBytes": 407,
+          "crc32": 2698167634,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/sealed_source_capsule.py",
+          "bytes": 12296,
+          "sha256": "44a8a5accac9da11422d606be02fe28487642215df511b5f1c4284296a453ee2",
+          "compressedBytes": 4026,
+          "crc32": 2344782746,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/test_customer_source_intake.py",
+          "bytes": 15530,
+          "sha256": "36d869f0ebb289a8056baa0404cbba5ba011331aeb7927f73776ca847965da4c",
+          "compressedBytes": 4177,
+          "crc32": 1476122093,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/test_external_unit_owner.py",
+          "bytes": 14525,
+          "sha256": "acbc5ee68b3cb3b592fe3f0713506d1c62a6ec6b0f5cff1448f6ebda2d49f5f4",
+          "compressedBytes": 4112,
+          "crc32": 3042674752,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "repo/scripts/test_kernel_root_route.py",
+          "bytes": 19075,
+          "sha256": "3eca8c9466cf432a6ea7cdf7d2e29e414b34f7fe483be004885d5668a75dd789",
+          "compressedBytes": 5296,
+          "crc32": 1076588068,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
             0,
             0,
             0
@@ -2192,7 +3027,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -2211,7 +3046,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -2230,7 +3065,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -2249,14 +3084,13 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
           ]
         }
-      ],
-      "entries": 118
+      ]
     },
     "dependencies": {
       "oid": "a14879fd785a1834c4bb3380b59cbc679670dc90",
@@ -4946,9 +5780,9 @@
       "entries": 141
     },
     "validation": {
-      "oid": "1e975e2fe0b0a3af933009f0c03e2d1fd6813f0c",
-      "sha256": "ad2a8c9df69939251837d9fe2732fb1a7a761b974a6cd7768f3edf474444cf85",
-      "bytes": 79842,
+      "oid": "8adea020d799f8c46e268fa69e0e49a6a258d8c5",
+      "sha256": "c7adf9101ff4e3f7896c892447b91f63d3c4d54e025fb3d86d0ccc8bf867ae84",
+      "bytes": 139826,
       "rows": [
         {
           "path": "envelope/customer_fixture_disposal.py",
@@ -4963,7 +5797,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -4982,7 +5816,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -5001,7 +5835,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -5020,7 +5854,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -5028,10 +5862,10 @@
         },
         {
           "path": "envelope/prepare_customer_provider_bundle.py",
-          "bytes": 16369,
-          "sha256": "4b4c0d106f1ead1bfc789afb99cdd59a1d77673e7d86c36849d2b6239e5cb9c8",
-          "compressedBytes": 6389,
-          "crc32": 153739775,
+          "bytes": 40812,
+          "sha256": "a45692e03d196a2779f0b7abae50d62ea8f8bed5a29900c8fb0d11a95866be9f",
+          "compressedBytes": 12401,
+          "crc32": 1829024165,
           "createSystem": 3,
           "externalAttributes": 2175008768,
           "flags": 0,
@@ -5039,7 +5873,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -5058,7 +5892,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -5077,7 +5911,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -5096,7 +5930,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -5115,7 +5949,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -5134,7 +5968,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -5153,7 +5987,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -5161,10 +5995,10 @@
         },
         {
           "path": "metadata/all-source-seals.json",
-          "bytes": 20707,
-          "sha256": "d63c594972fd61f260979da93a93f84caba9dfb6229834928eba927da59c54e7",
-          "compressedBytes": 6167,
-          "crc32": 702327603,
+          "bytes": 41214,
+          "sha256": "511ba044803c5f7b0e693858f3c380e4d66a5595b64c7b34124068045b379552",
+          "compressedBytes": 8848,
+          "crc32": 3587290332,
           "createSystem": 3,
           "externalAttributes": 2175008768,
           "flags": 0,
@@ -5172,7 +6006,102 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "metadata/association-actual-main-baseline-roster.json",
+          "bytes": 430668,
+          "sha256": "97826cfe247eba4261ba067136ffa70d82121bdabf7ebe46412228ec13162fc7",
+          "compressedBytes": 33016,
+          "crc32": 2906229284,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "metadata/association-baseline-source-inventory.json",
+          "bytes": 42482,
+          "sha256": "56e88acf8fe1d037e8ad5ea3b3b7843d109209b161c62ee1011238098b719f4d",
+          "compressedBytes": 12816,
+          "crc32": 20488096,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "metadata/association-manifest.json",
+          "bytes": 2856,
+          "sha256": "7fe7f0c4e2fc0c716b4dc6380abec2f6422037e35e31710acc518fc825a7c2cb",
+          "compressedBytes": 1265,
+          "crc32": 3118838163,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "metadata/association-original-full-sha-obligations.json",
+          "bytes": 5097,
+          "sha256": "c7f4e7c535f1f80d566aedf1330addca8b856f568a55f0ba0d7c52f32888b48a",
+          "compressedBytes": 913,
+          "crc32": 2745293615,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": "metadata/association-thirteen-authored-case-contract.json",
+          "bytes": 3730,
+          "sha256": "acf8e43152c1e10b4e197bfcbc60e2b94eabc7334d8aaa60ad14feab2cd1e802",
+          "compressedBytes": 749,
+          "crc32": 1544436623,
+          "createSystem": 3,
+          "externalAttributes": 2175008768,
+          "flags": 0,
+          "compression": 8,
+          "dateTime": [
+            2026,
+            10,
+            10,
             0,
             0,
             0
@@ -5180,10 +6109,10 @@
         },
         {
           "path": "metadata/candidate-manifest.json",
-          "bytes": 6673,
-          "sha256": "b7c1f7ec9ee34d607566365b13fc6a68d429fe12a200b44ae9e8c7a4d7b6ed11",
-          "compressedBytes": 2765,
-          "crc32": 2762393202,
+          "bytes": 1366,
+          "sha256": "ecbde2aaa14fba294a0858def8696e381539e483b1663f5e3ebf1771840e6691",
+          "compressedBytes": 623,
+          "crc32": 2041797914,
           "createSystem": 3,
           "externalAttributes": 2175008768,
           "flags": 0,
@@ -5191,7 +6120,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -5210,7 +6139,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -5218,10 +6147,10 @@
         },
         {
           "path": "metadata/provider-plan.json",
-          "bytes": 67891,
-          "sha256": "388882ef0c625783eb05731fec8608979420effa41520272011c8cd393ac7cdb",
-          "compressedBytes": 17936,
-          "crc32": 3709490478,
+          "bytes": 85005,
+          "sha256": "6319c8efd12e37ba62bc64c39b2fc2370280231c67b1951214234e64ac328cda",
+          "compressedBytes": 21730,
+          "crc32": 2852261309,
           "createSystem": 3,
           "externalAttributes": 2175008768,
           "flags": 0,
@@ -5229,7 +6158,7 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
@@ -5248,14 +6177,13 @@
           "dateTime": [
             2026,
             10,
-            8,
+            10,
             0,
             0,
             0
           ]
         }
-      ],
-      "entries": 16
+      ]
     }
   },
   "rawFiles": {
@@ -5301,6 +6229,12 @@
       "sha256": "5436292ba9523f34ca9f3801fdd674ed6e7d18b4e4d6e0b72bdb9c2d2fa1c1cd",
       "bytes": 246
     },
+    "repo/.github/workflows/customer-source-intake.yml": {
+      "capsule": "source",
+      "member": "repo/.github/workflows/customer-source-intake.yml",
+      "sha256": "4924f2e52d4c692c249d5d0fd43cb82f76bfe4422171bae2cccc686811e7e618",
+      "bytes": 10161
+    },
     "repo/.github/workflows/pr-validation.yml": {
       "capsule": "source",
       "member": "repo/.github/workflows/pr-validation.yml",
@@ -5340,14 +6274,14 @@
     "repo/Legacy.Maliev.CustomerService.Api/Controllers/AddressesController.cs": {
       "capsule": "source",
       "member": "repo/Legacy.Maliev.CustomerService.Api/Controllers/AddressesController.cs",
-      "sha256": "48c843d7395fac0589716464dd049e870312428f9abae9bdef0844c6fd811f84",
-      "bytes": 5397
+      "sha256": "184000b189cd467410493a294a5258e66e66d9912345a7b1323c89035d86ce1c",
+      "bytes": 5679
     },
     "repo/Legacy.Maliev.CustomerService.Api/Controllers/CompaniesController.cs": {
       "capsule": "source",
       "member": "repo/Legacy.Maliev.CustomerService.Api/Controllers/CompaniesController.cs",
-      "sha256": "287e77e449e68253d226582056ca9e0240407dfb662f8c9b455e84e96d5adadd",
-      "bytes": 4109
+      "sha256": "839d26fb10f1503073155832b3846a5aa1d5c563d557616190e1d1ab7fce9225",
+      "bytes": 4138
     },
     "repo/Legacy.Maliev.CustomerService.Api/Controllers/CustomerRelationsController.cs": {
       "capsule": "source",
@@ -5490,8 +6424,8 @@
     "repo/Legacy.Maliev.CustomerService.Data/CustomerRepository.cs": {
       "capsule": "source",
       "member": "repo/Legacy.Maliev.CustomerService.Data/CustomerRepository.cs",
-      "sha256": "12d2336d7cc76cb7b921d4a6b715fb6a5fac889b6779299ee928340a83e4ea1d",
-      "bytes": 20787
+      "sha256": "b85de58727a19d2862c6b90a832f90dcd3004a2faedeef2f793526730dfa2009",
+      "bytes": 20801
     },
     "repo/Legacy.Maliev.CustomerService.Data/DistributedCustomerCache.cs": {
       "capsule": "source",
@@ -5625,6 +6559,12 @@
       "sha256": "6d1ae93407571ef560f84e789ffd96e699a98c59bb3da456f833153b9a999778",
       "bytes": 4136
     },
+    "repo/Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOriginalNullBoundaryTests.cs": {
+      "capsule": "source",
+      "member": "repo/Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOriginalNullBoundaryTests.cs",
+      "sha256": "9af8f3322645dac2ac5415210157e1ee6c404448b2c120268605e59a1df69c40",
+      "bytes": 3039
+    },
     "repo/Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxOnlyHttpTests.cs": {
       "capsule": "source",
       "member": "repo/Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxOnlyHttpTests.cs",
@@ -5637,6 +6577,12 @@
       "sha256": "682dbde822e5d7f0ac56931870edbde8ce619cf4a056fb7f62f8a60c404122d7",
       "bytes": 7375
     },
+    "repo/Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressOriginalNullBoundaryTests.cs": {
+      "capsule": "source",
+      "member": "repo/Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressOriginalNullBoundaryTests.cs",
+      "sha256": "6da0b0d6d491c3a11be405e4006b8d5824b3280c35ed0c9358665628c57128b2",
+      "bytes": 3795
+    },
     "repo/Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressPersistenceHttpTests.cs": {
       "capsule": "source",
       "member": "repo/Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressPersistenceHttpTests.cs",
@@ -5646,8 +6592,8 @@
     "repo/Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLifecycleHttpTests.cs": {
       "capsule": "source",
       "member": "repo/Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLifecycleHttpTests.cs",
-      "sha256": "2a95f552cc7392b81e80a528b17b40e79367457c9e5f1d7d6668220d8ca73186",
-      "bytes": 14593
+      "sha256": "4a384a1cf8b7c27d2f3f4420224761f8e95524ec5fd4670870eb509e65fd9575",
+      "bytes": 7238
     },
     "repo/Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyPersistenceHttpTests.cs": {
       "capsule": "source",
@@ -5730,8 +6676,8 @@
     "repo/Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScopedRelationEditHttpTests.cs": {
       "capsule": "source",
       "member": "repo/Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScopedRelationEditHttpTests.cs",
-      "sha256": "8b1ba58b73ab529c2d7aaf9c84d3b291d15a7f212557e7b8a9672666d5469176",
-      "bytes": 39757
+      "sha256": "d42e132193acc74b06888fe3bcc837807fa532f7106f162bc06f0c65799171bb",
+      "bytes": 37093
     },
     "repo/Legacy.Maliev.CustomerService.Tests/Controllers/CustomerSharedRelationshipHttpTests.cs": {
       "capsule": "source",
@@ -5784,8 +6730,8 @@
     "repo/Legacy.Maliev.CustomerService.Tests/Data/CustomerCrudPostgresTests.cs": {
       "capsule": "source",
       "member": "repo/Legacy.Maliev.CustomerService.Tests/Data/CustomerCrudPostgresTests.cs",
-      "sha256": "a9f724f7ae32aa39dfac257b16ec030cde821dee2e1bccd2439d586f63ad61b1",
-      "bytes": 9260
+      "sha256": "3013fe18acce7cd0a63d0bd9a3f571d9074043bd88be747f89ba47886e700849",
+      "bytes": 9258
     },
     "repo/Legacy.Maliev.CustomerService.Tests/Data/CustomerModelCompatibilityTests.cs": {
       "capsule": "source",
@@ -5796,8 +6742,8 @@
     "repo/Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs": {
       "capsule": "source",
       "member": "repo/Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs",
-      "sha256": "95754ad29bd5e3e94392024d647c7ea98c3e0c67eb38a8eac93db07666fc953b",
-      "bytes": 16913
+      "sha256": "8dc10c77699ca87ac1f9bc39961d863b69eb6381260062592098ea6cba2159ef",
+      "bytes": 16911
     },
     "repo/Legacy.Maliev.CustomerService.Tests/Data/CustomerRevisionPostgresTests.cs": {
       "capsule": "source",
@@ -5883,12 +6829,6 @@
       "sha256": "b30ca954e81b10b9a3120b0a6624b71c46a1496282a15992f0e248a2b98ff136",
       "bytes": 5864
     },
-    "repo/docs/company-literal-name-source-candidate.md": {
-      "capsule": "source",
-      "member": "repo/docs/company-literal-name-source-candidate.md",
-      "sha256": "a4d95e6bae651b1427ce9ce2f723c96389a63a4208001575e196852cf2450f39",
-      "bytes": 2386
-    },
     "repo/docs/customer-actual-scaffold-proof-20261006.md": {
       "capsule": "source",
       "member": "repo/docs/customer-actual-scaffold-proof-20261006.md",
@@ -5907,17 +6847,41 @@
       "sha256": "c45e9755b2c3f0324eee86d6851d942bde405d8824e0435e916dff6aa7f17087",
       "bytes": 14624
     },
+    "repo/docs/customer-kernel-route.md": {
+      "capsule": "source",
+      "member": "repo/docs/customer-kernel-route.md",
+      "sha256": "7ae7cd86827a106f56a48e8f71d15dbfa780140c6736dcf9b8d67b60e2497275",
+      "bytes": 6518
+    },
     "repo/docs/customer-profile-revision-contract.md": {
       "capsule": "source",
       "member": "repo/docs/customer-profile-revision-contract.md",
       "sha256": "1011c0a9191fcba57fd1e8184fbbabaebb0a63687fbbe0e7a86c8535d0c0b21b",
       "bytes": 2198
     },
+    "repo/docs/customer-sealed-source-intake.md": {
+      "capsule": "source",
+      "member": "repo/docs/customer-sealed-source-intake.md",
+      "sha256": "7bf2d1d4bee6edca98e246ddaf2bfc49cb75a65dbb51afc635588d8a5e31fd76",
+      "bytes": 3619
+    },
     "repo/docs/customer-startup-private-boundary-design-20261002.md": {
       "capsule": "source",
       "member": "repo/docs/customer-startup-private-boundary-design-20261002.md",
       "sha256": "5baeb50ee20aeb6bb9c28ebe3b9fb6b5e2a0afc37533da5fcfbca4706dc3ae0c",
       "bytes": 46413
+    },
+    "repo/docs/original-native-logging-source-cohort.json": {
+      "capsule": "source",
+      "member": "repo/docs/original-native-logging-source-cohort.json",
+      "sha256": "7ed08fa93fcfdb5df571d250c26cd4c35a8ccddb7702c0cfa4a6b0e1fde99b81",
+      "bytes": 12064
+    },
+    "repo/docs/original-native-logging-source-cohort.md": {
+      "capsule": "source",
+      "member": "repo/docs/original-native-logging-source-cohort.md",
+      "sha256": "30497becc0fa95d788cdbeb036016e4c71ce63285fd20f90cc94df0f17e0de5f",
+      "bytes": 801
     },
     "repo/docs/publisher-validation-adoption-20261001.md": {
       "capsule": "source",
@@ -5942,6 +6906,234 @@
       "member": "repo/nuget.config",
       "sha256": "aec93b5637ab6d62470979a008990a4a336a287ab83a3f2541849ae735674055",
       "bytes": 197
+    },
+    "repo/review/customer-source-intake.patch": {
+      "capsule": "source",
+      "member": "repo/review/customer-source-intake.patch",
+      "sha256": "3e754d067c1b0a4493df46dfc7610be1d4cff95259fcc1cb30d1d5fbc025738a",
+      "bytes": 7176
+    },
+    "repo/review/customer-source-intake.preimage.yml": {
+      "capsule": "source",
+      "member": "repo/review/customer-source-intake.preimage.yml",
+      "sha256": "2fa0a51f9bf6d1273790e50c195df40527a32d3e166f2fca219ad293d3c9b741",
+      "bytes": 4622
+    },
+    "repo/scripts/customer-candidate-policy.json": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-candidate-policy.json",
+      "sha256": "ad4d2c21a3ad7c2dff819d04bac6913874d61db0bc2b410454169a583527655a",
+      "bytes": 250519
+    },
+    "repo/scripts/customer-kernel-packet/README.md": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-packet/README.md",
+      "sha256": "1b0e6e88f2624af3bfc2cc1b29d5c569c30cdae5ad80a8ae31541e47ce864be0",
+      "bytes": 7676
+    },
+    "repo/scripts/customer-kernel-packet/build-stage.json": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-packet/build-stage.json",
+      "sha256": "0b7f79cb13cc25ec2a87f6eb4cc28ccc6f94a245596f0ed4ebe5cc8fe20c5d05",
+      "bytes": 6601
+    },
+    "repo/scripts/customer-kernel-packet/customer_build_admission.py": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-packet/customer_build_admission.py",
+      "sha256": "67d6b6c0dd9027c4e926c6148919c6182bdce293f3bdfd6cec5c826c8ac4bb96",
+      "bytes": 11722
+    },
+    "repo/scripts/customer-kernel-packet/customer_build_guardian.py": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-packet/customer_build_guardian.py",
+      "sha256": "b6b4efc9416b6c416d35ad312d2c06eb15dc70b3fbbe230fba96093e76f204b2",
+      "bytes": 18111
+    },
+    "repo/scripts/customer-kernel-packet/customer_guardian_process.py": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-packet/customer_guardian_process.py",
+      "sha256": "b4c1aa5ccf7e44a920d63bd68d23a3645876171c0599bfb57bf1fc4c704c7489",
+      "bytes": 13051
+    },
+    "repo/scripts/customer-kernel-packet/customer_native_build_driver.py": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-packet/customer_native_build_driver.py",
+      "sha256": "0c32b97c3a21200fcb78729a3d39dd970456fc08e3a3b60ca55fbf211be836c6",
+      "bytes": 17415
+    },
+    "repo/scripts/customer-kernel-packet/customer_owned_build.py": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-packet/customer_owned_build.py",
+      "sha256": "ead09deb55bf1f6fa7a1076781070f612900a37899c36c2bb48fcd3c43724408",
+      "bytes": 31901
+    },
+    "repo/scripts/customer-kernel-packet/driver-manifest.json": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-packet/driver-manifest.json",
+      "sha256": "a647b1593f712317288547f39b1a5367c25d3180af4577aa250f4bca403f38cf",
+      "bytes": 3086
+    },
+    "repo/scripts/customer-kernel-packet/input/customer-candidate-policy.json": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-packet/input/customer-candidate-policy.json",
+      "sha256": "ad4d2c21a3ad7c2dff819d04bac6913874d61db0bc2b410454169a583527655a",
+      "bytes": 250519
+    },
+    "repo/scripts/customer-kernel-packet/input/customer_source_intake.py": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-packet/input/customer_source_intake.py",
+      "sha256": "da3b1299a8f971db03eb712322f70b43647e8589b1fcb181c943b053eb7a42f8",
+      "bytes": 14434
+    },
+    "repo/scripts/customer-kernel-packet/input/sealed_source_capsule.py": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-packet/input/sealed_source_capsule.py",
+      "sha256": "44a8a5accac9da11422d606be02fe28487642215df511b5f1c4284296a453ee2",
+      "bytes": 12296
+    },
+    "repo/scripts/customer-kernel-packet/supervisor.sh": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-packet/supervisor.sh",
+      "sha256": "af6754f42357c98a4278a0f20b025e7f55cdf53500f92600b1062815d565be20",
+      "bytes": 1285
+    },
+    "repo/scripts/customer-kernel-packet/test_customer_build_admission.py": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-packet/test_customer_build_admission.py",
+      "sha256": "111523a93b56167e8adbe091f9744e0704ebc461766d48798bea626025db30d7",
+      "bytes": 10314
+    },
+    "repo/scripts/customer-kernel-packet/test_customer_build_guardian.py": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-packet/test_customer_build_guardian.py",
+      "sha256": "eb714363f66956fc6263b91ea3b62e4b9f8afefad4d44122da68fd6223493d72",
+      "bytes": 17318
+    },
+    "repo/scripts/customer-kernel-packet/test_customer_guardian_process.py": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-packet/test_customer_guardian_process.py",
+      "sha256": "b4884b65047259108d0acc788bebc3b46c2ee785390bcea0d9704946cebfaeb9",
+      "bytes": 11198
+    },
+    "repo/scripts/customer-kernel-packet/test_customer_native_build_driver.py": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-packet/test_customer_native_build_driver.py",
+      "sha256": "eb7352a13ff56507d6cea7a0d62079e4c9361be809c1cf6d09e78bf3f2860e15",
+      "bytes": 12488
+    },
+    "repo/scripts/customer-kernel-packet/test_customer_owned_build.py": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-packet/test_customer_owned_build.py",
+      "sha256": "9ab66de45593728560cbac901055eb38bc3fa66963e292888a34210a516744e3",
+      "bytes": 27419
+    },
+    "repo/scripts/customer-kernel-packet/test_customer_packet_seals.py": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-packet/test_customer_packet_seals.py",
+      "sha256": "d5edc69051ef8e59e080cc627fc9163f315f933e0a6d046ae63e08e288abddd7",
+      "bytes": 3264
+    },
+    "repo/scripts/customer-kernel-source/README.md": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-source/README.md",
+      "sha256": "af5837ea57b72a0488c623ea0db7dfe1368931a2cb9402c169b6c36ec2060f3a",
+      "bytes": 11781
+    },
+    "repo/scripts/customer-kernel-source/fault_controls.py": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-source/fault_controls.py",
+      "sha256": "92c4da3890901bc6b09b97905e2d70f34289fc245c2ac5e92253c9079867e4ae",
+      "bytes": 38156
+    },
+    "repo/scripts/customer-kernel-source/kernel_only.py": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-source/kernel_only.py",
+      "sha256": "e75d185dd21d5e3142f969b76a06682d08329e2a2ddbf0d59bf8355be7424f3d",
+      "bytes": 22802
+    },
+    "repo/scripts/customer-kernel-source/owned_process.py": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-source/owned_process.py",
+      "sha256": "834cbb4f0380ef4460c9ff71b9632a952ab5a662d79074b6d35ff54484e8ce07",
+      "bytes": 30161
+    },
+    "repo/scripts/customer-kernel-source/prepare_handoff.py": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-source/prepare_handoff.py",
+      "sha256": "025c28c2aa5d53e0c5da24a99f081a2ed8fb5b64e69c4f558ce3fe9f6d46a32d",
+      "bytes": 9016
+    },
+    "repo/scripts/customer-kernel-source/repro_r3.py": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-source/repro_r3.py",
+      "sha256": "a3394cc60bd6cac5875622db2b87b9bcb35272283715c84817cc7fc8127281a7",
+      "bytes": 1040
+    },
+    "repo/scripts/customer-kernel-source/run_source_controls.py": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-kernel-source/run_source_controls.py",
+      "sha256": "afd44069abbbe3403783f448b7ebc9bcb8323c5d6f068c037dda4c790c17d561",
+      "bytes": 2526
+    },
+    "repo/scripts/customer-source-intake.draft.yml": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-source-intake.draft.yml",
+      "sha256": "4924f2e52d4c692c249d5d0fd43cb82f76bfe4422171bae2cccc686811e7e618",
+      "bytes": 10161
+    },
+    "repo/scripts/customer-source-intake.preimage.yml": {
+      "capsule": "source",
+      "member": "repo/scripts/customer-source-intake.preimage.yml",
+      "sha256": "2fa0a51f9bf6d1273790e50c195df40527a32d3e166f2fca219ad293d3c9b741",
+      "bytes": 4622
+    },
+    "repo/scripts/customer_source_intake.py": {
+      "capsule": "source",
+      "member": "repo/scripts/customer_source_intake.py",
+      "sha256": "da3b1299a8f971db03eb712322f70b43647e8589b1fcb181c943b053eb7a42f8",
+      "bytes": 14434
+    },
+    "repo/scripts/external_unit_owner.py": {
+      "capsule": "source",
+      "member": "repo/scripts/external_unit_owner.py",
+      "sha256": "9b1f9278beb9f9fbc6ae20fff2d356f6b588b8ebcfe905fc0faa867ef9f35162",
+      "bytes": 27097
+    },
+    "repo/scripts/kernel_root_route.py": {
+      "capsule": "source",
+      "member": "repo/scripts/kernel_root_route.py",
+      "sha256": "1ab1b24ddda662ea1200d9a2b13acb18df4c9c76e32d28c28fbbfe6449d7995c",
+      "bytes": 26064
+    },
+    "repo/scripts/publisher_recipe.py": {
+      "capsule": "source",
+      "member": "repo/scripts/publisher_recipe.py",
+      "sha256": "466855f61134730f041d2e868ff4c24603e76a20c1769a76e49a8c66ab53defb",
+      "bytes": 782
+    },
+    "repo/scripts/sealed_source_capsule.py": {
+      "capsule": "source",
+      "member": "repo/scripts/sealed_source_capsule.py",
+      "sha256": "44a8a5accac9da11422d606be02fe28487642215df511b5f1c4284296a453ee2",
+      "bytes": 12296
+    },
+    "repo/scripts/test_customer_source_intake.py": {
+      "capsule": "source",
+      "member": "repo/scripts/test_customer_source_intake.py",
+      "sha256": "36d869f0ebb289a8056baa0404cbba5ba011331aeb7927f73776ca847965da4c",
+      "bytes": 15530
+    },
+    "repo/scripts/test_external_unit_owner.py": {
+      "capsule": "source",
+      "member": "repo/scripts/test_external_unit_owner.py",
+      "sha256": "acbc5ee68b3cb3b592fe3f0713506d1c62a6ec6b0f5cff1448f6ebda2d49f5f4",
+      "bytes": 14525
+    },
+    "repo/scripts/test_kernel_root_route.py": {
+      "capsule": "source",
+      "member": "repo/scripts/test_kernel_root_route.py",
+      "sha256": "3eca8c9466cf432a6ea7cdf7d2e29e414b34f7fe483be004885d5668a75dd789",
+      "bytes": 19075
     },
     "repo/scripts/verify-runner-coverage.py": {
       "capsule": "source",
@@ -6840,8 +8032,8 @@
     "envelope/prepare_customer_provider_bundle.py": {
       "capsule": "validation",
       "member": "envelope/prepare_customer_provider_bundle.py",
-      "sha256": "4b4c0d106f1ead1bfc789afb99cdd59a1d77673e7d86c36849d2b6239e5cb9c8",
-      "bytes": 16369
+      "sha256": "a45692e03d196a2779f0b7abae50d62ea8f8bed5a29900c8fb0d11a95866be9f",
+      "bytes": 40812
     },
     "envelope/provider-image-metadata.json": {
       "capsule": "validation",
@@ -6882,14 +8074,44 @@
     "metadata/all-source-seals.json": {
       "capsule": "validation",
       "member": "metadata/all-source-seals.json",
-      "sha256": "d63c594972fd61f260979da93a93f84caba9dfb6229834928eba927da59c54e7",
-      "bytes": 20707
+      "sha256": "511ba044803c5f7b0e693858f3c380e4d66a5595b64c7b34124068045b379552",
+      "bytes": 41214
+    },
+    "metadata/association-actual-main-baseline-roster.json": {
+      "capsule": "validation",
+      "member": "metadata/association-actual-main-baseline-roster.json",
+      "sha256": "97826cfe247eba4261ba067136ffa70d82121bdabf7ebe46412228ec13162fc7",
+      "bytes": 430668
+    },
+    "metadata/association-baseline-source-inventory.json": {
+      "capsule": "validation",
+      "member": "metadata/association-baseline-source-inventory.json",
+      "sha256": "56e88acf8fe1d037e8ad5ea3b3b7843d109209b161c62ee1011238098b719f4d",
+      "bytes": 42482
+    },
+    "metadata/association-manifest.json": {
+      "capsule": "validation",
+      "member": "metadata/association-manifest.json",
+      "sha256": "7fe7f0c4e2fc0c716b4dc6380abec2f6422037e35e31710acc518fc825a7c2cb",
+      "bytes": 2856
+    },
+    "metadata/association-original-full-sha-obligations.json": {
+      "capsule": "validation",
+      "member": "metadata/association-original-full-sha-obligations.json",
+      "sha256": "c7f4e7c535f1f80d566aedf1330addca8b856f568a55f0ba0d7c52f32888b48a",
+      "bytes": 5097
+    },
+    "metadata/association-thirteen-authored-case-contract.json": {
+      "capsule": "validation",
+      "member": "metadata/association-thirteen-authored-case-contract.json",
+      "sha256": "acf8e43152c1e10b4e197bfcbc60e2b94eabc7334d8aaa60ad14feab2cd1e802",
+      "bytes": 3730
     },
     "metadata/candidate-manifest.json": {
       "capsule": "validation",
       "member": "metadata/candidate-manifest.json",
-      "sha256": "b7c1f7ec9ee34d607566365b13fc6a68d429fe12a200b44ae9e8c7a4d7b6ed11",
-      "bytes": 6673
+      "sha256": "ecbde2aaa14fba294a0858def8696e381539e483b1663f5e3ebf1771840e6691",
+      "bytes": 1366
     },
     "metadata/dependency-manifest.json": {
       "capsule": "validation",
@@ -6900,8 +8122,8 @@
     "metadata/provider-plan.json": {
       "capsule": "validation",
       "member": "metadata/provider-plan.json",
-      "sha256": "388882ef0c625783eb05731fec8608979420effa41520272011c8cd393ac7cdb",
-      "bytes": 67891
+      "sha256": "6319c8efd12e37ba62bc64c39b2fc2370280231c67b1951214234e64ac328cda",
+      "bytes": 85005
     },
     "serial.runsettings": {
       "capsule": "validation",
@@ -6911,20 +8133,20 @@
     }
   },
   "seals": {
-    "frozen6r2": {
+    "candidate4": {
       "path": "metadata/candidate-manifest.json",
-      "sha256": "b7c1f7ec9ee34d607566365b13fc6a68d429fe12a200b44ae9e8c7a4d7b6ed11"
+      "sha256": "ecbde2aaa14fba294a0858def8696e381539e483b1663f5e3ebf1771840e6691"
     },
-    "source117": {
+    "source160": {
       "path": "metadata/all-source-seals.json",
-      "sha256": "d63c594972fd61f260979da93a93f84caba9dfb6229834928eba927da59c54e7"
+      "sha256": "511ba044803c5f7b0e693858f3c380e4d66a5595b64c7b34124068045b379552"
     },
     "dependencies141": {
       "path": "metadata/dependency-manifest.json",
       "sha256": "1451fc01d863366d14287ae9cce5603fbf5cf7583cc4c74af414fc3e313ea2e9"
     }
   },
-  "providerPlanSha256": "388882ef0c625783eb05731fec8608979420effa41520272011c8cd393ac7cdb",
+  "providerPlanSha256": "6319c8efd12e37ba62bc64c39b2fc2370280231c67b1951214234e64ac328cda",
   "fileModuleSourceAcceptance": {
     "immutableV5": true,
     "rootIndependentNarrowSourceClear": true,
@@ -6938,5 +8160,8 @@
   "providerStarts": 0,
   "sourceClosure": false,
   "providerEnvelopeVersion": "r4",
-  "actualProviderRuntimeQualification": false
+  "actualProviderRuntimeQualification": false,
+  "forecastNewCases": 13,
+  "associationManifestSha256": "7fe7f0c4e2fc0c716b4dc6380abec2f6422037e35e31710acc518fc825a7c2cb",
+  "associationSourceOnly": true
 }

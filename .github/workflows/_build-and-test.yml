@@ -2,6 +2,17 @@ name: Build and test
 
 on:
   workflow_call:
+    inputs:
+      customer-consumer-custody:
+        description: Original admitted consumer owner receipt path; empty keeps ordinary CI unchanged
+        type: string
+        required: false
+        default: ''
+      customer-consumer-custody-sha256:
+        description: Independently trusted original consumer custody raw SHA256
+        type: string
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -35,10 +46,18 @@ jobs:
           path: .dependencies/Legacy.Maliev.CompatibilityContracts
           persist-credentials: false
       - name: Validate .NET solution
-        uses: MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e3a6093324a24968876782153286f52db8b29fd8
+        uses: MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e5732037fe94b7ed6e5be2cd4c23dbf6ef5e2617
         with:
           solution: Legacy.Maliev.CustomerService.slnx
           use-local-maliev-dependencies: 'true'
+      - name: Run exact separately admitted Customer consumer phases
+        if: inputs.customer-consumer-custody != ''
+        timeout-minutes: 30
+        env:
+          CUSTOMER_CONSUMER_CUSTODY: ${{ inputs.customer-consumer-custody }}
+          CUSTOMER_CONSUMER_CUSTODY_SHA256: ${{ inputs.customer-consumer-custody-sha256 }}
+        run: |
+          timeout --signal=TERM --kill-after=5s 1800s python3 -B scripts/kernel_root_route.py consumer-phases --packet scripts/customer-kernel-packet --source-directory /work/customer-source --consumer-custody "$CUSTOMER_CONSUMER_CUSTODY" --consumer-custody-sha256 "$CUSTOMER_CONSUMER_CUSTODY_SHA256" --output "$RUNNER_TEMP/customer-consumer-phases"
       - name: Validate safe scaffold orchestration
         shell: pwsh
         run: ./tooling/Test-CustomerScaffoldContract.ps1 -EvidencePath ./runner-results/customer-scaffold-orchestration.json
@@ -49,6 +68,8 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: customer-validation-${{ github.sha }}
-          path: runner-results
+          path: |
+            runner-results
+            ${{ runner.temp }}/customer-consumer-phases
           if-no-files-found: warn
           retention-days: 7
