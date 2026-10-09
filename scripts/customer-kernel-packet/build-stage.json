@@ -1,18 +1,18 @@
 {
   "schemaVersion": 1,
-  "stage": "customer-literal-build-first",
+  "stage": "customer-null-build-first",
   "status": "source-preparation-only",
   "nativeExecutionGranted": false,
   "rootThread": "019fc21e-50f0-7112-834f-9fb3b35b9dfe",
   "owner": "CRM-Customer",
-  "transportMain": "33b25d31e672b591f6869bbca33a9023e525473e",
-  "sourcePolicySha256": "ad4d2c21a3ad7c2dff819d04bac6913874d61db0bc2b410454169a583527655a",
-  "providerPlanSha256": "388882ef0c625783eb05731fec8608979420effa41520272011c8cd393ac7cdb",
-  "candidateBase": "dd36b868f538d5d8f0d97cc20b3a676fc6ef3d01",
+  "transportMain": "b50e12d66cf0c3d4211a41febe3b01ca265a0c15",
+  "sourcePolicySha256": "e0af0d56bc14f48ec7e7e80d445283faa942d2a80c6ab8caee39d45b6937a840",
+  "providerPlanSha256": "6319c8efd12e37ba62bc64c39b2fc2370280231c67b1951214234e64ac328cda",
+  "candidateBase": "b50e12d66cf0c3d4211a41febe3b01ca265a0c15",
   "sourceCounts": {
-    "source": 118,
+    "source": 162,
     "dependencies": 141,
-    "validation": 16
+    "validation": 21
   },
   "sourceDirectory": "/work/customer-source",
   "daemonSocket": "/var/run/docker.sock",
@@ -108,22 +108,22 @@
   ],
   "full403Accepted": false,
   "nextRuntimeStages": [
-    "focused regressions",
-    "full403",
-    "raw4coverage",
-    "scaffold nestedAuth"
+    "focused thirteen after strict build",
+    "fresh compiled baseline387 + candidate13 identities",
+    "full unfiltered candidate400 forecast",
+    "raw coverage/format/audit/scaffold/nestedAuth/liveIAM"
   ],
   "setupCompilerDependencyTimeoutIsBehavioralRed": false,
   "sourceArchive": {
-    "sha256": "96d5ebfd4284d55417df55701e5804b0ab85fce0d56dd7fc42cc3d933e7eccd7",
-    "bytes": 2160640,
-    "rawFiles": 275,
-    "rawGraphSha256": "7038b2c6bf19f5197075e009d8a1bb24bb18294a8ac5735dbfd35771f1005bae"
+    "sha256": "0911b232e22977a7ec0809c4224a37f1bd95f71be321c6cb5cb69de926601ab1",
+    "bytes": 3758080,
+    "rawFiles": 324,
+    "rawGraphSha256": "c77544fff3c99b95b2dd9d5f7cf52f5c98150ea1b04a304ab6fab7e273bf295b"
   },
   "supervisorScript": "set -eu\n[ \"$#\" -ge 5 ] || exit 78\ndeadline=\"$1\"; phase=\"$2\"; token=\"$3\"; builddir=\"$4\"; shift 4\ncase \"$deadline:$phase\" in *[!0-9:]*) exit 78;; esac\n[ \"${#token}\" -eq 64 ] || exit 78\ncase \"$token\" in *[!a-f0-9]*) exit 78;; esac\n[ \"$builddir\" = /work/repo ] || exit 78\nfor tool in timeout date cat mkdir sleep; do command -v \"$tool\" >/dev/null || exit 78; done\nnow=$(date -u +%s); remaining=$((deadline-now))\n[ \"$remaining\" -gt 0 ] || exit 124\nexport CUSTOMER_ABSOLUTE_DEADLINE=\"$deadline\" CUSTOMER_PHASE_SECONDS=\"$phase\" CUSTOMER_READY_TOKEN=\"$token\" CUSTOMER_BUILD_DIRECTORY=\"$builddir\"\nexec timeout --signal=TERM --kill-after=5s \"${remaining}s\" /bin/sh -c '\nset -eu\ncontrol=\"${CUSTOMER_CONTROL_DIRECTORY:?}\"\nmkdir -p \"$control\"\nwhile [ ! -f \"$control/build.ready\" ]; do\n    [ \"$(date -u +%s)\" -lt \"$CUSTOMER_ABSOLUTE_DEADLINE\" ] || exit 124\n    sleep 0.1\ndone\n[ ! -L \"$control/build.ready\" ] || exit 78\n[ \"$(cat \"$control/build.ready\")\" = \"$CUSTOMER_READY_TOKEN\" ] || exit 78\nnow=$(date -u +%s); remaining=$((CUSTOMER_ABSOLUTE_DEADLINE-now))\n[ \"$remaining\" -gt 0 ] || exit 124\nbudget=\"$CUSTOMER_PHASE_SECONDS\"\n[ \"$remaining\" -ge \"$budget\" ] || budget=\"$remaining\"\ncd \"$CUSTOMER_BUILD_DIRECTORY\"\nexec timeout --signal=TERM --kill-after=5s \"${budget}s\" \"$@\"\n' customer-build-gate \"$@\"\n",
   "supervisorScriptSha256": "af6754f42357c98a4278a0f20b025e7f55cdf53500f92600b1062815d565be20",
   "containerWorkingDirectory": "/",
-  "sourceStaging": "Start independently expiring gated SDK supervisor; PUT all275 raw files into live /work tmpfs; verify actual SDK archive against complete policy; refresh Root admission then publish exact readiness token; only then strict BUILD starts",
+  "sourceStaging": "PUT all324 exact raw files through existing verified archive route; no legacy275 staging recipe",
   "acceptedBuildEvidence": "Persisted bounded Docker logs plus actual exitCode/OOMKilled observation; tmpfs binaries disappear on SDK exit, no native-test reuse claimed",
   "startupDeadlineEnforcedIndependently": true,
   "maximumIndependentOverrunSeconds": 10,
@@ -141,5 +141,11 @@
     "memoryBytes": 268435456,
     "cpuSeconds": 30,
     "custody": "Independent session owns actualCREATE response or actual causalCREATEevent before workerSTART; fullID/config/Created custody; uncertain identity neveradopted frominventory; retainedcleanup retriedfinite"
-  }
+  },
+  "associationManifestSha256": "7fe7f0c4e2fc0c716b4dc6380abec2f6422037e35e31710acc518fc825a7c2cb",
+  "associationVerifierSha256": "ae35a1ffb0a07cb2cc79236a93cb5ea69a44e4fd21abad659bbdf9bd6ee52d08",
+  "actualHistoricalBaselineCases": 387,
+  "forecastCandidateCases": 400,
+  "freshCompiledDiscovery": null,
+  "runtimeQualificationAccepted": false
 }

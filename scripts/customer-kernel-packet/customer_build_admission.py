@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 import re
 
-STAGE_CANONICAL_SHA256 = '0be2f2a57a3f1a2e02d78fa8e4f679cb2200225cd1f556c220b53f5a73637ad8'
+STAGE_CANONICAL_SHA256 = '7de8971c4682a33703c1484c3f34e1b575b36d39166d0bc8c9b277461cab8be2'
 SHA256 = re.compile(r'[a-f0-9]{64}\Z')
 UUID = re.compile(r'[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\Z')
 NATIVE_EXECUTABLES = frozenset(('dotnet', 'testhost', 'MSBuild', 'VBCSCompiler', 'postgres', 'pg_ctl',
