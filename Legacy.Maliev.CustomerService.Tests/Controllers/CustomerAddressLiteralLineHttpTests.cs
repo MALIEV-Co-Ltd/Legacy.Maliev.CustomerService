@@ -181,8 +181,12 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
             : create ? "/customers/1/addresses/" : "/customers/addresses/1/";
         var fields = new Dictionary<string, object?>
         {
-            ["Building"] = Optional("Building", absent), ["AddressLine2"] = Optional("AddressLine2", absent),
-            ["City"] = Optional("City", absent), ["State"] = Optional("State", absent), ["PostalCode"] = Optional("PostalCode", absent), ["CountryId"] = 764,
+            ["Building"] = Optional("Building", absent),
+            ["AddressLine2"] = Optional("AddressLine2", absent),
+            ["City"] = Optional("City", absent),
+            ["State"] = Optional("State", absent),
+            ["PostalCode"] = Optional("PostalCode", absent),
+            ["CountryId"] = 764,
         };
         var tail = JsonSerializer.Serialize(fields);
         var body = "{\"AddressLine1\":" + (raw ?? JsonSerializer.Serialize(line)) + "," + tail[1..];
