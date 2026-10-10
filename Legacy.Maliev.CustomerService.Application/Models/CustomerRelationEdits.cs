@@ -25,7 +25,7 @@ public sealed record CustomerRelationVersionedResponse(CustomerRelationResponse 
 /// <summary>Scoped company replacement; callers cannot assign relation identifiers or timestamps.</summary>
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record CustomerCompanyRelationRequest(
-    [Required, StringLength(256)] string Name,
+    [Required, CompanyNameLength] string Name,
     [StringLength(256)] string? TaxNumber,
     [StringLength(256)] string? Registrar);
 

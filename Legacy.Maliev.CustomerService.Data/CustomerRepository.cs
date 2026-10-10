@@ -319,7 +319,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     public async Task<Company> CreateCompanyAsync(UpsertCompanyRequest request, CancellationToken cancellationToken)
     {
         var now = UtcWallClockNow();
-        var entity = new Company { Name = request.Name.Trim(), TaxNumber = request.TaxNumber, Registrar = request.Registrar, CreatedDate = now, ModifiedDate = now };
+        var entity = new Company { Name = request.Name, TaxNumber = request.TaxNumber, Registrar = request.Registrar, CreatedDate = now, ModifiedDate = now };
         dbContext.Companies.Add(entity); await dbContext.SaveChangesAsync(cancellationToken); return entity;
     }
 
@@ -327,7 +327,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     public async Task<bool> UpdateCompanyAsync(int id, UpsertCompanyRequest request, CancellationToken cancellationToken)
     {
         var entity = await dbContext.Companies.FindAsync([id], cancellationToken); if (entity is null) return false;
-        entity.Name = request.Name.Trim(); entity.TaxNumber = request.TaxNumber; entity.Registrar = request.Registrar;
+        entity.Name = request.Name; entity.TaxNumber = request.TaxNumber; entity.Registrar = request.Registrar;
         entity.ModifiedDate = UtcWallClockNow(); await dbContext.SaveChangesAsync(cancellationToken); return true;
     }
 
