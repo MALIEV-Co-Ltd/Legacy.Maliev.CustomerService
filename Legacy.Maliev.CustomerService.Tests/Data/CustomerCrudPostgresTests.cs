@@ -27,7 +27,9 @@ public sealed class CustomerCrudPostgresTests(CustomerCrudPostgresFixture fixtur
         var request = new UpsertCustomerRequest(" ทดสอบ ", " ตัวอย่าง ", "02-000-0000", "080-000-0000", "02-000-0001",
             " sample@example.test ", new DateTime(1990, 1, 2), company.Id, null, null);
         var customer = await service.CreateCustomerAsync(request, cancellation);
-        Assert.Equal("ทดสอบ ตัวอย่าง", customer.FullName);
+        Assert.Equal("ทดสอบ   ตัวอย่าง", customer.FullName);
+        Assert.Equal(request.FirstName, customer.FirstName);
+        Assert.Equal(request.LastName, customer.LastName);
         Assert.Equal("sample@example.test", customer.Email);
         Assert.Equal("02-000-0001", customer.Fax);
         Assert.Equal(new DateTime(1990, 1, 2), customer.DateOfBirth);
@@ -58,7 +60,8 @@ public sealed class CustomerCrudPostgresTests(CustomerCrudPostgresFixture fixtur
         Assert.True(await service.UpdateCustomerAsync(customer.Id, request, cancellation));
         db.ChangeTracker.Clear();
         var updated = await service.GetCustomerAsync(customer.Id, cancellation);
-        Assert.Equal("ใหม่", updated?.FirstName);
+        Assert.Equal(" ใหม่ ", updated?.FirstName);
+        Assert.Equal(request.LastName, updated?.LastName);
         Assert.Equal(customer.CreatedDate, updated?.CreatedDate);
         Assert.Equal(new DateTime(2026, 9, 1, 2, 2, 3), updated?.ModifiedDate);
         Assert.Equal(address.Id, updated?.BillingAddress?.Id);

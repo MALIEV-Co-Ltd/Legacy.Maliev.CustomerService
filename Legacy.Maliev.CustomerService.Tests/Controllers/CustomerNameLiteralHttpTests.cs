@@ -1,0 +1,354 @@
+using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+
+namespace Legacy.Maliev.CustomerService.Tests.Controllers;
+
+[Collection("Customer profile lifecycle")]
+public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture fixture)
+    : IClassFixture<CustomerDetailAuthorityFixture>
+{
+    private const string First = " \tสมชาย\u00a0 ";
+    private const string Last = "\u00a0 ใจดี\t ";
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Create_PreservesLiteralNamesInStorageWireAndKeyedReplay(bool keyed)
+    {
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+        var token = timeout.Token;
+        await fixture.ResetAsync();
+        await using var host = fixture.Start();
+        using var client = fixture.Client(host, "customer-lifecycle");
+        var before = await fixture.SnapshotAsync();
+        var key = Guid.NewGuid();
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/customers/")
+        {
+            Content = JsonContent.Create(Payload(First, Last)),
+        };
+        if (keyed) request.Headers.Add("Idempotency-Key", key.ToString());
+        using var created = await client.SendAsync(request, token);
+        Assert.True(created.StatusCode == HttpStatusCode.Created,
+            $"keyed={keyed}: actual {created.StatusCode}; body {await created.Content.ReadAsStringAsync(token)}");
+        using var wire = JsonDocument.Parse(await created.Content.ReadAsStringAsync(token));
+        AssertNames(wire.RootElement, First, Last);
+        var id = wire.RootElement.GetProperty("Id").GetInt32();
+        Assert.True(id > 1);
+        Assert.EndsWith($"/customers/{id}", created.Headers.Location!.ToString(), StringComparison.OrdinalIgnoreCase);
+        await AssertStoredAsync(id, First, Last, token);
+        using var read = await client.GetAsync(created.Headers.Location, token);
+        Assert.Equal(HttpStatusCode.OK, read.StatusCode);
+        using var readJson = JsonDocument.Parse(await read.Content.ReadAsStringAsync(token));
+        AssertNames(readJson.RootElement, First, Last);
+        if (keyed)
+        {
+            using var replayRequest = new HttpRequestMessage(HttpMethod.Post, "/customers/")
+            {
+                Content = JsonContent.Create(Payload(First, Last)),
+            };
+            replayRequest.Headers.Add("Idempotency-Key", key.ToString());
+            using var replay = await client.SendAsync(replayRequest, token);
+            Assert.Equal(HttpStatusCode.Created, replay.StatusCode);
+            using var replayJson = JsonDocument.Parse(await replay.Content.ReadAsStringAsync(token));
+            AssertNames(replayJson.RootElement, First, Last);
+            Assert.Equal(id, replayJson.RootElement.GetProperty("Id").GetInt32());
+            await using var check = fixture.Context();
+            Assert.Equal(2, await check.Customers.CountAsync(token));
+            Assert.Equal(1, await check.CustomerCreateOperations.CountAsync(token));
+        }
+        using var deleted = await client.DeleteAsync($"/customers/{id}", token);
+        Assert.Equal(HttpStatusCode.NoContent, deleted.StatusCode);
+        Assert.Equal(before, await fixture.SnapshotAsync());
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Update_PreservesLiteralNamesAndInvalidatesOldCacheWithoutChangingRelations(bool versioned)
+    {
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+        var token = timeout.Token;
+        await fixture.ResetAsync();
+        await using var host = fixture.Start();
+        using var client = fixture.Client(host);
+        await fixture.SeedOldAsync(host);
+        var relations = await RelationsAsync(token);
+        await using var db = fixture.Context();
+        var original = await db.Customers.AsNoTracking().SingleAsync(token);
+        var oldRevision = await db.Customers.Select(row => EF.Property<uint>(row, "xmin")).SingleAsync(token);
+        using var read = await client.GetAsync("/customers/1/versioned", token);
+        Assert.Equal(HttpStatusCode.OK, read.StatusCode);
+        var etag = read.Headers.ETag!.ToString();
+        using var request = new HttpRequestMessage(HttpMethod.Put, versioned ? "/customers/1/versioned" : "/customers/1/")
+        {
+            Content = JsonContent.Create(Payload(First, Last)),
+        };
+        if (versioned) request.Headers.TryAddWithoutValidation("If-Match", etag);
+        using var updated = await client.SendAsync(request, token);
+        Assert.Equal(HttpStatusCode.NoContent, updated.StatusCode);
+        Assert.False(await fixture.CacheExistsAsync());
+        await AssertStoredAsync(1, First, Last, token);
+        var stored = await db.Customers.AsNoTracking().SingleAsync(token);
+        Assert.Equal(original.CreatedDate, stored.CreatedDate);
+        Assert.Equal(original.InternalRemark, stored.InternalRemark);
+        Assert.NotNull(stored.ModifiedDate);
+        if (original.ModifiedDate.HasValue) Assert.True(stored.ModifiedDate >= original.ModifiedDate);
+        Assert.NotEqual(oldRevision, await db.Customers.Select(row => EF.Property<uint>(row, "xmin")).SingleAsync(token));
+        Assert.Equal(relations, await RelationsAsync(token));
+        using var afterRead = await client.GetAsync("/customers/1", token);
+        Assert.Equal(HttpStatusCode.OK, afterRead.StatusCode);
+        using var afterJson = JsonDocument.Parse(await afterRead.Content.ReadAsStringAsync(token));
+        AssertNames(afterJson.RootElement, First, Last);
+        if (versioned)
+        {
+            var snapshot = await fixture.SnapshotAsync();
+            using var staleRequest = new HttpRequestMessage(HttpMethod.Put, "/customers/1/versioned")
+            {
+                Content = JsonContent.Create(Payload("Stale", "Writer")),
+            };
+            staleRequest.Headers.TryAddWithoutValidation("If-Match", etag);
+            using var stale = await client.SendAsync(staleRequest, token);
+            Assert.Equal(HttpStatusCode.PreconditionFailed, stale.StatusCode);
+            Assert.Equal(snapshot, await fixture.SnapshotAsync());
+            await AssertStoredAsync(1, First, Last, token);
+        }
+    }
+
+    [Theory]
+    [InlineData("anonymous", HttpStatusCode.Unauthorized)]
+    [InlineData("denied", HttpStatusCode.Forbidden)]
+    [InlineData("wrong-signature", HttpStatusCode.Unauthorized)]
+    [InlineData("expired", HttpStatusCode.Unauthorized)]
+    public async Task PaddedNames_DoNotBypassAuthority(string authority, HttpStatusCode status)
+    {
+        await fixture.ResetAsync();
+        await using var host = fixture.Start();
+        using var client = fixture.Client(host, authority);
+        client.Timeout = TimeSpan.FromSeconds(90);
+        await fixture.SeedOldAsync(host);
+        var before = await fixture.SnapshotAsync();
+        using var created = await client.PostAsJsonAsync("/customers/", Payload(First, Last));
+        using var updated = await client.PutAsJsonAsync("/customers/1", Payload(First, Last));
+        using var versioned = await client.PutAsJsonAsync("/customers/1/versioned", Payload(First, Last));
+        foreach (var response in new[] { created, updated, versioned }) Assert.Equal(status, response.StatusCode);
+        Assert.Equal(before, await fixture.SnapshotAsync());
+        Assert.True(await fixture.CacheExistsAsync());
+    }
+
+    [Theory]
+    [InlineData(" \t\u00a0", "Valid")]
+    [InlineData("Valid", " \t\u00a0")]
+    public async Task WhitespaceOnlyNames_RemainRejected(string first, string last)
+    {
+        await fixture.ResetAsync();
+        await using var host = fixture.Start();
+        using var client = fixture.Client(host, "customer-lifecycle");
+        client.Timeout = TimeSpan.FromSeconds(90);
+        var before = await fixture.SnapshotAsync();
+        using var created = await client.PostAsJsonAsync("/customers/", Payload(first, last));
+        using var updated = await client.PutAsJsonAsync("/customers/1", Payload(first, last));
+        using var versioned = await client.PutAsJsonAsync("/customers/1/versioned", Payload(first, last));
+        foreach (var response in new[] { created, updated, versioned }) Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(before, await fixture.SnapshotAsync());
+    }
+
+    [Fact]
+    public async Task KeyedCreate_RealHostRetryProvider_PreservesLiteralNamesAndReplay()
+    {
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+        var token = timeout.Token;
+        await fixture.ResetAsync();
+        await using var host = fixture.Start();
+        await using var scope = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.CreateAsyncScope(host.Services);
+        var db = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<Legacy.Maliev.CustomerService.Data.CustomerDbContext>(scope.ServiceProvider);
+        Assert.True(db.Database.CreateExecutionStrategy().RetriesOnFailure);
+        var service = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<Legacy.Maliev.CustomerService.Api.CustomerCreateReplayService>(scope.ServiceProvider);
+        var request = JsonSerializer.Deserialize<Legacy.Maliev.CustomerService.Application.Models.UpsertCustomerRequest>(JsonSerializer.Serialize(Payload(First, Last)))!;
+        var key = Guid.NewGuid();
+        Legacy.Maliev.CustomerService.Api.CustomerCreateReplayResult first;
+        try
+        {
+            first = await service.CreateAsync(key, "controlled-test-actor", request, token);
+        }
+        catch (InvalidOperationException exception)
+        {
+            var category = exception.Message.Contains("does not support user-initiated transactions", StringComparison.Ordinal)
+                ? "RetryProviderRejectsUserTransaction" : "OtherInvalidOperation";
+            var methods = string.Join(" -> ", new System.Diagnostics.StackTrace(exception).GetFrames()
+                .Select(frame => frame.GetMethod()?.DeclaringType?.FullName + "." + frame.GetMethod()?.Name));
+            Assert.Fail($"Controlled keyed failure: {category}; type={exception.GetType().FullName}; methods={methods}");
+            throw;
+        }
+        Assert.False(first.ConflictingKey);
+        Assert.Equal(First, first.Customer!.FirstName);
+        Assert.Equal(Last, first.Customer.LastName);
+        var replay = await service.CreateAsync(key, "controlled-test-actor", request, token);
+        Assert.False(replay.ConflictingKey);
+        Assert.Equal(first.Customer.Id, replay.Customer!.Id);
+        Assert.Equal(First, replay.Customer.FirstName);
+        Assert.Equal(Last, replay.Customer.LastName);
+        Assert.Equal(2, await db.Customers.CountAsync(token));
+        Assert.Equal(1, await db.CustomerCreateOperations.CountAsync(token));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task KeyedCreate_RealHostRetryProvider_RollsBackAndUsesFreshAttempt(bool transient)
+    {
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+        var token = timeout.Token;
+        await fixture.ResetAsync();
+        var failure = new KeyedSaveFailure(transient);
+        await using var host = fixture.Start(interceptor: failure);
+        await using var scope = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.CreateAsyncScope(host.Services);
+        var service = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<Legacy.Maliev.CustomerService.Api.CustomerCreateReplayService>(scope.ServiceProvider);
+        var request = JsonSerializer.Deserialize<Legacy.Maliev.CustomerService.Application.Models.UpsertCustomerRequest>(JsonSerializer.Serialize(Payload(First, Last)))!;
+        var key = Guid.NewGuid();
+        if (!transient)
+        {
+            await Assert.ThrowsAsync<InvalidOperationException>(() => service.CreateAsync(key, "controlled-test-actor", request, token));
+            await using var beforeRetry = fixture.Context();
+            Assert.Equal(1, await beforeRetry.Customers.CountAsync(token));
+            Assert.False(await beforeRetry.CustomerCreateOperations.AnyAsync(row => row.Key == key, token));
+        }
+
+        var created = await service.CreateAsync(key, "controlled-test-actor", request, token);
+        Assert.False(created.ConflictingKey);
+        Assert.Equal(First, created.Customer!.FirstName);
+        Assert.Equal(Last, created.Customer.LastName);
+        var replay = await service.CreateAsync(key, "controlled-test-actor", request, token);
+        Assert.Equal(created.Customer.Id, replay.Customer!.Id);
+        Assert.Equal(First, replay.Customer.FirstName);
+        Assert.Equal(Last, replay.Customer.LastName);
+        Assert.Equal(2, failure.Contexts.Count);
+        Assert.Equal(2, failure.Contexts.Distinct().Count());
+        await using var stored = fixture.Context();
+        Assert.Equal(2, await stored.Customers.CountAsync(token));
+        Assert.Equal(1, await stored.CustomerCreateOperations.CountAsync(row => row.Key == key, token));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task KeyedCreate_RealHostRetryProvider_LostCommitAckReplaysAndHonorsCancellation(bool cancel)
+    {
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+        await fixture.ResetAsync();
+        var failure = new KeyedCommitFailure(cancel ? timeout : null);
+        await using var host = fixture.Start(interceptor: failure);
+        await using var scope = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.CreateAsyncScope(host.Services);
+        var service = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<Legacy.Maliev.CustomerService.Api.CustomerCreateReplayService>(scope.ServiceProvider);
+        var request = JsonSerializer.Deserialize<Legacy.Maliev.CustomerService.Application.Models.UpsertCustomerRequest>(JsonSerializer.Serialize(Payload(First, Last)))!;
+        var key = Guid.NewGuid();
+        if (cancel)
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => service.CreateAsync(key, "controlled-test-actor", request, timeout.Token));
+        else
+            Assert.False((await service.CreateAsync(key, "controlled-test-actor", request, timeout.Token)).ConflictingKey);
+
+        using var verification = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+        var token = verification.Token;
+        var replay = await service.CreateAsync(key, "controlled-test-actor", request, token);
+        Assert.False(replay.ConflictingKey);
+        Assert.Equal(First, replay.Customer!.FirstName);
+        Assert.Equal(Last, replay.Customer.LastName);
+        Assert.True((await service.CreateAsync(key, "other-controlled-actor", request, token)).ConflictingKey);
+        Assert.True((await service.CreateAsync(key, "controlled-test-actor", request with { FirstName = "Changed" }, token)).ConflictingKey);
+        await using var stored = fixture.Context();
+        Assert.Equal(2, await stored.Customers.CountAsync(token));
+        var receipt = await stored.CustomerCreateOperations.SingleAsync(row => row.Key == key, token);
+        Assert.Equal(replay.Customer.Id, receipt.CustomerId);
+        Assert.Equal(1, failure.Commits);
+    }
+
+    private sealed class KeyedCommitFailure(CancellationTokenSource? cancellation) : Microsoft.EntityFrameworkCore.Diagnostics.DbTransactionInterceptor
+    {
+        private int commits;
+        public int Commits => Volatile.Read(ref commits);
+
+        public override Task TransactionCommittedAsync(System.Data.Common.DbTransaction transaction,
+            Microsoft.EntityFrameworkCore.Diagnostics.TransactionEndEventData eventData, CancellationToken cancellationToken = default)
+        {
+            if (Interlocked.Increment(ref commits) == 1)
+            {
+                if (cancellation is not null)
+                {
+                    cancellation.Cancel();
+                    throw new OperationCanceledException(cancellation.Token);
+                }
+
+                throw new Npgsql.NpgsqlException("controlled lost commit acknowledgement", new TimeoutException("controlled acknowledgement"));
+            }
+
+            return Task.CompletedTask;
+        }
+    }
+
+    private sealed class KeyedSaveFailure(bool transient) : Microsoft.EntityFrameworkCore.Diagnostics.SaveChangesInterceptor
+    {
+        private int calls;
+        public List<Guid> Contexts { get; } = [];
+
+        public override ValueTask<int> SavedChangesAsync(Microsoft.EntityFrameworkCore.Diagnostics.SaveChangesCompletedEventData eventData,
+            int result, CancellationToken cancellationToken = default)
+        {
+            Contexts.Add(eventData.Context!.ContextId.InstanceId);
+            if (Interlocked.Increment(ref calls) == 1)
+            {
+                if (transient) throw new Npgsql.NpgsqlException("controlled transient failure", new IOException("controlled test transport"));
+                throw new InvalidOperationException("controlled rollback failure");
+            }
+
+            return ValueTask.FromResult(result);
+        }
+    }
+
+    private static object Payload(string first, string last) => new
+    {
+        FirstName = first,
+        LastName = last,
+        Email = "literal@example.test",
+        Telephone = "020000001",
+        Mobile = "0800000001",
+        Fax = "020000002",
+        DateOfBirth = new DateTime(1980, 1, 1),
+        CompanyId = 1,
+        BillingAddressId = 1,
+        ShippingAddressId = 1,
+    };
+
+    private static void AssertNames(JsonElement item, string first, string last)
+    {
+        Assert.Equal(first, item.GetProperty("FirstName").GetString());
+        Assert.Equal(last, item.GetProperty("LastName").GetString());
+        Assert.Equal((first + " " + last).Trim(' '), item.GetProperty("FullName").GetString());
+        Assert.False(item.TryGetProperty("firstName", out _));
+        Assert.False(item.TryGetProperty("InternalRemark", out _));
+        foreach (var field in new[] { "PasswordHash", "SecurityStamp", "Revision", "Token" })
+            Assert.False(item.TryGetProperty(field, out _));
+    }
+
+    private async Task AssertStoredAsync(int id, string first, string last, CancellationToken token)
+    {
+        await using var db = fixture.Context();
+        var stored = await db.Customers.AsNoTracking().SingleAsync(row => row.Id == id, token);
+        Assert.Equal(first, stored.FirstName); Assert.Equal(last, stored.LastName);
+        Assert.Equal((first + " " + last).Trim(' '), stored.FullName);
+        Assert.Equal("literal@example.test", stored.Email);
+        Assert.Equal(1, stored.CompanyId); Assert.Equal(1, stored.BillingAddressId); Assert.Equal(1, stored.ShippingAddressId);
+        Assert.Equal("020000001", stored.Telephone); Assert.Equal("0800000001", stored.Mobile); Assert.Equal("020000002", stored.Fax);
+        Assert.Equal(new DateTime(1980, 1, 1), stored.DateOfBirth);
+    }
+
+    private async Task<string> RelationsAsync(CancellationToken token)
+    {
+        await using var db = fixture.Context();
+        return JsonSerializer.Serialize(new
+        {
+            Companies = await db.Companies.AsNoTracking().OrderBy(row => row.Id).ToArrayAsync(token),
+            Addresses = await db.Addresses.AsNoTracking().OrderBy(row => row.Id).ToArrayAsync(token),
+        });
+    }
+}

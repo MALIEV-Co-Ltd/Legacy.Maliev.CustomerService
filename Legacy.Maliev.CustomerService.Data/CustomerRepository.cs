@@ -111,8 +111,8 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
         var now = UtcWallClockNow();
         var entity = new Customer
         {
-            FirstName = request.FirstName.Trim(),
-            LastName = request.LastName.Trim(),
+            FirstName = request.FirstName,
+            LastName = request.LastName,
             Email = request.Email.Trim(),
             Telephone = request.Telephone,
             Mobile = request.Mobile,
@@ -195,7 +195,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     {
         var entity = await dbContext.Customers.FindAsync([id], cancellationToken);
         if (entity is null) return false;
-        entity.FirstName = request.FirstName.Trim(); entity.LastName = request.LastName.Trim(); entity.Email = request.Email.Trim();
+        entity.FirstName = request.FirstName; entity.LastName = request.LastName; entity.Email = request.Email.Trim();
         entity.Telephone = request.Telephone; entity.Mobile = request.Mobile; entity.Fax = request.Fax; entity.DateOfBirth = request.DateOfBirth;
         entity.CompanyId = request.CompanyId; entity.BillingAddressId = request.BillingAddressId; entity.ShippingAddressId = request.ShippingAddressId;
         entity.ModifiedDate = UtcWallClockNow();
@@ -210,8 +210,8 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
         var affected = await dbContext.Customers
             .Where(value => value.Id == id && EF.Property<uint>(value, "xmin") == revision)
             .ExecuteUpdateAsync(setters => setters
-                .SetProperty(value => value.FirstName, request.FirstName.Trim())
-                .SetProperty(value => value.LastName, request.LastName.Trim())
+                .SetProperty(value => value.FirstName, request.FirstName)
+                .SetProperty(value => value.LastName, request.LastName)
                 .SetProperty(value => value.Email, request.Email.Trim())
                 .SetProperty(value => value.Telephone, request.Telephone)
                 .SetProperty(value => value.Mobile, request.Mobile)
