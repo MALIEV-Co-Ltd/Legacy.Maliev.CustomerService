@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "enabled": false,
+  "owner": "Legacy.Maliev.CustomerService",
+  "originalSourceCommit": "c3450c9d9a75f04b32eeed91d05d95b9f7a2c449",
+  "rollout": {
+    "minReadySeconds": 90,
+    "preStopDrainSeconds": 60,
+    "terminationGracePeriodSeconds": 90,
+    "maxSurge": 1,
+    "maxUnavailable": 0
+  }
+}
