@@ -47,7 +47,7 @@ public sealed class CustomerDetailAuthorityFixture : IAsyncLifetime
         await admin.GetDatabase().ExecuteAsync("ACL", "SETUSER", "detail-fixture", "+@all");
         await admin.GetServer(redis.Hostname, redis.GetMappedPublicPort(6379)).FlushDatabaseAsync();
         await using var db = Context();
-        await db.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"Customer\", \"Company\", \"Address\" RESTART IDENTITY CASCADE");
+        await db.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"CustomerCreateOperation\", \"Customer\", \"Company\", \"Address\" RESTART IDENTITY CASCADE");
         var company = new Company { Name = "Before company", TaxNumber = "123" };
         var address = new Address { AddressLine1 = "Before road", City = "Bangkok", CountryId = 764 };
         db.Customers.Add(new Customer
