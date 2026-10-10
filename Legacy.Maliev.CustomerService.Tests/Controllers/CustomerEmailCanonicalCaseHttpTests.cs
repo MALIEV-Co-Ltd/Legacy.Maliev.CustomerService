@@ -230,7 +230,7 @@ public sealed class CustomerEmailCanonicalCaseHttpTests(CustomerDetailAuthorityF
                 catch { /* Exact request tokens and host/client disposal release test-owned transports. */ }
             }
             foreach (var request in requests)
-                if (request.IsCompletedSuccessfully) request.Result.Dispose();
+                if (request.IsCompletedSuccessfully) (await request).Dispose();
             Assert.All(requests, request => Assert.True(request.IsCompleted, "Owned provisioning request did not settle during cleanup."));
         }
     }
