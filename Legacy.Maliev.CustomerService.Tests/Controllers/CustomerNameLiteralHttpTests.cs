@@ -30,7 +30,8 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
         };
         if (keyed) request.Headers.Add("Idempotency-Key", key.ToString());
         using var created = await client.SendAsync(request, token);
-        Assert.Equal(HttpStatusCode.Created, created.StatusCode);
+        Assert.True(created.StatusCode == HttpStatusCode.Created,
+            $"keyed={keyed}: actual {created.StatusCode}; body {await created.Content.ReadAsStringAsync(token)}");
         using var wire = JsonDocument.Parse(await created.Content.ReadAsStringAsync(token));
         AssertNames(wire.RootElement, First, Last);
         var id = wire.RootElement.GetProperty("Id").GetInt32();

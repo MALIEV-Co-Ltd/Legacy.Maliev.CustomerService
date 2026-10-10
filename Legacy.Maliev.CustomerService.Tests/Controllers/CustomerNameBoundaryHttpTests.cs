@@ -66,7 +66,7 @@ public sealed class CustomerNameBoundaryHttpTests(CustomerDetailAuthorityFixture
                 if (route == "versioned-update") request.Headers.TryAddWithoutValidation("If-Match", etag);
                 using var result = await client.SendAsync(request, token);
                 Assert.True(result.StatusCode == (item.Accepted ? create ? HttpStatusCode.Created : HttpStatusCode.NoContent : HttpStatusCode.BadRequest),
-                    $"{route}/{field}/{item.Label}: actual {result.StatusCode}");
+                    $"{route}/{field}/{item.Label}: actual {result.StatusCode}; body {await result.Content.ReadAsStringAsync(token)}");
                 if (!item.Accepted)
                 {
                     Assert.Equal(before, await PhysicalSnapshotAsync(token));
