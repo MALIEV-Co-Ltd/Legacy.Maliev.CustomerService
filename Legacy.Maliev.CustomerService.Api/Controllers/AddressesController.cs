@@ -27,7 +27,13 @@ public sealed class AddressesController(ICustomerService service) : ControllerBa
     [RequirePermission(CustomerPermissions.AddressesCreate, ResourcePathTemplate = "/customers/{customerId}")]
     public async Task<IActionResult> CreateCustomerAddressAsync(int customerId, UpsertAddressRequest item, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(item.AddressLine1)) return BadRequest();
+        if (item is null)
+        {
+            var customer = await service.GetCustomerAsync(customerId, cancellationToken);
+            return customer is null ? NotFound() : BadRequest();
+        }
+
+        if (string.IsNullOrWhiteSpace(item.AddressLine1) || !AddressLine1LengthAttribute.IsStorable(item.AddressLine1)) return BadRequest();
         var address = await service.CreateAddressAsync(customerId, item, cancellationToken);
         return address is null ? NotFound() : CreatedAtRoute("GetAddress", new { customerId, addressId = address.Id }, address);
     }
@@ -83,7 +89,12 @@ public sealed class AddressesController(ICustomerService service) : ControllerBa
     [RequirePermission(CustomerPermissions.AddressesUpdate, ResourcePathTemplate = "/addresses/{id}")]
     public async Task<IActionResult> UpdateAddressAsync(int id, UpsertAddressRequest item, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(item.AddressLine1)) return BadRequest();
+        if (item is null)
+        {
+            return BadRequest();
+        }
+
+        if (string.IsNullOrWhiteSpace(item.AddressLine1) || !AddressLine1LengthAttribute.IsStorable(item.AddressLine1)) return BadRequest();
         return await service.UpdateAddressAsync(id, item, cancellationToken) ? NoContent() : NotFound();
     }
 }

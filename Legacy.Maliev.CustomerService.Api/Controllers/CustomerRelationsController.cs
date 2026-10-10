@@ -83,7 +83,7 @@ public sealed class CustomerRelationsController(ICustomerRelationService service
 
     private async Task<IActionResult> SaveAddressAsync(int customerId, CustomerRelationKind kind, int? relationId, CustomerAddressRelationRequest request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(request.AddressLine1) || request.CountryId == 0) return BadRequest();
+        if (string.IsNullOrWhiteSpace(request.AddressLine1) || !AddressLine1LengthAttribute.IsStorable(request.AddressLine1) || request.CountryId == 0) return BadRequest();
         var refusal = Precondition(out var version, out var revision);
         if (refusal is not null) return refusal;
         return Result(await service.SaveAddressAsync(customerId, kind, relationId, version!, revision, request, cancellationToken));

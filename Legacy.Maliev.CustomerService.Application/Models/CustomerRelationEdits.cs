@@ -33,7 +33,7 @@ public sealed record CustomerCompanyRelationRequest(
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record CustomerAddressRelationRequest(
     [StringLength(256)] string? Building,
-    [Required, StringLength(256)] string AddressLine1,
+    [Required, AddressLine1Length] string AddressLine1,
     [StringLength(256)] string? AddressLine2,
     [StringLength(256)] string? City,
     [StringLength(256)] string? State,
