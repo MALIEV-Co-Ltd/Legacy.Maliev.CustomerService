@@ -154,6 +154,45 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
         Assert.Equal(before, await fixture.SnapshotAsync());
     }
 
+    [Fact]
+    public async Task KeyedCreate_RealHostRetryProvider_PreservesLiteralNamesAndReplay()
+    {
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+        var token = timeout.Token;
+        await fixture.ResetAsync();
+        await using var host = fixture.Start();
+        await using var scope = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.CreateAsyncScope(host.Services);
+        var db = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<Legacy.Maliev.CustomerService.Data.CustomerDbContext>(scope.ServiceProvider);
+        Assert.True(db.Database.CreateExecutionStrategy().RetriesOnFailure);
+        var service = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<Legacy.Maliev.CustomerService.Api.CustomerCreateReplayService>(scope.ServiceProvider);
+        var request = JsonSerializer.Deserialize<Legacy.Maliev.CustomerService.Application.Models.UpsertCustomerRequest>(JsonSerializer.Serialize(Payload(First, Last)))!;
+        var key = Guid.NewGuid();
+        Legacy.Maliev.CustomerService.Api.CustomerCreateReplayResult first;
+        try
+        {
+            first = await service.CreateAsync(key, "controlled-test-actor", request, token);
+        }
+        catch (InvalidOperationException exception)
+        {
+            var category = exception.Message.Contains("does not support user-initiated transactions", StringComparison.Ordinal)
+                ? "RetryProviderRejectsUserTransaction" : "OtherInvalidOperation";
+            var methods = string.Join(" -> ", new System.Diagnostics.StackTrace(exception).GetFrames()
+                .Select(frame => frame.GetMethod()?.DeclaringType?.FullName + "." + frame.GetMethod()?.Name));
+            Assert.Fail($"Controlled keyed failure: {category}; type={exception.GetType().FullName}; methods={methods}");
+            throw;
+        }
+        Assert.False(first.ConflictingKey);
+        Assert.Equal(First, first.Customer!.FirstName);
+        Assert.Equal(Last, first.Customer.LastName);
+        var replay = await service.CreateAsync(key, "controlled-test-actor", request, token);
+        Assert.False(replay.ConflictingKey);
+        Assert.Equal(first.Customer.Id, replay.Customer!.Id);
+        Assert.Equal(First, replay.Customer.FirstName);
+        Assert.Equal(Last, replay.Customer.LastName);
+        Assert.Equal(2, await db.Customers.CountAsync(token));
+        Assert.Equal(1, await db.CustomerCreateOperations.CountAsync(token));
+    }
+
     private static object Payload(string first, string last) => new
     {
         FirstName = first,
