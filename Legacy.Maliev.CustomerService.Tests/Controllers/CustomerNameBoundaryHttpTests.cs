@@ -45,73 +45,77 @@ public sealed class CustomerNameBoundaryHttpTests(CustomerDetailAuthorityFixture
             ("NulNotStorable", "Name\0", 5, false),
         };
         foreach (var field in new[] { "FirstName", "LastName" })
-        foreach (var item in cases)
-        {
-            if (item.Label != "NulNotStorable")
-                Assert.Equal(item.Scalars, await db.Database.SqlQuery<int>($"SELECT char_length({item.Literal}) AS \"Value\"").SingleAsync(token));
-            await fixture.SeedOldAsync(host);
-            var before = await PhysicalSnapshotAsync(token);
-            var cacheBefore = await cache.GetAsync("customer:1", token);
-            Assert.NotNull(cacheBefore);
-            using var versionRead = await client.GetAsync("/customers/1/versioned", token);
-            Assert.Equal(HttpStatusCode.OK, versionRead.StatusCode);
-            var etag = versionRead.Headers.ETag!.ToString();
-            var first = field == "FirstName" ? item.Literal : "สมชาย";
-            var last = field == "LastName" ? item.Literal : "ใจดี";
-            var create = route is "create" or "keyed-create";
-            var path = create ? "/customers/" : route == "update" ? "/customers/1/" : "/customers/1/versioned";
-            var key = Guid.NewGuid();
-            using var request = Request(create ? HttpMethod.Post : HttpMethod.Put, path, first, last);
-            if (route == "keyed-create") request.Headers.Add("Idempotency-Key", key.ToString());
-            if (route == "versioned-update") request.Headers.TryAddWithoutValidation("If-Match", etag);
-            using var result = await client.SendAsync(request, token);
-            Assert.True(result.StatusCode == (item.Accepted ? create ? HttpStatusCode.Created : HttpStatusCode.NoContent : HttpStatusCode.BadRequest),
-                $"{route}/{field}/{item.Label}: actual {result.StatusCode}");
-            if (!item.Accepted)
+            foreach (var item in cases)
             {
-                Assert.Equal(before, await PhysicalSnapshotAsync(token));
-                Assert.Equal(cacheBefore, await cache.GetAsync("customer:1", token));
-                Assert.False(await db.CustomerCreateOperations.AnyAsync(row => row.Key == key, token));
-                continue;
+                if (item.Label != "NulNotStorable")
+                    Assert.Equal(item.Scalars, await db.Database.SqlQuery<int>($"SELECT char_length({item.Literal}) AS \"Value\"").SingleAsync(token));
+                await fixture.SeedOldAsync(host);
+                var before = await PhysicalSnapshotAsync(token);
+                var cacheBefore = await cache.GetAsync("customer:1", token);
+                Assert.NotNull(cacheBefore);
+                using var versionRead = await client.GetAsync("/customers/1/versioned", token);
+                Assert.Equal(HttpStatusCode.OK, versionRead.StatusCode);
+                var etag = versionRead.Headers.ETag!.ToString();
+                var first = field == "FirstName" ? item.Literal : "สมชาย";
+                var last = field == "LastName" ? item.Literal : "ใจดี";
+                var create = route is "create" or "keyed-create";
+                var path = create ? "/customers/" : route == "update" ? "/customers/1/" : "/customers/1/versioned";
+                var key = Guid.NewGuid();
+                using var request = Request(create ? HttpMethod.Post : HttpMethod.Put, path, first, last);
+                if (route == "keyed-create") request.Headers.Add("Idempotency-Key", key.ToString());
+                if (route == "versioned-update") request.Headers.TryAddWithoutValidation("If-Match", etag);
+                using var result = await client.SendAsync(request, token);
+                Assert.True(result.StatusCode == (item.Accepted ? create ? HttpStatusCode.Created : HttpStatusCode.NoContent : HttpStatusCode.BadRequest),
+                    $"{route}/{field}/{item.Label}: actual {result.StatusCode}");
+                if (!item.Accepted)
+                {
+                    Assert.Equal(before, await PhysicalSnapshotAsync(token));
+                    Assert.Equal(cacheBefore, await cache.GetAsync("customer:1", token));
+                    Assert.False(await db.CustomerCreateOperations.AnyAsync(row => row.Key == key, token));
+                    continue;
+                }
+                Assert.True(item.Literal.Length <= 256);
+                var id = 1;
+                if (create)
+                {
+                    using var body = JsonDocument.Parse(await result.Content.ReadAsStringAsync(token));
+                    id = body.RootElement.GetProperty("Id").GetInt32();
+                    AssertLiteral(body.RootElement, first, last);
+                    Assert.Equal(cacheBefore, await cache.GetAsync("customer:1", token));
+                }
+                else Assert.Null(await cache.GetAsync("customer:1", token));
+                var stored = await db.Customers.AsNoTracking().SingleAsync(row => row.Id == id, token);
+                Assert.Equal(first, stored.FirstName); Assert.Equal(last, stored.LastName);
+                Assert.Equal((first + " " + last).Trim(' '), stored.FullName);
+                using var read = await client.GetAsync($"/customers/{id}", token);
+                Assert.Equal(HttpStatusCode.OK, read.StatusCode);
+                using var readJson = JsonDocument.Parse(await read.Content.ReadAsStringAsync(token));
+                AssertLiteral(readJson.RootElement, first, last);
+                if (route == "keyed-create")
+                {
+                    var after = await PhysicalSnapshotAsync(token);
+                    using var replayRequest = Request(HttpMethod.Post, path, first, last);
+                    replayRequest.Headers.Add("Idempotency-Key", key.ToString());
+                    using var replay = await client.SendAsync(replayRequest, token);
+                    Assert.Equal(HttpStatusCode.Created, replay.StatusCode);
+                    using var replayJson = JsonDocument.Parse(await replay.Content.ReadAsStringAsync(token));
+                    Assert.Equal(id, replayJson.RootElement.GetProperty("Id").GetInt32());
+                    AssertLiteral(replayJson.RootElement, first, last);
+                    Assert.Equal(after, await PhysicalSnapshotAsync(token));
+                }
             }
-            Assert.True(item.Literal.Length <= 256);
-            var id = 1;
-            if (create)
-            {
-                using var body = JsonDocument.Parse(await result.Content.ReadAsStringAsync(token));
-                id = body.RootElement.GetProperty("Id").GetInt32();
-                AssertLiteral(body.RootElement, first, last);
-                Assert.Equal(cacheBefore, await cache.GetAsync("customer:1", token));
-            }
-            else Assert.Null(await cache.GetAsync("customer:1", token));
-            var stored = await db.Customers.AsNoTracking().SingleAsync(row => row.Id == id, token);
-            Assert.Equal(first, stored.FirstName); Assert.Equal(last, stored.LastName);
-            Assert.Equal((first + " " + last).Trim(' '), stored.FullName);
-            using var read = await client.GetAsync($"/customers/{id}", token);
-            Assert.Equal(HttpStatusCode.OK, read.StatusCode);
-            using var readJson = JsonDocument.Parse(await read.Content.ReadAsStringAsync(token));
-            AssertLiteral(readJson.RootElement, first, last);
-            if (route == "keyed-create")
-            {
-                var after = await PhysicalSnapshotAsync(token);
-                using var replayRequest = Request(HttpMethod.Post, path, first, last);
-                replayRequest.Headers.Add("Idempotency-Key", key.ToString());
-                using var replay = await client.SendAsync(replayRequest, token);
-                Assert.Equal(HttpStatusCode.Created, replay.StatusCode);
-                using var replayJson = JsonDocument.Parse(await replay.Content.ReadAsStringAsync(token));
-                Assert.Equal(id, replayJson.RootElement.GetProperty("Id").GetInt32());
-                AssertLiteral(replayJson.RootElement, first, last);
-                Assert.Equal(after, await PhysicalSnapshotAsync(token));
-            }
-        }
     }
 
     private static HttpRequestMessage Request(HttpMethod method, string path, string first, string last) => new(method, path)
     {
         Content = JsonContent.Create(new
         {
-            FirstName = first, LastName = last, Email = "boundary@example.test",
-            CompanyId = 1, BillingAddressId = 1, ShippingAddressId = 1,
+            FirstName = first,
+            LastName = last,
+            Email = "boundary@example.test",
+            CompanyId = 1,
+            BillingAddressId = 1,
+            ShippingAddressId = 1,
         }),
     };
 

@@ -155,9 +155,16 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
 
     private static object Payload(string first, string last) => new
     {
-        FirstName = first, LastName = last, Email = "literal@example.test",
-        Telephone = "020000001", Mobile = "0800000001", Fax = "020000002",
-        DateOfBirth = new DateTime(1980, 1, 1), CompanyId = 1, BillingAddressId = 1, ShippingAddressId = 1,
+        FirstName = first,
+        LastName = last,
+        Email = "literal@example.test",
+        Telephone = "020000001",
+        Mobile = "0800000001",
+        Fax = "020000002",
+        DateOfBirth = new DateTime(1980, 1, 1),
+        CompanyId = 1,
+        BillingAddressId = 1,
+        ShippingAddressId = 1,
     };
 
     private static void AssertNames(JsonElement item, string first, string last)
