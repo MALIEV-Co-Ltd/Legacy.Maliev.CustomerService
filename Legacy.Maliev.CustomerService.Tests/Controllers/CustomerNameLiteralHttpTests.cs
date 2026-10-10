@@ -193,6 +193,118 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
         Assert.Equal(1, await db.CustomerCreateOperations.CountAsync(token));
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task KeyedCreate_RealHostRetryProvider_RollsBackAndUsesFreshAttempt(bool transient)
+    {
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+        var token = timeout.Token;
+        await fixture.ResetAsync();
+        var failure = new KeyedSaveFailure(transient);
+        await using var host = fixture.Start(interceptor: failure);
+        await using var scope = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.CreateAsyncScope(host.Services);
+        var service = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<Legacy.Maliev.CustomerService.Api.CustomerCreateReplayService>(scope.ServiceProvider);
+        var request = JsonSerializer.Deserialize<Legacy.Maliev.CustomerService.Application.Models.UpsertCustomerRequest>(JsonSerializer.Serialize(Payload(First, Last)))!;
+        var key = Guid.NewGuid();
+        if (!transient)
+        {
+            await Assert.ThrowsAsync<InvalidOperationException>(() => service.CreateAsync(key, "controlled-test-actor", request, token));
+            await using var beforeRetry = fixture.Context();
+            Assert.Equal(1, await beforeRetry.Customers.CountAsync(token));
+            Assert.False(await beforeRetry.CustomerCreateOperations.AnyAsync(row => row.Key == key, token));
+        }
+
+        var created = await service.CreateAsync(key, "controlled-test-actor", request, token);
+        Assert.False(created.ConflictingKey);
+        Assert.Equal(First, created.Customer!.FirstName);
+        Assert.Equal(Last, created.Customer.LastName);
+        var replay = await service.CreateAsync(key, "controlled-test-actor", request, token);
+        Assert.Equal(created.Customer.Id, replay.Customer!.Id);
+        Assert.Equal(First, replay.Customer.FirstName);
+        Assert.Equal(Last, replay.Customer.LastName);
+        Assert.Equal(2, failure.Contexts.Count);
+        Assert.Equal(2, failure.Contexts.Distinct().Count());
+        await using var stored = fixture.Context();
+        Assert.Equal(2, await stored.Customers.CountAsync(token));
+        Assert.Equal(1, await stored.CustomerCreateOperations.CountAsync(row => row.Key == key, token));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task KeyedCreate_RealHostRetryProvider_LostCommitAckReplaysAndHonorsCancellation(bool cancel)
+    {
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+        await fixture.ResetAsync();
+        var failure = new KeyedCommitFailure(cancel ? timeout : null);
+        await using var host = fixture.Start(interceptor: failure);
+        await using var scope = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.CreateAsyncScope(host.Services);
+        var service = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<Legacy.Maliev.CustomerService.Api.CustomerCreateReplayService>(scope.ServiceProvider);
+        var request = JsonSerializer.Deserialize<Legacy.Maliev.CustomerService.Application.Models.UpsertCustomerRequest>(JsonSerializer.Serialize(Payload(First, Last)))!;
+        var key = Guid.NewGuid();
+        if (cancel)
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => service.CreateAsync(key, "controlled-test-actor", request, timeout.Token));
+        else
+            Assert.False((await service.CreateAsync(key, "controlled-test-actor", request, timeout.Token)).ConflictingKey);
+
+        using var verification = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+        var token = verification.Token;
+        var replay = await service.CreateAsync(key, "controlled-test-actor", request, token);
+        Assert.False(replay.ConflictingKey);
+        Assert.Equal(First, replay.Customer!.FirstName);
+        Assert.Equal(Last, replay.Customer.LastName);
+        Assert.True((await service.CreateAsync(key, "other-controlled-actor", request, token)).ConflictingKey);
+        Assert.True((await service.CreateAsync(key, "controlled-test-actor", request with { FirstName = "Changed" }, token)).ConflictingKey);
+        await using var stored = fixture.Context();
+        Assert.Equal(2, await stored.Customers.CountAsync(token));
+        var receipt = await stored.CustomerCreateOperations.SingleAsync(row => row.Key == key, token);
+        Assert.Equal(replay.Customer.Id, receipt.CustomerId);
+        Assert.Equal(1, failure.Commits);
+    }
+
+    private sealed class KeyedCommitFailure(CancellationTokenSource? cancellation) : Microsoft.EntityFrameworkCore.Diagnostics.DbTransactionInterceptor
+    {
+        private int commits;
+        public int Commits => Volatile.Read(ref commits);
+
+        public override Task TransactionCommittedAsync(System.Data.Common.DbTransaction transaction,
+            Microsoft.EntityFrameworkCore.Diagnostics.TransactionEndEventData eventData, CancellationToken cancellationToken = default)
+        {
+            if (Interlocked.Increment(ref commits) == 1)
+            {
+                if (cancellation is not null)
+                {
+                    cancellation.Cancel();
+                    throw new OperationCanceledException(cancellation.Token);
+                }
+
+                throw new Npgsql.NpgsqlException("controlled lost commit acknowledgement", new TimeoutException("controlled acknowledgement"));
+            }
+
+            return Task.CompletedTask;
+        }
+    }
+
+    private sealed class KeyedSaveFailure(bool transient) : Microsoft.EntityFrameworkCore.Diagnostics.SaveChangesInterceptor
+    {
+        private int calls;
+        public List<Guid> Contexts { get; } = [];
+
+        public override ValueTask<int> SavedChangesAsync(Microsoft.EntityFrameworkCore.Diagnostics.SaveChangesCompletedEventData eventData,
+            int result, CancellationToken cancellationToken = default)
+        {
+            Contexts.Add(eventData.Context!.ContextId.InstanceId);
+            if (Interlocked.Increment(ref calls) == 1)
+            {
+                if (transient) throw new Npgsql.NpgsqlException("controlled transient failure", new IOException("controlled test transport"));
+                throw new InvalidOperationException("controlled rollback failure");
+            }
+
+            return ValueTask.FromResult(result);
+        }
+    }
+
     private static object Payload(string first, string last) => new
     {
         FirstName = first,
