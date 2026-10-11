@@ -194,12 +194,13 @@ public sealed class CustomersController(ICustomerService service) : ControllerBa
         await service.UpdateInternalRemarkAsync(id, request, cancellationToken) ? NoContent() : NotFound();
 
     private static bool Valid(UpsertCustomerRequest request) =>
-        ValidName(request.FirstName) && ValidName(request.LastName) &&
-        !string.IsNullOrWhiteSpace(request.Email) && request.Email.Contains('@', StringComparison.Ordinal);
+        ValidLiteralText(request.FirstName) && ValidLiteralText(request.LastName) &&
+        ValidLiteralText(request.Email) && request.Email.Contains('@', StringComparison.Ordinal);
 
     // Preserve the original SQL Server nvarchar(256) UTF-16 capacity.
-    // Reject overlong literal names before writes, including excess trailing spaces.
-    private static bool ValidName(string? value)
+    // Reject overlong literal names and emails before writes, including excess
+    // trailing spaces that PostgreSQL varchar assignment can silently truncate.
+    private static bool ValidLiteralText(string? value)
     {
         if (string.IsNullOrWhiteSpace(value) || value.Length > 256) return false;
         var remaining = value.AsSpan();

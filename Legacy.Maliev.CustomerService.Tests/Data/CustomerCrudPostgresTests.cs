@@ -30,7 +30,8 @@ public sealed class CustomerCrudPostgresTests(CustomerCrudPostgresFixture fixtur
         Assert.Equal("ทดสอบ   ตัวอย่าง", customer.FullName);
         Assert.Equal(request.FirstName, customer.FirstName);
         Assert.Equal(request.LastName, customer.LastName);
-        Assert.Equal("sample@example.test", customer.Email);
+        // Original administrative writers preserve Email bytes, including padding.
+        Assert.Equal(request.Email, customer.Email);
         Assert.Equal("02-000-0001", customer.Fax);
         Assert.Equal(new DateTime(1990, 1, 2), customer.DateOfBirth);
         Assert.Equal(customer.CreatedDate, customer.ModifiedDate);

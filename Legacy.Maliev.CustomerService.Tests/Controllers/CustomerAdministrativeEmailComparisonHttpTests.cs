@@ -35,6 +35,8 @@ public sealed class CustomerAdministrativeEmailComparisonHttpTests(CustomerDetai
         using var selected = await writer.GetAsync($"/customers/{id}", token);
         Assert.Equal(HttpStatusCode.OK, selected.StatusCode);
         var cache = host.Services.GetRequiredService<IDistributedCache>();
+        // Normal reads bypass Redis; seed independent bytes to prove no cache mutation.
+        await cache.SetAsync($"customer:{id}", JsonSerializer.SerializeToUtf8Bytes(new { Id = id, Email = "cache-sentinel@example.test" }), token);
         var cacheBefore = await cache.GetAsync($"customer:{id}", token);
         Assert.NotNull(cacheBefore);
         var before = await SnapshotAsync(token);
@@ -92,6 +94,8 @@ public sealed class CustomerAdministrativeEmailComparisonHttpTests(CustomerDetai
         using var selected = await writer.GetAsync($"/customers/{id}", token);
         Assert.Equal(HttpStatusCode.OK, selected.StatusCode);
         var cache = host.Services.GetRequiredService<IDistributedCache>();
+        // Normal reads bypass Redis; seed independent bytes to prove no cache mutation.
+        await cache.SetAsync($"customer:{id}", JsonSerializer.SerializeToUtf8Bytes(new { Id = id, Email = "cache-sentinel@example.test" }), token);
         var cacheBefore = await cache.GetAsync($"customer:{id}", token);
         Assert.NotNull(cacheBefore);
         var before = await SnapshotAsync(token);
@@ -100,7 +104,7 @@ public sealed class CustomerAdministrativeEmailComparisonHttpTests(CustomerDetai
             using var lookup = await reader.GetAsync("/customers/emails/" + Uri.EscapeDataString(caller), token);
             await AssertRefusalAsync(lookup, core, token);
             using var provision = await writer.PostAsJsonAsync("/customers/instant-quotation-profile", ProvisionPayload(caller), token);
-            await AssertRefusalAsync(provision, core, token);
+            await AssertSelectedAsync(provision, id, token);
             Assert.Equal(before, await SnapshotAsync(token));
             Assert.Equal(cacheBefore, await cache.GetAsync($"customer:{id}", token));
         }

@@ -49,6 +49,8 @@ public sealed class CustomerEmailCanonicalCaseHttpTests(CustomerDetailAuthorityF
         using var selected = await writer.GetAsync($"/customers/{id}", token);
         Assert.Equal(HttpStatusCode.OK, selected.StatusCode);
         var cache = host.Services.GetRequiredService<IDistributedCache>();
+        // Normal reads bypass Redis; seed independent bytes to prove no cache mutation.
+        await cache.SetAsync($"customer:{id}", JsonSerializer.SerializeToUtf8Bytes(new { Id = id, Email = "cache-sentinel@example.test" }), token);
         var cacheBefore = await cache.GetAsync($"customer:{id}", token);
         Assert.NotNull(cacheBefore);
         var before = await SnapshotAsync(token);
@@ -111,7 +113,7 @@ public sealed class CustomerEmailCanonicalCaseHttpTests(CustomerDetailAuthorityF
         {
             using var lookup = await reader.GetAsync("/customers/emails/" + Uri.EscapeDataString(caller), token);
             using var provision = await writer.PostAsJsonAsync("/customers/instant-quotation-profile", ProvisionPayload(caller), token);
-            foreach (var failure in new[] { lookup, provision })
+            foreach (var failure in new[] { lookup })
             {
                 Assert.Equal(HttpStatusCode.InternalServerError, failure.StatusCode);
                 var body = await failure.Content.ReadAsStringAsync(token);
@@ -120,6 +122,9 @@ public sealed class CustomerEmailCanonicalCaseHttpTests(CustomerDetailAuthorityF
                 Assert.DoesNotContain("ambiguous", body, StringComparison.OrdinalIgnoreCase);
                 Assert.DoesNotContain("CustomerId", body, StringComparison.Ordinal);
             }
+            var provisioned = await ReadProvisionAsync(provision, token);
+            Assert.Equal(1, provisioned.Id);
+            Assert.False(provisioned.Created);
             Assert.Equal(before, await SnapshotAsync(token));
             Assert.Equal(cacheBefore, await cache.GetAsync("customer:1", token));
         }

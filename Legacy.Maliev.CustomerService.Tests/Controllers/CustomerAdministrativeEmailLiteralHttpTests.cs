@@ -101,7 +101,7 @@ public sealed class CustomerAdministrativeEmailLiteralHttpTests(CustomerDetailAu
             }
             else
             {
-                Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+                Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
                 var error = await response.Content.ReadAsStringAsync(token);
                 Assert.DoesNotContain(email, error, StringComparison.Ordinal);
                 Assert.DoesNotContain("Postgres", error, StringComparison.OrdinalIgnoreCase);
@@ -176,9 +176,11 @@ public sealed class CustomerAdministrativeEmailLiteralHttpTests(CustomerDetailAu
         Assert.Equal(HttpStatusCode.NoContent, first.StatusCode);
         using var fresh = await client.GetAsync("/customers/1", token);
         Assert.Equal(HttpStatusCode.OK, fresh.StatusCode);
+        // Seed the committed value explicitly; normal GET does not refill Redis.
+        var cache = host.Services.GetRequiredService<IDistributedCache>();
+        await cache.SetAsync("customer:1", JsonSerializer.SerializeToUtf8Bytes(new { Id = 1, Email = " winner@example.test " }), token);
         Assert.True(await fixture.CacheExistsAsync());
         var before = await SnapshotAsync(token);
-        var cache = host.Services.GetRequiredService<IDistributedCache>();
         var cacheBefore = await cache.GetAsync("customer:1", token);
         using var staleRequest = Request("versioned-update", " stale@example.test ", Guid.NewGuid(), etag);
         using var stale = await client.SendAsync(staleRequest, token);

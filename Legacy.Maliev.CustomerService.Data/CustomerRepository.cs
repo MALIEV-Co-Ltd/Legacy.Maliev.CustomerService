@@ -2,6 +2,7 @@ using Legacy.Maliev.CustomerService.Application.Interfaces;
 using Legacy.Maliev.CustomerService.Application.Models;
 using Legacy.Maliev.CustomerService.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Legacy.Maliev.CustomerService.Data;
 
@@ -133,6 +134,22 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
         InstantQuotationCustomerProfileRequest request,
         CancellationToken cancellationToken)
     {
+        return await dbContext.Database.CreateExecutionStrategy().ExecuteAsync(async token =>
+        {
+            // Each retry owns its context so rollback or a lost commit acknowledgement
+            // cannot replay an earlier attempt's tracked graph. The email lock and
+            // lowest-ID lookup run again before any graph is created.
+            await using var attempt = new CustomerDbContext(
+                (DbContextOptions<CustomerDbContext>)dbContext.GetService<IDbContextOptions>());
+            return await new CustomerRepository(attempt, timeProvider)
+                .ProvisionInstantQuotationProfileOnceAsync(request, token);
+        }, cancellationToken);
+    }
+
+    private async Task<InstantQuotationCustomerProfileResult> ProvisionInstantQuotationProfileOnceAsync(
+        InstantQuotationCustomerProfileRequest request,
+        CancellationToken cancellationToken)
+    {
         var normalizedEmail = NormalizeEmailForComparison(request.Email);
         await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
 
@@ -143,20 +160,18 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
             $"SELECT pg_advisory_xact_lock(hashtextextended({normalizedEmail} COLLATE \"C\", 0))",
             cancellationToken);
 
-        var existingCustomerIds = await FindMatchingCustomers(normalizedEmail)
+        // Provisioning preserves the accepted migration's deterministic lowest-ID
+        // selection for imported duplicates. Staff email lookup separately refuses
+        // ambiguity; both consumers use the same comparison relation.
+        var existingCustomerId = await FindMatchingCustomers(normalizedEmail)
             .AsNoTracking()
             .OrderBy(customer => customer.Id)
-            .Select(customer => customer.Id)
-            .Take(2)
-            .ToListAsync(cancellationToken);
-        if (existingCustomerIds.Count > 1)
-        {
-            throw new System.Data.DataException("Customer email lookup is ambiguous.");
-        }
-        if (existingCustomerIds.Count == 1)
+            .Select(customer => (int?)customer.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+        if (existingCustomerId.HasValue)
         {
             await transaction.CommitAsync(cancellationToken);
-            return new InstantQuotationCustomerProfileResult(existingCustomerIds[0], CustomerCreated: false);
+            return new InstantQuotationCustomerProfileResult(existingCustomerId.Value, CustomerCreated: false);
         }
 
         var now = UtcWallClockNow();
