@@ -1,0 +1,1190 @@
+{
+  "schemaVersion": 1,
+  "behaviorHead": "a498bbc08991485f23ce48ba4e67406d40c523b5",
+  "behaviorTree": "6c324c1c6c8bb31727c8babc49ccb6bfb0efea9d",
+  "ordinaryFullRun": 38099642214,
+  "filter": "FullyQualifiedName~CustomerAdministrativeEmailLiteralHttpTests|FullyQualifiedName~CustomerAdministrativeEmailComparisonHttpTests|FullyQualifiedName~CustomerEmailCanonicalCaseHttpTests|FullyQualifiedName~Provision_RetriesWholeLockedGraphWithoutDuplicatingResources|FullyQualifiedName~CustomerGraph_CRUD_PreservesRelationshipsTimestampsAndCacheBoundaries|FullyQualifiedName~ProvisionInstantQuotationProfile_LegacyDuplicateEmail_SelectsLowestIdWithoutCreatingResources",
+  "requiredFocusedCount": 77,
+  "selected": [
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.NonAsciiCanonicalCollision_RefusesBothConsumersAndKeepsAllStoredBytes(first: \"\\ud801\\udc00@example.test\", second: \"\\ud801\\udc28@EXAMPLE.TEST\")",
+      "testId": "bb75e372-e21c-c0e7-7852-3153e44a1e11"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailLiteralHttpTests.AdministrativeWrite_PreservesLiteralEmailAndUnrelatedGraph(route: \"keyed-create\", unicode: False)",
+      "testId": "0b040a81-b003-4206-29fa-3eba0a8391e1"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.NonWhitespaceAndInteriorWhitespace_AreNotCollapsedIntoAnotherProfile(character: \"\ufeff\", interior: False)",
+      "testId": "db8bda63-edaa-85e9-bc2d-7e1515f9e7f4"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.NonAsciiLiteralWriter_RoundTripsThroughBothCanonicalConsumers(route: \"versioned-update\", supplied: \"\\ud801\\udc00@EXAMPLE.TEST\", equivalent: \"\\ud801\\udc28@example.test\")",
+      "testId": "da79c673-dad4-6f23-9274-abc8e0102e28"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.NonAsciiCanonicalCollision_RefusesBothConsumersAndKeepsAllStoredBytes(first: \"\u13a0@example.test\", second: \"\uab70@EXAMPLE.TEST\")",
+      "testId": "d49956d8-a43a-4c6d-abee-173eaebc345d"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Data.CustomerCrudPostgresTests.CustomerGraph_CRUD_PreservesRelationshipsTimestampsAndCacheBoundaries",
+      "testId": "5c1bb256-5c2d-a7f5-1256-1bb47352a1ee"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Data.CustomerPostgresMigrationTests.ProvisionInstantQuotationProfile_LegacyDuplicateEmail_SelectsLowestIdWithoutCreatingResources",
+      "testId": "058c6127-09d2-096c-80c3-6b09821c0ce7"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailLiteralHttpTests.LiteralEmail_DoesNotBypassWriteAuthority(authority: \"wrong-signature\", expected: Unauthorized)",
+      "testId": "ab972e77-3e55-e6c1-1a50-9fe2231bd8a9"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.NonAsciiLiteralWriter_RoundTripsThroughBothCanonicalConsumers(route: \"update\", supplied: \"\u03a3@EXAMPLE.TEST\", equivalent: \"\u03c2@example.test\")",
+      "testId": "62dc69c6-af7b-f938-d13d-b509c17aaf43"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.NonAsciiLiteralWriter_RoundTripsThroughBothCanonicalConsumers(route: \"create\", supplied: \"\u03a3@EXAMPLE.TEST\", equivalent: \"\u03c2@example.test\")",
+      "testId": "2100b4f6-78c0-ffe7-db86-b7f30ab20712"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.PaddedPlainCollision_BothConsumersRefuseWithoutGraphReplayOrCacheMutation(route: \"keyed-create\", count: 3)",
+      "testId": "0c743b69-9bd4-7ae7-a6d3-7ff3fe1af06a"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailLiteralHttpTests.LiteralEmail_DoesNotBypassWriteAuthority(authority: \"anonymous\", expected: Unauthorized)",
+      "testId": "e6d436ad-930a-4a9f-fb6e-c34b241ff001"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.NonAsciiCanonicalCollision_RefusesBothConsumersAndKeepsAllStoredBytes(first: \"\u03a3@example.test\", second: \"\u03c2@EXAMPLE.TEST\")",
+      "testId": "d129e5d9-cadd-d6ad-8e89-156167b59726"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.NonAsciiCanonicalCollision_RefusesBothConsumersAndKeepsAllStoredBytes(first: \"\u1e9e@example.test\", second: \"\u00df@EXAMPLE.TEST\")",
+      "testId": "0e6774bb-7d24-f9f5-f6cf-3e806dd90b41"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.LiteralWriter_LookupAndProvisionSelectSameProfileWithoutMutation(route: \"create\", unicode: False)",
+      "testId": "0c611992-7ca4-9b55-da84-7e387712ce80"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailLiteralHttpTests.PaddedEmail_UsesExistingStorageLimitAndRollsBackOverlongValue(route: \"create\")",
+      "testId": "cfc98bd4-30e2-89bb-788c-b373dd9c8ff8"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailLiteralHttpTests.StaleVersion_RefusesLiteralEmailWithoutInvalidatingCommittedCache",
+      "testId": "1c21f814-f68e-124a-5a46-2cd7e4cb2e3e"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.NonAsciiLiteralWriter_RoundTripsThroughBothCanonicalConsumers(route: \"keyed-create\", supplied: \"\\ud801\\udc00@EXAMPLE.TEST\", equivalent: \"\\ud801\\udc28@example.test\")",
+      "testId": "74581acc-2083-a9fd-51b1-7112ade375b2"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailLiteralHttpTests.InvalidEmail_RemainsRejectedWithoutGraphOrCacheMutation(email: \" \\t\u00a0 \")",
+      "testId": "b0940e4a-0fbe-546d-b2ca-279e5b36e1c8"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailLiteralHttpTests.AdministrativeWrite_PreservesLiteralEmailAndUnrelatedGraph(route: \"keyed-create\", unicode: True)",
+      "testId": "6f604c66-d130-07eb-e1f3-8d02251da8f6"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.AbsentNormalizedEmail_PreservesLookup404AndProvisioningCreationThenSelection",
+      "testId": "2328cd28-e910-df97-7f04-68495518ca95"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailLiteralHttpTests.AdministrativeWrite_PreservesLiteralEmailAndUnrelatedGraph(route: \"create\", unicode: False)",
+      "testId": "0a9dde11-4867-8aba-1e7c-a7820e239dd1"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailLiteralHttpTests.PaddedEmail_UsesExistingStorageLimitAndRollsBackOverlongValue(route: \"keyed-create\")",
+      "testId": "86fac9ca-13ef-8e12-30d8-d62bf115b8e8"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailLiteralHttpTests.LiteralEmail_DoesNotBypassWriteAuthority(authority: \"expired\", expected: Unauthorized)",
+      "testId": "11efe6c8-a3b8-201f-26b8-04bd98491932"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Data.QuotationProfileRetryPostgresTests.Provision_RetriesWholeLockedGraphWithoutDuplicatingResources(lostCommit: False)",
+      "testId": "76c5fc13-ebaa-b52e-569f-596372ecdf14"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailLiteralHttpTests.AdministrativeWrite_PreservesLiteralEmailAndUnrelatedGraph(route: \"create\", unicode: True)",
+      "testId": "57f6d3bc-41ac-4c50-ffe9-2f8baf71f9a2"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.LiteralWriter_LookupAndProvisionSelectSameProfileWithoutMutation(route: \"keyed-create\", unicode: True)",
+      "testId": "41c17d0e-cc1d-a4f2-96fa-8b10643a5db8"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailLiteralHttpTests.AdministrativeWrite_PreservesLiteralEmailAndUnrelatedGraph(route: \"versioned-update\", unicode: True)",
+      "testId": "db64593e-73b2-9edb-29ac-d2affff65658"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.NonAsciiLiteralWriter_RoundTripsThroughBothCanonicalConsumers(route: \"update\", supplied: \"\u00c9cole@EXAMPLE.TEST\", equivalent: \"\u00e9COLE@example.test\")",
+      "testId": "d3bf07dd-e2d4-8823-1f0f-2d148d17904b"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailLiteralHttpTests.AdministrativeWrite_PreservesLiteralEmailAndUnrelatedGraph(route: \"versioned-update\", unicode: False)",
+      "testId": "08680dc2-aab2-e3b7-fb58-8d2a07cff83b"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.InvalidAuthority_CannotReachNormalizedLookupOrProvisioning(authority: \"denied\", expected: Forbidden)",
+      "testId": "a4e2902b-eb73-c585-eaa2-87788de56d21"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailLiteralHttpTests.PaddedEmail_UsesExistingStorageLimitAndRollsBackOverlongValue(route: \"update\")",
+      "testId": "d7af953f-34ad-1a49-73f8-b9de1d827d0b"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.LiteralWriter_LookupAndProvisionSelectSameProfileWithoutMutation(route: \"update\", unicode: False)",
+      "testId": "c16f7ef3-fed6-8671-0f6e-5f53c4ffb228"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.NonAsciiLiteralWriter_RoundTripsThroughBothCanonicalConsumers(route: \"keyed-create\", supplied: \"\u0130@EXAMPLE.TEST\", equivalent: \"\u0130@example.test\")",
+      "testId": "904fe74d-6b18-3a12-467b-867ce4e0a0b8"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.LiteralWriter_LookupAndProvisionSelectSameProfileWithoutMutation(route: \"keyed-create\", unicode: False)",
+      "testId": "9a0b330c-8a34-bfe3-cc99-dc4682512d02"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.NonAsciiLiteralWriter_RoundTripsThroughBothCanonicalConsumers(route: \"keyed-create\", supplied: \"\u03a3@EXAMPLE.TEST\", equivalent: \"\u03c2@example.test\")",
+      "testId": "25ad0208-fd4d-bdc1-8309-3b95b127baae"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.NonWhitespaceAndInteriorWhitespace_AreNotCollapsedIntoAnotherProfile(character: \"\u200b\", interior: False)",
+      "testId": "34b105fd-f468-9c6a-0c42-dfb5fd2f0863"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.NonAsciiLiteralWriter_RoundTripsThroughBothCanonicalConsumers(route: \"update\", supplied: \"\\ud801\\udc00@EXAMPLE.TEST\", equivalent: \"\\ud801\\udc28@example.test\")",
+      "testId": "8074c34c-cc24-c83c-f0fc-f4d0ae06f938"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailLiteralHttpTests.AdministrativeWrite_PreservesLiteralEmailAndUnrelatedGraph(route: \"update\", unicode: True)",
+      "testId": "21080efe-3444-54c3-9bb3-5a54dc458d5a"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.PaddedPlainCollision_BothConsumersRefuseWithoutGraphReplayOrCacheMutation(route: \"update\", count: 3)",
+      "testId": "0d4c1a75-2b92-696f-71e7-767c9182b7e9"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.ExcludedTurkicExpansionAndNormalizationPolicies_DoNotSelectAnotherProfile(stored: \"\u0131@example.test\", distinct: \"i@example.test\")",
+      "testId": "42c17bb5-1a84-7a79-7443-752fdc9e9a12"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.ConcurrentNormalizedCallers_ReusePaddedProfileWithoutCreatingGraph",
+      "testId": "9434a127-dbcd-d969-49c8-091c9e733cf4"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.NonAsciiLiteralWriter_RoundTripsThroughBothCanonicalConsumers(route: \"keyed-create\", supplied: \"\u00c9cole@EXAMPLE.TEST\", equivalent: \"\u00e9COLE@example.test\")",
+      "testId": "8582194a-e055-9e1b-122f-1ed5b09373f4"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.NonAsciiLiteralWriter_RoundTripsThroughBothCanonicalConsumers(route: \"versioned-update\", supplied: \"\u00c9cole@EXAMPLE.TEST\", equivalent: \"\u00e9COLE@example.test\")",
+      "testId": "2e459af0-b429-fc05-9d5e-5551a8d02607"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.InvalidAuthority_CannotReachNormalizedLookupOrProvisioning(authority: \"expired\", expected: Unauthorized)",
+      "testId": "0c512e6e-5362-5a4e-bc99-887336a34ce4"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailLiteralHttpTests.ExistingLookup_StillNormalizesCallerAndReturnsUnchangedPlainStoredEmail",
+      "testId": "e5115452-d24d-d8e6-7e7b-a9d201cf98c3"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.ExcludedTurkicExpansionAndNormalizationPolicies_DoNotSelectAnotherProfile(stored: \"\u0130@example.test\", distinct: \"i@example.test\")",
+      "testId": "b2f8e5e3-223c-6893-5a3d-341d2d43d0aa"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.NonAsciiLiteralWriter_RoundTripsThroughBothCanonicalConsumers(route: \"versioned-update\", supplied: \"\u0130@EXAMPLE.TEST\", equivalent: \"\u0130@example.test\")",
+      "testId": "5c74e876-6a13-c188-5fec-339a800232d0"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.ExplicitWhitespacePolicy_MatchesAllDotNetWhitespaceWithoutChangingLiteralStorage",
+      "testId": "690adc6e-2e4b-96a4-348c-c1c263124366"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.NonAsciiLiteralWriter_RoundTripsThroughBothCanonicalConsumers(route: \"create\", supplied: \"\u00c9cole@EXAMPLE.TEST\", equivalent: \"\u00e9COLE@example.test\")",
+      "testId": "59f0f8af-b1e3-177d-4a7a-b9289e5bb09b"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.PaddedPlainCollision_BothConsumersRefuseWithoutGraphReplayOrCacheMutation(route: \"update\", count: 2)",
+      "testId": "1926a187-ce9b-1964-ccdb-78da002abb97"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.ExcludedTurkicExpansionAndNormalizationPolicies_DoNotSelectAnotherProfile(stored: \"\u00c9@example.test\", distinct: \"E\u0301@example.test\")",
+      "testId": "ed2a8c2e-0e26-d1dd-48dd-672520cf7539"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailLiteralHttpTests.InvalidEmail_RemainsRejectedWithoutGraphOrCacheMutation(email: \" padded-without-at \")",
+      "testId": "d2541c26-d00c-c283-7684-d9544009f139"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.NonWhitespaceAndInteriorWhitespace_AreNotCollapsedIntoAnotherProfile(character: \"\u00a0\", interior: True)",
+      "testId": "5f8b8796-494b-7a29-e952-55b0bb8adabe"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.PaddedPlainCollision_BothConsumersRefuseWithoutGraphReplayOrCacheMutation(route: \"create\", count: 3)",
+      "testId": "dac54ee5-3473-05c5-c3aa-6bba2a2d9849"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Data.QuotationProfileRetryPostgresTests.Provision_RetriesWholeLockedGraphWithoutDuplicatingResources(lostCommit: True)",
+      "testId": "5b1f2e46-5d30-0286-80e3-52ca14591db8"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.PaddedPlainCollision_BothConsumersRefuseWithoutGraphReplayOrCacheMutation(route: \"create\", count: 2)",
+      "testId": "99c072b3-b9dd-c24d-ee54-3010eb5a095c"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.ConcurrentAbsentCanonicalEquivalents_BothWaitForExactLockThenCreateOneGraph(first: \"\u03a3@EXAMPLE.TEST\", second: \"\u03c2@example.test\", canonical: \"\u03c3@example.test\")",
+      "testId": "f412b75b-fa6e-fe8f-4a6d-bf989cf0cd36"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.ConcurrentAbsentCanonicalEquivalents_BothWaitForExactLockThenCreateOneGraph(first: \"\u00c9cole@EXAMPLE.TEST\", second: \"\u00e9COLE@example.test\", canonical: \"\u00e9cole@example.test\")",
+      "testId": "81e534bd-4e63-00ea-f327-035db2c70fef"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.LiteralWriter_LookupAndProvisionSelectSameProfileWithoutMutation(route: \"versioned-update\", unicode: False)",
+      "testId": "ce575fb8-01ad-541d-81a8-f3db1b36f5b2"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.InvalidAuthority_CannotReachNormalizedLookupOrProvisioning(authority: \"anonymous\", expected: Unauthorized)",
+      "testId": "c18680ce-121f-a55d-f55d-b60b16a98b48"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.InvalidAuthority_CannotReachNormalizedLookupOrProvisioning(authority: \"wrong-signature\", expected: Unauthorized)",
+      "testId": "ed798acd-0349-8b55-0567-35ba4c8547f1"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.PaddedPlainCollision_BothConsumersRefuseWithoutGraphReplayOrCacheMutation(route: \"versioned-update\", count: 2)",
+      "testId": "933ac728-0a66-c958-d40d-8d9f2e4b997a"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailLiteralHttpTests.PaddedEmail_UsesExistingStorageLimitAndRollsBackOverlongValue(route: \"versioned-update\")",
+      "testId": "6cd36743-e9af-424f-374c-8a109350daef"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailLiteralHttpTests.LiteralEmail_DoesNotBypassWriteAuthority(authority: \"denied\", expected: Forbidden)",
+      "testId": "15daf383-c1d5-f7d1-bf80-0ddcc95f6968"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.PaddedPlainCollision_BothConsumersRefuseWithoutGraphReplayOrCacheMutation(route: \"versioned-update\", count: 3)",
+      "testId": "ec32687c-0329-f236-2903-74f7d9dd08f0"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.NonAsciiLiteralWriter_RoundTripsThroughBothCanonicalConsumers(route: \"create\", supplied: \"\\ud801\\udc00@EXAMPLE.TEST\", equivalent: \"\\ud801\\udc28@example.test\")",
+      "testId": "6d02b9b2-3a88-3192-bf23-c7023d19c530"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.LiteralWriter_LookupAndProvisionSelectSameProfileWithoutMutation(route: \"create\", unicode: True)",
+      "testId": "eed59e88-00c3-433e-0bbc-c2cc5c2972bc"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.NonAsciiLiteralWriter_RoundTripsThroughBothCanonicalConsumers(route: \"versioned-update\", supplied: \"\u03a3@EXAMPLE.TEST\", equivalent: \"\u03c2@example.test\")",
+      "testId": "8b425691-7ec7-9ee9-35ce-fb07672ea234"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.LiteralWriter_LookupAndProvisionSelectSameProfileWithoutMutation(route: \"versioned-update\", unicode: True)",
+      "testId": "b8d2c9de-5261-cf40-60cc-4c99256cbc7d"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.NonAsciiLiteralWriter_RoundTripsThroughBothCanonicalConsumers(route: \"update\", supplied: \"\u0130@EXAMPLE.TEST\", equivalent: \"\u0130@example.test\")",
+      "testId": "3000878d-ca74-bbbc-55ad-d5bfc8abb629"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.NonAsciiCanonicalCollision_RefusesBothConsumersAndKeepsAllStoredBytes(first: \"\u00c9cole@example.test\", second: \"\u00e9cole@EXAMPLE.TEST\")",
+      "testId": "bd8cd596-36d5-f74c-7703-1da2bd4668c1"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailLiteralHttpTests.AdministrativeWrite_PreservesLiteralEmailAndUnrelatedGraph(route: \"update\", unicode: False)",
+      "testId": "96f00201-08f5-72bb-3a4b-dc17e372365b"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.PaddedPlainCollision_BothConsumersRefuseWithoutGraphReplayOrCacheMutation(route: \"keyed-create\", count: 2)",
+      "testId": "2b80217c-97aa-37b9-ecf0-70f3029714d6"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.ExcludedTurkicExpansionAndNormalizationPolicies_DoNotSelectAnotherProfile(stored: \"\u00df@example.test\", distinct: \"ss@example.test\")",
+      "testId": "4b1542bd-9203-ecaf-4ed6-2c4cdce3fdb6"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerAdministrativeEmailComparisonHttpTests.LiteralWriter_LookupAndProvisionSelectSameProfileWithoutMutation(route: \"update\", unicode: True)",
+      "testId": "0d8938c0-febf-2e12-8ab9-3f37f97f9862"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerEmailCanonicalCaseHttpTests.NonAsciiLiteralWriter_RoundTripsThroughBothCanonicalConsumers(route: \"create\", supplied: \"\u0130@EXAMPLE.TEST\", equivalent: \"\u0130@example.test\")",
+      "testId": "562a9cb8-0499-e436-658d-d97a179fd0d7"
+    }
+  ],
+  "codePins": [
+    {
+      "path": ".github/workflows/_build-and-test.yml",
+      "bytes": 3307,
+      "sha256": "8d23ba2835adfca5b07dd3c8b0c9072418fc60f4c2f3b957fea9493c87feb51c"
+    },
+    {
+      "path": "Directory.Build.props",
+      "bytes": 515,
+      "sha256": "b03b93e505f9bd0f5d396c5041d9b35d6cfccb454384ba8151e55e05edf45083"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Authorization/CustomerPermissions.cs",
+      "bytes": 2366,
+      "sha256": "cec08e59670526a20199b81a677fbb86a2970dea139c93ae7e42ccb0a19263a7"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Controllers/AddressesController.cs",
+      "bytes": 5397,
+      "sha256": "48c843d7395fac0589716464dd049e870312428f9abae9bdef0844c6fd811f84"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Controllers/CompaniesController.cs",
+      "bytes": 4109,
+      "sha256": "287e77e449e68253d226582056ca9e0240407dfb662f8c9b455e84e96d5adadd"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Controllers/CustomerRelationsController.cs",
+      "bytes": 8095,
+      "sha256": "13bfd3cfed1647a54c2d7d56284b9f190273ed23dfab6b20a1fe2b1ed882150b"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Controllers/CustomersController.cs",
+      "bytes": 12471,
+      "sha256": "344cf12fa44af63ee577db20ac91a110270fd752caa68e10563c7422e88895f1"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Controllers/EmailsController.cs",
+      "bytes": 1553,
+      "sha256": "ca5ac4b95b905a4b99fa2c65ad203369a0a47ff132491a52116257e3831d46e9"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Controllers/QuotationProfileCompletionController.cs",
+      "bytes": 4197,
+      "sha256": "bca5697e2aefdfc416cca26b53fd5ed20c02fa7bd67390e1cb9c0c0d46d133cb"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/CustomerCreateReplayService.cs",
+      "bytes": 4531,
+      "sha256": "13f6fd4e16add22db3f3b5719cb15e50cbc0f48ee7902c3372b64af5506737af"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Legacy.Maliev.CustomerService.Api.csproj",
+      "bytes": 1761,
+      "sha256": "2e3761fbacb75bf275b7147006818ad54e025492e04d0ac96e578f0f9700f198"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Program.cs",
+      "bytes": 2475,
+      "sha256": "d161a28da02298348d07b84e0c87e8fa104d89f792b0a952c33408d03054e227"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Interfaces/ICustomerBoundaries.cs",
+      "bytes": 21758,
+      "sha256": "4f6b19724f53b87c7d9780b06012f27832d60df4ac1c485caff0b4c1c9be8252"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Interfaces/ICustomerRelationEdits.cs",
+      "bytes": 1365,
+      "sha256": "b35d02e3e7f6961900b5f07e63c24e843e85ff135f9da33cac9cb5978cf27ded"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Legacy.Maliev.CustomerService.Application.csproj",
+      "bytes": 476,
+      "sha256": "316f3f7a304b3bd4ff4d02dc3ea472b04daf596d92483dabfc840e8fe4e04835"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Migration/CustomerRollingAvailabilityReview.cs",
+      "bytes": 9658,
+      "sha256": "17a45fc353f8a6a0eae0bca87a392a66e588caecb0ae44bd7ae745a8e61c486b"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/CustomerModels.cs",
+      "bytes": 5550,
+      "sha256": "c7b3c9a9f793367be4202092210a424e04a4b0bb08b4dee10cd8634d817128d2"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/CustomerRelationEdits.cs",
+      "bytes": 5011,
+      "sha256": "f6d6a0b7aabbcc8f802bd4702da93590c96eba38e32a96eda670031ab0a866de"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/QuotationProfileCompletionModels.cs",
+      "bytes": 2296,
+      "sha256": "fa54e03554b4733028744dd3bd2c3dcd957852b04e44ec70a425bfad6cc39d50"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Services/CustomerApplicationService.cs",
+      "bytes": 7640,
+      "sha256": "a823a39a928f49069d435afe0b2d77d6a7ca568681f5d94545d42487c63cb2e8"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Services/CustomerRelationService.cs",
+      "bytes": 2859,
+      "sha256": "6e86151e218985fd8f76d74926b15324515daf11c8694145bf3fba55de70f2f4"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/CustomerCreateOperation.cs",
+      "bytes": 931,
+      "sha256": "b54c497cd352e791068ed1b9f86435c7c2c32832c37f2b8ade92c77eea8329d6"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/CustomerDbContext.cs",
+      "bytes": 7144,
+      "sha256": "6e5d93ba8d385099b0d06d782db17344fe9656fc056ddeed1c00c2f07710b970"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/CustomerDbContextFactory.cs",
+      "bytes": 930,
+      "sha256": "90e9632c85633609ca6be4e66d52de7948fca76ba51025d4cd53b7011bd0ea44"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/CustomerEmailComparisonCaseFolding.cs",
+      "bytes": 24443,
+      "sha256": "47e4199b9b7370d6cebb580a0665c686e704514eb9d97416ca395a35b11bcbb2"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/CustomerRelationRepository.cs",
+      "bytes": 8618,
+      "sha256": "abe2f4a3bd5033f4c33f145ea7e3d01a8b583443389f90c023b0164c8def76cd"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/CustomerRepository.cs",
+      "bytes": 22681,
+      "sha256": "0a354190be58c24f345875d26d7bf0347366f72705c74aa09da4d3c1e4fa18e8"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/DistributedCustomerCache.cs",
+      "bytes": 2616,
+      "sha256": "87de61003e9e4acf68427265fc2b87574e4f40ceaf7a4da0f1741db30ac28744"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Legacy.Maliev.CustomerService.Data.csproj",
+      "bytes": 1170,
+      "sha256": "7e6041c2250e65fe8c4f4878cb1feda5c3f8e4e70c4a93adf2e4b300a5b32b4c"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260715040653_InitialPostgresCompatibility.Designer.cs",
+      "bytes": 9589,
+      "sha256": "0d85cb85ba1669fcd1f4f10c590f3b4d303c26b41061166937cd7e0d57c894b2"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260715040653_InitialPostgresCompatibility.cs",
+      "bytes": 6919,
+      "sha256": "c3fad934b5d92d57584936b4032c78d05d07bb7bfae0e09f55b647ab3807ce82"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260807140250_AlignUtcTimestampColumns.Designer.cs",
+      "bytes": 9713,
+      "sha256": "d7de9490db7302380c59c58299d8b1612e91b640743e0fe39bf3873b8d23e80d"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260807140250_AlignUtcTimestampColumns.cs",
+      "bytes": 4704,
+      "sha256": "27ec9b255bf432a77863549d4a5c9006b4d5b3a4e3b75ab57b8dfededbce37f0"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260901142048_AddCustomerInternalRemark.Designer.cs",
+      "bytes": 9885,
+      "sha256": "42bda16942b6d418b5515395491d0b311082a7f1a58fb685d1658054a61346a8"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260901142048_AddCustomerInternalRemark.cs",
+      "bytes": 821,
+      "sha256": "b54a58ed44c12a09f06cca834018c372deba8424837495d869bebafeb31b31dc"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260926135021_AddCustomerCreateReplay.Designer.cs",
+      "bytes": 11035,
+      "sha256": "8314e7a629e6f183079501eb6411e2781ee06c1c3b6fa974f865ffc6979e527f"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260926135021_AddCustomerCreateReplay.cs",
+      "bytes": 1553,
+      "sha256": "71c47199c53810b62e589b9776cc7429fec90d77ca4ad64d3f32bae0184b1fb9"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260927135317_MapNativeCustomerXminRevision.Designer.cs",
+      "bytes": 11242,
+      "sha256": "ad6b4df131cff1a8a03dacf78d83e0e5343b5b1bac1e62b319d21c6f9b38ddc3"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260927135317_MapNativeCustomerXminRevision.cs",
+      "bytes": 718,
+      "sha256": "01c845a1194679cfbd37ff8832d7b8039fa406a2b5f44c1c4d3c53d253831377"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260930050259_AddQuotationProfileCompletionReplay.Designer.cs",
+      "bytes": 12413,
+      "sha256": "2016a01a432b6fcc08de51832fd87e10e57027e1d5d1c4f385c27c0b913febf3"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260930050259_AddQuotationProfileCompletionReplay.cs",
+      "bytes": 1690,
+      "sha256": "94c7c42ee0a6c057b5f7b409fbe414ac02d6a8cec4eab6547b18282464023b17"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/CustomerDbContextModelSnapshot.cs",
+      "bytes": 12273,
+      "sha256": "795475768f136faad32445b7eafa56d87ad6b98a58394292329b4534e450a7be"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/QuotationProfileCompletionStore.cs",
+      "bytes": 17454,
+      "sha256": "8f5fa644223f5fcb274f7fd3c37355129332482e99c343ce1ee04a113ed42972"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Domain/CustomerEntities.cs",
+      "bytes": 4984,
+      "sha256": "d191de45db4d4bba5ff5d1938a5e168f03444e99a3a3e8f365934411e27b77e8"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Domain/Legacy.Maliev.CustomerService.Domain.csproj",
+      "bytes": 327,
+      "sha256": "0aec8d23fc31d062753209091db0c1b51aef9b67e0ed3626bf0dee66e38dc118"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Domain/QuotationProfileCompletionOperation.cs",
+      "bytes": 963,
+      "sha256": "13df9031878942e1efc0e42a630db1e7f56cab61e794ed4a1ebcbd13cf062a51"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Application/CustomerApplicationServiceTests.cs",
+      "bytes": 8464,
+      "sha256": "aa58ef4f2f1e967b27a11ae69e79a10afc43968686874951b3f0552ec5b8223a"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Caching/DistributedCustomerCacheTests.cs",
+      "bytes": 4136,
+      "sha256": "6d1ae93407571ef560f84e789ffd96e699a98c59bb3da456f833153b9a999778"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxOnlyHttpTests.cs",
+      "bytes": 9572,
+      "sha256": "14a8b7139444d71d9a5bf6e955876c0bcbd230a3f63bb4e1c1c08225db5cbade"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressAttachmentLifecycleHttpTests.cs",
+      "bytes": 7375,
+      "sha256": "682dbde822e5d7f0ac56931870edbde8ce619cf4a056fb7f62f8a60c404122d7"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressPersistenceHttpTests.cs",
+      "bytes": 9467,
+      "sha256": "3b0cf68bceafae91591b605f9f98ef640644b3b643c77ad82a24895e26dcd8f9"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAdministrativeEmailComparisonHttpTests.cs",
+      "bytes": 18557,
+      "sha256": "a9cde5118f87d845d9770e9803ea410c1356623f6508303cf87d4a9c7e6705b3"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAdministrativeEmailLiteralHttpTests.cs",
+      "bytes": 14261,
+      "sha256": "fa1698387c1f78fff7c38f3b72e83e2c7b00d2544dcb7874b3d076c90cf389be"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLifecycleHttpTests.cs",
+      "bytes": 7238,
+      "sha256": "4a384a1cf8b7c27d2f3f4420224761f8e95524ec5fd4670870eb509e65fd9575"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyPersistenceHttpTests.cs",
+      "bytes": 8283,
+      "sha256": "24c2cef9b15f442f7ed5f1c40ddcd78b3d67f695db71cdfb1d0e326328e8413b"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerControllerContractTests.cs",
+      "bytes": 4811,
+      "sha256": "e2053170e1e1f487870a71b5a66119a633f7fe68a189152ac01befc897c48a22"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCrudHttpTests.cs",
+      "bytes": 8506,
+      "sha256": "8d67ba43aafc62249aec81b749d48f7c9130556a1de11cf3dc528024abfb4c7d"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDetailAuthorityFixture.cs",
+      "bytes": 10630,
+      "sha256": "a2e55bec498b515f399f0a324b4346cd775c239e0b7eb8ba025c7df022751b3b"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDetailAuthorityHttpTests.cs",
+      "bytes": 9679,
+      "sha256": "37135c1102ed74d36e99f6630d6778722c2b0f725ac4351925938daccf68bbda"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerEmailAmbiguityHttpTests.cs",
+      "bytes": 6181,
+      "sha256": "9d01e6334dd47b5909dcd4f5684df9f291a28e5a1f098e2a988b0194bceb5fcd"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerEmailCanonicalCaseHttpTests.cs",
+      "bytes": 17206,
+      "sha256": "c68d1de3758cf66935eb3f0f5f86758c90e69b1f83f95389ce7feccf435a9f4a"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerInternalRemarkValidationTests.cs",
+      "bytes": 1550,
+      "sha256": "f089677531276a2a607f732ab64ad57c7a7c9750ed9feaa44e4699f2c2c78e9c"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerLiteralSearchHttpTests.cs",
+      "bytes": 7646,
+      "sha256": "4b25ed7eb16b4618c70ff502264b978a0964154bc1013030dd2df2e7e07fd044"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerNameBoundaryHttpTests.cs",
+      "bytes": 8803,
+      "sha256": "64580a726b6ef7c8cbf3e9c1f1c27c39dde0b9cae7c7fa5349b1138e0883818b"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerNameLiteralHttpTests.cs",
+      "bytes": 19601,
+      "sha256": "458ba5373b8d6581ae1ac2a21d17ee69a0e7867dfbfb88b466032d2a4b0555d5"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerProductionPipelineHttpTests.cs",
+      "bytes": 4921,
+      "sha256": "c5d3a2ea24732e95f24430dd7a426a64f93405c85a6c701bb0113456b87f01a2"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerProfileDeletionIsolationHttpTests.cs",
+      "bytes": 12814,
+      "sha256": "26f7a828414b2560747f7d8eb11ad2fda67c84038a96d62e5258ec91eaf9d1df"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerProfileLifecycleHttpTests.cs",
+      "bytes": 11068,
+      "sha256": "00b26792c325ac9fbdd15fa485b570fad200540144888a801a9567927c1cdcf5"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerRelationshipFailureHttpTests.cs",
+      "bytes": 6547,
+      "sha256": "406d9d461bc34e33f325aa77ecd3dc56d3b932470245615544c8ad2bb6d9a014"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScaffoldRuntimeProof.cs",
+      "bytes": 24662,
+      "sha256": "85b96d50c2591f7224e46d482192f29d14cb9f5c28d31d4aa7c202dc38b6c536"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScopedRelationEditHttpTests.cs",
+      "bytes": 37093,
+      "sha256": "d42e132193acc74b06888fe3bcc837807fa532f7106f162bc06f0c65799171bb"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerSharedRelationshipHttpTests.cs",
+      "bytes": 10062,
+      "sha256": "eb0bc22e46d8f97fccb94b2a8a2cece4333a55b502d14dab8c84b05b16656f39"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerSignificantSearchHttpTests.cs",
+      "bytes": 14952,
+      "sha256": "c60ad6b6ae716f2350597a68061839f44208e08af6425bc974719d0a006f9336"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerUnhealthyReadinessHttpTests.cs",
+      "bytes": 3847,
+      "sha256": "7019bb8358c5480647f5aa666ad88fe1c3c0d74372a11cf74e65785ae0148930"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerVersionedAuthorityHttpTests.cs",
+      "bytes": 5040,
+      "sha256": "aca7ac0dc7ae40b9da96b40dd4f40b39dcb56a65aa68d5a27ea9502755f1a287"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/ExceptionBoundaryContractTests.cs",
+      "bytes": 2973,
+      "sha256": "463826fb48d3575c1f9b8be579d6d6ac9c4644dde155cd0d60c99a3729a74531"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/QuotationProfileCompletionHttpTests.cs",
+      "bytes": 43866,
+      "sha256": "377548beab815860a66694891bc23292fe6ee5075e72c97ef2b836d9debdf6a0"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/CustomerJwtExternalizationTests.cs",
+      "bytes": 6061,
+      "sha256": "a95e925d3ec7ec915567426d7b859a9ab53157b35c6ce8c32fb8264d2df17797"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerCreateReplayPostgresTests.cs",
+      "bytes": 9265,
+      "sha256": "aed7c348e0bbd9339e1b1d1f5857db23e3db14582c2ee7d58294c8189aff0d17"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerCrudPostgresTests.cs",
+      "bytes": 9517,
+      "sha256": "19b7e6e0500b0ae20cbea598cea8ba87913a5879ef00455521f872b9ae70f612"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerModelCompatibilityTests.cs",
+      "bytes": 4370,
+      "sha256": "1250f5a64e9fa10f14c724f8354d4225d8873612a67be8410c632b7d1336aa78"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs",
+      "bytes": 16911,
+      "sha256": "8dc10c77699ca87ac1f9bc39961d863b69eb6381260062592098ea6cba2159ef"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerRevisionPostgresTests.cs",
+      "bytes": 8700,
+      "sha256": "56deca6fd593c0e41de3d144f9ec3683b36ac35676bc291bc778ee860253f8a1"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Data/QuotationProfileRetryPostgresTests.cs",
+      "bytes": 9216,
+      "sha256": "7f4c4a380e1ffa53ba1a8b7ba3a7018f6c163fbe548d56368cd390ad8fa905ad"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Documentation/CustomerDocumentationHttpTests.cs",
+      "bytes": 6829,
+      "sha256": "365f21b0d2927712ab3f2129261f41fc0ca163e9ed4e3d0ebd328eab58d206e5"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Legacy.Maliev.CustomerService.Tests.csproj",
+      "bytes": 1613,
+      "sha256": "b02ab9a044741a4db9da1fad9f9d9028480b882644aa5dc4ad58936a13454eda"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/PublishWorkflowPermissionContractTests.cs",
+      "bytes": 2298,
+      "sha256": "e4a1286cfcaa95861735cf869bd021fbaffe680d11310f501a0ceecfd77a2002"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Startup/CustomerStartupInterceptionTests.cs",
+      "bytes": 5321,
+      "sha256": "d68daa44a58989186a4f9de06052e289b0a115c258844428cade5e2ed7cbadf9"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Startup/CustomerStartupProcess.cs",
+      "bytes": 9945,
+      "sha256": "60c8c5f1038ab06964221c4b0f3f68be3c84ea4a2b9d01c39a1034a76067c3ea"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Startup/CustomerStartupProcessTests.cs",
+      "bytes": 5350,
+      "sha256": "e8865634ef37a8455986c38222fe022aa8095193ffd3778f7557157271f41ef2"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Workflows/CustomerRollingAvailabilityContractTests.cs",
+      "bytes": 16000,
+      "sha256": "53c04640f289d76f0b801e694286d05d851f7f185d14acfdc380f3c4bfe037dc"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Workflows/DependabotConfigurationContractTests.cs",
+      "bytes": 2443,
+      "sha256": "a4b84cd5a2184e1d5af118c324f81f2b6ae323d7269456506aaaf7ed8620854f"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Workflows/PublicationDependencyTests.cs",
+      "bytes": 3168,
+      "sha256": "9dc889fa3e630b62dd4d2bdf0b9cc1227e6229203d43b655d534b6a8027ca200"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Workflows/WorkflowContractTests.cs",
+      "bytes": 24730,
+      "sha256": "b607f39c3b69581e9e4f9ecd9b2d0794dcc8b5be8a3a0a98b914bbb9872bb141"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.slnx",
+      "bytes": 531,
+      "sha256": "3dd9d03f4b3a0f929dce460a3dffedcfc4298eb1a4b5dcd4e88cb7b71cbdc5e8"
+    },
+    {
+      "path": "tooling/CustomerStartupPhaseProbe/CustomerStartupPhaseProbe.csproj",
+      "bytes": 296,
+      "sha256": "25d111608dc0c1dd47702cd0501f7de2e20d67552ff7e1c3779722985c27641e"
+    },
+    {
+      "path": "tooling/CustomerStartupPhaseProbe/StartupHook.cs",
+      "bytes": 3237,
+      "sha256": "112a4b454783fa473a5734dbe95c388abfad02120f2c70850a883b0debfb751d"
+    },
+    {
+      "path": "nuget.config",
+      "bytes": 197,
+      "sha256": "aec93b5637ab6d62470979a008990a4a336a287ab83a3f2541849ae735674055"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/Directory.Build.props",
+      "bytes": 598,
+      "sha256": "56228ebe62fe27ad7377a27dcbd954968cd05aaf8ae5a3fa113f3e1da773a8de"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/Legacy.Maliev.ServiceDefaults.slnx",
+      "bytes": 221,
+      "sha256": "27306562c9b1ca3e025a6616c2bdbcd0d201944d9fea5350772ddc9773557fb1"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/global.json",
+      "bytes": 81,
+      "sha256": "b48d6da8fa62c0da7cc8a2da4ea036ac55836660a448ba533135abb5b8451b73"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/nuget.config",
+      "bytes": 197,
+      "sha256": "aec93b5637ab6d62470979a008990a4a336a287ab83a3f2541849ae735674055"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/AssemblyInfo.cs",
+      "bytes": 102,
+      "sha256": "50b9c15ab1f0fe2def488072d2434f67f609c9bdc6c2b19358f28ed64f40f719"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Authorization/IAuthMetrics.cs",
+      "bytes": 677,
+      "sha256": "c8f92faba768eb2defaf0b17407750a6c0c6f25a9b3d2de6c4acdb0b950805ea"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Authorization/PermissionAuthorizationHandler.cs",
+      "bytes": 17197,
+      "sha256": "687d32dc8d21fc6a150a3cfd40ba332b921bac7f32ada23ec7490177a7d86d17"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Authorization/PermissionAuthorizationPolicyProvider.cs",
+      "bytes": 4626,
+      "sha256": "d28a44a4add52e11cbb54d9cb8beb273d969b52c030d7241afb12dc387a8986d"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Authorization/PermissionRequirement.cs",
+      "bytes": 2631,
+      "sha256": "aa8df5dbc098b67741f5564cf390b1a77cf2b0ca303105edd1eb2e4ffa5bcbff"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Authorization/RequirePermissionAttribute.cs",
+      "bytes": 4470,
+      "sha256": "4fa797ffcc231f5b92f916b90a0650d4f391eac5cd552c6cac9d924d82008f64"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Caching/CacheLogValue.cs",
+      "bytes": 718,
+      "sha256": "821ae5218cd3f3ef0bd54968145837660b092f8a8a976f6e0e5ed763b11344f9"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Caching/ICacheService.cs",
+      "bytes": 2576,
+      "sha256": "ca0cb9b86d92ac7b37a5cab67ad0e3e6cae35ff9695774948e795e8cc6c16123"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Caching/InMemoryCacheService.cs",
+      "bytes": 8966,
+      "sha256": "01dc21381386d0a278a17e83f968f895a783f22d76141fb6881ffba0ee7af5d8"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Caching/RedisAvailabilityHealthCheck.cs",
+      "bytes": 997,
+      "sha256": "bf34d883d56208e67962c3064780ced956824e6ab37c9cfa8ecb4f78f7411dc4"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Caching/RedisCacheService.cs",
+      "bytes": 9856,
+      "sha256": "5c9f4e8321a31a650ff08c16ea1adbc2338d50688a57a15524e8ff7134964022"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Database/SnakeCaseNamingHelper.cs",
+      "bytes": 3724,
+      "sha256": "96930338889040a674f2f4f7dcca54ae98b68dfe87c461cb28b994a1c03711f8"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Diagnostics/PrivateDependencyFailureHandler.cs",
+      "bytes": 2373,
+      "sha256": "54d7eb3498e6428f5673d62af6adce21adf68e5bf044a459615c6171d0f8153d"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Diagnostics/PrivateStartupBoundary.cs",
+      "bytes": 3486,
+      "sha256": "72487ace3b4f797f78c100afaec66018e8829e2e50853c5dbc05d07ebe90edaf"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.ApiDocumentation.cs",
+      "bytes": 5424,
+      "sha256": "e2e69acc3f6e7558074841cf06c5aafb05f2f45a41408ccc7f8c5f395022e3c6"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.ApiVersioning.cs",
+      "bytes": 1262,
+      "sha256": "d73355cae6bca988ea3cd75efeaaebf4eb4a0fbb8217198d53da0f9422c80e05"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.AuthServiceTokenExchange.cs",
+      "bytes": 9437,
+      "sha256": "b480464172e42a932637d7b87947880b1a6f8b9dc33aa7bd94d7c808beff9210"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.Authentication.Cookie.cs",
+      "bytes": 4623,
+      "sha256": "5572fdcf51a85738f8b8dc3c6c822189ded39efed0377fdcf5251ee0c9b6816e"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.Authentication.cs",
+      "bytes": 10677,
+      "sha256": "a39e5dde44a8fd406ce7aad6ea2f63b083cf7e8a2a1297af93d4e5854ebeea56"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.BackgroundServiceResilience.cs",
+      "bytes": 1737,
+      "sha256": "7a4155057807c363cca9ac21ada9c1416c2edf549f37076591ef5aceb444c238"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.Caching.cs",
+      "bytes": 7467,
+      "sha256": "94fa3177963e877451eb2c03967163e3e38ee5e62f5e22b1a1ae872cdae372ce"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.Cors.cs",
+      "bytes": 5579,
+      "sha256": "217cede0788cf8611a94052ccb3f3c26966b8b3ae6bf81cc7ba7b7b7b1dc2666"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.Database.cs",
+      "bytes": 8784,
+      "sha256": "6e01fa4212904233e62e6a258a257b84feca7f6c8ae422765a06aa22f98e9638"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.HttpClients.cs",
+      "bytes": 11977,
+      "sha256": "192c6573bfe3c0f8e026c7fc9a162ee96a4cb9c1b401c47ffc16dd21b1a7627d"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.IAM.cs",
+      "bytes": 3742,
+      "sha256": "c0f97b7347a1bf400a9aedc7527a7020720bd4047cf8c12d200781f55a91e46f"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.IAMRegistration.cs",
+      "bytes": 2024,
+      "sha256": "afd5d6831cc7f32091c1c2c5fb075bbbd563f6537e0629fda3b1d6e94931f8c1"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.LegacyServiceAuthentication.cs",
+      "bytes": 2804,
+      "sha256": "4d2cd12e93adf8436de735b37fb97413ec05eb64be5f2d5098981caa97bb60f8"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.MassTransit.cs",
+      "bytes": 9521,
+      "sha256": "d178f512edb603e1da8f97575cf46f9bbf11d0c258aff244a1b2cbf8bf232797"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.Middleware.cs",
+      "bytes": 4406,
+      "sha256": "581473862acca83145d81eeb131dd842718f5955dd7b192221376d633c240683"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.PrivateFailureObservation.cs",
+      "bytes": 3409,
+      "sha256": "736d8b5800e7071e2353f7b15ee0e40cab8713436d6cb7364a88cacbf83365eb"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.RateLimiting.cs",
+      "bytes": 8935,
+      "sha256": "a15a09e2c4a1f2b203e56f739c21a4d7967897ecbc325d9a21107d54e84773b3"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.Redis.cs",
+      "bytes": 7120,
+      "sha256": "ad478557399007cf4aa3850f22a42e987753223054a25855c6f0903744c37267"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.Secrets.cs",
+      "bytes": 993,
+      "sha256": "fcd6f3f4e7d14c394b22cdc5c4c052c690982b45b5e79f2ae6f9dd07db728061"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.ServiceRegistration.cs",
+      "bytes": 4914,
+      "sha256": "9ea5602e48bc033c555980f2b25892e8a49f095fd02a15e369e3a63627af36cc"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.cs",
+      "bytes": 13310,
+      "sha256": "645b99cdd4fca495da84f5b55ce93645b7e96641232d11ee387c9a520505c791"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/AuthServiceTokenExchangeHandler.cs",
+      "bytes": 868,
+      "sha256": "510ebf95f32ab2cb64fa3918c75e9fd1486c7a469acaf70bdb5289ad467ddebe"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/AuthServiceTokenProvider.cs",
+      "bytes": 20765,
+      "sha256": "9d51ada5721927261fc276df241bc38e6685ba263f9f8dba751c91259a429702"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/BackgroundIAMRegistrationService.cs",
+      "bytes": 11366,
+      "sha256": "7c9b120870ae9b41e0223716ac7dbdfdf08fe7b7fa85ff907c444cd33bb9fe4e"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/IAMRegistrationHealthCheck.cs",
+      "bytes": 2861,
+      "sha256": "fd3a1735cbf7ca7f17f106a46edd368bd4bff2fe1803d70248e72e56bae443a8"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/IAMRegistrationService.cs",
+      "bytes": 4082,
+      "sha256": "5ba4464c409aa6b3622f4bab33316454f9cacb4b1fcb965a3bc15e2e5a1c8220"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/IIamServiceClient.cs",
+      "bytes": 4524,
+      "sha256": "62eb9950c7a8ff816f0084fdf1226f7925b727e7cf8e4a6abc0e03aafa9649fa"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/IServicePermissions.cs",
+      "bytes": 300,
+      "sha256": "2381ba0c905141c5ec7447d4d1b165b9da2fb8bc254b87a08e5bbab27b0eb064"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/IamClientRegistrationGuard.cs",
+      "bytes": 3261,
+      "sha256": "dbdb345c8a834bc6bbb813061fd8ffe6f50e349f6cb6e316d6edbb8e4789d7f7"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/IamServiceClient.cs",
+      "bytes": 15348,
+      "sha256": "c3841cb9b2a2f92840fd3a935ca5397d68f956c28b5f77bd996e90a05e655160"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/MalievIamRoles.cs",
+      "bytes": 7016,
+      "sha256": "29a5350fc2d9ffb011a36a063215320fd57d5af75e97770621f5cb58b65ce8c9"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/PermissionMatcher.cs",
+      "bytes": 4749,
+      "sha256": "eccb03922b191fcd5b1f3655127357d53c9dbab818010d5cb57ba5835d89e364"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/ServiceAccountAuthenticationHandler.cs",
+      "bytes": 5129,
+      "sha256": "d5000934d801a3d1a2ddd3a37c7675f135751c1df24a115828de43040b7e1a92"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/ServiceAccountTokenProvider.cs",
+      "bytes": 8226,
+      "sha256": "285e9278b43f9936063f462ba4a4eef3c159fd597877d11da9e6dca6db8adf36"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Legacy.Maliev.ServiceDefaults.csproj",
+      "bytes": 3216,
+      "sha256": "8938676ca6848677628fc11fccd78774c2732a991e7f8d166f8440e448093d4a"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/LegacyAuth/LegacyServiceAccessTokenProvider.cs",
+      "bytes": 8944,
+      "sha256": "9fd90711fd065f689373067e2c7b9a15607027ed293ab90b8c334842ce509c2c"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/LegacyAuth/LegacyServiceAuthenticationHandler.cs",
+      "bytes": 1232,
+      "sha256": "af65b00aeafdd6323e9446da851e10f18a2cee9494fe3715a88e2f0c40136714"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Logging/MalievCloudJsonConsoleFormatter.cs",
+      "bytes": 4448,
+      "sha256": "3000ff8e529b6a2b1f58b1ec12b816531db2f566e4657fb7a567493836c758ff"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Logging/PrivateFailureConsoleFormatter.cs",
+      "bytes": 3637,
+      "sha256": "ae2e9d319bef69bef1d12e46498ce76b76ed2af13ed379830bede51a7ae13cf7"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Middleware/CorrelationIdMiddleware.cs",
+      "bytes": 2598,
+      "sha256": "a0348054276f43e5b087720ad4f3d4ae81d7b5483b18ade27fb614b6d54443ee"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Middleware/ExceptionHandlingMiddleware.cs",
+      "bytes": 8930,
+      "sha256": "874a496bd238028c25c6e449d35d1b52ea241a44b5c7bda722cc2112cb851df7"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Middleware/RequestLoggingMiddleware.cs",
+      "bytes": 2371,
+      "sha256": "764874e385000ec946dceddc7d8f1a806b5305e53e4f76100ada1f6fa20f57b6"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Middleware/RouteLogPath.cs",
+      "bytes": 542,
+      "sha256": "9fc508e9d06bd0f637ac90677c52ea41bef78257cd44192ac519a954c52dd2d3"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Middleware/SecurityHeadersMiddleware.cs",
+      "bytes": 2212,
+      "sha256": "9f6cde8cdac3ad4987b55eff6c58d4b2c3c8c24c4ddaf8801591e5e13e3cc29d"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/RateLimitPolicies.cs",
+      "bytes": 1342,
+      "sha256": "f20f6a30b15ad588a1f13cb78219c91263030ff81d63cb969cc20f4a788ea50f"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Resilience/LegacyHttpResilienceExtensions.cs",
+      "bytes": 1953,
+      "sha256": "934a9270a68ae2c9af4fd28a6f7929d104a392e81987c4f7cb41a8ad2dea1c88"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Telemetry/SafeRequestLogContextProcessor.cs",
+      "bytes": 1180,
+      "sha256": "cb76fb0692f43350c091d45a2379effbed4115ede1b9465e137cea43253744fd"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Telemetry/UrlQueryRedactionProcessor.cs",
+      "bytes": 3063,
+      "sha256": "245a698880d040a8dacc58475c8555bda4cb3fa398876f3e0f6ab935c46c39d8"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Testing/IAMTestHelpers.cs",
+      "bytes": 2582,
+      "sha256": "2f652999489bdcfb5cf33dca91467a79b589560e9ae27f59ad078b3c1ee70d8a"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj",
+      "bytes": 1105,
+      "sha256": "acc34689c4fa0bfa0ac55364ee779ac95c79d141544f6f540d7ffeb0572bb4d9"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.CompatibilityContracts/Directory.Build.props",
+      "bytes": 377,
+      "sha256": "1ed87f1b0cf8d42c77558b99547a1eb0c444f222527b6932e5586cbd3e42c2bc"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.CompatibilityContracts/Legacy.Maliev.CompatibilityContracts.slnx",
+      "bytes": 249,
+      "sha256": "f8412ccb32dbf0b0399d11fd28383028c6a1979946a87e7f71c3b874f8b55f6d"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.CompatibilityContracts/global.json",
+      "bytes": 81,
+      "sha256": "b48d6da8fa62c0da7cc8a2da4ea036ac55836660a448ba533135abb5b8451b73"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.CompatibilityContracts/nuget.config",
+      "bytes": 197,
+      "sha256": "aec93b5637ab6d62470979a008990a4a336a287ab83a3f2541849ae735674055"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.CompatibilityContracts/src/Legacy.Maliev.CompatibilityContracts/Iam/PermissionRegistrationRequest.cs",
+      "bytes": 2507,
+      "sha256": "037f981561153af4dd0d1969f98c599e4f8f013c0465732a0c45d242d6cc5bf7"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.CompatibilityContracts/src/Legacy.Maliev.CompatibilityContracts/Legacy.Maliev.CompatibilityContracts.csproj",
+      "bytes": 871,
+      "sha256": "11bdd1d8f71bafe7c49f1cb9957b6368e8a8c0af9c44e8bf5ae50af747ead005"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.CompatibilityContracts/src/Legacy.Maliev.CompatibilityContracts/Shared/MessageEnvelope.cs",
+      "bytes": 1591,
+      "sha256": "81120a5065869e23a39a8b0bd3ae5e8130eab245a106252bcf9897b54b2d75ee"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.CompatibilityContracts/tests/Legacy.Maliev.CompatibilityContracts.Tests/Legacy.Maliev.CompatibilityContracts.Tests.csproj",
+      "bytes": 810,
+      "sha256": "4765b1b02168e926034495b9e4c3fba49bb2c3bec6c47b6546186ea0c01f25c5"
+    }
+  ]
+}

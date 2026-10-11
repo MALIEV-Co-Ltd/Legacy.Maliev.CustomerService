@@ -2,6 +2,7 @@ using Legacy.Maliev.CustomerService.Application.Interfaces;
 using Legacy.Maliev.CustomerService.Application.Models;
 using Legacy.Maliev.CustomerService.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Legacy.Maliev.CustomerService.Data;
 
@@ -25,8 +26,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     /// <inheritdoc />
     public async Task<CustomerResponse?> GetCustomerByEmailAsync(string email, CancellationToken cancellationToken)
     {
-        var matches = await Project(dbContext.Customers.AsNoTracking()
-            .Where(customer => customer.Email.ToLower() == email.ToLower())
+        var matches = await Project(FindMatchingCustomers(email).AsNoTracking()
             .OrderBy(customer => customer.Id))
             .Take(2)
             .ToListAsync(cancellationToken);
@@ -113,7 +113,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
         {
             FirstName = request.FirstName,
             LastName = request.LastName,
-            Email = request.Email.Trim(),
+            Email = request.Email,
             Telephone = request.Telephone,
             Mobile = request.Mobile,
             Fax = request.Fax,
@@ -134,19 +134,37 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
         InstantQuotationCustomerProfileRequest request,
         CancellationToken cancellationToken)
     {
-        var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+        return await dbContext.Database.CreateExecutionStrategy().ExecuteAsync(async token =>
+        {
+            // Each retry owns its context so rollback or a lost commit acknowledgement
+            // cannot replay an earlier attempt's tracked graph. The email lock and
+            // lowest-ID lookup run again before any graph is created.
+            await using var attempt = new CustomerDbContext(
+                (DbContextOptions<CustomerDbContext>)dbContext.GetService<IDbContextOptions>());
+            return await new CustomerRepository(attempt, timeProvider)
+                .ProvisionInstantQuotationProfileOnceAsync(request, token);
+        }, cancellationToken);
+    }
+
+    private async Task<InstantQuotationCustomerProfileResult> ProvisionInstantQuotationProfileOnceAsync(
+        InstantQuotationCustomerProfileRequest request,
+        CancellationToken cancellationToken)
+    {
+        var normalizedEmail = NormalizeEmailForComparison(request.Email);
         await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
 
         // Imported legacy data does not have a unique normalized-email constraint. A
         // transaction-scoped advisory lock prevents two independent Web submissions
         // from provisioning duplicate customer graphs without changing that schema.
         await dbContext.Database.ExecuteSqlInterpolatedAsync(
-            $"SELECT pg_advisory_xact_lock(hashtextextended({normalizedEmail}, 0))",
+            $"SELECT pg_advisory_xact_lock(hashtextextended({normalizedEmail} COLLATE \"C\", 0))",
             cancellationToken);
 
-        var existingCustomerId = await dbContext.Customers
+        // Provisioning preserves the accepted migration's deterministic lowest-ID
+        // selection for imported duplicates. Staff email lookup separately refuses
+        // ambiguity; both consumers use the same comparison relation.
+        var existingCustomerId = await FindMatchingCustomers(normalizedEmail)
             .AsNoTracking()
-            .Where(customer => customer.Email.ToLower() == normalizedEmail)
             .OrderBy(customer => customer.Id)
             .Select(customer => (int?)customer.Id)
             .FirstOrDefaultAsync(cancellationToken);
@@ -195,7 +213,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     {
         var entity = await dbContext.Customers.FindAsync([id], cancellationToken);
         if (entity is null) return false;
-        entity.FirstName = request.FirstName; entity.LastName = request.LastName; entity.Email = request.Email.Trim();
+        entity.FirstName = request.FirstName; entity.LastName = request.LastName; entity.Email = request.Email;
         entity.Telephone = request.Telephone; entity.Mobile = request.Mobile; entity.Fax = request.Fax; entity.DateOfBirth = request.DateOfBirth;
         entity.CompanyId = request.CompanyId; entity.BillingAddressId = request.BillingAddressId; entity.ShippingAddressId = request.ShippingAddressId;
         entity.ModifiedDate = UtcWallClockNow();
@@ -212,7 +230,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(value => value.FirstName, request.FirstName)
                 .SetProperty(value => value.LastName, request.LastName)
-                .SetProperty(value => value.Email, request.Email.Trim())
+                .SetProperty(value => value.Email, request.Email)
                 .SetProperty(value => value.Telephone, request.Telephone)
                 .SetProperty(value => value.Mobile, request.Mobile)
                 .SetProperty(value => value.Fax, request.Fax)
@@ -341,6 +359,22 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     /// <inheritdoc />
     public async Task<bool> DeleteCompanyAsync(int id, CancellationToken cancellationToken) =>
         await dbContext.Companies.Where(value => value.Id == id).ExecuteDeleteAsync(cancellationToken) == 1;
+
+    // One frozen Unicode simple-case map is shared by SQL comparison and lock keys.
+    // Explicit C collation gives exact canonical bytes regardless of database locale.
+    private static string NormalizeEmailForComparison(string email) =>
+        CustomerEmailComparisonCaseFolding.Normalize(email);
+
+    private IQueryable<Customer> FindMatchingCustomers(string email)
+    {
+        var normalized = NormalizeEmailForComparison(email);
+        return dbContext.Customers.FromSqlInterpolated($"""
+            SELECT c.*, c.xmin FROM "Customer" AS c
+            WHERE translate(btrim(c."Email", {CustomerEmailComparisonCaseFolding.WhitespaceCharacters}),
+                {CustomerEmailComparisonCaseFolding.FromCharacters}, {CustomerEmailComparisonCaseFolding.ToCharacters}) COLLATE "C"
+                = {normalized} COLLATE "C"
+            """);
+    }
 
     // The migrated legacy schema stores audit timestamps as UTC wall-clock values
     // in timestamp-without-time-zone columns. Npgsql rejects DateTimeKind.Utc for
