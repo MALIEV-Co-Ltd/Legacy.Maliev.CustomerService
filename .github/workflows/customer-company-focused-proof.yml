@@ -30,6 +30,12 @@ on:
       - 'docs/company-ordinary-primitive-source-compatibility-20261011.md'
       - 'Legacy.Maliev.CustomerService.Api/Controllers/CustomerRelationsController.cs'
       - 'Legacy.Maliev.CustomerService.Api/Controllers/CompaniesController.cs'
+      - 'Legacy.Maliev.CustomerService.Api/Program.cs'
+      - 'Legacy.Maliev.CustomerService.Api/OrdinaryCompanyMvcJsonMetadata.cs'
+      - 'Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryMvcMetadataControls.cs'
+      - 'Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryDuplicateNullReferenceTests.cs'
+      - 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryDuplicateNullHttpTests.cs'
+      - 'docs/company-ordinary-duplicate-null-mvc-compatibility-20261011.md'
 
 permissions:
   contents: read
@@ -94,7 +100,7 @@ jobs:
           mkdir -p runner-default-focused
           set -o pipefail
           timeout --signal=TERM --kill-after=5s 180s dotnet build Legacy.Maliev.CustomerService.slnx -c Release --no-restore -warnaserror -p:UseSharedCompilation=false | tee runner-default-focused/build.log
-      - name: Admitted exact16 Company focused cases
+      - name: Admitted exact21 Company focused cases
         shell: bash
         run: |
           set -euo pipefail

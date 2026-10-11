@@ -54,8 +54,8 @@
     },
     {
       "path": ".github/workflows/customer-company-focused-proof.yml",
-      "bytes": 6270,
-      "sha256": "38fc3b9d9d8d8eed441e81d0446fc196a73b93270c1dbe5bdf9e1b84f79280e7"
+      "bytes": 6787,
+      "sha256": "67eedd0c6bf7861f3e53032f91a1ede8113e654e6363dc515c20087e64fd5e96"
     },
     {
       "path": ".github/workflows/customer-default-page-focused-proof.yml",
@@ -149,8 +149,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Program.cs",
-      "bytes": 2475,
-      "sha256": "d161a28da02298348d07b84e0c87e8fa104d89f792b0a952c33408d03054e227"
+      "bytes": 2654,
+      "sha256": "e799e5baa1ae72e73af2990cf3d6f852a537df12a4cbbeab5b0cfbb7da70dc40"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Properties/launchSettings.json",
@@ -954,8 +954,8 @@
     },
     {
       "path": "scripts/test_customer_company_focus.py",
-      "bytes": 8063,
-      "sha256": "f3d2423098912a4093178681a64f3e8ab73deed53cef6c723b4653ef82692fa8"
+      "bytes": 9461,
+      "sha256": "f45725354cc70ab5f1cde6132dc6abb6f872a1ab7bb8b12752d03067f4e11f76"
     },
     {
       "path": "scripts/test_customer_default_focus_resources.py",
@@ -994,8 +994,8 @@
     },
     {
       "path": "scripts/verify_customer_company_focus.py",
-      "bytes": 7426,
-      "sha256": "6bcda28f1e39e8be0e00bdda8f27310f9b5b05165087bf4804b7bb4874e9492c"
+      "bytes": 7849,
+      "sha256": "41d1dca49e44b72c0f45fc1b477616dd5cbf71607dd30a288b063c31ffedc83f"
     },
     {
       "path": "scripts/verify_customer_default_page_focus.py",
@@ -1401,6 +1401,31 @@
       "path": ".dependencies/Legacy.Maliev.CompatibilityContracts/tests/Legacy.Maliev.CompatibilityContracts.Tests/Legacy.Maliev.CompatibilityContracts.Tests.csproj",
       "bytes": 810,
       "sha256": "4765b1b02168e926034495b9e4c3fba49bb2c3bec6c47b6546186ea0c01f25c5"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCompanyMvcJsonMetadata.cs",
+      "bytes": 1901,
+      "sha256": "91d5ac9743da2d93f8c3af69b6ce4827b8cbe3da957c2dbdb966dbf4131736c8"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryMvcMetadataControls.cs",
+      "bytes": 22171,
+      "sha256": "1a0dd50c8af5da2a252893243308eb6de56e5d6724a1db5d25ad999177c5bc59"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryDuplicateNullReferenceTests.cs",
+      "bytes": 11830,
+      "sha256": "6934b6075de20af376690b49379b9497d0f7f42bf0165cbe02d316a3e760de84"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryDuplicateNullHttpTests.cs",
+      "bytes": 29903,
+      "sha256": "15b6c70a366d755f73a014055e6c40a3e0bb00815cfdfbc99fec1f0b1b5ee473"
+    },
+    {
+      "path": "docs/company-ordinary-duplicate-null-mvc-compatibility-20261011.md",
+      "bytes": 2895,
+      "sha256": "9de213d718c8f118f6790b8c5443e844c954efaf1af08f2abfcc218465021f4e"
     }
   ],
   "futureTestIdsInvented": false,
