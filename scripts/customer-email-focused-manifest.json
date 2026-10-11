@@ -353,8 +353,8 @@
     },
     {
       "path": ".github/workflows/customer-company-focused-proof.yml",
-      "bytes": 7073,
-      "sha256": "5d86f531034e76fca1b00ec2355d8485440a6cb66cede5ce312f67074286d96b"
+      "bytes": 7345,
+      "sha256": "1e12a309a6c90a0f48ff7615d01f138a98234481bae9b1e163f3a95a58c04a86"
     },
     {
       "path": ".github/workflows/customer-default-page-focused-proof.yml",
@@ -1254,7 +1254,7 @@
     {
       "path": "scripts/test_customer_company_focus.py",
       "bytes": 9461,
-      "sha256": "b5de0ddaa34575cd81ca99f8f6a81f09581bdbcfeb74acd5f345c1c478e17203"
+      "sha256": "51aaab0c3d8c411fe944db7e720730ece7d5bb94bd50e6fb76a6674b783e0524"
     },
     {
       "path": "scripts/test_customer_default_focus_resources.py",
@@ -1293,8 +1293,8 @@
     },
     {
       "path": "scripts/verify_customer_company_focus.py",
-      "bytes": 7942,
-      "sha256": "a33cb8c2eefb03fda716a246e0586dd06e15ff7afbfda31ca4b3a0619168032e"
+      "bytes": 7831,
+      "sha256": "316035f5a4f52093bd33433395b8d5d4cf9a521418b0474f21d949cbfa9fbeff"
     },
     {
       "path": "scripts/verify_customer_default_page_focus.py",
@@ -1740,6 +1740,21 @@
       "path": "docs/company-ordinary-tax-registrar-null-mvc-compatibility-20261011.md",
       "bytes": 3474,
       "sha256": "a6af29a1e1ff02f0ab77def0a4f1f5fd8123810bfd6b4c79418bdf32430f29d4"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveOracleTests.cs",
+      "bytes": 19628,
+      "sha256": "a0b776e7d715a8c0484d1cb8d5625dffa50eee879196467e2265912e08f1e597"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveStorageTests.cs",
+      "bytes": 9298,
+      "sha256": "fa5d1418c2b39bd588c5e9920ad872c824e72adb2a59d82023420a48674f5a17"
+    },
+    {
+      "path": "docs/company-paired-field-primitive-proof-only-20261011.md",
+      "bytes": 3204,
+      "sha256": "0ba5fb6b313c9dbe2e7f3f8db51183b2b726f4345caba40d8ca470a8c3c7921f"
     }
   ],
   "inputSourceBase": "745fdcee8a68a82363648838e99a727aacbb1176"
