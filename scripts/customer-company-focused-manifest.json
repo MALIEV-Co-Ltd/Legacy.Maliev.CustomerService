@@ -493,8 +493,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryPrimitiveHttpTests.cs",
-      "bytes": 13300,
-      "sha256": "a36aed7ee4a25443c482ea991340e03b924d896b5d33108f861c881db412de93"
+      "bytes": 13644,
+      "sha256": "6e8737e1afd223d643b8f05a0720d104528158639fcc34b5a858abb7c289dbd6"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyPersistenceHttpTests.cs",
@@ -1464,12 +1464,12 @@
     {
       "path": "scripts/customer-default-page-focused-manifest.json",
       "bytes": 60895,
-      "sha256": "a15080c3930cfa0dd67334d57006a0d8b3aab41ff597f6c07bb4d8616c20a298"
+      "sha256": "86ed79193c7ba30abcb104ccd91751b1d8245a8d75cc4654d4337774cd80d31f"
     },
     {
       "path": "scripts/customer-email-focused-manifest.json",
       "bytes": 81362,
-      "sha256": "1a5d73700fb7088568bfd7e1b8b7852c4f182ad81567a78bf1f08ffcb54e539b"
+      "sha256": "601916e929bf729731169025e17b05ce33b51aa1f1215d41ba2e02b2fde95690"
     }
   ],
   "frozenDependencyPins": [

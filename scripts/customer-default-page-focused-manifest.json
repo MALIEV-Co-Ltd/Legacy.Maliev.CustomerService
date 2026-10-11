@@ -434,8 +434,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryPrimitiveHttpTests.cs",
-      "bytes": 13300,
-      "sha256": "a36aed7ee4a25443c482ea991340e03b924d896b5d33108f861c881db412de93"
+      "bytes": 13644,
+      "sha256": "6e8737e1afd223d643b8f05a0720d104528158639fcc34b5a858abb7c289dbd6"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyPersistenceHttpTests.cs",
