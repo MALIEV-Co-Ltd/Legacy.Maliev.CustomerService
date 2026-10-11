@@ -1,0 +1,81 @@
+name: Customer email focused proof
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/customer-email-focused-proof.yml'
+      - 'scripts/customer-email-focused-manifest.json'
+      - 'scripts/verify_customer_email_focused.py'
+      - 'scripts/test_customer_email_focused_validator.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: customer-email-focused-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  focused:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies
+      MSBUILDDISABLENODEREUSE: '1'
+      DOTNET_CLI_USE_MSBUILD_SERVER: '0'
+    steps:
+      - name: Check out exact Customer PR tree
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Check out frozen Defaults
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults
+          ref: 086760fa0aae976a799dbcda1960d5c0981248cb
+          path: .dependencies/Legacy.Maliev.ServiceDefaults
+          persist-credentials: false
+      - name: Check out frozen Contracts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts
+          ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
+          path: .dependencies/Legacy.Maliev.CompatibilityContracts
+          persist-credentials: false
+      - name: Set up existing SDK family
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+        with:
+          dotnet-version: 10.0.x
+      - name: Run pure focused evidence parser controls
+        run: python3 -B scripts/test_customer_email_focused_validator.py
+      - name: Admitted focused restore
+        shell: bash
+        run: |
+          export GITHUB_ACTIONS=false
+          python3 -B scripts/verify_customer_email_focused.py guard
+          timeout --signal=TERM --kill-after=5s 180s dotnet restore Legacy.Maliev.CustomerService.slnx
+      - name: Admitted focused Release build
+        shell: bash
+        run: |
+          export GITHUB_ACTIONS=false
+          python3 -B scripts/verify_customer_email_focused.py guard
+          mkdir -p runner-focused
+          set -o pipefail
+          timeout --signal=TERM --kill-after=5s 180s dotnet build Legacy.Maliev.CustomerService.slnx -c Release --no-restore -warnaserror -p:UseSharedCompilation=false | tee runner-focused/build.log
+      - name: Admitted exact77 focused cases
+        shell: bash
+        run: |
+          export GITHUB_ACTIONS=false
+          python3 -B scripts/verify_customer_email_focused.py guard
+          filter=$(python3 -c 'import json;print(json.load(open("scripts/customer-email-focused-manifest.json"))["filter"])')
+          timeout --signal=TERM --kill-after=5s 600s dotnet test Legacy.Maliev.CustomerService.slnx -c Release --no-build --no-restore --filter "$filter" --logger trx --results-directory runner-focused
+          python3 -B scripts/verify_customer_email_focused.py verify
+      - name: Preserve original focused evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: customer-email-focused-${{ github.sha }}
+          path: runner-focused
+          if-no-files-found: error
+          retention-days: 7
