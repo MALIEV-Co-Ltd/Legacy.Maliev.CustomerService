@@ -213,8 +213,12 @@ public sealed class CustomerAdministrativeEmailLiteralHttpTests(CustomerDetailAu
         {
             Content = JsonContent.Create(new
             {
-                FirstName = "Before", LastName = "Customer", Email = email,
-                CompanyId = 1, BillingAddressId = 1, ShippingAddressId = 1,
+                FirstName = "Before",
+                LastName = "Customer",
+                Email = email,
+                CompanyId = 1,
+                BillingAddressId = 1,
+                ShippingAddressId = 1,
             }),
         };
         if (route == "keyed-create") request.Headers.Add("Idempotency-Key", key.ToString());

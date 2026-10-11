@@ -250,8 +250,13 @@ public sealed class CustomerEmailCanonicalCaseHttpTests(CustomerDetailAuthorityF
 
     private static object ProvisionPayload(string email) => new
     {
-        FirstName = "Controlled", LastName = "Provisioned", Email = email, Company = "Controlled new company", TaxNumber = "synthetic",
-        Billing = new { AddressLine1 = "Controlled new road", CountryId = 764 }, ShipToBillingAddress = true,
+        FirstName = "Controlled",
+        LastName = "Provisioned",
+        Email = email,
+        Company = "Controlled new company",
+        TaxNumber = "synthetic",
+        Billing = new { AddressLine1 = "Controlled new road", CountryId = 764 },
+        ShipToBillingAddress = true,
     };
 
     private static async Task<(int Id, bool Created)> ReadProvisionAsync(HttpResponseMessage response, CancellationToken token)

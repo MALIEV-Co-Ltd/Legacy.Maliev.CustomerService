@@ -283,8 +283,13 @@ public sealed class CustomerAdministrativeEmailComparisonHttpTests(CustomerDetai
 
     private static object ProvisionPayload(string email) => new
     {
-        FirstName = "Ignored", LastName = "Replacement", Email = email, Company = "Ignored company", TaxNumber = "synthetic",
-        Billing = new { AddressLine1 = "Ignored road", CountryId = 764 }, ShipToBillingAddress = true,
+        FirstName = "Ignored",
+        LastName = "Replacement",
+        Email = email,
+        Company = "Ignored company",
+        TaxNumber = "synthetic",
+        Billing = new { AddressLine1 = "Ignored road", CountryId = 764 },
+        ShipToBillingAddress = true,
     };
 
     private static async Task AssertSelectedAsync(HttpResponseMessage response, int id, CancellationToken token)
