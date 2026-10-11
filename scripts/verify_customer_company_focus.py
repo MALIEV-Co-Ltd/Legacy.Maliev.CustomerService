@@ -1,4 +1,4 @@
-"""Exact separately executed Company16 proof; no full or consumer acceptance."""
+"""Exact separately executed Company21 proof; no full or consumer acceptance."""
 import collections
 import hashlib
 import json
@@ -24,22 +24,22 @@ def exact_records(doc, parent, name, count):
     return direct
 
 def validate(raw, selected):
-    need(len(selected) == 16 and hashlib.sha256(json.dumps(selected[:12], sort_keys=True, separators=(',', ':')).encode()).hexdigest() == '50407090793a119dfbf6486f4576b3e3f8b0c023d6f31e3216f4a78ed300275c', 'Frozen original12 name/GUID identities retained')
-    authored = ['Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyOrdinaryPrimitiveHttpTests.OrdinaryPrimitiveNames_PersistExactLexemesAndOnlyIntendedGraphAndCacheEffects', 'Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyOrdinaryPrimitiveHttpTests.OrdinaryNumericNames_PreserveOverflowAndSpellingOrRefuseOver256Units', 'Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyOrdinaryPrimitiveHttpTests.OrdinaryPrimitiveNames_InvalidAuthorityCannotChangeGraphOrCache', 'Legacy.Maliev.CustomerService.Tests.Controllers.CompanyOrdinaryPrimitiveReferenceTests.OrdinaryNameConverter_MatchesPinnedReferenceLexemesAcrossCulturesAndSegmentedInput']
-    need([row['name'] for row in selected[12:]] == authored and all(row['testId'] is None for row in selected[12:]), 'Four authored compiled Facts; no invented actual GUIDs')
+    need(len(selected) == 21 and hashlib.sha256(json.dumps(selected[:16], sort_keys=True, separators=(',', ':')).encode()).hexdigest() == '46983af8d84e34b5233e4cfb70a781b48801e311520d48816608c8ae8e9a2b6c', 'Frozen accepted16 actual name/GUID identities retained')
+    authored = ['Legacy.Maliev.CustomerService.Tests.Controllers.CompanyOrdinaryDuplicateNullReferenceTests.OrdinaryDuplicateNames_MatchPinnedReferenceForOrderedNullAndEscapedCaseVariants', 'Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyOrdinaryDuplicateNullHttpTests.OrdinaryDuplicateNames_PersistLastNonNullNameAndOnlyIntendedGraphAndCacheEffects', 'Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyOrdinaryDuplicateNullHttpTests.OrdinaryDuplicateNames_InvalidOccurrenceCannotHideBehindLaterValuesOrMutateGraph', 'Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyOrdinaryDuplicateNullHttpTests.OrdinaryDuplicateNames_InvalidAuthorityAndScopedLiteralPolicyCannotChangeGraphOrCache', 'Legacy.Maliev.CustomerService.Tests.Controllers.CompanyOrdinaryMvcMetadataControls.OrdinaryDuplicateNames_PreserveOtherFieldsAndPublicRecordAndWireContracts']
+    need([row['name'] for row in selected[16:]] == authored and all(row['testId'] is None for row in selected[16:]), 'Five authored compiled Facts; no invented actual GUIDs')
     expected_names = [row['name'] for row in selected]
-    expected_known = [(row['name'], shared.guid(row['testId'])) for row in selected[:12]]
+    expected_known = [(row['name'], shared.guid(row['testId'])) for row in selected[:16]]
     doc = E.fromstring(raw)
     need(doc.tag == '{' + NS['t'] + '}TestRun', 'Exact TRX TestRun root')
     containers = [exact_records(doc, doc, name, 1)[0] for name in ('Results', 'TestDefinitions', 'TestEntries')]
-    results, definitions, entries = [exact_records(doc, parent, name, 16) for parent, name in zip(containers, ('UnitTestResult', 'UnitTest', 'TestEntry'))]
-    need(all(len(parent) == 16 for parent in containers), 'Only canonical records in join containers')
+    results, definitions, entries = [exact_records(doc, parent, name, 21) for parent, name in zip(containers, ('UnitTestResult', 'UnitTest', 'TestEntry'))]
+    need(all(len(parent) == 21 for parent in containers), 'Only canonical records in join containers')
     all_methods = doc.findall('.//t:TestMethod', NS)
-    need(len(all_methods) == 16 and len([r for r in doc.iter() if r.tag.rsplit('}', 1)[-1] == 'TestMethod']) == 16, 'Exactly16 global compiled methods')
-    need(len(doc.findall('.//t:Execution', NS)) == 16 and len([r for r in doc.iter() if r.tag.rsplit('}', 1)[-1] == 'Execution']) == 16, 'Exactly16 global definition executions')
-    need(len(results) == len(definitions) == len(entries) == 16, 'Exactly16 complete joins required')
+    need(len(all_methods) == 21 and len([r for r in doc.iter() if r.tag.rsplit('}', 1)[-1] == 'TestMethod']) == 21, 'Exactly21 global compiled methods')
+    need(len(doc.findall('.//t:Execution', NS)) == 21 and len([r for r in doc.iter() if r.tag.rsplit('}', 1)[-1] == 'Execution']) == 21, 'Exactly21 global definition executions')
+    need(len(results) == len(definitions) == len(entries) == 21, 'Exactly21 complete joins required')
     by_id = {shared.guid(row.get('id')): row for row in definitions}
-    need(len(by_id) == 16, 'Unique16 definition GUIDs')
+    need(len(by_id) == 21, 'Unique21 definition GUIDs')
     pairs = []
     identities = []
     for row in results:
@@ -57,21 +57,23 @@ def validate(raw, selected):
         expected_class, expected_method = qualified.rsplit('.', 1)
         need(method is not None and method.get('className') == expected_class, 'Exact compiled Company class')
         need(method.get('name') == expected_method, 'Exact compiled Company method')
+        code_base = method.get('codeBase', '').replace('\\', '/')
+        need(code_base.endswith('/bin/Release/net10.0/Legacy.Maliev.CustomerService.Tests.dll'), 'Exact Release/net10.0 Customer test DLL')
         pairs.append((test_id, execution_id))
         identities.append((name, test_id))
     entry_pairs = [(shared.guid(row.get('testId')), shared.guid(row.get('executionId'))) for row in entries]
-    need(len({row[0] for row in pairs}) == len({row[1] for row in pairs}) == len({row[0] for row in entry_pairs}) == len({row[1] for row in entry_pairs}) == 16, 'Unique tests/executions')
+    need(len({row[0] for row in pairs}) == len({row[1] for row in pairs}) == len({row[0] for row in entry_pairs}) == len({row[1] for row in entry_pairs}) == 21, 'Unique tests/executions')
     need(collections.Counter(pairs) == collections.Counter(entry_pairs), 'Entry execution bijection')
-    need(collections.Counter(name for name, _ in identities) == collections.Counter(expected_names), 'Exact16 compiled names')
-    need(collections.Counter((name, test_id) for name, test_id in identities if name not in authored) == collections.Counter(expected_known), 'Frozen actual12 GUID/name multiset')
+    need(collections.Counter(name for name, _ in identities) == collections.Counter(expected_names), 'Exact21 compiled names')
+    need(collections.Counter((name, test_id) for name, test_id in identities if name not in authored) == collections.Counter(expected_known), 'Frozen actual16 GUID/name multiset')
     summaries = exact_records(doc, doc, 'ResultSummary', 1)
     need(len(summaries) == 1 and summaries[0].get('outcome') in {'Passed', 'Completed'}, 'Passing summary required')
     counters = exact_records(doc, summaries[0], 'Counters', 1)
-    expected_counters = dict(total='16', executed='16', passed='16', **{key: '0' for key in shared.NONPASSING})
-    need(len(counters[0]) == 0 and counters[0].attrib == expected_counters, 'Exactly16 canonical clean counters')
+    expected_counters = dict(total='21', executed='21', passed='21', **{key: '0' for key in shared.NONPASSING})
+    need(len(counters[0]) == 0 and counters[0].attrib == expected_counters, 'Exactly21 canonical clean counters')
     need(doc.find('.//t:ErrorInfo', NS) is None, 'ErrorInfo forbidden')
     need(all(row.get('outcome') in {'Passed', 'Completed', 'Information'} for row in doc.findall('.//t:RunInfo', NS)), 'RunInfo outcome required')
-    return {'selectedCount': 16, 'summaryOutcome': summaries[0].get('outcome'), 'executionBijection': True, 'all16CountersCanonical': True, 'original12NameGuidRowsFrozen': True, 'authored4ObservedNameGuidRows': [{'name': name, 'testId': test_id} for name, test_id in identities if name in authored], 'full564IdentityJoinAccepted': False}
+    return {'selectedCount': 21, 'summaryOutcome': summaries[0].get('outcome'), 'executionBijection': True, 'all21CountersCanonical': True, 'accepted16NameGuidRowsFrozen': True, 'authored5ObservedNameGuidRows': [{'name': name, 'testId': test_id} for name, test_id in identities if name in authored], 'full569IdentityJoinAccepted': False}
 
 def validate_build(build):
     need('Build succeeded.' in build and re.search(r'0 Warning\(s\)', build) and re.search(r'0 Error\(s\)', build) and not re.search(r'\b[1-9]\d* (?:Warning|Error)\(s\)', build), 'Actual strict Release0WE')
@@ -88,7 +90,7 @@ def verify():
     structure = validate(raw, manifest['selected'])
     build = (FOLDER / 'build.log').read_text()
     validate_build(build)
-    result = {'actualFocusedPassed': 16, 'failed': 0, 'skipped': 0, 'trxSha256': hashlib.sha256(raw).hexdigest(), 'strictStructure': structure, 'original12IdentityRun': manifest['identityRun'], 'githubSha': os.environ.get('GITHUB_SHA'), 'runId': os.environ.get('GITHUB_RUN_ID'), 'strictRelease0WE': True, 'full564Accepted': False, 'consumerAccepted': False, 'originalPrimitiveParityAccepted': False, 'authored4ActualGuidsCollectedFromThisTrx': True, 'full564IdentityJoinAccepted': False}
+    result = {'actualFocusedPassed': 21, 'failed': 0, 'skipped': 0, 'trxSha256': hashlib.sha256(raw).hexdigest(), 'strictStructure': structure, 'accepted16IdentityRun': manifest['identityRun'], 'githubSha': os.environ.get('GITHUB_SHA'), 'runId': os.environ.get('GITHUB_RUN_ID'), 'strictRelease0WE': True, 'full569Accepted': False, 'consumerAccepted': False, 'originalPrimitiveParityAccepted': False, 'authored5ActualGuidsCollectedFromThisTrx': True, 'full569IdentityJoinAccepted': False}
     (FOLDER / 'focused-proof.json').write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps(result))
 
