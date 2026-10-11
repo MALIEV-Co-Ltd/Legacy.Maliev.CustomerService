@@ -23,7 +23,7 @@ def read_process_identity(directory):
         try:
             result=subprocess.run(['/usr/bin/sudo','-n','--','/usr/bin/readlink','--',str(directory/'exe')],capture_output=True,text=True,timeout=3,check=False)
         except (OSError,subprocess.TimeoutExpired): return None,'unknown-authoritative-readlink-unavailable'
-        if result.returncode!=0: return None,'unknown-authoritative-readlink-refused'
+        if result.returncode!=0: return missing_executable_identity(directory)
         executable=result.stdout.rstrip('\n');source='sudo-readlink-exe'
     if not executable.startswith('/') or '\n' in executable or '\x00' in executable:
         return None,'unknown-malformed-executable-observation'
@@ -35,6 +35,14 @@ def require_authoritative_census(census):
     need(not unknown,'Unknown live executable identity refuses native admission')
     need(not native,'Existing native process prevents a new focused worker')
     return native
+
+def unknown_task_observation(directory):
+    # Diagnostic fields only. Neither state nor a missing/zero flag admits a task.
+    try: status=(directory/'status').read_text()
+    except (OSError,UnicodeError): return {'kernelStatusReadable':False,'kernelTaskFlag':None,'kernelState':None}
+    flag=re.search(r'^Kthread:\s+([01])$',status,re.M)
+    state=re.search(r'^State:\s+([A-Za-z])',status,re.M)
+    return {'kernelStatusReadable':True,'kernelTaskFlag':flag.group(1) if flag else None,'kernelState':state.group(1) if state else None}
 
 def guard():
     need(sys.platform=='linux' and os.environ.get('GITHUB_REPOSITORY')=='MALIEV-Co-Ltd/Legacy.Maliev.CustomerService','Exact hosted Customer repository required')
@@ -48,7 +56,9 @@ def guard():
         identity=read_process_identity(directory)
         if identity is None: continue
         executable,identitySource=identity
-        census.append({'pid':int(directory.name),'identity':executable,'source':identitySource})
+        row={'pid':int(directory.name),'identity':executable,'source':identitySource}
+        if executable is None: row.update(unknown_task_observation(directory))
+        census.append(row)
     print(json.dumps({'mode':'process-census','physicalMemFreeKiB':int(mem['MemFree']),'processes':census,'nativeProcesses':[x['pid'] for x in census if x['identity'] is not None and x['identity'].lower() in {'dotnet','testhost','msbuild','vbcscompiler'}],'unknownProcesses':[x['pid'] for x in census if x['identity'] is None]}),flush=True)
     native=require_authoritative_census(census)
     for row in manifest['codePins']:

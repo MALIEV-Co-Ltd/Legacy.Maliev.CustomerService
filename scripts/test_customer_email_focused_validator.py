@@ -91,6 +91,7 @@ class ProcessIdentityControls(unittest.TestCase):
         from unittest.mock import MagicMock,patch
         directory=MagicMock();directory.exists.return_value=exists
         directory.__truediv__.return_value.read_text.return_value=status
+        if isinstance(status,Exception):directory.__truediv__.return_value.read_text.side_effect=status
         with patch.object(v.os,'readlink',side_effect=exe if isinstance(exe,Exception) else None,return_value=exe),patch.object(v.subprocess,'run',side_effect=exception,return_value=result) as run:
             value=v.read_process_identity(directory)
             if run.called:
@@ -118,4 +119,19 @@ class ProcessIdentityControls(unittest.TestCase):
             with self.assertRaises(ValueError):v.require_authoritative_census([{'pid':1,'identity':identity,'source':'test-only'}])
     def test_authoritatively_known_non_native_census_passes(self):
         self.assertEqual([],v.require_authoritative_census([{'pid':1,'identity':'systemd','source':'sudo-readlink-exe'},{'pid':2,'identity':'[kernel-thread]','source':'kernel-status-Kthread=1'}]))
+    def test_permission_sudo_exit1_consults_only_valid_kernel_flag(self):
+        self.assertEqual(('[kernel-thread]','kernel-status-Kthread=1'),self.observe(PermissionError(),self.result(code=1),status='Kthread:\t1\n'))
+        for status in ['Kthread:\t0\n','','Name: dotnet\n','Kthread:\t10\n',PermissionError()]:
+            identity=self.observe(PermissionError(),self.result(code=1),status=status)
+            self.assertIsNone(identity[0])
+            with self.assertRaises(ValueError):v.require_authoritative_census([{'pid':2,'identity':identity[0],'source':identity[1]}])
+    def test_timeout_stays_unknown_even_with_kernel_flag(self):
+        identity=self.observe(PermissionError(),status='Kthread:\t1\n',exception=v.subprocess.TimeoutExpired('readlink',3));self.assertIsNone(identity[0])
+        with self.assertRaises(ValueError):v.require_authoritative_census([{'pid':2,'identity':identity[0],'source':identity[1]}])
+    def test_unknown_kernel_fields_are_observation_only(self):
+        from unittest.mock import MagicMock
+        directory=MagicMock();directory.__truediv__.return_value.read_text.return_value='Name: forged\nState:\tS (sleeping)\nKthread:\t0\n'
+        self.assertEqual({'kernelStatusReadable':True,'kernelTaskFlag':'0','kernelState':'S'},v.unknown_task_observation(directory))
+        with self.assertRaises(ValueError):v.require_authoritative_census([{'pid':2,'identity':None,'source':'unknown',**v.unknown_task_observation(directory)}])
+        directory.__truediv__.return_value.read_text.side_effect=PermissionError();self.assertFalse(v.unknown_task_observation(directory)['kernelStatusReadable'])
 if __name__=='__main__':unittest.main()
