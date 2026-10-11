@@ -1,0 +1,78 @@
+{
+  "expectedNames": [
+    "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.OmittedSize_ReturnsFilteredCohortUpToApprovedCapWithExplicitPagingUnchanged(matchCount: 60, distractorCount: 100)",
+    "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.OmittedSize_ReturnsFilteredCohortUpToApprovedCapWithExplicitPagingUnchanged(matchCount: 100, distractorCount: 900)",
+    "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.OmittedSize_ReturnsFilteredCohortUpToApprovedCapWithExplicitPagingUnchanged(matchCount: 300, distractorCount: 900)",
+    "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.OmittedSize_InvalidDirectoryAuthorityCannotReadOrMutateProfiles(authority: \"anonymous\", expected: Unauthorized)",
+    "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.OmittedSize_InvalidDirectoryAuthorityCannotReadOrMutateProfiles(authority: \"full\", expected: Forbidden)",
+    "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.OmittedSize_InvalidDirectoryAuthorityCannotReadOrMutateProfiles(authority: \"wrong-signature\", expected: Unauthorized)",
+    "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.OmittedSize_InvalidDirectoryAuthorityCannotReadOrMutateProfiles(authority: \"expired\", expected: Unauthorized)",
+    "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.DistantPage_ReturnsNotFoundWithoutOffsetOverflowOrStoredMutation(index: 2147483647, size: null)",
+    "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.DistantPage_ReturnsNotFoundWithoutOffsetOverflowOrStoredMutation(index: 2147483646, size: null)",
+    "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.DistantPage_ReturnsNotFoundWithoutOffsetOverflowOrStoredMutation(index: 2147483647, size: 1)",
+    "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.DistantPage_ReturnsNotFoundWithoutOffsetOverflowOrStoredMutation(index: 2147483646, size: 1)",
+    "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.DistantPage_ReturnsNotFoundWithoutOffsetOverflowOrStoredMutation(index: 2147483647, size: 250)",
+    "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.DistantPage_ReturnsNotFoundWithoutOffsetOverflowOrStoredMutation(index: 2147483646, size: 250)"
+  ],
+  "filter": "FullyQualifiedName~CustomerDefaultPageHttpTests",
+  "sourceBase": "d76e7c79564065aac6f64bbd26ddeab6b4c9ff9e",
+  "codePins": [
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Interfaces/ICustomerBoundaries.cs",
+      "bytes": 21819,
+      "sha256": "d7f42a1655c74fa99287fae2eb2965969ead275040fd04770b9f54c8aaf8bcd3"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Services/CustomerApplicationService.cs",
+      "bytes": 7662,
+      "sha256": "24974aed8e278d395478f77046cc8f95efbb3504696855f594c35599c79c74f6"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/CustomerRepository.cs",
+      "bytes": 22874,
+      "sha256": "48a85a9d4896f48863213a0decf09b14fb04a39d0792f970d734407cabf0c5cd"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDefaultPageHttpTests.cs",
+      "bytes": 12781,
+      "sha256": "7bfa08c1980cba719b2422641029e2195621875c8992501d36b6e901e729167b"
+    },
+    {
+      "path": ".github/workflows/customer-default-page-focused-proof.yml",
+      "bytes": 4894,
+      "sha256": "f0ad01dc165d4a08e4a704bd615d70febc6eaecc4f77c3f89062df3792724f2e"
+    },
+    {
+      "path": "scripts/verify_customer_default_page_focus.py",
+      "bytes": 4386,
+      "sha256": "7780f8dc6d10a6d4ecbcb3b6b7a7150d9ffca0f888e49a615ab2a11f5e6d3505"
+    },
+    {
+      "path": "scripts/test_customer_default_page_focus.py",
+      "bytes": 3311,
+      "sha256": "a0d25662494f2d3b4d8ae210a514ce62379c7b01551e8fbcd800dae38a314dbe"
+    },
+    {
+      "path": "scripts/verify_customer_email_focused.py",
+      "bytes": 9391,
+      "sha256": "d9cc14c23849f4bcb198b392941f1b937c724477d8f71e8037e3419974d041de"
+    },
+    {
+      "path": ".github/workflows/_build-and-test.yml",
+      "bytes": 3307,
+      "sha256": "8d23ba2835adfca5b07dd3c8b0c9072418fc60f4c2f3b957fea9493c87feb51c"
+    },
+    {
+      "path": "scripts/capture_customer_default_focus_resources.py",
+      "bytes": 10958,
+      "sha256": "544f61b8f7d1c1c4fe97b6a4da12e9655809117523b1b083d3282b91944525f3"
+    },
+    {
+      "path": "scripts/test_customer_default_focus_resources.py",
+      "bytes": 2121,
+      "sha256": "60bdfb32f21a750dcd51007a16148baca5c0a4762905ca342f1d671c40a2b0eb"
+    }
+  ],
+  "futureTestIdsInvented": false,
+  "full548Accepted": false
+}
