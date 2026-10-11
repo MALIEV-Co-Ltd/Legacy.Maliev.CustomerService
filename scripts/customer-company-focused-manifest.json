@@ -39,12 +39,22 @@
     {
       "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyLiteralNameHttpTests.CompanyLiteralName_PreservesWireStorageSharedGraphAndCacheOrRefusesBeforeWrite(route: \"update\")",
       "testId": "ab8a5ebf-8889-7dc9-1667-5a1a9b97b118"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyPrimitiveNameHttpTests.PrimitiveNameMembers_RefuseWithoutChangingPhysicalGraphOrCache",
+      "testId": null,
+      "identityDisposition": "Authored compiled Fact; actual GUID and full-suite join required after hosted execution"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyPrimitiveNameHttpTests.WholeBodyPrimitive_RefusesWithoutChangingPhysicalGraphOrCache",
+      "testId": null,
+      "identityDisposition": "Authored compiled Fact; actual GUID and full-suite join required after hosted execution"
     }
   ],
-  "filter": "FullyQualifiedName~CustomerCompanyLiteralNameHttpTests",
+  "filter": "FullyQualifiedName~CustomerCompanyLiteralNameHttpTests|FullyQualifiedName~CustomerCompanyPrimitiveNameHttpTests",
   "identityRun": 38131513875,
   "identityHead": "3dc681cd0fb6dd152b632fe7a6e87fdff35d24b3",
-  "sourceBase": "ae616232d79c5892b2fb8f336d47fc45e7a07148",
+  "sourceBase": "1637dae7ce7fc839d1431ac7f807729a907e48a3",
   "codePins": [
     {
       "path": ".dockerignore",
@@ -80,6 +90,11 @@
       "path": ".github/workflows/ci-staging.yml",
       "bytes": 246,
       "sha256": "5436292ba9523f34ca9f3801fdd674ed6e7d18b4e4d6e0b72bdb9c2d2fa1c1cd"
+    },
+    {
+      "path": ".github/workflows/customer-company-focused-proof.yml",
+      "bytes": 5920,
+      "sha256": "e8a7a8456f35ee41bfb4bf38b874cebcfc3d1668f70cb7065e9d2c5867affbcc"
     },
     {
       "path": ".github/workflows/customer-default-page-focused-proof.yml",
@@ -452,6 +467,11 @@
       "sha256": "1c3ec6c3404d30852724600debbf0b0de411692a5cef6624213f34d8e35f0ecd"
     },
     {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyPrimitiveNameHttpTests.cs",
+      "bytes": 8862,
+      "sha256": "ca821a7b0a90b16a4fa74e7ea353a0285720ebbfdb934d3ddf46a45cfd94a454"
+    },
+    {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerControllerContractTests.cs",
       "bytes": 4811,
       "sha256": "e2053170e1e1f487870a71b5a66119a633f7fe68a189152ac01befc897c48a22"
@@ -672,6 +692,11 @@
       "sha256": "27ee2d83b9cdf8f0588bdd962acc0e04104f3911481c9bfa2a911221273306e9"
     },
     {
+      "path": "docs/company-primitive-admission-boundary-20261011.md",
+      "bytes": 2241,
+      "sha256": "6821baa69c6cc5ad755cdfc2a2f803b7c87562389a0e8f038c832f0d7595070a"
+    },
+    {
       "path": "docs/customer-actual-scaffold-proof-20261006.md",
       "bytes": 2880,
       "sha256": "3b1fd4c973069d4a7785dfac9a34d42441395e1980c92462b1e78a4a13ec682b"
@@ -780,16 +805,6 @@
       "path": "scripts/customer-candidate-policy.json",
       "bytes": 250519,
       "sha256": "ad4d2c21a3ad7c2dff819d04bac6913874d61db0bc2b410454169a583527655a"
-    },
-    {
-      "path": "scripts/customer-default-page-focused-manifest.json",
-      "bytes": 6892,
-      "sha256": "051d4adb0b63bd085372e5764285849aed3e41be2f416c10a8718a99f7eb9000"
-    },
-    {
-      "path": "scripts/customer-email-focused-manifest.json",
-      "bytes": 63314,
-      "sha256": "d0e89259ef0237fbbfa1db0e2d7052fe24f5674c6bdfb6d36f19014e50e2f78c"
     },
     {
       "path": "scripts/customer-kernel-packet/README.md",
@@ -957,6 +972,11 @@
       "sha256": "44a8a5accac9da11422d606be02fe28487642215df511b5f1c4284296a453ee2"
     },
     {
+      "path": "scripts/test_customer_company_focus.py",
+      "bytes": 8190,
+      "sha256": "f53aa47f2ed57f0b68107886a9bb18188aa00a13f1c0b909d58a12bafc661ca8"
+    },
+    {
       "path": "scripts/test_customer_default_focus_resources.py",
       "bytes": 2121,
       "sha256": "60bdfb32f21a750dcd51007a16148baca5c0a4762905ca342f1d671c40a2b0eb"
@@ -992,6 +1012,11 @@
       "sha256": "d4dad783c83efc6c22df4abc6dacf6879456b18c9c145145d725a3da5c3753c2"
     },
     {
+      "path": "scripts/verify_customer_company_focus.py",
+      "bytes": 7161,
+      "sha256": "038121fdd88c69baedc7b7175baa5ca34c15ca6d1b0a4e3779b8da3c49758443"
+    },
+    {
       "path": "scripts/verify_customer_default_page_focus.py",
       "bytes": 4386,
       "sha256": "7780f8dc6d10a6d4ecbcb3b6b7a7150d9ffca0f888e49a615ab2a11f5e6d3505"
@@ -1015,21 +1040,6 @@
       "path": "tooling/Test-CustomerScaffoldContract.ps1",
       "bytes": 10660,
       "sha256": "d793ecc3fcbf592e0407dcfc704b3b3add7f2a93b6bf034c348b2312c7b8bf7a"
-    },
-    {
-      "path": ".github/workflows/customer-company-focused-proof.yml",
-      "bytes": 5707,
-      "sha256": "af68f0b71c4e5328a035c5ddd0eebab962f15a3cbed18d6680a712412c20092a"
-    },
-    {
-      "path": "scripts/verify_customer_company_focus.py",
-      "bytes": 4737,
-      "sha256": "b6a33c7c96621c5f5efc4e41c54756b117f5a12fe2deef036733d507cb04e785"
-    },
-    {
-      "path": "scripts/test_customer_company_focus.py",
-      "bytes": 4679,
-      "sha256": "c6eaa2159faa0464d5c421b8be8e3799dc06fe1fad977c6f92d34985cb7f63d5"
     },
     {
       "path": ".dependencies/Legacy.Maliev.ServiceDefaults/Directory.Build.props",
@@ -1410,6 +1420,16 @@
       "path": ".dependencies/Legacy.Maliev.CompatibilityContracts/tests/Legacy.Maliev.CompatibilityContracts.Tests/Legacy.Maliev.CompatibilityContracts.Tests.csproj",
       "bytes": 810,
       "sha256": "4765b1b02168e926034495b9e4c3fba49bb2c3bec6c47b6546186ea0c01f25c5"
+    },
+    {
+      "path": "scripts/customer-default-page-focused-manifest.json",
+      "bytes": 61414,
+      "sha256": "78dd9f891ebd24783d5c67a6c9c7169524596bc7ca40d7f0c0f86c92f4aea6ac"
+    },
+    {
+      "path": "scripts/customer-email-focused-manifest.json",
+      "bytes": 82178,
+      "sha256": "c0749f8db100ba4bbcaf9875aa1830967757bcaf15265c6337b9c2555b700638"
     }
   ],
   "frozenDependencyPins": [
@@ -1796,5 +1816,7 @@
   ],
   "futureTestIdsInvented": false,
   "full558Accepted": false,
-  "consumerAccepted": false
+  "consumerAccepted": false,
+  "forecastFullSuite": 560,
+  "inputSourceBase": "1637dae7ce7fc839d1431ac7f807729a907e48a3"
 }
