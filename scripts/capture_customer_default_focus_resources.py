@@ -97,7 +97,7 @@ def command(args):
             process.stdout.close()
             process.stderr.close()
 
-def capture(stage):
+def capture(stage, enforce=True):
     shared.need(sys.platform == 'linux' and os.environ.get('GITHUB_REPOSITORY') == 'MALIEV-Co-Ltd/Legacy.Maliev.CustomerService', 'Exact hosted repository required')
     shared.need(stage in {'initial', 'terminal'}, 'Exact observation stage required')
     FOLDER.mkdir(exist_ok=True)
@@ -137,7 +137,7 @@ def capture(stage):
         if len(ids) > 64 or len(ids) != len(set(ids)) or any(len(x) != 64 or any(c not in '0123456789abcdef' for c in x) for x in ids):
             containers = None
         elif ids:
-            template = '{"id":{{json .Id}},"created":{{json .Created}},"running":{{json .State.Running}},"pid":{{json .State.Pid}},"started":{{json .State.StartedAt}},"sessionLabel":{{json (index .Config.Labels "org.testcontainers.session-id")}},"testcontainersLabel":{{json (index .Config.Labels "org.testcontainers")}},"memoryBytes":{{json .HostConfig.Memory}},"nanoCpus":{{json .HostConfig.NanoCpus}},"portBindings":{{json .HostConfig.PortBindings}}}'
+            template = '{"image":{{json .Config.Image}},"ryukLabel":{{json (index .Config.Labels "org.testcontainers.ryuk")}},"reaperSessionLabel":{{json (index .Config.Labels "org.testcontainers.resource-reaper-session")}},"id":{{json .Id}},"created":{{json .Created}},"running":{{json .State.Running}},"pid":{{json .State.Pid}},"started":{{json .State.StartedAt}},"sessionLabel":{{json (index .Config.Labels "org.testcontainers.session-id")}},"testcontainersLabel":{{json (index .Config.Labels "org.testcontainers")}},"memoryBytes":{{json .HostConfig.Memory}},"nanoCpus":{{json .HostConfig.NanoCpus}},"portBindings":{{json .HostConfig.PortBindings}}}'
             inspected, row = command(['docker', 'inspect', '--format', template, *ids])
             calls.append(row)
             try:
@@ -160,13 +160,24 @@ def capture(stage):
         receipt.update(initialReceiptBound=bool(bound), initialBaselineValid=bool(valid), newContainerCandidatesRemaining=leftovers, containerOwnershipQualified=False, cleanupAbsenceObserved=bool(valid) and calls_valid(calls) and not native and not unknown and leftovers == [], vmExpiryIsOnlyContainment=True)
     (FOLDER / ('resources-' + stage + '.json')).write_text(json.dumps(receipt, indent=2) + '\n')
     print(json.dumps(receipt))
-    if stage == 'terminal':
+    if stage == 'terminal' and enforce:
         shared.need(receipt['cleanupAbsenceObserved'], 'Actual final absence unqualified; retain resource receipt, do not kill uncertain resources')
+    return receipt
 
 if __name__ == '__main__':
     stage = sys.argv[1]
     try:
-        capture(stage)
+        receipt = capture(stage, enforce=False)
+        if stage == 'terminal':
+            (FOLDER / 'resources-terminal-attempt1.json').write_text(json.dumps(receipt, indent=2) + '\n')
+            # A remaining helper may be in library reconnection grace. This is
+            # observation only, never ownership or a waiver of final absence.
+            eligible = receipt.get('initialBaselineValid') and calls_valid(receipt.get('ownedObservationCommands')) and not receipt.get('nativeProcesses') and not receipt.get('unknownProcesses') and bool(receipt.get('newContainerCandidatesRemaining'))
+            if not receipt.get('cleanupAbsenceObserved') and eligible:
+                time.sleep(12)
+                receipt = capture(stage, enforce=False)
+                (FOLDER / 'resources-terminal-attempt2.json').write_text(json.dumps(receipt, indent=2) + '\n')
+            shared.need(receipt.get('cleanupAbsenceObserved'), 'Actual final absence unqualified; retain every attempt, do not kill uncertain resources')
     except Exception as error:
         # Ordinary observation failures retain an explicitly unqualified receipt.
         # Forced process/job cancellation can still prevent any terminal receipt;

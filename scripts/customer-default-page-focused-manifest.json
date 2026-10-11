@@ -34,8 +34,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDefaultPageHttpTests.cs",
-      "bytes": 12781,
-      "sha256": "7bfa08c1980cba719b2422641029e2195621875c8992501d36b6e901e729167b"
+      "bytes": 13181,
+      "sha256": "78c4e0ff951dccffe37a948713fb7e73ab5b3d7a13adb50912243d1e8dfe11c5"
     },
     {
       "path": ".github/workflows/customer-default-page-focused-proof.yml",
@@ -64,8 +64,8 @@
     },
     {
       "path": "scripts/capture_customer_default_focus_resources.py",
-      "bytes": 10958,
-      "sha256": "544f61b8f7d1c1c4fe97b6a4da12e9655809117523b1b083d3282b91944525f3"
+      "bytes": 12198,
+      "sha256": "74d736881ad7a0492e44584357f028cc570461bf2399b3fd35da68ba1d4e2aa2"
     },
     {
       "path": "scripts/test_customer_default_focus_resources.py",
