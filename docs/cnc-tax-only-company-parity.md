@@ -8,10 +8,10 @@ Read-only source checkpoint: `5ac7d045c51194edd9e64d8564f1b726b001be34`.
 
 - `Maliev.Web/Pages/InstantQuotation/CNC-Machining.AuthenticatedProfile.cs`, `PersistMissingProfileValuesAsync`: creates a company when either company name or tax number is present; updates missing company fields without replacing existing values. Its `CreateCompanyAsync` helper is in `CNC-Machining.ProfilePersistence.cs`.
 - `Maliev.CustomerService.Api/Controllers/CompaniesController.cs`, create/update: persists supplied company details without rejecting blank names. POST returns 201 through `GetCompany`; PUT returns 204 or 404.
-- `Maliev.CustomerService.Data/Database/CustomerContext/Company.cs` and `CustomerContext.cs`: `Name` is non-nullable/required, maximum 256 characters. Required database strings still permit an empty string. Null is not a valid source database value.
+- `Maliev.CustomerService.Data/Database/CustomerContext/Company.cs` and `CustomerContext.cs`: `Name` is non-nullable/required, maximum 256 UTF-16 units. Required database strings still permit an empty string. Null is not a valid source database value.
 - Migrated `CompaniesController`: permits a blank name only when tax number is present. Null name and records with neither name nor tax number remain rejected. Registrar alone is not sufficient. Existing nonblank company-name requests remain valid.
 
-No DTO, schema, route, permission, serializer, or repository/cache change is required. The existing PostgreSQL `Company.Name` NOT NULL column permits empty strings. Existing repository trimming is retained; null is not normalized into an invented valid name. The focused PostgreSQL regression runs actual migrations, then verifies create/update/read, Thai customer relation, linked customer lookup, NOT NULL metadata, and no pending EF model changes.
+The existing PostgreSQL `Company.Name` NOT NULL column permits empty strings. Company create/update now preserve Name literally, including padding; null is not normalized into an invented valid name. Both ordinary and scoped routes reject names over 256 UTF-16 units, malformed UTF-16 and NUL before writes. Tax-only ordinary admission remains intact, while scoped edits still require a nonblank Name. TaxNumber/Registrar semantics, routes, permissions, serialization, schema and cache scope remain unchanged. The focused PostgreSQL regression runs actual migrations, then verifies create/update/read, Thai customer relation, linked customer lookup, NOT NULL metadata, and no pending EF model changes.
 
 ## Boundaries preserved
 
@@ -46,3 +46,7 @@ git diff --check
 ```
 
 CNC authenticated profile completion, protected submission coordination, end-to-end browser verification and production-derived data verification remain separate pending gates.
+
+Company literal-name successor: source candidate only. The new HTTP regressions and changed Name257 expectations have not run build, focused/full tests, format, package audit or raw coverage. Earlier counts above describe prior revisions, not this candidate. CNC create acknowledgement also requires the separately owned Web literal-name consumer repair before end-to-end acceptance.
+
+V2 boundary correction: original SQLServer Unicode MaxLength256 maps to nvarchar(256), counting UTF16 units. Supplementary128 (256 units) fits;129 (258 units) fails. Mixed254Thai+one supplementary fits256 units;255Thai+one fails257. V1 scalar-count acceptance was an unapproved boundary expansion; prior scalar source-clear conclusion is withdrawn. Rune decoding still rejects malformed UTF16/NUL. PostgreSQL schema/capacity is unchanged and does not define migration input authority. Original SQL runtime/collation remains unverified.

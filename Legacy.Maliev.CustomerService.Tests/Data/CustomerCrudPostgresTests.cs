@@ -22,7 +22,7 @@ public sealed class CustomerCrudPostgresTests(CustomerCrudPostgresFixture fixtur
         var service = new CustomerApplicationService(new CustomerRepository(db, clock), cache.Object);
         var cancellation = CancellationToken.None;
         var company = await service.CreateCompanyAsync(new(" บริษัทตัวอย่าง ", "0100000000000", "Registrar"), cancellation);
-        Assert.Equal("บริษัทตัวอย่าง", company.Name);
+        Assert.Equal(" บริษัทตัวอย่าง ", company.Name);
         Assert.Equal(new DateTime(2026, 9, 1, 1, 2, 3), company.CreatedDate);
         var request = new UpsertCustomerRequest(" ทดสอบ ", " ตัวอย่าง ", "02-000-0000", "080-000-0000", "02-000-0001",
             " sample@example.test ", new DateTime(1990, 1, 2), company.Id, null, null);

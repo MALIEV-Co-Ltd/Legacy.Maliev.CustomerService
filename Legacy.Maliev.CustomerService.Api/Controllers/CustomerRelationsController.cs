@@ -75,7 +75,7 @@ public sealed class CustomerRelationsController(ICustomerRelationService service
 
     private async Task<IActionResult> SaveCompanyAsync(int customerId, int? relationId, CustomerCompanyRelationRequest request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(request.Name)) return BadRequest();
+        if (string.IsNullOrWhiteSpace(request.Name) || !CompanyNameLengthAttribute.IsStorable(request.Name)) return BadRequest();
         var refusal = Precondition(out var version, out var revision);
         if (refusal is not null) return refusal;
         return Result(await service.SaveCompanyAsync(customerId, relationId, version!, revision, request, cancellationToken));
