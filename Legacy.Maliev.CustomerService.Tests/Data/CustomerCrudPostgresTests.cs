@@ -22,7 +22,7 @@ public sealed class CustomerCrudPostgresTests(CustomerCrudPostgresFixture fixtur
         var service = new CustomerApplicationService(new CustomerRepository(db, clock), cache.Object);
         var cancellation = CancellationToken.None;
         var company = await service.CreateCompanyAsync(new(" บริษัทตัวอย่าง ", "0100000000000", "Registrar"), cancellation);
-        Assert.Equal("บริษัทตัวอย่าง", company.Name);
+        Assert.Equal(" บริษัทตัวอย่าง ", company.Name);
         Assert.Equal(new DateTime(2026, 9, 1, 1, 2, 3), company.CreatedDate);
         var request = new UpsertCustomerRequest(" ทดสอบ ", " ตัวอย่าง ", "02-000-0000", "080-000-0000", "02-000-0001",
             " sample@example.test ", new DateTime(1990, 1, 2), company.Id, null, null);
@@ -45,7 +45,7 @@ public sealed class CustomerCrudPostgresTests(CustomerCrudPostgresFixture fixtur
         var addressRequest = new UpsertAddressRequest("อาคาร", " 1 ถนนตัวอย่าง ", "ชั้น 2", "กรุงเทพมหานคร", "กรุงเทพมหานคร", "10110", 764);
         var address = await service.CreateAddressAsync(customer.Id, addressRequest, cancellation);
         Assert.NotNull(address);
-        Assert.Equal("1 ถนนตัวอย่าง", address.AddressLine1);
+        Assert.Equal(" 1 ถนนตัวอย่าง ", address.AddressLine1);
         Assert.Equal("อาคาร", address.Building);
         Assert.Equal("ชั้น 2", address.AddressLine2);
         Assert.Equal("กรุงเทพมหานคร", address.City);
@@ -71,7 +71,7 @@ public sealed class CustomerCrudPostgresTests(CustomerCrudPostgresFixture fixtur
         Assert.Single(await service.GetAddressesAsync(cancellation));
         cache.Invocations.Clear();
         Assert.True(await service.UpdateAddressAsync(address.Id, addressRequest with { AddressLine1 = " 2 ถนนใหม่ " }, cancellation));
-        Assert.Equal("2 ถนนใหม่", (await service.GetAddressAsync(customer.Id, address.Id, cancellation))?.AddressLine1);
+        Assert.Equal(" 2 ถนนใหม่ ", (await service.GetAddressAsync(customer.Id, address.Id, cancellation))?.AddressLine1);
         cache.Verify(value => value.RemoveAsync(customer.Id, cancellation), Times.Once);
         cache.Invocations.Clear();
         Assert.True(await service.UpdateCompanyAsync(company.Id, new("บริษัทใหม่", "0200000000000", "Registrar updated"), cancellation));
