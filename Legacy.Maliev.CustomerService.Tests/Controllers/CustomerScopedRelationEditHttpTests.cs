@@ -293,8 +293,8 @@ public sealed class CustomerScopedRelationEditHttpTests(CustomerDetailAuthorityF
         using var read = await ReadAsync(client, ReadPath(kind));
         var payload = JsonSerializer.SerializeToNode(Payload(kind, "Invalid fields"))!.AsObject();
         if (kind == "company") payload["Name"] = "";
-        else if (kind == "billing") payload["CountryId"] = 0;
-        else payload["AddressLine1"] = "";
+        else if (kind == "billing") payload["CountryId"] = true;
+        else payload["AddressLine1"] = new string('a', 257);
         var before = await SnapshotAsync();
         using var request = new HttpRequestMessage(HttpMethod.Put, WritePath(kind)) { Content = JsonContent.Create(payload) };
         request.Headers.TryAddWithoutValidation("If-Match", read.Headers.ETag!.ToString());

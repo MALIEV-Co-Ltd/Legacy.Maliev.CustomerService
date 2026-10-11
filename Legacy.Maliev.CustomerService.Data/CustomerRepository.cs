@@ -285,7 +285,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
         var entity = new Address
         {
             Building = request.Building,
-            AddressLine1 = request.AddressLine1.Trim(),
+            AddressLine1 = request.AddressLine1!,
             AddressLine2 = request.AddressLine2,
             City = request.City,
             State = request.State,
@@ -304,7 +304,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
     {
         var entity = await dbContext.Addresses.FindAsync([id], cancellationToken);
         if (entity is null) return false;
-        entity.Building = request.Building; entity.AddressLine1 = request.AddressLine1.Trim(); entity.AddressLine2 = request.AddressLine2;
+        entity.Building = request.Building; entity.AddressLine1 = request.AddressLine1!; entity.AddressLine2 = request.AddressLine2;
         entity.City = request.City; entity.State = request.State; entity.PostalCode = request.PostalCode; entity.CountryId = request.CountryId;
         entity.ModifiedDate = UtcWallClockNow();
         await dbContext.SaveChangesAsync(cancellationToken);

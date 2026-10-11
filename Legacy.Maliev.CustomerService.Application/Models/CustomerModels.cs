@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Legacy.Maliev.CustomerService.Application.Models;
 
@@ -78,12 +79,12 @@ public sealed record UpsertCompanyRequest(string Name, string? TaxNumber, string
 /// <summary>Address create/update request.</summary>
 public sealed record UpsertAddressRequest(
     string? Building,
-    string AddressLine1,
+    [property: JsonConverter(typeof(AddressLine1JsonConverter))] string? AddressLine1,
     string? AddressLine2,
     string? City,
     string? State,
     string? PostalCode,
-    int CountryId);
+    [property: JsonConverter(typeof(AddressCountryIdJsonConverter))] int CountryId);
 
 /// <summary>Address details captured for an instant-quotation customer profile.</summary>
 public sealed record InstantQuotationAddressInput(
