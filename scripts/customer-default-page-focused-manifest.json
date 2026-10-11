@@ -1419,8 +1419,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryDuplicateNullHttpTests.cs",
-      "bytes": 29903,
-      "sha256": "15b6c70a366d755f73a014055e6c40a3e0bb00815cfdfbc99fec1f0b1b5ee473"
+      "bytes": 29974,
+      "sha256": "712018e7c4e9aef3a78bd01d2c96922d981504b06e7f61079c304dc67a153e88"
     },
     {
       "path": "docs/company-ordinary-duplicate-null-mvc-compatibility-20261011.md",

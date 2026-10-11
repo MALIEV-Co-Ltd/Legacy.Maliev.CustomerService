@@ -90,7 +90,8 @@ public sealed class CustomerCompanyOrdinaryDuplicateNullHttpTests(CustomerDetail
             Assert.Equal("ok", saved.Name);
             Assert.Null(saved.TaxNumber);
             Assert.Null(saved.Registrar);
-            Assert.InRange(saved.ModifiedDate, started.AddSeconds(-1), ended.AddSeconds(1));
+            var modifiedDate = Assert.NotNull<DateTime>(saved.ModifiedDate);
+            Assert.InRange(modifiedDate, started.AddSeconds(-1), ended.AddSeconds(1));
             using var oldGraph = JsonDocument.Parse(before);
             using var newGraph = JsonDocument.Parse(after);
             var stored = newGraph.RootElement.GetProperty("companies").EnumerateArray().Single(value => value.GetProperty("ID").GetInt32() == id);
