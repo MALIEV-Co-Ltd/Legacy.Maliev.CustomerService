@@ -44,6 +44,10 @@ def unknown_task_observation(directory):
     state=re.search(r'^State:\s+([A-Za-z])',status,re.M)
     return {'kernelStatusReadable':True,'kernelTaskFlag':flag.group(1) if flag else None,'kernelState':state.group(1) if state else None}
 
+def validate_code_pins(root, rows):
+    for row in rows:
+        data=(root/row['path']).read_bytes();need(len(data)==row['bytes'] and hashlib.sha256(data).hexdigest()==row['sha256'],'Frozen behavior/dependency/workflow code drift')
+
 def guard():
     need(sys.platform=='linux' and os.environ.get('GITHUB_REPOSITORY')=='MALIEV-Co-Ltd/Legacy.Maliev.CustomerService','Exact hosted Customer repository required')
     manifest=json.loads(MANIFEST.read_bytes())
@@ -61,8 +65,7 @@ def guard():
         census.append(row)
     print(json.dumps({'mode':'process-census','physicalMemFreeKiB':int(mem['MemFree']),'processes':census,'nativeProcesses':[x['pid'] for x in census if x['identity'] is not None and x['identity'].lower() in {'dotnet','testhost','msbuild','vbcscompiler'}],'unknownProcesses':[x['pid'] for x in census if x['identity'] is None]}),flush=True)
     native=require_authoritative_census(census)
-    for row in manifest['codePins']:
-        data=(ROOT/row['path']).read_bytes();need(len(data)==row['bytes'] and hashlib.sha256(data).hexdigest()==row['sha256'],'Frozen behavior/dependency/workflow code drift')
+    validate_code_pins(ROOT, manifest['codePins'])
     print(json.dumps({'mode':'guard','physicalMemFreeKiB':int(mem['MemFree']),'nativeProcesses':native,'codePins':len(manifest['codePins']),'githubSha':os.environ.get('GITHUB_SHA'),'runId':os.environ.get('GITHUB_RUN_ID')}))
 NONPASSING=('failed','error','timeout','aborted','inconclusive','passedButRunAborted','notRunnable','notExecuted','disconnected','warning','completed','inProgress','pending')
 NS={'t':'http://microsoft.com/schemas/VisualStudio/TeamTest/2010'}

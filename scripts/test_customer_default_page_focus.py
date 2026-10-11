@@ -47,3 +47,36 @@ check('error info', lambda r: E.SubElement(r, q('ErrorInfo')))
 check('unknown run info', lambda r: E.SubElement(r, q('RunInfo')))
 check('incomplete entry join', lambda r: r.find('t:TestEntries', verifier.NS).remove(r.find('t:TestEntries/t:TestEntry', verifier.NS)))
 print('13 parser controls passed: one positive and twelve adversarial controls; no native execution')
+
+# Pure pin-drift controls exercise the same validator used at hosted admission.
+# They run no build, HTTP host, container, or consumer.
+import hashlib
+import tempfile
+
+with tempfile.TemporaryDirectory(prefix='customer-pin-controls-') as temporary:
+    pin_root = Path(temporary)
+    original = b'CompanyName literal UTF16 source control\n'
+    (pin_root / 'source.cs').write_bytes(original)
+    row = {'path': 'source.cs', 'bytes': len(original), 'sha256': hashlib.sha256(original).hexdigest()}
+    verifier.shared.validate_code_pins(pin_root, [row])
+    for label, altered, changed_row in (
+        ('same-size source drift', original.replace(b'literal', b'changed'), row),
+        ('size drift', original + b'x', row),
+        ('incorrect expected size', original, dict(row, bytes=len(original) + 1)),
+        ('incorrect expected hash', original, dict(row, sha256='0' * 64)),
+    ):
+        (pin_root / 'source.cs').write_bytes(altered)
+        try:
+            verifier.shared.validate_code_pins(pin_root, [changed_row])
+        except ValueError:
+            print('REFUSED pin ' + label)
+        else:
+            raise AssertionError('Pin validator accepted ' + label)
+    (pin_root / 'source.cs').unlink()
+    try:
+        verifier.shared.validate_code_pins(pin_root, [row])
+    except FileNotFoundError:
+        print('REFUSED pin missing source')
+    else:
+        raise AssertionError('Pin validator accepted missing source')
+print('6 pin controls passed: one positive and five negative; no native execution')
