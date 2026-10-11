@@ -53,13 +53,15 @@ jobs:
         shell: bash
         run: |
           export GITHUB_ACTIONS=false
-          python3 -B scripts/verify_customer_email_focused.py guard
+          mkdir -p runner-focused
+          python3 -B scripts/verify_customer_email_focused.py guard 2>&1 | tee runner-focused/restore-admission.log
           timeout --signal=TERM --kill-after=5s 180s dotnet restore Legacy.Maliev.CustomerService.slnx
       - name: Admitted focused Release build
         shell: bash
         run: |
           export GITHUB_ACTIONS=false
-          python3 -B scripts/verify_customer_email_focused.py guard
+          mkdir -p runner-focused
+          python3 -B scripts/verify_customer_email_focused.py guard 2>&1 | tee runner-focused/build-admission.log
           mkdir -p runner-focused
           set -o pipefail
           timeout --signal=TERM --kill-after=5s 180s dotnet build Legacy.Maliev.CustomerService.slnx -c Release --no-restore -warnaserror -p:UseSharedCompilation=false | tee runner-focused/build.log
@@ -67,7 +69,8 @@ jobs:
         shell: bash
         run: |
           export GITHUB_ACTIONS=false
-          python3 -B scripts/verify_customer_email_focused.py guard
+          mkdir -p runner-focused
+          python3 -B scripts/verify_customer_email_focused.py guard 2>&1 | tee runner-focused/test-admission.log
           filter=$(python3 -c 'import json;print(json.load(open("scripts/customer-email-focused-manifest.json"))["filter"])')
           timeout --signal=TERM --kill-after=5s 600s dotnet test Legacy.Maliev.CustomerService.slnx -c Release --no-build --no-restore --filter "$filter" --logger trx --results-directory runner-focused
           python3 -B scripts/verify_customer_email_focused.py verify

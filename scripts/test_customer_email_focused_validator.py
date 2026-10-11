@@ -86,4 +86,36 @@ class ParserControls(unittest.TestCase):
             elif mode=='missing-counter':summary.remove(counter)
             else:summary.append(copy.deepcopy(counter))
             self.reject(root)
+class ProcessIdentityControls(unittest.TestCase):
+    def observe(self,exe,result=None,status='',exists=True,exception=None):
+        from unittest.mock import MagicMock,patch
+        directory=MagicMock();directory.exists.return_value=exists
+        directory.__truediv__.return_value.read_text.return_value=status
+        with patch.object(v.os,'readlink',side_effect=exe if isinstance(exe,Exception) else None,return_value=exe),patch.object(v.subprocess,'run',side_effect=exception,return_value=result) as run:
+            value=v.read_process_identity(directory)
+            if run.called:
+                self.assertEqual(['/usr/bin/sudo','-n','--','/usr/bin/readlink','--',str(directory/'exe')],run.call_args.args[0]);self.assertEqual(3,run.call_args.kwargs['timeout']);self.assertTrue(run.call_args.kwargs['capture_output']);self.assertFalse(run.call_args.kwargs['check'])
+            return value
+    def result(self,code=0,value='/usr/bin/systemd\n'):
+        return v.subprocess.CompletedProcess([],code,stdout=value,stderr='')
+    def test_direct_executable_and_deleted_native(self):
+        self.assertEqual(('dotnet','exe'),self.observe('/usr/share/dotnet/dotnet'))
+        self.assertEqual(('dotnet','exe'),self.observe('/usr/share/dotnet/dotnet (deleted)'))
+    def test_permission_denied_uses_authoritative_executable_link(self):
+        for name in ['systemd','dotnet','testhost','MSBuild','VBCSCompiler']:
+            self.assertEqual((name,'sudo-readlink-exe'),self.observe(PermissionError(),self.result(value='/usr/bin/'+name+'\n')))
+    def test_refusal_unavailable_timeout_and_malformed_are_unknown(self):
+        self.assertIsNone(self.observe(PermissionError(),self.result(code=1))[0])
+        for error in [FileNotFoundError(),PermissionError(),v.subprocess.TimeoutExpired('readlink',3)]:self.assertIsNone(self.observe(PermissionError(),exception=error)[0])
+        for value in ['', 'dotnet','/usr/bin/dotnet\nforged','/bad\x00name']:self.assertIsNone(self.observe(PermissionError(),self.result(value=value))[0])
+    def test_kernel_task_flag_and_exited_pid(self):
+        self.assertEqual(('[kernel-thread]','kernel-status-Kthread=1'),self.observe(FileNotFoundError(),status='Name: arbitrary\nKthread:\t1\n'))
+        self.assertIsNone(self.observe(FileNotFoundError(),exists=False))
+    def test_live_missing_executable_is_unknown_without_kernel_flag(self):
+        for status in ['', 'Name: systemd\n','Kthread:\t0\n']:self.assertIsNone(self.observe(FileNotFoundError(),status=status)[0])
+    def test_census_unknown_and_every_native_refuse(self):
+        for identity in [None,'dotnet','testhost','MSBuild','VBCSCompiler']:
+            with self.assertRaises(ValueError):v.require_authoritative_census([{'pid':1,'identity':identity,'source':'test-only'}])
+    def test_authoritatively_known_non_native_census_passes(self):
+        self.assertEqual([],v.require_authoritative_census([{'pid':1,'identity':'systemd','source':'sudo-readlink-exe'},{'pid':2,'identity':'[kernel-thread]','source':'kernel-status-Kthread=1'}]))
 if __name__=='__main__':unittest.main()

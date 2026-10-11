@@ -1,23 +1,56 @@
 """Admission and exact TRX verification for a separate77-case hosted proof."""
 from __future__ import annotations
-import collections,hashlib,json,os,re,sys,uuid,xml.etree.ElementTree as E
+import collections,hashlib,json,os,re,subprocess,sys,uuid,xml.etree.ElementTree as E
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 MANIFEST=ROOT/'scripts/customer-email-focused-manifest.json'
 def need(value,reason):
     if not value: raise ValueError(reason)
+def missing_executable_identity(directory):
+    if not directory.exists(): return None
+    try: status=(directory/'status').read_text()
+    except (OSError,UnicodeError): return None,'unknown-status-unreadable'
+    # Kthread is a kernel-produced task flag, not mutable comm/display text.
+    if re.search(r'^Kthread:\s+1$',status,re.M): return '[kernel-thread]','kernel-status-Kthread=1'
+    return None,'unknown-live-task-without-executable'
+
+def read_process_identity(directory):
+    try: executable=os.readlink(directory/'exe');source='exe'
+    except FileNotFoundError: return missing_executable_identity(directory)
+    except PermissionError:
+        # Read only this exact executable symlink; never prompt, mutate, attach,
+        # read memory, use comm as authority, or infer absence from access denial.
+        try:
+            result=subprocess.run(['/usr/bin/sudo','-n','--','/usr/bin/readlink','--',str(directory/'exe')],capture_output=True,text=True,timeout=3,check=False)
+        except (OSError,subprocess.TimeoutExpired): return None,'unknown-authoritative-readlink-unavailable'
+        if result.returncode!=0: return None,'unknown-authoritative-readlink-refused'
+        executable=result.stdout.rstrip('\n');source='sudo-readlink-exe'
+    if not executable.startswith('/') or '\n' in executable or '\x00' in executable:
+        return None,'unknown-malformed-executable-observation'
+    return Path(executable).name.removesuffix(' (deleted)'),source
+
+def require_authoritative_census(census):
+    unknown=[x['pid'] for x in census if x['identity'] is None]
+    native=[x['pid'] for x in census if x['identity'] is not None and x['identity'].lower() in {'dotnet','testhost','msbuild','vbcscompiler'}]
+    need(not unknown,'Unknown live executable identity refuses native admission')
+    need(not native,'Existing native process prevents a new focused worker')
+    return native
+
 def guard():
     need(sys.platform=='linux' and os.environ.get('GITHUB_REPOSITORY')=='MALIEV-Co-Ltd/Legacy.Maliev.CustomerService','Exact hosted Customer repository required')
     manifest=json.loads(MANIFEST.read_bytes())
     mem=dict(re.findall(r'^(\w+):\s+(\d+) kB$',Path('/proc/meminfo').read_text(),re.M))
+    print(json.dumps({'mode':'physical-memory','physicalMemFreeKiB':int(mem['MemFree'])}),flush=True)
     need(int(mem['MemFree'])>=4194304,'Fresh physical MemFree4GiB required before native phase')
-    native=[]
+    native=[];census=[]
     for directory in Path('/proc').iterdir():
         if not directory.name.isdigit(): continue
-        try: executable=Path(os.readlink(directory/'exe')).name
-        except FileNotFoundError: continue
-        if executable.lower() in {'dotnet','testhost','msbuild','vbcscompiler'}: native.append(int(directory.name))
-    need(not native,'Existing native process prevents a new focused worker')
+        identity=read_process_identity(directory)
+        if identity is None: continue
+        executable,identitySource=identity
+        census.append({'pid':int(directory.name),'identity':executable,'source':identitySource})
+    print(json.dumps({'mode':'process-census','physicalMemFreeKiB':int(mem['MemFree']),'processes':census,'nativeProcesses':[x['pid'] for x in census if x['identity'] is not None and x['identity'].lower() in {'dotnet','testhost','msbuild','vbcscompiler'}],'unknownProcesses':[x['pid'] for x in census if x['identity'] is None]}),flush=True)
+    native=require_authoritative_census(census)
     for row in manifest['codePins']:
         data=(ROOT/row['path']).read_bytes();need(len(data)==row['bytes'] and hashlib.sha256(data).hexdigest()==row['sha256'],'Frozen behavior/dependency/workflow code drift')
     print(json.dumps({'mode':'guard','physicalMemFreeKiB':int(mem['MemFree']),'nativeProcesses':native,'codePins':len(manifest['codePins']),'githubSha':os.environ.get('GITHUB_SHA'),'runId':os.environ.get('GITHUB_RUN_ID')}))
