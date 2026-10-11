@@ -72,6 +72,6 @@ public sealed class CompaniesController(ICustomerService service) : ControllerBa
     }
 
     private static bool HasCompanyDetails(UpsertCompanyRequest item) =>
-        item.Name is not null &&
+        CompanyNameLengthAttribute.IsStorable(item.Name) &&
         (!string.IsNullOrWhiteSpace(item.Name) || !string.IsNullOrWhiteSpace(item.TaxNumber));
 }
