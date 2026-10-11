@@ -64,9 +64,15 @@ public sealed class CompanyTaxRegistrarPrimitiveOracleTests(ITestOutputHelper ou
                             }
                             output.WriteLine(JsonSerializer.Serialize(new
                             {
-                                Kind = "primitive-reference", Culture = language, Field = field, Case = item.Label,
-                                Segmented = segmented, ReferenceValue = item.Expected, ReferenceError = referenceError,
-                                Current = current, PostgreSqlStorage = "NOT RUN in reference comparison",
+                                Kind = "primitive-reference",
+                                Culture = language,
+                                Field = field,
+                                Case = item.Label,
+                                Segmented = segmented,
+                                ReferenceValue = item.Expected,
+                                ReferenceError = referenceError,
+                                Current = current,
+                                PostgreSqlStorage = "NOT RUN in reference comparison",
                                 Reference = "Newtonsoft.Json [13.0.3] on net10; historical resolved net8 runtime UNKNOWN",
                             }));
                         }
@@ -86,9 +92,14 @@ public sealed class CompanyTaxRegistrarPrimitiveOracleTests(ITestOutputHelper ou
                             }
                             output.WriteLine(JsonSerializer.Serialize(new
                             {
-                                Kind = "builtin-string-differential", Culture = language, Field = field,
-                                Case = item.Label, Segmented = segmented, Current = current,
-                                PostgreSqlStorage = "NOT RUN in string differential", HistoricalMalformedParity = "UNKNOWN",
+                                Kind = "builtin-string-differential",
+                                Culture = language,
+                                Field = field,
+                                Case = item.Label,
+                                Segmented = segmented,
+                                Current = current,
+                                PostgreSqlStorage = "NOT RUN in string differential",
+                                HistoricalMalformedParity = "UNKNOWN",
                             }));
                         }
                 }

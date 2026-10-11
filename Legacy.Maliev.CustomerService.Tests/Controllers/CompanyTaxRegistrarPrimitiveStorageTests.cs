@@ -43,8 +43,13 @@ public sealed class CompanyTaxRegistrarPrimitiveStorageTests(CustomerDetailAutho
                     Assert.Equal(cached, await cache.GetAsync("customer:1", token));
                     output.WriteLine(JsonSerializer.Serialize(new
                     {
-                        Kind = "storage-stage", Field = field, Case = item.Label, Deserialize = readError,
-                        Controller = "NOT RUN", PostgreSqlStorage = "NOT RUN", GraphCacheUnchanged = true,
+                        Kind = "storage-stage",
+                        Field = field,
+                        Case = item.Label,
+                        Deserialize = readError,
+                        Controller = "NOT RUN",
+                        PostgreSqlStorage = "NOT RUN",
+                        GraphCacheUnchanged = true,
                     }));
                     continue;
                 }
@@ -57,11 +62,14 @@ public sealed class CompanyTaxRegistrarPrimitiveStorageTests(CustomerDetailAutho
                 var id = 0;
                 await using (var db = fixture.Context())
                 {
-                    var now = DateTime.UtcNow;
+                    var now = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
                     var company = new Company
                     {
-                        Name = value.Name, TaxNumber = value.TaxNumber, Registrar = value.Registrar,
-                        CreatedDate = now, ModifiedDate = now,
+                        Name = value.Name,
+                        TaxNumber = value.TaxNumber,
+                        Registrar = value.Registrar,
+                        CreatedDate = now,
+                        ModifiedDate = now,
                     };
                     db.Companies.Add(company);
                     try { await db.SaveChangesAsync(token); id = company.Id; }
@@ -111,10 +119,15 @@ public sealed class CompanyTaxRegistrarPrimitiveStorageTests(CustomerDetailAutho
                 Assert.Equal(cached, await cache.GetAsync("customer:1", token));
                 output.WriteLine(JsonSerializer.Serialize(new
                 {
-                    Kind = "storage-stage", Field = field, Case = item.Label, Deserialize = "Succeeded",
+                    Kind = "storage-stage",
+                    Field = field,
+                    Case = item.Label,
+                    Deserialize = "Succeeded",
                     Controller = "Existing HasCompanyDetails returned true; no HTTP action invoked",
-                    PostgreSqlStorage = storageError ?? "Direct disposable context insert/readback succeeded", SqlState = sqlState,
-                    ExistingGraphCachePreserved = true, HistoricalSqlServer = "UNKNOWN",
+                    PostgreSqlStorage = storageError ?? "Direct disposable context insert/readback succeeded",
+                    SqlState = sqlState,
+                    ExistingGraphCachePreserved = true,
+                    HistoricalSqlServer = "UNKNOWN",
                 }));
             }
     }

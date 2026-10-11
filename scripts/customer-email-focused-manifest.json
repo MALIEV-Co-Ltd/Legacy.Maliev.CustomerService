@@ -1743,13 +1743,13 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveOracleTests.cs",
-      "bytes": 19276,
-      "sha256": "f3dea34e94340e3477ac822be0fa5d1e82da18b71a7c43d2bea07f5b0ccd8f58"
+      "bytes": 19628,
+      "sha256": "a0b776e7d715a8c0484d1cb8d5625dffa50eee879196467e2265912e08f1e597"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveStorageTests.cs",
-      "bytes": 8958,
-      "sha256": "5382af7b5ed611db1e68cea44c52843dd46499847cd774d8977e36b1194161cf"
+      "bytes": 9298,
+      "sha256": "fa5d1418c2b39bd588c5e9920ad872c824e72adb2a59d82023420a48674f5a17"
     },
     {
       "path": "docs/company-paired-field-primitive-proof-only-20261011.md",
