@@ -353,8 +353,8 @@
     },
     {
       "path": ".github/workflows/customer-company-focused-proof.yml",
-      "bytes": 5920,
-      "sha256": "e8a7a8456f35ee41bfb4bf38b874cebcfc3d1668f70cb7065e9d2c5867affbcc"
+      "bytes": 5808,
+      "sha256": "5aa1410ea84c6fb61d5d3e2a97a9040fb936c01c0eb30d458df779e5fa07a3a7"
     },
     {
       "path": ".github/workflows/customer-default-page-focused-proof.yml",
@@ -728,8 +728,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyPrimitiveNameHttpTests.cs",
-      "bytes": 8862,
-      "sha256": "ca821a7b0a90b16a4fa74e7ea353a0285720ebbfdb934d3ddf46a45cfd94a454"
+      "bytes": 8703,
+      "sha256": "c29d46f8acac3df2bb6c1f39f4edb1c7168088815fab779aa29430be7a7c35d7"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerControllerContractTests.cs",
@@ -953,8 +953,8 @@
     },
     {
       "path": "docs/company-primitive-admission-boundary-20261011.md",
-      "bytes": 2241,
-      "sha256": "6821baa69c6cc5ad755cdfc2a2f803b7c87562389a0e8f038c832f0d7595070a"
+      "bytes": 2234,
+      "sha256": "5375e0be8f56d025c196d7e4a4ed92b747842264479d6eb08b08450db79993ef"
     },
     {
       "path": "docs/customer-actual-scaffold-proof-20261006.md",
@@ -1233,8 +1233,8 @@
     },
     {
       "path": "scripts/test_customer_company_focus.py",
-      "bytes": 8190,
-      "sha256": "f53aa47f2ed57f0b68107886a9bb18188aa00a13f1c0b909d58a12bafc661ca8"
+      "bytes": 8063,
+      "sha256": "e62704ca9ce466ec4b5e25fed731757db9f0a59811cd34cc7d62814e03b37ba3"
     },
     {
       "path": "scripts/test_customer_default_focus_resources.py",
@@ -1273,8 +1273,8 @@
     },
     {
       "path": "scripts/verify_customer_company_focus.py",
-      "bytes": 7161,
-      "sha256": "038121fdd88c69baedc7b7175baa5ca34c15ca6d1b0a4e3779b8da3c49758443"
+      "bytes": 7065,
+      "sha256": "01c21e3393d63b4ce7c8404f447c09938fa7a8c6034b2ee1497009fb06999606"
     },
     {
       "path": "scripts/verify_customer_default_page_focus.py",
