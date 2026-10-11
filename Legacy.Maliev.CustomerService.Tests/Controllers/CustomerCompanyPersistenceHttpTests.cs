@@ -81,14 +81,17 @@ public sealed class CustomerCompanyPersistenceHttpTests(CustomerDetailAuthorityF
         var beforeCache = await PrimeAsync(cache);
         var before = await SnapshotAsync();
         using var rejected = await SendAsync(client, update, Payload(field, 257));
-        Assert.Equal(HttpStatusCode.InternalServerError, rejected.StatusCode);
+        Assert.Equal(field == "Name" ? HttpStatusCode.BadRequest : HttpStatusCode.InternalServerError, rejected.StatusCode);
         Assert.Equal(before, await SnapshotAsync());
         foreach (var customerId in new[] { 1, 2, 3 })
             Assert.Equal(beforeCache[customerId], await cache.GetAsync($"customer:{customerId}"));
-        using var error = JsonDocument.Parse(await rejected.Content.ReadAsStringAsync());
-        Assert.Equal(500, error.RootElement.GetProperty("statusCode").GetInt32());
-        Assert.Equal(JsonValueKind.Null, error.RootElement.GetProperty("details").ValueKind);
-        Assert.False(string.IsNullOrWhiteSpace(error.RootElement.GetProperty("traceId").GetString()));
+        if (field != "Name")
+        {
+            using var error = JsonDocument.Parse(await rejected.Content.ReadAsStringAsync());
+            Assert.Equal(500, error.RootElement.GetProperty("statusCode").GetInt32());
+            Assert.Equal(JsonValueKind.Null, error.RootElement.GetProperty("details").ValueKind);
+            Assert.False(string.IsNullOrWhiteSpace(error.RootElement.GetProperty("traceId").GetString()));
+        }
         var body = await rejected.Content.ReadAsStringAsync();
         foreach (var marker in new[] { new string('ก', 257), "Npgsql", "character varying", "staff-only" })
             Assert.DoesNotContain(marker, body, StringComparison.OrdinalIgnoreCase);

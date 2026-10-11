@@ -29,8 +29,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Data/CustomerRepository.cs",
-      "bytes": 22874,
-      "sha256": "48a85a9d4896f48863213a0decf09b14fb04a39d0792f970d734407cabf0c5cd"
+      "bytes": 22860,
+      "sha256": "8fa964cbaac788c8b1805ceec4f5ac0c3c4044b91a4bc1feee78d85948f7c838"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDefaultPageHttpTests.cs",
@@ -49,13 +49,13 @@
     },
     {
       "path": "scripts/test_customer_default_page_focus.py",
-      "bytes": 3311,
-      "sha256": "a0d25662494f2d3b4d8ae210a514ce62379c7b01551e8fbcd800dae38a314dbe"
+      "bytes": 4833,
+      "sha256": "03754bdfe386e185b827dbb6ffe6d640fb2acdc19c3f80c665c8a90090bf81fb"
     },
     {
       "path": "scripts/verify_customer_email_focused.py",
-      "bytes": 9391,
-      "sha256": "d9cc14c23849f4bcb198b392941f1b937c724477d8f71e8037e3419974d041de"
+      "bytes": 9463,
+      "sha256": "5ea7d087156bd3754b60ac77033ea0ac9e4b32a1bb29c704ba99b91c44153824"
     },
     {
       "path": ".github/workflows/_build-and-test.yml",
@@ -71,6 +71,56 @@
       "path": "scripts/test_customer_default_focus_resources.py",
       "bytes": 2121,
       "sha256": "60bdfb32f21a750dcd51007a16148baca5c0a4762905ca342f1d671c40a2b0eb"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Controllers/CompaniesController.cs",
+      "bytes": 4136,
+      "sha256": "dcc403df88f05c503a34e5656136a2f803cb94afc14bef31203dc54358839a54"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Controllers/CustomerRelationsController.cs",
+      "bytes": 8175,
+      "sha256": "426baa3bae42449efd77662ac6e28ddb25dfe9e276f207b39b8d3fe9ee3a5f0a"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/CompanyNameJsonConverter.cs",
+      "bytes": 911,
+      "sha256": "e85031e7eebc4481ef750e6af1e69f40478be393e5402eab074f9d60c198d9d1"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/CompanyNameLengthAttribute.cs",
+      "bytes": 1449,
+      "sha256": "bf219f1c3f4b1179444b48f4a048553d5ab95535eaec8dbd281a6cb6c5675761"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/CustomerModels.cs",
+      "bytes": 5775,
+      "sha256": "7ad22d389d4bfd39f5ed8c79d52cc759b76acac81efcf1112b96a1b97efb866b"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/CustomerRelationEdits.cs",
+      "bytes": 5187,
+      "sha256": "8ed639fc57b54f9607ef5f2468cf810727996f738c493474aa8a181c2e5964e0"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLiteralNameHttpTests.cs",
+      "bytes": 17226,
+      "sha256": "2b00d66dc6e5de061bd11f2b52b68d16e29fd08b6ca09996255d211d70336249"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyPersistenceHttpTests.cs",
+      "bytes": 8394,
+      "sha256": "1c3ec6c3404d30852724600debbf0b0de411692a5cef6624213f34d8e35f0ecd"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerCrudPostgresTests.cs",
+      "bytes": 9523,
+      "sha256": "79a45a7ebac611be024324332ab2484e3b88fa6aeb5086de1d2a5c47bfa521f1"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs",
+      "bytes": 16913,
+      "sha256": "95754ad29bd5e3e94392024d647c7ea98c3e0c67eb38a8eac93db07666fc953b"
     }
   ],
   "futureTestIdsInvented": false,
