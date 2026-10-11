@@ -317,9 +317,79 @@
   ],
   "codePins": [
     {
+      "path": ".dockerignore",
+      "bytes": 85,
+      "sha256": "5984866d3f136fd22a64d3147c942eac8423638bf2f5703232c2d11cc1ed0db5"
+    },
+    {
+      "path": ".gitattributes",
+      "bytes": 39,
+      "sha256": "91c171a7f4e295966f6e40aba83b0a11a56b4c99b59b9c55fcf54f15df207bc0"
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "bytes": 1169,
+      "sha256": "81d84822f0121926013fb9ff5b2a7bae913d8ed833fce3a422ec2e13aa42bd61"
+    },
+    {
       "path": ".github/workflows/_build-and-test.yml",
       "bytes": 3307,
       "sha256": "8d23ba2835adfca5b07dd3c8b0c9072418fc60f4c2f3b957fea9493c87feb51c"
+    },
+    {
+      "path": ".github/workflows/ci-develop.yml",
+      "bytes": 247,
+      "sha256": "55438892e1be3a3f5ff3e3e96aa69d74fc50884f1f465ce0ef1bc7e733ff825f"
+    },
+    {
+      "path": ".github/workflows/ci-main.yml",
+      "bytes": 241,
+      "sha256": "4a5aeebe5da345b1fd15ff1a81197914a8bcd2fdb4c478bf04166ceeca273892"
+    },
+    {
+      "path": ".github/workflows/ci-staging.yml",
+      "bytes": 246,
+      "sha256": "5436292ba9523f34ca9f3801fdd674ed6e7d18b4e4d6e0b72bdb9c2d2fa1c1cd"
+    },
+    {
+      "path": ".github/workflows/customer-company-focused-proof.yml",
+      "bytes": 5808,
+      "sha256": "5aa1410ea84c6fb61d5d3e2a97a9040fb936c01c0eb30d458df779e5fa07a3a7"
+    },
+    {
+      "path": ".github/workflows/customer-default-page-focused-proof.yml",
+      "bytes": 4894,
+      "sha256": "f0ad01dc165d4a08e4a704bd615d70febc6eaecc4f77c3f89062df3792724f2e"
+    },
+    {
+      "path": ".github/workflows/customer-email-focused-proof.yml",
+      "bytes": 3723,
+      "sha256": "2e85ccf68009067c01ed30078fcb08046bb928c00d2abed9c74f3aadd17bcffe"
+    },
+    {
+      "path": ".github/workflows/customer-source-intake.yml",
+      "bytes": 10732,
+      "sha256": "417e78dccb9ed49e422b7125e2fe063d56ba5835cf42d61fc37c5f1bba9fec63"
+    },
+    {
+      "path": ".github/workflows/pr-validation.yml",
+      "bytes": 293,
+      "sha256": "8645e3bae51218b468c15c026360f8b2befd29813236e10d30def30bcee68cff"
+    },
+    {
+      "path": ".github/workflows/publish-image.yml",
+      "bytes": 1270,
+      "sha256": "45094e59e1fbfc83f6b0c26937432047dde30022509c7b2a49a6a12709284f49"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 86,
+      "sha256": "363bbccb4453446e08e3f918755199c089110fd6e784f542a12f2ec0c646330a"
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 2046,
+      "sha256": "d51551e42cbc890ba4a85327e40db07772be8500b05f03233bc0194578a5943a"
     },
     {
       "path": "Directory.Build.props",
@@ -367,6 +437,11 @@
       "sha256": "13f6fd4e16add22db3f3b5719cb15e50cbc0f48ee7902c3372b64af5506737af"
     },
     {
+      "path": "Legacy.Maliev.CustomerService.Api/Dockerfile",
+      "bytes": 1279,
+      "sha256": "5df3ccbb9b05ed5320134c032bc0321241161f4c98dd4e73c64b78262f2004d6"
+    },
+    {
       "path": "Legacy.Maliev.CustomerService.Api/Legacy.Maliev.CustomerService.Api.csproj",
       "bytes": 1761,
       "sha256": "2e3761fbacb75bf275b7147006818ad54e025492e04d0ac96e578f0f9700f198"
@@ -375,6 +450,21 @@
       "path": "Legacy.Maliev.CustomerService.Api/Program.cs",
       "bytes": 2475,
       "sha256": "d161a28da02298348d07b84e0c87e8fa104d89f792b0a952c33408d03054e227"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Properties/launchSettings.json",
+      "bytes": 618,
+      "sha256": "3d5744d3d6ffce5b0a1a1b30d81543bda5ddc6146fd7ee9d1592c3b769210a40"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/appsettings.Development.json",
+      "bytes": 119,
+      "sha256": "817db0bf2ecca78364c41dbaf7949bf2504cf47a1c3d0d54f3be8178fefc030b"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/appsettings.json",
+      "bytes": 398,
+      "sha256": "d23c8ea8e5ec65dc0425ed341a99eb2d4460bc922b42a45b8201ddb6a68d3442"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Application/Interfaces/ICustomerBoundaries.cs",
@@ -395,6 +485,31 @@
       "path": "Legacy.Maliev.CustomerService.Application/Migration/CustomerRollingAvailabilityReview.cs",
       "bytes": 9658,
       "sha256": "17a45fc353f8a6a0eae0bca87a392a66e588caecb0ae44bd7ae745a8e61c486b"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/AddressCountryIdJsonConverter.cs",
+      "bytes": 1463,
+      "sha256": "feacc75443c82b6fcdbe063c13bab3cfa908d6b8e0c2fc04eedfa19be0217b62"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/AddressLine1JsonConverter.cs",
+      "bytes": 1304,
+      "sha256": "8624472452c5c24f5008c741e7a8228a123eaa1544663cefe372449a882da3cc"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/AddressLine1LengthAttribute.cs",
+      "bytes": 1495,
+      "sha256": "7ef5e02aa6d265aac60c280598eb90b6bb1745dcd9d057ba2af9d9883d859ad0"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/CompanyNameJsonConverter.cs",
+      "bytes": 911,
+      "sha256": "e85031e7eebc4481ef750e6af1e69f40478be393e5402eab074f9d60c198d9d1"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/CompanyNameLengthAttribute.cs",
+      "bytes": 1449,
+      "sha256": "bf219f1c3f4b1179444b48f4a048553d5ab95535eaec8dbd281a6cb6c5675761"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Application/Models/CustomerModels.cs",
@@ -532,6 +647,11 @@
       "sha256": "8f5fa644223f5fcb274f7fd3c37355129332482e99c343ce1ee04a113ed42972"
     },
     {
+      "path": "Legacy.Maliev.CustomerService.Data/ScaffoldCustomerContext.ps1",
+      "bytes": 2716,
+      "sha256": "44fa1a21c5884b296a8e4857ea185f8d8011290efc11cf1ebbfabaca0be7e5d8"
+    },
+    {
       "path": "Legacy.Maliev.CustomerService.Domain/CustomerEntities.cs",
       "bytes": 4984,
       "sha256": "d191de45db4d4bba5ff5d1938a5e168f03444e99a3a3e8f365934411e27b77e8"
@@ -567,6 +687,16 @@
       "sha256": "f8bc39206c5ae56c48deef7ad3f9747eec12c9fd4140c4c44fbd884d00e9efc0"
     },
     {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressLiteralLineHttpTests.cs",
+      "bytes": 27600,
+      "sha256": "34bef4ecaa0191a2279ff469bc6b98f6bacb7d179f38cbd24685e29d61201f77"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressOriginalNullBoundaryTests.cs",
+      "bytes": 3795,
+      "sha256": "6da0b0d6d491c3a11be405e4006b8d5824b3280c35ed0c9358665628c57128b2"
+    },
+    {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressPersistenceHttpTests.cs",
       "bytes": 9594,
       "sha256": "356d115ccc3f90676bf558e72a2bb0ba41590c0008c04f6cf0cbe357576b9608"
@@ -587,9 +717,19 @@
       "sha256": "4a384a1cf8b7c27d2f3f4420224761f8e95524ec5fd4670870eb509e65fd9575"
     },
     {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLiteralNameHttpTests.cs",
+      "bytes": 17226,
+      "sha256": "2b00d66dc6e5de061bd11f2b52b68d16e29fd08b6ca09996255d211d70336249"
+    },
+    {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyPersistenceHttpTests.cs",
       "bytes": 8394,
       "sha256": "1c3ec6c3404d30852724600debbf0b0de411692a5cef6624213f34d8e35f0ecd"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyPrimitiveNameHttpTests.cs",
+      "bytes": 8703,
+      "sha256": "c29d46f8acac3df2bb6c1f39f4edb1c7168088815fab779aa29430be7a7c35d7"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerControllerContractTests.cs",
@@ -600,6 +740,11 @@
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCrudHttpTests.cs",
       "bytes": 8523,
       "sha256": "bdd2883b071f697db7ee38fd5079dc35112c4275d7edce4f3e81c71e04091415"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDefaultPageHttpTests.cs",
+      "bytes": 13181,
+      "sha256": "78c4e0ff951dccffe37a948713fb7e73ab5b3d7a13adb50912243d1e8dfe11c5"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDetailAuthorityFixture.cs",
@@ -792,6 +937,356 @@
       "sha256": "3dd9d03f4b3a0f929dce460a3dffedcfc4298eb1a4b5dcd4e88cb7b71cbdc5e8"
     },
     {
+      "path": "README.md",
+      "bytes": 4092,
+      "sha256": "b9ea2c38945e726e0f524fcf64a74671d3d1d327d01a1b7eb3a2963db7887566"
+    },
+    {
+      "path": "docs/address-literal-line1-current-main-proposal.md",
+      "bytes": 5312,
+      "sha256": "284ff56440c4562c3d742cf75ec2f145e87bf230891c0534198761455160d922"
+    },
+    {
+      "path": "docs/cnc-tax-only-company-parity.md",
+      "bytes": 8508,
+      "sha256": "27ee2d83b9cdf8f0588bdd962acc0e04104f3911481c9bfa2a911221273306e9"
+    },
+    {
+      "path": "docs/company-primitive-admission-boundary-20261011.md",
+      "bytes": 2234,
+      "sha256": "5375e0be8f56d025c196d7e4a4ed92b747842264479d6eb08b08450db79993ef"
+    },
+    {
+      "path": "docs/customer-actual-scaffold-proof-20261006.md",
+      "bytes": 2880,
+      "sha256": "3b1fd4c973069d4a7785dfac9a34d42441395e1980c92462b1e78a4a13ec682b"
+    },
+    {
+      "path": "docs/customer-administrative-email-literal-source-20261011.md",
+      "bytes": 8166,
+      "sha256": "25c99c6c52262577ba1c538579590d6edc3d285f87af7af69dc53656b7d13730"
+    },
+    {
+      "path": "docs/customer-create-replay-contract.md",
+      "bytes": 1875,
+      "sha256": "db7d77a0426594cc53d860ff032fa74e0d345a07a8210c6410a3b357c25b602d"
+    },
+    {
+      "path": "docs/customer-detail-authority-design-20261001.md",
+      "bytes": 14624,
+      "sha256": "c45e9755b2c3f0324eee86d6851d942bde405d8824e0435e916dff6aa7f17087"
+    },
+    {
+      "path": "docs/customer-kernel-route.md",
+      "bytes": 6518,
+      "sha256": "7ae7cd86827a106f56a48e8f71d15dbfa780140c6736dcf9b8d67b60e2497275"
+    },
+    {
+      "path": "docs/customer-omitted-size-source-20261011.md",
+      "bytes": 3785,
+      "sha256": "eaa524e2e48d77cb0f6a0bc03fc93a45d500ab4cdb016769a530b469f4c30374"
+    },
+    {
+      "path": "docs/customer-profile-revision-contract.md",
+      "bytes": 2198,
+      "sha256": "1011c0a9191fcba57fd1e8184fbbabaebb0a63687fbbe0e7a86c8535d0c0b21b"
+    },
+    {
+      "path": "docs/customer-rolling-availability.md",
+      "bytes": 4181,
+      "sha256": "67c6e14dcd410cff2a2b7f525dfcc04f2f8d857b536cc57eaa088d889ea8fd5b"
+    },
+    {
+      "path": "docs/customer-sealed-source-intake.md",
+      "bytes": 3619,
+      "sha256": "7bf2d1d4bee6edca98e246ddaf2bfc49cb75a65dbb51afc635588d8a5e31fd76"
+    },
+    {
+      "path": "docs/customer-startup-private-boundary-design-20261002.md",
+      "bytes": 46413,
+      "sha256": "5baeb50ee20aeb6bb9c28ebe3b9fb6b5e2a0afc37533da5fcfbca4706dc3ae0c"
+    },
+    {
+      "path": "docs/licenses/Unicode-3.0.txt",
+      "bytes": 1995,
+      "sha256": "e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96"
+    },
+    {
+      "path": "docs/original-native-logging-source-cohort.json",
+      "bytes": 12064,
+      "sha256": "7ed08fa93fcfdb5df571d250c26cd4c35a8ccddb7702c0cfa4a6b0e1fde99b81"
+    },
+    {
+      "path": "docs/original-native-logging-source-cohort.md",
+      "bytes": 801,
+      "sha256": "30497becc0fa95d788cdbeb036016e4c71ce63285fd20f90cc94df0f17e0de5f"
+    },
+    {
+      "path": "docs/publisher-validation-adoption-20261001.md",
+      "bytes": 8205,
+      "sha256": "26a62d7436c425eaf15acaa8e8094924f9bf4e1cc8e6b5bd37f5988d2b23ab56"
+    },
+    {
+      "path": "docs/quotation-profile-completion.md",
+      "bytes": 10518,
+      "sha256": "be472cc6618b9b7e6d01474a82e806b48e81e9754d22dd1167fa9fe70ef269bd"
+    },
+    {
+      "path": "docs/scoped-customer-relation-edits.md",
+      "bytes": 9697,
+      "sha256": "322d112a97d8dcda829a321383f95d007ba447c76c6f31e508a1dcd3e797ad4a"
+    },
+    {
+      "path": "nuget.config",
+      "bytes": 197,
+      "sha256": "aec93b5637ab6d62470979a008990a4a336a287ab83a3f2541849ae735674055"
+    },
+    {
+      "path": "review/customer-rolling-availability.json",
+      "bytes": 321,
+      "sha256": "737577a6437e9c6fd6b3e54e335550f437407f8af6d4a510d046943285260438"
+    },
+    {
+      "path": "review/customer-source-intake.patch",
+      "bytes": 7176,
+      "sha256": "3e754d067c1b0a4493df46dfc7610be1d4cff95259fcc1cb30d1d5fbc025738a"
+    },
+    {
+      "path": "review/customer-source-intake.preimage.yml",
+      "bytes": 4622,
+      "sha256": "2fa0a51f9bf6d1273790e50c195df40527a32d3e166f2fca219ad293d3c9b741"
+    },
+    {
+      "path": "scripts/capture_customer_default_focus_resources.py",
+      "bytes": 12198,
+      "sha256": "74d736881ad7a0492e44584357f028cc570461bf2399b3fd35da68ba1d4e2aa2"
+    },
+    {
+      "path": "scripts/customer-candidate-policy.json",
+      "bytes": 250519,
+      "sha256": "ad4d2c21a3ad7c2dff819d04bac6913874d61db0bc2b410454169a583527655a"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/README.md",
+      "bytes": 7676,
+      "sha256": "1b0e6e88f2624af3bfc2cc1b29d5c569c30cdae5ad80a8ae31541e47ce864be0"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/build-stage.json",
+      "bytes": 6924,
+      "sha256": "eaec53cbe7f2744aa24aaa75a7636c6978a7bf2eafa3b1f8d85089e5ed257147"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/customer_build_admission.py",
+      "bytes": 11722,
+      "sha256": "fcbcd987bd46ba500f02a37f3a87d47cb06dd334a7324aee0ab7814a29d870b4"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/customer_build_guardian.py",
+      "bytes": 18111,
+      "sha256": "b6b4efc9416b6c416d35ad312d2c06eb15dc70b3fbbe230fba96093e76f204b2"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/customer_guardian_process.py",
+      "bytes": 13051,
+      "sha256": "b4c1aa5ccf7e44a920d63bd68d23a3645876171c0599bfb57bf1fc4c704c7489"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/customer_native_build_driver.py",
+      "bytes": 24903,
+      "sha256": "45d44931173d8d060c6c5a90ea36bad5ff4ecbfbed0fb0d6afd67b5a2e3da2a0"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/customer_owned_build.py",
+      "bytes": 31901,
+      "sha256": "ead09deb55bf1f6fa7a1076781070f612900a37899c36c2bb48fcd3c43724408"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/driver-manifest.json",
+      "bytes": 3399,
+      "sha256": "eccc5ddac7342c0297c177945030426fabca183455901021463d084d2eefe079"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/input/customer-candidate-policy.json",
+      "bytes": 290152,
+      "sha256": "e0af0d56bc14f48ec7e7e80d445283faa942d2a80c6ab8caee39d45b6937a840"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/input/customer_source_intake.py",
+      "bytes": 19391,
+      "sha256": "db52060501053e7eeec624743b040fa0aa2818e0e92fd462800a904f54a744c7"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/input/sealed_source_capsule.py",
+      "bytes": 12296,
+      "sha256": "44a8a5accac9da11422d606be02fe28487642215df511b5f1c4284296a453ee2"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/input/verify_customer_null_association.py",
+      "bytes": 4582,
+      "sha256": "ae35a1ffb0a07cb2cc79236a93cb5ea69a44e4fd21abad659bbdf9bd6ee52d08"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/supervisor.sh",
+      "bytes": 1285,
+      "sha256": "af6754f42357c98a4278a0f20b025e7f55cdf53500f92600b1062815d565be20"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/test_customer_build_admission.py",
+      "bytes": 10314,
+      "sha256": "111523a93b56167e8adbe091f9744e0704ebc461766d48798bea626025db30d7"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/test_customer_build_guardian.py",
+      "bytes": 17318,
+      "sha256": "eb714363f66956fc6263b91ea3b62e4b9f8afefad4d44122da68fd6223493d72"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/test_customer_guardian_process.py",
+      "bytes": 11198,
+      "sha256": "b4884b65047259108d0acc788bebc3b46c2ee785390bcea0d9704946cebfaeb9"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/test_customer_native_build_driver.py",
+      "bytes": 12488,
+      "sha256": "eb7352a13ff56507d6cea7a0d62079e4c9361be809c1cf6d09e78bf3f2860e15"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/test_customer_owned_build.py",
+      "bytes": 27419,
+      "sha256": "9ab66de45593728560cbac901055eb38bc3fa66963e292888a34210a516744e3"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/test_customer_packet_seals.py",
+      "bytes": 3264,
+      "sha256": "d5edc69051ef8e59e080cc627fc9163f315f933e0a6d046ae63e08e288abddd7"
+    },
+    {
+      "path": "scripts/customer-kernel-source/README.md",
+      "bytes": 11781,
+      "sha256": "af5837ea57b72a0488c623ea0db7dfe1368931a2cb9402c169b6c36ec2060f3a"
+    },
+    {
+      "path": "scripts/customer-kernel-source/fault_controls.py",
+      "bytes": 38156,
+      "sha256": "92c4da3890901bc6b09b97905e2d70f34289fc245c2ac5e92253c9079867e4ae"
+    },
+    {
+      "path": "scripts/customer-kernel-source/kernel_only.py",
+      "bytes": 23431,
+      "sha256": "c61da7a397069e73b0fff919f87f9b1d944fa0a1ad8b40eb02487dfd194996a1"
+    },
+    {
+      "path": "scripts/customer-kernel-source/owned_process.py",
+      "bytes": 30161,
+      "sha256": "834cbb4f0380ef4460c9ff71b9632a952ab5a662d79074b6d35ff54484e8ce07"
+    },
+    {
+      "path": "scripts/customer-kernel-source/prepare_handoff.py",
+      "bytes": 9016,
+      "sha256": "025c28c2aa5d53e0c5da24a99f081a2ed8fb5b64e69c4f558ce3fe9f6d46a32d"
+    },
+    {
+      "path": "scripts/customer-kernel-source/repro_r3.py",
+      "bytes": 1040,
+      "sha256": "a3394cc60bd6cac5875622db2b87b9bcb35272283715c84817cc7fc8127281a7"
+    },
+    {
+      "path": "scripts/customer-kernel-source/run_source_controls.py",
+      "bytes": 2526,
+      "sha256": "afd44069abbbe3403783f448b7ebc9bcb8323c5d6f068c037dda4c790c17d561"
+    },
+    {
+      "path": "scripts/customer-source-intake.draft.yml",
+      "bytes": 10161,
+      "sha256": "4924f2e52d4c692c249d5d0fd43cb82f76bfe4422171bae2cccc686811e7e618"
+    },
+    {
+      "path": "scripts/customer-source-intake.preimage.yml",
+      "bytes": 4622,
+      "sha256": "2fa0a51f9bf6d1273790e50c195df40527a32d3e166f2fca219ad293d3c9b741"
+    },
+    {
+      "path": "scripts/customer_source_intake.py",
+      "bytes": 14434,
+      "sha256": "da3b1299a8f971db03eb712322f70b43647e8589b1fcb181c943b053eb7a42f8"
+    },
+    {
+      "path": "scripts/external_unit_owner.py",
+      "bytes": 27097,
+      "sha256": "9b1f9278beb9f9fbc6ae20fff2d356f6b588b8ebcfe905fc0faa867ef9f35162"
+    },
+    {
+      "path": "scripts/kernel_root_route.py",
+      "bytes": 45503,
+      "sha256": "9e13526b6f020b2580a632e261a50a4278099999dd96af48d76cf9618c726f5c"
+    },
+    {
+      "path": "scripts/publisher_recipe.py",
+      "bytes": 782,
+      "sha256": "466855f61134730f041d2e868ff4c24603e76a20c1769a76e49a8c66ab53defb"
+    },
+    {
+      "path": "scripts/sealed_source_capsule.py",
+      "bytes": 12296,
+      "sha256": "44a8a5accac9da11422d606be02fe28487642215df511b5f1c4284296a453ee2"
+    },
+    {
+      "path": "scripts/test_customer_company_focus.py",
+      "bytes": 8063,
+      "sha256": "e62704ca9ce466ec4b5e25fed731757db9f0a59811cd34cc7d62814e03b37ba3"
+    },
+    {
+      "path": "scripts/test_customer_default_focus_resources.py",
+      "bytes": 2121,
+      "sha256": "60bdfb32f21a750dcd51007a16148baca5c0a4762905ca342f1d671c40a2b0eb"
+    },
+    {
+      "path": "scripts/test_customer_default_page_focus.py",
+      "bytes": 4833,
+      "sha256": "03754bdfe386e185b827dbb6ffe6d640fb2acdc19c3f80c665c8a90090bf81fb"
+    },
+    {
+      "path": "scripts/test_customer_email_focused_validator.py",
+      "bytes": 11200,
+      "sha256": "9420b87ad2169203927ecf6ae4f940cd89a80c6b7b9dc96c4d6fa0cd084b2f9a"
+    },
+    {
+      "path": "scripts/test_customer_source_intake.py",
+      "bytes": 15530,
+      "sha256": "36d869f0ebb289a8056baa0404cbba5ba011331aeb7927f73776ca847965da4c"
+    },
+    {
+      "path": "scripts/test_external_unit_owner.py",
+      "bytes": 14525,
+      "sha256": "acbc5ee68b3cb3b592fe3f0713506d1c62a6ec6b0f5cff1448f6ebda2d49f5f4"
+    },
+    {
+      "path": "scripts/test_kernel_root_route.py",
+      "bytes": 19075,
+      "sha256": "3eca8c9466cf432a6ea7cdf7d2e29e414b34f7fe483be004885d5668a75dd789"
+    },
+    {
+      "path": "scripts/verify-runner-coverage.py",
+      "bytes": 2073,
+      "sha256": "d4dad783c83efc6c22df4abc6dacf6879456b18c9c145145d725a3da5c3753c2"
+    },
+    {
+      "path": "scripts/verify_customer_company_focus.py",
+      "bytes": 7065,
+      "sha256": "01c21e3393d63b4ce7c8404f447c09938fa7a8c6034b2ee1497009fb06999606"
+    },
+    {
+      "path": "scripts/verify_customer_default_page_focus.py",
+      "bytes": 4386,
+      "sha256": "7780f8dc6d10a6d4ecbcb3b6b7a7150d9ffca0f888e49a615ab2a11f5e6d3505"
+    },
+    {
+      "path": "scripts/verify_customer_email_focused.py",
+      "bytes": 9463,
+      "sha256": "5ea7d087156bd3754b60ac77033ea0ac9e4b32a1bb29c704ba99b91c44153824"
+    },
+    {
       "path": "tooling/CustomerStartupPhaseProbe/CustomerStartupPhaseProbe.csproj",
       "bytes": 296,
       "sha256": "25d111608dc0c1dd47702cd0501f7de2e20d67552ff7e1c3779722985c27641e"
@@ -802,9 +1297,9 @@
       "sha256": "112a4b454783fa473a5734dbe95c388abfad02120f2c70850a883b0debfb751d"
     },
     {
-      "path": "nuget.config",
-      "bytes": 197,
-      "sha256": "aec93b5637ab6d62470979a008990a4a336a287ab83a3f2541849ae735674055"
+      "path": "tooling/Test-CustomerScaffoldContract.ps1",
+      "bytes": 10660,
+      "sha256": "d793ecc3fcbf592e0407dcfc704b3b3add7f2a93b6bf034c348b2312c7b8bf7a"
     },
     {
       "path": ".dependencies/Legacy.Maliev.ServiceDefaults/Directory.Build.props",
@@ -1185,31 +1680,7 @@
       "path": ".dependencies/Legacy.Maliev.CompatibilityContracts/tests/Legacy.Maliev.CompatibilityContracts.Tests/Legacy.Maliev.CompatibilityContracts.Tests.csproj",
       "bytes": 810,
       "sha256": "4765b1b02168e926034495b9e4c3fba49bb2c3bec6c47b6546186ea0c01f25c5"
-    },
-    {
-      "path": "Legacy.Maliev.CustomerService.Application/Models/CompanyNameJsonConverter.cs",
-      "bytes": 911,
-      "sha256": "e85031e7eebc4481ef750e6af1e69f40478be393e5402eab074f9d60c198d9d1"
-    },
-    {
-      "path": "Legacy.Maliev.CustomerService.Application/Models/CompanyNameLengthAttribute.cs",
-      "bytes": 1449,
-      "sha256": "bf219f1c3f4b1179444b48f4a048553d5ab95535eaec8dbd281a6cb6c5675761"
-    },
-    {
-      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLiteralNameHttpTests.cs",
-      "bytes": 17226,
-      "sha256": "2b00d66dc6e5de061bd11f2b52b68d16e29fd08b6ca09996255d211d70336249"
-    },
-    {
-      "path": "scripts/test_customer_default_page_focus.py",
-      "bytes": 4833,
-      "sha256": "03754bdfe386e185b827dbb6ffe6d640fb2acdc19c3f80c665c8a90090bf81fb"
-    },
-    {
-      "path": "scripts/verify_customer_email_focused.py",
-      "bytes": 9463,
-      "sha256": "5ea7d087156bd3754b60ac77033ea0ac9e4b32a1bb29c704ba99b91c44153824"
     }
-  ]
+  ],
+  "inputSourceBase": "1637dae7ce7fc839d1431ac7f807729a907e48a3"
 }

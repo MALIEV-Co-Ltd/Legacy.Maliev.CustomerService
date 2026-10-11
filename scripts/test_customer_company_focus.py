@@ -1,4 +1,4 @@
-"""Synthetic Company10 parser controls; no native, Docker, HTTP or acceptance."""
+"""Synthetic Company12 parser controls; no native, Docker, HTTP or acceptance."""
 import copy
 import json
 import uuid
@@ -13,18 +13,19 @@ results = E.SubElement(root, q('Results'))
 definitions = E.SubElement(root, q('TestDefinitions'))
 entries = E.SubElement(root, q('TestEntries'))
 for index, row in enumerate(selected):
+    test_id = row['testId'] or str(uuid.uuid5(uuid.NAMESPACE_URL, 'synthetic-authored-company-' + row['name']))
     execution = str(uuid.uuid5(uuid.NAMESPACE_URL, 'synthetic-company-parser-' + str(index)))
-    E.SubElement(results, q('UnitTestResult'), testName=row['name'], testId=row['testId'], executionId=execution, outcome='Passed')
-    definition = E.SubElement(definitions, q('UnitTest'), id=row['testId'], name=row['name'])
+    E.SubElement(results, q('UnitTestResult'), testName=row['name'], testId=test_id, executionId=execution, outcome='Passed')
+    definition = E.SubElement(definitions, q('UnitTest'), id=test_id, name=row['name'])
     E.SubElement(definition, q('Execution'), id=execution)
-    E.SubElement(definition, q('TestMethod'), className='Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyLiteralNameHttpTests', name=row['name'].split('CustomerCompanyLiteralNameHttpTests.', 1)[1].split('(', 1)[0])
-    E.SubElement(entries, q('TestEntry'), testId=row['testId'], executionId=execution)
+    E.SubElement(definition, q('TestMethod'), className=row['name'].split('(', 1)[0].rsplit('.', 1)[0], name=row['name'].split('(', 1)[0].rsplit('.', 1)[1])
+    E.SubElement(entries, q('TestEntry'), testId=test_id, executionId=execution)
 summary = E.SubElement(root, q('ResultSummary'), outcome='Completed')
-E.SubElement(summary, q('Counters'), **dict(total='10', executed='10', passed='10', **{key: '0' for key in verifier.shared.NONPASSING}))
+E.SubElement(summary, q('Counters'), **dict(total='12', executed='12', passed='12', **{key: '0' for key in verifier.shared.NONPASSING}))
 count = 0
 for label in ('Completed', 'Passed'):
     summary.set('outcome', label)
-    assert verifier.validate(E.tostring(root), selected)['selectedCount'] == 10
+    assert verifier.validate(E.tostring(root), selected)['selectedCount'] == 12
     count += 1
 
 def check(label, mutate):
@@ -75,3 +76,52 @@ for label, build in (
     else:
         raise AssertionError('Company build predicate accepted ' + label)
 print(str(build_count) + ' build controls passed; synthetic only, no native execution')
+
+# New authored rows must retain their exact compiled class/method and cannot invent actual GUIDs.
+check('new Fact foreign compiled class', lambda r: r.findall('t:TestDefinitions/t:UnitTest/t:TestMethod', verifier.NS)[-1].set('className', 'Other'))
+check('new Fact foreign compiled method', lambda r: r.findall('t:TestDefinitions/t:UnitTest/t:TestMethod', verifier.NS)[-1].set('name', 'Other'))
+for label, index in [('invented authored actual GUID', 10), ('replaced frozen actual GUID', 0)]:
+    altered = copy.deepcopy(selected)
+    altered[index]['testId'] = str(uuid.uuid4())
+    try:
+        verifier.validate(E.tostring(root), altered)
+    except ValueError:
+        count += 1
+        print('REFUSED manifest ' + label)
+    else:
+        raise AssertionError('Company parser accepted ' + label)
+print(str(count) + ' total Company parser controls passed; synthetic GUIDs are not runtime identities')
+
+# Contradictory records must never hide outside the direct joins.
+check('wrong root', lambda r: setattr(r, 'tag', q('Other')))
+for name in ('Results', 'TestDefinitions', 'TestEntries', 'ResultSummary'):
+    check('duplicate container ' + name, lambda r, name=name: r.append(copy.deepcopy(r.find('t:' + name, verifier.NS))))
+    check('extra nested container ' + name, lambda r, name=name: E.SubElement(r, q('Metadata')).append(copy.deepcopy(r.find('t:' + name, verifier.NS))))
+    def relocate(r, name=name):
+        row = r.find('t:' + name, verifier.NS)
+        r.remove(row)
+        E.SubElement(r, q('Metadata')).append(row)
+    check('relocated container ' + name, relocate)
+for path, name in (
+    ('Results/UnitTestResult', 'UnitTestResult'),
+    ('TestDefinitions/UnitTest', 'UnitTest'),
+    ('TestEntries/TestEntry', 'TestEntry'),
+    ('TestDefinitions/UnitTest/TestMethod', 'TestMethod'),
+    ('TestDefinitions/UnitTest/Execution', 'Execution'),
+    ('ResultSummary/Counters', 'Counters'),
+):
+    qualified_path = '/'.join('t:' + part for part in path.split('/'))
+    parent_path = qualified_path.rsplit('/', 1)[0]
+    check('duplicate record ' + name, lambda r, path=qualified_path, parent=parent_path: r.find(parent, verifier.NS).append(copy.deepcopy(r.find(path, verifier.NS))))
+    check('extra nested record ' + name, lambda r, path=qualified_path: E.SubElement(r, q('Metadata')).append(copy.deepcopy(r.find(path, verifier.NS))))
+    def relocate_record(r, path=qualified_path, parent=parent_path):
+        row = r.find(path, verifier.NS)
+        r.find(parent, verifier.NS).remove(row)
+        E.SubElement(r, q('Metadata')).append(row)
+    check('relocated record ' + name, relocate_record)
+    check('foreign namespace record ' + name, lambda r, path=qualified_path, name=name: setattr(r.find(path, verifier.NS), 'tag', '{urn:foreign}' + name))
+check('unknown results child', lambda r: E.SubElement(r.find('t:Results', verifier.NS), q('OtherResult')))
+check('nested method leaf', lambda r: E.SubElement(r.find('t:TestDefinitions/t:UnitTest/t:TestMethod', verifier.NS), q('Metadata')))
+check('nested execution leaf', lambda r: E.SubElement(r.find('t:TestDefinitions/t:UnitTest/t:Execution', verifier.NS), q('Metadata')))
+check('nested counters leaf', lambda r: E.SubElement(r.find('t:ResultSummary/t:Counters', verifier.NS), q('Metadata')))
+print(str(count) + ' total Company parser controls passed; strict global/direct structural joins')
