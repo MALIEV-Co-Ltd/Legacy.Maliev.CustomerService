@@ -41,6 +41,9 @@ on:
       - 'Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveOracleTests.cs'
       - 'Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveStorageTests.cs'
       - 'docs/company-paired-field-primitive-proof-only-20261011.md'
+      - 'Legacy.Maliev.CustomerService.Api/OrdinaryCompanyFieldPrimitiveJsonConverter.cs'
+      - 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyFieldPrimitiveHttpTests.cs'
+      - 'docs/company-tax-registrar-primitive-mvc-20261011.md'
       - 'docs/company-ordinary-duplicate-null-mvc-compatibility-20261011.md'
 
 permissions:
@@ -106,7 +109,7 @@ jobs:
           mkdir -p runner-default-focused
           set -o pipefail
           timeout --signal=TERM --kill-after=5s 180s dotnet build Legacy.Maliev.CustomerService.slnx -c Release --no-restore -warnaserror -p:UseSharedCompilation=false | tee runner-default-focused/build.log
-      - name: Admitted exact27 Company focused cases
+      - name: Admitted exact30 Company focused cases
         shell: bash
         run: |
           set -euo pipefail

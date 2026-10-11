@@ -62,7 +62,20 @@ public sealed class CompanyOrdinaryMvcMetadataControls
             "{\"Name\":\"first\",\"TaxNumber\":42}",
             "{\"Name\":\"first\",\"Registrar\":true}"
         })
-            Assert.Equal(Read(invalid, typeof(UpsertCompanyRequest), Options()), Read(invalid, typeof(UpsertCompanyRequest), Proposed()));
+        {
+            var baseline = Read(invalid, typeof(UpsertCompanyRequest), Options());
+            var candidate = Read(invalid, typeof(UpsertCompanyRequest), Proposed());
+            if (invalid.Contains("TaxNumber", StringComparison.Ordinal) || invalid.Contains("Registrar", StringComparison.Ordinal))
+            {
+                Assert.Equal(typeof(JsonException).FullName, baseline.ReadError);
+                Assert.Null(candidate.ReadError);
+                Assert.Null(candidate.WriteError);
+                var expected = new UpsertCompanyRequest("first", invalid.Contains("TaxNumber", StringComparison.Ordinal) ? "42" : null,
+                    invalid.Contains("Registrar", StringComparison.Ordinal) ? "true" : null);
+                Assert.Equal(JsonSerializer.Serialize(expected, Options()), candidate.Json);
+            }
+            else Assert.Equal(baseline, candidate);
+        }
 
         foreach (var ignoreNull in new[] { false, true })
             foreach (var required in new[] { false, true })

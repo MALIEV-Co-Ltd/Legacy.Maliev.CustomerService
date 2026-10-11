@@ -54,8 +54,8 @@
     },
     {
       "path": ".github/workflows/customer-company-focused-proof.yml",
-      "bytes": 7345,
-      "sha256": "1e12a309a6c90a0f48ff7615d01f138a98234481bae9b1e163f3a95a58c04a86"
+      "bytes": 7598,
+      "sha256": "61a65a8fc51707bfcb9a0574a7c3112f0fc23cdaa393f8c00081254b500cb96f"
     },
     {
       "path": ".github/workflows/customer-default-page-focused-proof.yml",
@@ -955,7 +955,7 @@
     {
       "path": "scripts/test_customer_company_focus.py",
       "bytes": 9461,
-      "sha256": "51aaab0c3d8c411fe944db7e720730ece7d5bb94bd50e6fb76a6674b783e0524"
+      "sha256": "b43b988dd19a6e0baf2b1d9ed8cadaba6c0bb8a4bce7fabd66bb96e17303a15d"
     },
     {
       "path": "scripts/test_customer_default_focus_resources.py",
@@ -994,8 +994,8 @@
     },
     {
       "path": "scripts/verify_customer_company_focus.py",
-      "bytes": 7831,
-      "sha256": "316035f5a4f52093bd33433395b8d5d4cf9a521418b0474f21d949cbfa9fbeff"
+      "bytes": 8213,
+      "sha256": "c88250b597e2a0855e10f885cb50fe5d703eca3c1a1e5aee094995f00de9dffe"
     },
     {
       "path": "scripts/verify_customer_default_page_focus.py",
@@ -1404,13 +1404,13 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCompanyMvcJsonMetadata.cs",
-      "bytes": 2630,
-      "sha256": "34769ded6a8de5c51b19eb6ef350eb30dd899904dd5179f60b4303dc82acc712"
+      "bytes": 3428,
+      "sha256": "fa0ec89cfb0b7d4c574182d44b4190c4617f30617a8175ca6c52da319d580c9e"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryMvcMetadataControls.cs",
-      "bytes": 22297,
-      "sha256": "dbae9d497648ca601659ac4e5dddacb28616884989df23d28619f39c5a71a784"
+      "bytes": 23064,
+      "sha256": "79f642df873c4cc395a3e7415bd045ebe030f3a6eab30c5261e61c69b9b0eb3a"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryDuplicateNullReferenceTests.cs",
@@ -1419,8 +1419,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryDuplicateNullHttpTests.cs",
-      "bytes": 38248,
-      "sha256": "a04d258048d22a42ad4407cc9ee5b70f62b8bc8ca465f35fe1126dca8d1154f5"
+      "bytes": 39430,
+      "sha256": "f8a0859c64a769e3aadf832f1a96494baee49bb139018073b1f400feff1ee397"
     },
     {
       "path": "docs/company-ordinary-duplicate-null-mvc-compatibility-20261011.md",
@@ -1434,8 +1434,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryTaxRegistrarMetadataTests.cs",
-      "bytes": 33983,
-      "sha256": "735dedb6c53b02a7c1c9f7e68e350fb6a3f4f271d44f9e8118874a2bc5ba8409"
+      "bytes": 34555,
+      "sha256": "ce1a0f4a816f856efa526c8d1fdc695cabb2406ee5940c779adf21340be4a9a2"
     },
     {
       "path": "docs/company-ordinary-tax-registrar-null-mvc-compatibility-20261011.md",
@@ -1444,18 +1444,33 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveOracleTests.cs",
-      "bytes": 19628,
-      "sha256": "a0b776e7d715a8c0484d1cb8d5625dffa50eee879196467e2265912e08f1e597"
+      "bytes": 24177,
+      "sha256": "6e015c495dd2387d9e1d0b608b70e789c4449be764f6c53538260544f994563c"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveStorageTests.cs",
-      "bytes": 9298,
-      "sha256": "fa5d1418c2b39bd588c5e9920ad872c824e72adb2a59d82023420a48674f5a17"
+      "bytes": 8959,
+      "sha256": "d9812622cce23d298c1be9c1d806dd99f90feb92924a37ee75e997648315f866"
     },
     {
       "path": "docs/company-paired-field-primitive-proof-only-20261011.md",
       "bytes": 3204,
       "sha256": "0ba5fb6b313c9dbe2e7f3f8db51183b2b726f4345caba40d8ca470a8c3c7921f"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCompanyFieldPrimitiveJsonConverter.cs",
+      "bytes": 1066,
+      "sha256": "755c9f223d0726766d5a5c57f4e30aa7c4e531ff3926d5946a0700332d076624"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyFieldPrimitiveHttpTests.cs",
+      "bytes": 28630,
+      "sha256": "1d9868c0576eac9c2d60b1b54c8e9d75e2790095fead2aa09fe25d60706b42a8"
+    },
+    {
+      "path": "docs/company-tax-registrar-primitive-mvc-20261011.md",
+      "bytes": 4790,
+      "sha256": "47ed24defa77a066a1e85cd1e6faa20d554fd1eb63b359b76d05a06088dff617"
     }
   ],
   "futureTestIdsInvented": false,

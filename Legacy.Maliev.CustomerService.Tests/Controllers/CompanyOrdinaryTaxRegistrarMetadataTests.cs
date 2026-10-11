@@ -59,7 +59,17 @@ public sealed class CompanyOrdinaryTaxRegistrarMetadataTests
                 var body = "{\"Name\":\"first\",\"" + field + "\":" + invalid + ",\"" + field + "\":\"later\",\"" + field + "\":null}";
                 var baseline = Read(body, typeof(UpsertCompanyRequest), Options());
                 Assert.Equal(typeof(JsonException).FullName, baseline.ReadError);
-                Assert.Equal(baseline, Read(body, typeof(UpsertCompanyRequest), Proposed()));
+                var candidate = Read(body, typeof(UpsertCompanyRequest), Proposed());
+                if (invalid is "42" or "true")
+                {
+                    var expected = new UpsertCompanyRequest("first", field == "TaxNumber" ? "later" : null,
+                        field == "Registrar" ? "later" : null);
+                    Assert.Null(candidate.ReadError);
+                    Assert.Equal(Fields(expected), candidate.DecodedFields);
+                    Assert.Null(candidate.WriteError);
+                    Assert.Equal(Write(expected, Options()).Json, candidate.Json);
+                }
+                else Assert.Equal(baseline, candidate);
             }
 
         var inactiveBodies = cases.Select(item => item.Body).Concat(new[]

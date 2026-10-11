@@ -7,6 +7,9 @@ namespace Legacy.Maliev.CustomerService.Api;
 
 internal static class OrdinaryCompanyMvcJsonMetadata
 {
+    private static readonly JsonConverter<string> DefaultString =
+        (JsonConverter<string>)JsonSerializerOptions.Default.GetConverter(typeof(string));
+
     internal static IJsonTypeInfoResolver? Compose(IJsonTypeInfoResolver? resolver) =>
         resolver?.GetType() == typeof(DefaultJsonTypeInfoResolver)
             ? resolver.WithAddedModifier(Configure)
@@ -28,10 +31,26 @@ internal static class OrdinaryCompanyMvcJsonMetadata
         name.Set = IgnoreNull(assignName);
         var taxNumber = typeInfo.Properties.SingleOrDefault(property => property.Name == nameof(UpsertCompanyRequest.TaxNumber));
         if (taxNumber is not null && taxNumber.PropertyType == typeof(string) && taxNumber.Set is { } assignTaxNumber)
+        {
             taxNumber.Set = IgnoreNull(assignTaxNumber);
+            PreserveDefaultStringRead(taxNumber, typeInfo.Options);
+        }
         var registrar = typeInfo.Properties.SingleOrDefault(property => property.Name == nameof(UpsertCompanyRequest.Registrar));
         if (registrar is not null && registrar.PropertyType == typeof(string) && registrar.Set is { } assignRegistrar)
+        {
             registrar.Set = IgnoreNull(assignRegistrar);
+            PreserveDefaultStringRead(registrar, typeInfo.Options);
+        }
+    }
+
+    private static void PreserveDefaultStringRead(JsonPropertyInfo property, JsonSerializerOptions options)
+    {
+        if (property.CustomConverter is not null
+            || options.Converters.Any(converter => converter.CanConvert(typeof(string)))
+            || !ReferenceEquals(options.GetConverter(typeof(string)), DefaultString))
+            return;
+
+        property.CustomConverter = new OrdinaryCompanyFieldPrimitiveJsonConverter(DefaultString);
     }
 
     private static Action<object, object?> IgnoreNull(Action<object, object?> assign) =>

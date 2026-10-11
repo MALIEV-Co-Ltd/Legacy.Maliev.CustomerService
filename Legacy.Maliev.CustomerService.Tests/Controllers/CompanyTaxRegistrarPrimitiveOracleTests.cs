@@ -45,9 +45,13 @@ public sealed class CompanyTaxRegistrarPrimitiveOracleTests(ITestOutputHelper ou
                         }
                         foreach (var segmented in new[] { false, true })
                         {
+                            var baseline = Observe(json, Options(true), segmented);
                             var current = Observe(json, Options(false), segmented);
-                            Assert.Equal(Observe(json, Options(true), segmented), current);
                             if (item.CurrentRejects)
+                                Assert.Equal(typeof(JsonException).FullName, baseline.ReadError);
+                            else
+                                Assert.Equal(baseline, current);
+                            if (item.ReferenceRejects)
                             {
                                 Assert.Equal(typeof(JsonException).FullName, current.ReadError);
                                 Assert.Null(current.Decoded);
@@ -61,6 +65,8 @@ public sealed class CompanyTaxRegistrarPrimitiveOracleTests(ITestOutputHelper ou
                                     field == "Registrar" ? item.Expected : null)), current.Decoded);
                                 Assert.True(current.ControllerDetails);
                                 Assert.Null(current.WriteError);
+                                Assert.Equal(JsonSerializer.Serialize(new UpsertCompanyRequest("ok", field == "TaxNumber" ? item.Expected : null,
+                                    field == "Registrar" ? item.Expected : null), Options(true)), current.Written);
                             }
                             output.WriteLine(JsonSerializer.Serialize(new
                             {
@@ -71,6 +77,7 @@ public sealed class CompanyTaxRegistrarPrimitiveOracleTests(ITestOutputHelper ou
                                 Segmented = segmented,
                                 ReferenceValue = item.Expected,
                                 ReferenceError = referenceError,
+                                AcceptedBaseline = baseline,
                                 Current = current,
                                 PostgreSqlStorage = "NOT RUN in reference comparison",
                                 Reference = "Newtonsoft.Json [13.0.3] on net10; historical resolved net8 runtime UNKNOWN",
@@ -115,9 +122,66 @@ public sealed class CompanyTaxRegistrarPrimitiveOracleTests(ITestOutputHelper ou
                     var accepted = Modified(scenario, true);
                     var current = Modified(scenario, false);
                     var expected = Observe(json, accepted, false);
-                    Assert.Equal(expected, Observe(json, current, false));
-                    output.WriteLine(JsonSerializer.Serialize(new { Kind = "custom-metadata-differential", Scenario = scenario, Token = value, Current = expected }));
+                    var actual = Observe(json, current, false);
+                    if (value != "42" || scenario is "global" or "global-null" or "wrapped-resolver")
+                        Assert.Equal(expected, actual);
+                    else
+                    {
+                        Assert.Equal(typeof(JsonException).FullName, expected.ReadError);
+                        var tax = scenario switch
+                        {
+                            "tax-property" => "probe:42",
+                            "tax-setter" => "setter:42",
+                            "remove-tax" or "unset-tax" => null,
+                            _ => "42",
+                        };
+                        var registrar = scenario switch
+                        {
+                            "registrar-property" => "probe:42",
+                            "registrar-setter" => "setter:42",
+                            "remove-registrar" or "unset-registrar" => null,
+                            _ => "42",
+                        };
+                        var decoded = new UpsertCompanyRequest("ok", tax, registrar);
+                        Assert.Null(actual.ReadError);
+                        Assert.Equal(Fields(decoded), actual.Decoded);
+                        Assert.True(actual.ControllerDetails);
+                        Assert.Null(actual.WriteError);
+                        Assert.Equal(JsonSerializer.Serialize(decoded, accepted), actual.Written);
+                    }
+                    if (scenario.EndsWith("-property", StringComparison.Ordinal))
+                    {
+                        var field = scenario.StartsWith("tax-", StringComparison.Ordinal) ? "TaxNumber" : "Registrar";
+                        Assert.IsType<ProbeStringConverter>(current.GetTypeInfo(typeof(UpsertCompanyRequest)).Properties.Single(property => property.Name == field).CustomConverter);
+                    }
+                    output.WriteLine(JsonSerializer.Serialize(new { Kind = "custom-metadata-differential", Scenario = scenario, Token = value, AcceptedBaseline = expected, Current = actual }));
                 }
+            var owned = Options(false);
+            owned.MakeReadOnly();
+            var defaultLiteral = JsonSerializerOptions.Default.GetConverter(typeof(string));
+            Assert.Same(defaultLiteral, owned.GetConverter(typeof(string)));
+            foreach (var field in new[] { "TaxNumber", "Registrar" })
+                Assert.Equal("Legacy.Maliev.CustomerService.Api.OrdinaryCompanyFieldPrimitiveJsonConverter",
+                    owned.GetTypeInfo(typeof(UpsertCompanyRequest)).Properties.Single(property => property.Name == field).CustomConverter!.GetType().FullName);
+            foreach (var field in new[] { "TaxNumber", "Registrar" })
+                foreach (var malformed in new[] { "\\uD800", "\\uDC00", "\\uDC00\\uD800" })
+                {
+                    var json = "{\"Name\":\"ok\",\"" + field + "\":\"" + malformed + "\"}";
+                    var acceptedError = Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<UpsertCompanyRequest>(json, Options(true)));
+                    var candidateError = Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<UpsertCompanyRequest>(json, Options(false)));
+                    Assert.Equal(acceptedError.Path, candidateError.Path);
+                    Assert.Equal(acceptedError.LineNumber, candidateError.LineNumber);
+                    Assert.Equal(acceptedError.BytePositionInLine, candidateError.BytePositionInLine);
+                }
+            // Even an explicitly registered default converter is user-owned global metadata.
+            var registered = BaseOptions();
+            registered.Converters.Add(defaultLiteral);
+            registered.TypeInfoResolver = Compose(registered.TypeInfoResolver);
+            registered.MakeReadOnly();
+            foreach (var field in new[] { "TaxNumber", "Registrar" })
+                Assert.Null(registered.GetTypeInfo(typeof(UpsertCompanyRequest)).Properties.Single(property => property.Name == field).CustomConverter);
+            Assert.Equal(typeof(JsonException).FullName,
+                Observe("{\"Name\":\"ok\",\"TaxNumber\":42}", registered, false).ReadError);
         }
         finally
         {
