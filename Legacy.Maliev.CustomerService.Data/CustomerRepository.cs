@@ -50,7 +50,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
         CustomerSortType? sort,
         string? search,
         int pageIndex,
-        int pageSize,
+        int? pageSize,
         CancellationToken cancellationToken)
     {
         IQueryable<Customer> query = dbContext.Customers.AsNoTracking();
@@ -93,16 +93,23 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
             return null;
         }
 
+        var resolvedPageSize = Math.Clamp(pageSize ?? total, 1, 250);
+        var offset = (pageIndex - 1L) * resolvedPageSize;
+        if (offset >= total)
+        {
+            return null;
+        }
+
         var items = await Project(query)
-            .Skip((pageIndex - 1) * pageSize)
-            .Take(pageSize)
+            .Skip((int)offset)
+            .Take(resolvedPageSize)
             .ToListAsync(cancellationToken);
         if (items.Count == 0)
         {
             return null;
         }
 
-        return new PaginatedResponse<CustomerResponse>(items, pageIndex, (int)Math.Ceiling(total / (double)pageSize), total);
+        return new PaginatedResponse<CustomerResponse>(items, pageIndex, (int)Math.Ceiling(total / (double)resolvedPageSize), total);
     }
 
     /// <inheritdoc />
