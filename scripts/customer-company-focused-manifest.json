@@ -1534,12 +1534,12 @@
     {
       "path": "scripts/customer-default-page-focused-manifest.json",
       "bytes": 63911,
-      "sha256": "4a3b52b2635d2cd54424daea9adb3b4f9170361586f58271770637f96e3d023a"
+      "sha256": "592dd0a6d6cec5eb4f8afd125e6d8305d16e8faee8eff6ffd5a07bf923b3ba96"
     },
     {
       "path": "scripts/customer-email-focused-manifest.json",
       "bytes": 84378,
-      "sha256": "98de4c3bedd1ab81847b8d29d5f57d6bc5ab8341e227813323bdc5102aa0d13b"
+      "sha256": "ade32107fdd90f0b08c0e8cc35e6efb740db48e69880e067eccc59e08ceabb04"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCompanyMvcJsonMetadata.cs",
@@ -1568,13 +1568,13 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryTaxRegistrarReferenceTests.cs",
-      "bytes": 16203,
-      "sha256": "e8c3b66401f61197183c046d2cea4f71180eb07739e44bd80d4cd1aecaf0dfc2"
+      "bytes": 17815,
+      "sha256": "54ea20197ba3fe01cf631f4ea9172e2e6fc797b23aa2bf731aef273382dd9ef3"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryTaxRegistrarMetadataTests.cs",
-      "bytes": 34555,
-      "sha256": "ce1a0f4a816f856efa526c8d1fdc695cabb2406ee5940c779adf21340be4a9a2"
+      "bytes": 35193,
+      "sha256": "70291e55b6953c58f53e82bb36ef1649cb9358562f26e133f28afb8810f60bf7"
     },
     {
       "path": "docs/company-ordinary-tax-registrar-null-mvc-compatibility-20261011.md",
@@ -1603,13 +1603,13 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyFieldPrimitiveHttpTests.cs",
-      "bytes": 28630,
-      "sha256": "1d9868c0576eac9c2d60b1b54c8e9d75e2790095fead2aa09fe25d60706b42a8"
+      "bytes": 29932,
+      "sha256": "3262955101ecb456265adaae9d33b19814a6d055a1a6ef2b1e205d2dc248a854"
     },
     {
       "path": "docs/company-tax-registrar-primitive-mvc-20261011.md",
-      "bytes": 4790,
-      "sha256": "47ed24defa77a066a1e85cd1e6faa20d554fd1eb63b359b76d05a06088dff617"
+      "bytes": 5720,
+      "sha256": "2d16414b3628a55841cf361e8483f9ef9028544b10d0af3136a26fd013dcb252"
     }
   ],
   "frozenDependencyPins": [

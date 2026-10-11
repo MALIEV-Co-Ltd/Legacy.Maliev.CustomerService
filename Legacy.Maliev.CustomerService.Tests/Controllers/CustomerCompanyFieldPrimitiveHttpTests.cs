@@ -51,9 +51,19 @@ public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthori
                                 var first = await PersistAsync(client, cache, route, primitive, expected, segmented, token);
                                 var second = await PersistAsync(client, cache, route, literal, expected, segmented, token);
                                 Assert.Equal(first, second);
-                                output.WriteLine(JsonSerializer.Serialize(new { Kind = "http-primitive-string-pair", Culture = language,
-                                    Field = field, Route = route, Case = item.Label, BodyWrittenInOneByteSegments = segmented,
-                                    Primitive = first, EquivalentString = second, Graph = "intended effects only", Cache = "exact eviction" }));
+                                output.WriteLine(JsonSerializer.Serialize(new
+                                {
+                                    Kind = "http-primitive-string-pair",
+                                    Culture = language,
+                                    Field = field,
+                                    Route = route,
+                                    Case = item.Label,
+                                    BodyWrittenInOneByteSegments = segmented,
+                                    Primitive = first,
+                                    EquivalentString = second,
+                                    Graph = "intended effects only",
+                                    Cache = "exact eviction"
+                                }));
                             }
             }
         }
@@ -83,17 +93,35 @@ public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthori
                         var observation = await RollbackAsync(client, cache, route, Payload(field, shape, ",\"FIELD\":\"later\",\"FIELD\":null"),
                             segmented, false, token);
                         Assert.Equal(400, observation.Status);
-                        output.WriteLine(JsonSerializer.Serialize(new { Kind = "http-structured-refusal", Field = field, Route = route,
-                            Case = shape, BodyWrittenInOneByteSegments = segmented, Observation = observation, Graph = "unchanged", Cache = "unchanged" }));
+                        output.WriteLine(JsonSerializer.Serialize(new
+                        {
+                            Kind = "http-structured-refusal",
+                            Field = field,
+                            Route = route,
+                            Case = shape,
+                            BodyWrittenInOneByteSegments = segmented,
+                            Observation = observation,
+                            Graph = "unchanged",
+                            Cache = "unchanged"
+                        }));
                     }
                     foreach (var item in BoundaryCases())
                     {
                         var first = await RollbackAsync(client, cache, route, Payload(field, item.Token, ""), segmented, item.Storage, token);
                         var second = await RollbackAsync(client, cache, route, Payload(field, item.StringToken, ""), segmented, item.Storage, token);
                         Assert.Equal(first, second);
-                        output.WriteLine(JsonSerializer.Serialize(new { Kind = "http-boundary-string-pair", Field = field, Route = route,
-                            Case = item.Label, BodyWrittenInOneByteSegments = segmented, PrimitiveOrLiteral = first, EquivalentString = second,
-                            Graph = "unchanged", Cache = "unchanged" }));
+                        output.WriteLine(JsonSerializer.Serialize(new
+                        {
+                            Kind = "http-boundary-string-pair",
+                            Field = field,
+                            Route = route,
+                            Case = item.Label,
+                            BodyWrittenInOneByteSegments = segmented,
+                            PrimitiveOrLiteral = first,
+                            EquivalentString = second,
+                            Graph = "unchanged",
+                            Cache = "unchanged"
+                        }));
                     }
                 }
     }
@@ -119,23 +147,31 @@ public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthori
                 {
                     using var client = fixture.Client(host, kind);
                     client.Timeout = TimeSpan.FromSeconds(15);
-                    using var request = Request(route, Payload(field, "42", ""), versions);
+                    using var request = Request(route, Payload(field, "42", "", scoped: route.StartsWith("scoped-", StringComparison.Ordinal)), versions);
                     using var response = await client.SendAsync(request, token);
                     Assert.Equal(kind == "denied" ? HttpStatusCode.Forbidden : HttpStatusCode.Unauthorized, response.StatusCode);
                     Assert.Equal(before, await PhysicalSnapshotAsync(token));
                     await AssertCacheAsync(cache, cached, [], token);
-                    output.WriteLine(JsonSerializer.Serialize(new { Kind = "http-primitive-authority", Field = field, Route = route,
-                        Authority = kind, Status = (int)response.StatusCode, Graph = "unchanged", Cache = "unchanged" }));
+                    output.WriteLine(JsonSerializer.Serialize(new
+                    {
+                        Kind = "http-primitive-authority",
+                        Field = field,
+                        Route = route,
+                        Authority = kind,
+                        Status = (int)response.StatusCode,
+                        Graph = "unchanged",
+                        Cache = "unchanged"
+                    }));
                 }
                 if (!route.StartsWith("scoped-", StringComparison.Ordinal)) continue;
-                using (var request = Request(route, Payload(field, "42", ",\"FIELD\":\"later\",\"FIELD\":null"), versions))
+                using (var request = Request(route, Payload(field, "42", ",\"FIELD\":\"later\",\"FIELD\":null", scoped: true), versions))
                 using (var response = await editor.SendAsync(request, token))
                 {
                     Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
                     Assert.Equal(before, await PhysicalSnapshotAsync(token));
                     await AssertCacheAsync(cache, cached, [], token);
                 }
-                var literal = Payload(field, "\"later\"", ",\"FIELD\":null");
+                var literal = Payload(field, "\"later\"", ",\"FIELD\":null", scoped: true);
                 using var acceptedRequest = Request(route, literal, versions);
                 using var accepted = await editor.SendAsync(acceptedRequest, token);
                 Assert.Equal(HttpStatusCode.NoContent, accepted.StatusCode);
@@ -161,8 +197,15 @@ public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthori
                 Assert.Equal(HttpStatusCode.PreconditionFailed, stale.StatusCode);
                 Assert.Equal(after, await PhysicalSnapshotAsync(token));
                 await AssertCacheAsync(cache, replayCache, [], token);
-                output.WriteLine(JsonSerializer.Serialize(new { Kind = "http-primitive-scoped", Field = field, Route = route,
-                    PrimitiveStatus = 400, StringStatus = (int)accepted.StatusCode, StaleStatus = (int)stale.StatusCode }));
+                output.WriteLine(JsonSerializer.Serialize(new
+                {
+                    Kind = "http-primitive-scoped",
+                    Field = field,
+                    Route = route,
+                    PrimitiveStatus = 400,
+                    StringStatus = (int)accepted.StatusCode,
+                    StaleStatus = (int)stale.StatusCode
+                }));
             }
     }
 
@@ -283,8 +326,9 @@ public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthori
         _ => value.ValueKind.ToString(),
     };
 
-    private static string Payload(string field, string value, string suffix) =>
-        "{\"Name\":\"ok\",\"Name\":null,\"" + field + "\":" + value + suffix.Replace("FIELD", field, StringComparison.Ordinal) + "}";
+    private static string Payload(string field, string value, string suffix, bool scoped = false) =>
+        "{\"Name\":\"ok\"," + (scoped ? "" : "\"Name\":null,") + "\"" + field + "\":" + value
+        + suffix.Replace("FIELD", field, StringComparison.Ordinal) + "}";
 
     private static PrimitiveCase[] PositivePrimitives()
     {

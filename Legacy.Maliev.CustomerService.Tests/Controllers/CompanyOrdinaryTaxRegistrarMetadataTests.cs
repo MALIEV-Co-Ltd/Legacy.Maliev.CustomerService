@@ -332,7 +332,15 @@ public sealed class CompanyOrdinaryTaxRegistrarMetadataTests
                     continue;
                 }
                 Assert.Same(property, proposedInfo.Properties.Single(item => item.Name == field));
-                Assert.Same(proposalProbe.Converters[field], property.CustomConverter);
+                if (proposalProbe.Converters[field] is not null || proposalProbe.Setters[field] is null)
+                    Assert.Same(proposalProbe.Converters[field], property.CustomConverter);
+                else
+                {
+                    Assert.NotNull(property.CustomConverter);
+                    Assert.Equal("Legacy.Maliev.CustomerService.Api.OrdinaryCompanyFieldPrimitiveJsonConverter", property.CustomConverter.GetType().FullName);
+                    Assert.False(Assert.IsAssignableFrom<JsonConverter<string>>(property.CustomConverter).HandleNull);
+                    Assert.Same(JsonSerializerOptions.Default.GetConverter(typeof(string)), proposal.GetConverter(typeof(string)));
+                }
                 if (proposalProbe.Setters[field] is null)
                     Assert.Null(property.Set);
                 else
