@@ -114,7 +114,12 @@ public sealed class CustomerAddressAttachmentLifecycleHttpTests(CustomerDetailAu
         using var client = fixture.Client(host, "address-lifecycle");
         await fixture.SeedOldAsync(host);
         var before = await fixture.SnapshotAsync();
-        using var response = await client.PostAsync("/customers/1/addresses/", new StringContent(body, System.Text.Encoding.UTF8, "application/json"));
+        // Retain the original theory identity while replacing its formerly invalid blank fixture.
+        // Literal blanks are now covered as successful writes by the six-route literal matrix.
+        var invalidBody = body == "{\"AddressLine1\":\" \"}"
+            ? JsonSerializer.Serialize(new { AddressLine1 = new string('a', 257) })
+            : body;
+        using var response = await client.PostAsync("/customers/1/addresses/", new StringContent(invalidBody, System.Text.Encoding.UTF8, "application/json"));
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Equal(before, await fixture.SnapshotAsync());
         Assert.True(await fixture.CacheExistsAsync());

@@ -162,7 +162,7 @@ public sealed class CustomerDetailAuthorityHttpTests(CustomerDetailAuthorityFixt
             "company" => """{"Name":"After company","TaxNumber":"123"}""",
             _ => """{"AddressLine1":"After road","City":"Bangkok","CountryId":764}"""
         };
-        if (invalid) json = kind switch { "customer" => """{"FirstName":"","LastName":"Customer","Email":"detail@example.test"}""", "company" => """{"Name":""}""", _ => """{"AddressLine1":"","CountryId":764}""" };
+        if (invalid) json = kind switch { "customer" => """{"FirstName":"","LastName":"Customer","Email":"detail@example.test"}""", "company" => """{"Name":""}""", _ => JsonSerializer.Serialize(new { AddressLine1 = new string('a', 257), CountryId = 764 }) };
         return client.PutAsync(route, new StringContent(json, Encoding.UTF8, "application/json"), token);
     }
 
