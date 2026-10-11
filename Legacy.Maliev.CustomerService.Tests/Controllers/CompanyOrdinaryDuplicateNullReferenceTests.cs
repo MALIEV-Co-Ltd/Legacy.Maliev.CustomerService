@@ -95,8 +95,11 @@ public sealed class CompanyOrdinaryDuplicateNullReferenceTests(ITestOutputHelper
                         Assert.Equal(expectedWire, candidateWire);
                         output.WriteLine(JsonSerializer.Serialize(new
                         {
-                            Culture = culture, Case = item.Label, Segmented = segmented,
-                            Name = candidate.Name, FinalControllerShapeAccepted = item.HasDetails,
+                            Culture = culture,
+                            Case = item.Label,
+                            Segmented = segmented,
+                            Name = candidate.Name,
+                            FinalControllerShapeAccepted = item.HasDetails,
                             Reference = "Newtonsoft.Json [13.0.3] on net10; original net8 runtime UNPROVEN",
                         }));
                     }

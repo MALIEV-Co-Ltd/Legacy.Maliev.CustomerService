@@ -1489,12 +1489,12 @@
     {
       "path": "scripts/customer-default-page-focused-manifest.json",
       "bytes": 61980,
-      "sha256": "e4e104fd792b875296282ea1a3493e43f3cc1d1892bed570a15eb0cf2df3f6a8"
+      "sha256": "293d04b57a0d594b56517821cd91244f9c77d48b9ae194bac101bc31a36c1777"
     },
     {
       "path": "scripts/customer-email-focused-manifest.json",
       "bytes": 82447,
-      "sha256": "3886b3170e15ae5bd2651d6ade877e6af70ecd42a1c748dabb87f624f357eed9"
+      "sha256": "a4817fc450d80636439729a46c716c1ef78e63aa36f87021c3cae05bd649b6cd"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCompanyMvcJsonMetadata.cs",
@@ -1508,13 +1508,13 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryDuplicateNullReferenceTests.cs",
-      "bytes": 11830,
-      "sha256": "6934b6075de20af376690b49379b9497d0f7f42bf0165cbe02d316a3e760de84"
+      "bytes": 11914,
+      "sha256": "5fd9d81374261836a85c04fb2c2620386f6790fdcf7599f5c05d6c62dcd7373f"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryDuplicateNullHttpTests.cs",
-      "bytes": 29974,
-      "sha256": "712018e7c4e9aef3a78bd01d2c96922d981504b06e7f61079c304dc67a153e88"
+      "bytes": 29986,
+      "sha256": "bed2d32706fdb4d1edcf0b99a42590a83c3f3c668e683454e932dd58559bc497"
     },
     {
       "path": "docs/company-ordinary-duplicate-null-mvc-compatibility-20261011.md",

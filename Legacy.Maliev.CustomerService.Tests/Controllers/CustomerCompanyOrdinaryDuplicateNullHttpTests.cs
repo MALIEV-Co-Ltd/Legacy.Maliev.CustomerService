@@ -270,7 +270,8 @@ public sealed class CustomerCompanyOrdinaryDuplicateNullHttpTests(CustomerDetail
     {
         var path = route switch
         {
-            "create" => "/customers/companies/", "update" => "/customers/companies/1/",
+            "create" => "/customers/companies/",
+            "update" => "/customers/companies/1/",
             "scoped-create" => "/customers/1/relations/company/new/versioned",
             "scoped-update" => "/customers/1/relations/company/1/versioned",
             _ => throw new ArgumentOutOfRangeException(nameof(route)),
