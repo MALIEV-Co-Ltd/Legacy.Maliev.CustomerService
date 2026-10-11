@@ -49,8 +49,9 @@ public sealed class CompanyOrdinaryMvcMetadataControls
         var otherFields = JsonSerializer.Deserialize<UpsertCompanyRequest>(
             "{\"Name\":\"first\",\"Name\":null,\"TaxNumber\":\"tax\",\"TaxNumber\":null,\"Registrar\":\"r\",\"Registrar\":null}", active)!;
         Assert.Equal("first", otherFields.Name);
-        Assert.Null(otherFields.TaxNumber);
-        Assert.Null(otherFields.Registrar);
+        // Intentional compatibility repair: the two ordinary string fields now retain earlier non-null values.
+        Assert.Equal("tax", otherFields.TaxNumber);
+        Assert.Equal("r", otherFields.Registrar);
         foreach (var invalid in new[]
         {
             "{\"Name\":{},\"Name\":\"later\"}",

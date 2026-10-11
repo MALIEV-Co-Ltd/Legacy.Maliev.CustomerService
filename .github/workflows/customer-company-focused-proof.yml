@@ -35,6 +35,9 @@ on:
       - 'Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryMvcMetadataControls.cs'
       - 'Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryDuplicateNullReferenceTests.cs'
       - 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryDuplicateNullHttpTests.cs'
+      - 'Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryTaxRegistrarReferenceTests.cs'
+      - 'Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryTaxRegistrarMetadataTests.cs'
+      - 'docs/company-ordinary-tax-registrar-null-mvc-compatibility-20261011.md'
       - 'docs/company-ordinary-duplicate-null-mvc-compatibility-20261011.md'
 
 permissions:
@@ -100,7 +103,7 @@ jobs:
           mkdir -p runner-default-focused
           set -o pipefail
           timeout --signal=TERM --kill-after=5s 180s dotnet build Legacy.Maliev.CustomerService.slnx -c Release --no-restore -warnaserror -p:UseSharedCompilation=false | tee runner-default-focused/build.log
-      - name: Admitted exact21 Company focused cases
+      - name: Admitted exact25 Company focused cases
         shell: bash
         run: |
           set -euo pipefail

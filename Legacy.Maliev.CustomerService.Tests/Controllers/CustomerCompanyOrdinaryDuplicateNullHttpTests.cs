@@ -22,6 +22,84 @@ public sealed class CustomerCompanyOrdinaryDuplicateNullHttpTests(CustomerDetail
     public Task OrdinaryDuplicateNames_PersistLastNonNullNameAndOnlyIntendedGraphAndCacheEffects() => WriteMatrixAsync(PositiveCases());
 
     [Fact]
+    public Task OrdinaryTaxRegistrar_PersistLastNonNullStringsAndOnlyIntendedGraphAndCacheEffects() => WriteMatrixAsync(NullablePositiveCases());
+
+    [Fact]
+    public async Task OrdinaryTaxRegistrar_InvalidAuthorityTokensAndScopedPolicyCannotMutateGraphOrCache()
+    {
+        using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(180));
+        var token = deadline.Token;
+        await using var host = fixture.Start();
+        AssertActualMvc(host);
+        var cache = host.Services.GetRequiredService<IDistributedCache>();
+        using var editor = fixture.Client(host, "relation-editor");
+        editor.Timeout = TimeSpan.FromSeconds(15);
+        const string duplicate = "{\"Name\":\"ok\",\"TaxNumber\":\"tax\",\"TaxNumber\":null,\"Registrar\":\"r\",\"Registrar\":null}";
+        foreach (var route in new[] { "create", "update", "scoped-create", "scoped-update" })
+        {
+            await SeedAsync(route, token);
+            var versions = route.StartsWith("scoped-", StringComparison.Ordinal) ? await VersionsAsync(editor, route, token) : default;
+            var before = await PhysicalSnapshotAsync(token);
+            var cached = await PrimeAsync(cache, token);
+            foreach (var kind in new[] { "anonymous", "denied", "wrong-signature", "expired" })
+            {
+                using var client = fixture.Client(host, kind);
+                client.Timeout = TimeSpan.FromSeconds(15);
+                await RefuseAsync(client, cache, route, "tax-registrar-authority/" + kind, duplicate, versions,
+                    kind == "denied" ? HttpStatusCode.Forbidden : HttpStatusCode.Unauthorized, before, cached, token);
+            }
+            if (!route.StartsWith("scoped-", StringComparison.Ordinal))
+            {
+                foreach (var field in new[] { "TaxNumber", "Registrar" })
+                    foreach (var invalid in new[] { "{}", "[]", "true", "42", "1e309" })
+                    {
+                        var json = "{\"Name\":\"ok\",\"" + field + "\":\"first\",\"" + field + "\":" + invalid
+                            + ",\"" + field + "\":null,\"" + field + "\":\"later\"}";
+                        await RefuseAsync(editor, cache, route, "tax-registrar-invalid/" + field + "/" + invalid,
+                            json, versions, HttpStatusCode.BadRequest, before, cached, token);
+                    }
+                await RefuseAsync(editor, cache, route, "tax-registrar-details-still-required",
+                    "{\"Name\":\" \",\"TaxNumber\":null,\"Registrar\":\"r\",\"Registrar\":null}", versions,
+                    HttpStatusCode.BadRequest, before, cached, token);
+                continue;
+            }
+
+            // Scoped strings deliberately keep their existing last-null policy, including ETag enforcement.
+            using var request = Request(route, duplicate, versions);
+            using var response = await editor.SendAsync(request, token);
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+            Assert.Equal("", await response.Content.ReadAsStringAsync(token));
+            var id = int.Parse(response.Headers.GetValues("X-Relation-Id").Single(), System.Globalization.CultureInfo.InvariantCulture);
+            var after = await PhysicalSnapshotAsync(token);
+            AssertPreservedGraph(before, after, id, true, route == "scoped-create");
+            await AssertCacheAsync(cache, cached, route == "scoped-create" ? [1] : [1, 2], token);
+            await using (var db = fixture.Context())
+            {
+                var stored = await db.Companies.AsNoTracking().SingleAsync(value => value.Id == id, token);
+                Assert.Equal("ok", stored.Name);
+                Assert.Null(stored.TaxNumber);
+                Assert.Null(stored.Registrar);
+            }
+            foreach (var path in new[] { $"/customers/companies/{id}", $"/customers/1/relations/company/{id}/edit" })
+            {
+                using var read = await editor.GetAsync(path, token);
+                Assert.Equal(HttpStatusCode.OK, read.StatusCode);
+                using var body = JsonDocument.Parse(await read.Content.ReadAsStringAsync(token));
+                var value = body.RootElement.TryGetProperty("Company", out var company) ? company : body.RootElement;
+                AssertLiteral(value, new("scoped-tax-registrar-last-null", "", "ok", null, null));
+            }
+            var replayCache = await PrimeAsync(cache, token);
+            using var staleRequest = Request(route, duplicate, versions);
+            using var stale = await editor.SendAsync(staleRequest, token);
+            Assert.Equal(HttpStatusCode.PreconditionFailed, stale.StatusCode);
+            Assert.Equal(after, await PhysicalSnapshotAsync(token));
+            await AssertCacheAsync(cache, replayCache, [], token);
+            output.WriteLine(JsonSerializer.Serialize(new { Route = route, Case = "tax-registrar-scoped-last-null", Status = (int)response.StatusCode }));
+            output.WriteLine(JsonSerializer.Serialize(new { Route = route, Case = "tax-registrar-scoped-stale", Status = (int)stale.StatusCode }));
+        }
+    }
+
+    [Fact]
     public async Task OrdinaryDuplicateNames_InvalidOccurrenceCannotHideBehindLaterValuesOrMutateGraph()
     {
         using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(120));
@@ -309,6 +387,26 @@ public sealed class CustomerCompanyOrdinaryDuplicateNullHttpTests(CustomerDetail
 
     private sealed record PositiveCase(string Label, string Json, string Name, string? Tax, string? Registrar);
 
+    private static PositiveCase[] NullablePositiveCases() =>
+    [
+        new("tax-registrar-missing", "{\"Name\":\"ok\"}", "ok", null, null),
+        new("tax-registrar-null-only", "{\"Name\":\"ok\",\"TaxNumber\":null,\"Registrar\":null}", "ok", null, null),
+        new("tax-null-first-last", "{\"Name\":\"ok\",\"TaxNumber\":null,\"TaxNumber\":\"tax\",\"TaxNumber\":null}", "ok", "tax", null),
+        new("registrar-null-first-last", "{\"Name\":\"ok\",\"Registrar\":null,\"Registrar\":\"r\",\"Registrar\":null}", "ok", null, "r"),
+        new("tax-registrar-both-last-null", "{\"Name\":\"ok\",\"Name\":null,\"TaxNumber\":\"tax\",\"TaxNumber\":null,\"Registrar\":\"r\",\"Registrar\":null}", "ok", "tax", "r"),
+        new("tax-registrar-null-between", "{\"Name\":\"ok\",\"TaxNumber\":\"first\",\"TaxNumber\":null,\"TaxNumber\":\"last\",\"Registrar\":\"first-r\",\"Registrar\":null,\"Registrar\":\"last-r\"}", "ok", "last", "last-r"),
+        new("tax-registrar-repeated-last-null", "{\"Name\":\"ok\",\"TaxNumber\":\"last\",\"TaxNumber\":null,\"TaxNumber\":null,\"Registrar\":\"r\",\"Registrar\":null,\"Registrar\":null}", "ok", "last", "r"),
+        new("tax-registrar-final-empty", "{\"Name\":\"ok\",\"TaxNumber\":\"first\",\"TaxNumber\":\"\",\"TaxNumber\":null,\"Registrar\":\"first\",\"Registrar\":\"\",\"Registrar\":null}", "ok", "", ""),
+        new("tax-registrar-final-whitespace", "{\"Name\":\"ok\",\"TaxNumber\":\" \\t \",\"TaxNumber\":null,\"Registrar\":\" \\t \",\"Registrar\":null}", "ok", " \t ", " \t "),
+        new("tax-registrar-case-variants", "{\"Name\":\"ok\",\"taxnumber\":\"first\",\"TAXNUMBER\":\"tax\",\"TaxNumber\":null,\"REGISTRAR\":\"first\",\"registrar\":\"r\",\"Registrar\":null}", "ok", "tax", "r"),
+        new("tax-registrar-escaped-first-key", "{\"Name\":\"ok\",\"\\u0054axNumber\":\"tax\",\"\\u0074axNumber\":null,\"\\u0052egistrar\":\"r\",\"\\u0072egistrar\":null}", "ok", "tax", "r"),
+        new("tax-registrar-escaped-middle-key", "{\"Name\":\"ok\",\"Tax\\u004Eumber\":\"tax\",\"taxnumber\":null,\"Regi\\u0073trar\":\"r\",\"REGISTRAR\":null}", "ok", "tax", "r"),
+        new("tax-registrar-literal-unicode", "{\"Name\":\"ok\",\"TaxNumber\":\" ก้ 😀 \",\"TaxNumber\":null,\"Registrar\":\" บริษัท 😀 \",\"Registrar\":null}", "ok", " ก้ 😀 ", " บริษัท 😀 "),
+        new("tax-registrar-escaped-unicode", "{\"Name\":\"ok\",\"TaxNumber\":\"\\u0E01\\u0E49 \\uD83D\\uDE00\",\"TaxNumber\":null,\"Registrar\":\"\\u0E01 \\uD83D\\uDE00\",\"Registrar\":null}", "ok", "ก้ 😀", "ก 😀"),
+        new("tax-registrar-earlier257-final-bounded", "{\"Name\":\"ok\",\"TaxNumber\":" + JsonSerializer.Serialize(new string('x', 257)) + ",\"TaxNumber\":\"tax\",\"Registrar\":" + JsonSerializer.Serialize(new string('x', 257)) + ",\"Registrar\":\"r\"}", "ok", "tax", "r"),
+        new("tax-last-null-details", "{\"Name\":\" \",\"TaxNumber\":\"tax\",\"TaxNumber\":null,\"Registrar\":null}", " ", "tax", null),
+    ];
+
     private static PositiveCase[] PositiveCases() =>
     [
         new("positive-name-1", "{\"Name\":\" \u0e01\u0e49 \ud83d\ude00 \\t \",\"Name\":null}", " \u0e01\u0e49 \ud83d\ude00 \t ", null, null),
@@ -325,7 +423,8 @@ public sealed class CustomerCompanyOrdinaryDuplicateNullHttpTests(CustomerDetail
         new("positive-name-12", "{\"Name\":false,\"Name\":null,\"Name\":\"last\"}", "last", null, null),
         new("positive-name-13", "{\"Name\":\"1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111\",\"Name\":null}", "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111", null, null),
         new("positive-name-14", "{\"Name\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"Name\":\"last\"}", "last", null, null),
-        new("other-field-control-31", "{\"Name\":\"ok\",\"Name\":null,\"TaxNumber\":\"first\",\"TaxNumber\":null,\"Registrar\":\"first\",\"Registrar\":null}", "ok", null, null),
+        // Intentional repair of accepted Name-only behavior; retain this Fact identity and every existing case.
+        new("other-field-control-31", "{\"Name\":\"ok\",\"Name\":null,\"TaxNumber\":\"first\",\"TaxNumber\":null,\"Registrar\":\"first\",\"Registrar\":null}", "ok", "first", "first"),
         new("other-field-control-32", "{\"Name\":\"ok\",\"name\":null,\"taxnumber\":\"tax\",\"REGISTRAR\":\"registrar\"}", "ok", "tax", "registrar"),
         new("other-field-control-37", "{\"Name\":\"ok\",\"Name\":null,\"unknown\":{\"nested\":[null,true,42]}}", "ok", null, null),
         new("other-field-control-38", "{\"Name\":\"ok\",\"Name\":null,\"$type\":\"unknown-metadata\",\"$id\":\"irrelevant\"}", "ok", null, null),
