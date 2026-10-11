@@ -74,7 +74,7 @@ public sealed record UpdateCustomerInternalRemarkRequest(
     [StringLength(4000)] string? InternalRemark);
 
 /// <summary>Company create/update request.</summary>
-public sealed record UpsertCompanyRequest([property: JsonConverter(typeof(CompanyNameJsonConverter))] string Name, string? TaxNumber, string? Registrar);
+public sealed record UpsertCompanyRequest([property: JsonConverter(typeof(OrdinaryCompanyNameJsonConverter))] string Name, string? TaxNumber, string? Registrar);
 
 /// <summary>Address create/update request.</summary>
 public sealed record UpsertAddressRequest(

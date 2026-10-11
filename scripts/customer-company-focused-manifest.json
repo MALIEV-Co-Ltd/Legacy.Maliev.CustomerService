@@ -42,19 +42,39 @@
     },
     {
       "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyPrimitiveNameHttpTests.PrimitiveNameMembers_RefuseWithoutChangingPhysicalGraphOrCache",
-      "testId": null,
-      "identityDisposition": "Authored compiled Fact; actual GUID and full-suite join required after hosted execution"
+      "testId": "1d7be836-2df6-5877-884a-51ff067e2c61",
+      "identityDisposition": "Actual protected-main38137744484 GUID/name; refusal semantics narrowed transparently"
     },
     {
       "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyPrimitiveNameHttpTests.WholeBodyPrimitive_RefusesWithoutChangingPhysicalGraphOrCache",
+      "testId": "97608439-7af7-c9d8-acd7-78154b6b55cd",
+      "identityDisposition": "Actual protected-main38137744484 GUID/name; refusal semantics narrowed transparently"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyOrdinaryPrimitiveHttpTests.OrdinaryPrimitiveNames_PersistExactLexemesAndOnlyIntendedGraphAndCacheEffects",
       "testId": null,
-      "identityDisposition": "Authored compiled Fact; actual GUID and full-suite join required after hosted execution"
+      "identityDisposition": "Authored Fact; actual GUID/full-suite join required"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyOrdinaryPrimitiveHttpTests.OrdinaryNumericNames_PreserveOverflowAndSpellingOrRefuseOver256Units",
+      "testId": null,
+      "identityDisposition": "Authored Fact; actual GUID/full-suite join required"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyOrdinaryPrimitiveHttpTests.OrdinaryPrimitiveNames_InvalidAuthorityCannotChangeGraphOrCache",
+      "testId": null,
+      "identityDisposition": "Authored Fact; actual GUID/full-suite join required"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CompanyOrdinaryPrimitiveReferenceTests.OrdinaryNameConverter_MatchesPinnedReferenceLexemesAcrossCulturesAndSegmentedInput",
+      "testId": null,
+      "identityDisposition": "Authored Fact; actual GUID/full-suite join required"
     }
   ],
-  "filter": "FullyQualifiedName~CustomerCompanyLiteralNameHttpTests|FullyQualifiedName~CustomerCompanyPrimitiveNameHttpTests",
-  "identityRun": 38131513875,
-  "identityHead": "3dc681cd0fb6dd152b632fe7a6e87fdff35d24b3",
-  "sourceBase": "1637dae7ce7fc839d1431ac7f807729a907e48a3",
+  "filter": "FullyQualifiedName~CustomerCompanyLiteralNameHttpTests|FullyQualifiedName~CustomerCompanyPrimitiveNameHttpTests|FullyQualifiedName~CustomerCompanyOrdinaryPrimitiveHttpTests|FullyQualifiedName~CompanyOrdinaryPrimitiveReferenceTests",
+  "identityRun": 38137744484,
+  "identityHead": "745fdcee8a68a82363648838e99a727aacbb1176",
+  "sourceBase": "745fdcee8a68a82363648838e99a727aacbb1176",
   "codePins": [
     {
       "path": ".dockerignore",
@@ -93,8 +113,8 @@
     },
     {
       "path": ".github/workflows/customer-company-focused-proof.yml",
-      "bytes": 5808,
-      "sha256": "5aa1410ea84c6fb61d5d3e2a97a9040fb936c01c0eb30d458df779e5fa07a3a7"
+      "bytes": 6270,
+      "sha256": "38fc3b9d9d8d8eed441e81d0446fc196a73b93270c1dbe5bdf9e1b84f79280e7"
     },
     {
       "path": ".github/workflows/customer-default-page-focused-proof.yml",
@@ -253,13 +273,18 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Application/Models/CustomerModels.cs",
-      "bytes": 5775,
-      "sha256": "7ad22d389d4bfd39f5ed8c79d52cc759b76acac81efcf1112b96a1b97efb866b"
+      "bytes": 5783,
+      "sha256": "d9e8bfedf05d2d49d60386ef9588f7cf6748b0f93f418f50e9672214b1178d9a"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Application/Models/CustomerRelationEdits.cs",
       "bytes": 5187,
       "sha256": "8ed639fc57b54f9607ef5f2468cf810727996f738c493474aa8a181c2e5964e0"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/OrdinaryCompanyNameJsonConverter.cs",
+      "bytes": 1627,
+      "sha256": "f3821876c9b64619d2213bc70cbf08f710a7ea64c9c0c1342263a82909df36e4"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Application/Models/QuotationProfileCompletionModels.cs",
@@ -417,6 +442,11 @@
       "sha256": "6d1ae93407571ef560f84e789ffd96e699a98c59bb3da456f833153b9a999778"
     },
     {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryPrimitiveReferenceTests.cs",
+      "bytes": 3731,
+      "sha256": "7d0e989dc826b58ed30cdff410903cf8ac47c91e93629dc5a84fcdfa1ef2ec9e"
+    },
+    {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxOnlyHttpTests.cs",
       "bytes": 9572,
       "sha256": "14a8b7139444d71d9a5bf6e955876c0bcbd230a3f63bb4e1c1c08225db5cbade"
@@ -462,14 +492,19 @@
       "sha256": "2b00d66dc6e5de061bd11f2b52b68d16e29fd08b6ca09996255d211d70336249"
     },
     {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryPrimitiveHttpTests.cs",
+      "bytes": 13644,
+      "sha256": "6e8737e1afd223d643b8f05a0720d104528158639fcc34b5a858abb7c289dbd6"
+    },
+    {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyPersistenceHttpTests.cs",
       "bytes": 8394,
       "sha256": "1c3ec6c3404d30852724600debbf0b0de411692a5cef6624213f34d8e35f0ecd"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyPrimitiveNameHttpTests.cs",
-      "bytes": 8703,
-      "sha256": "c29d46f8acac3df2bb6c1f39f4edb1c7168088815fab779aa29430be7a7c35d7"
+      "bytes": 8944,
+      "sha256": "204e952c42a4bd56d892c54f3866f9381d781953ff5e04b99e289f523c7a15ff"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerControllerContractTests.cs",
@@ -628,8 +663,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Legacy.Maliev.CustomerService.Tests.csproj",
-      "bytes": 1613,
-      "sha256": "b02ab9a044741a4db9da1fad9f9d9028480b882644aa5dc4ad58936a13454eda"
+      "bytes": 1683,
+      "sha256": "f1ddd92dfc670c05789da0da123b8f17801b70261d9e633d161d92ffa895deac"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/PublishWorkflowPermissionContractTests.cs",
@@ -690,6 +725,11 @@
       "path": "docs/cnc-tax-only-company-parity.md",
       "bytes": 8508,
       "sha256": "27ee2d83b9cdf8f0588bdd962acc0e04104f3911481c9bfa2a911221273306e9"
+    },
+    {
+      "path": "docs/company-ordinary-primitive-source-compatibility-20261011.md",
+      "bytes": 3261,
+      "sha256": "ae1a7a04b4e01a35bb5370182603c21f81442685856f8ae110003c8e1637de8b"
     },
     {
       "path": "docs/company-primitive-admission-boundary-20261011.md",
@@ -974,7 +1014,7 @@
     {
       "path": "scripts/test_customer_company_focus.py",
       "bytes": 8063,
-      "sha256": "e62704ca9ce466ec4b5e25fed731757db9f0a59811cd34cc7d62814e03b37ba3"
+      "sha256": "f3d2423098912a4093178681a64f3e8ab73deed53cef6c723b4653ef82692fa8"
     },
     {
       "path": "scripts/test_customer_default_focus_resources.py",
@@ -1013,8 +1053,8 @@
     },
     {
       "path": "scripts/verify_customer_company_focus.py",
-      "bytes": 7065,
-      "sha256": "01c21e3393d63b4ce7c8404f447c09938fa7a8c6034b2ee1497009fb06999606"
+      "bytes": 7426,
+      "sha256": "6bcda28f1e39e8be0e00bdda8f27310f9b5b05165087bf4804b7bb4874e9492c"
     },
     {
       "path": "scripts/verify_customer_default_page_focus.py",
@@ -1423,13 +1463,13 @@
     },
     {
       "path": "scripts/customer-default-page-focused-manifest.json",
-      "bytes": 60025,
-      "sha256": "24638821a1b39cfc233cda2d2d8d4430f820643e91393da54c13dbcc73c42f6d"
+      "bytes": 60895,
+      "sha256": "86ed79193c7ba30abcb104ccd91751b1d8245a8d75cc4654d4337774cd80d31f"
     },
     {
       "path": "scripts/customer-email-focused-manifest.json",
-      "bytes": 80492,
-      "sha256": "8cea916a4c9499ddbc67c89b7b52870c08324a2ba28a0024adb9ee3f1c64f7c0"
+      "bytes": 81362,
+      "sha256": "601916e929bf729731169025e17b05ce33b51aa1f1215d41ba2e02b2fde95690"
     }
   ],
   "frozenDependencyPins": [
@@ -1817,6 +1857,8 @@
   "futureTestIdsInvented": false,
   "full558Accepted": false,
   "consumerAccepted": false,
-  "forecastFullSuite": 560,
-  "inputSourceBase": "1637dae7ce7fc839d1431ac7f807729a907e48a3"
+  "forecastFullSuite": 564,
+  "inputSourceBase": "1637dae7ce7fc839d1431ac7f807729a907e48a3",
+  "sourceDefinedStrictJsonSubset": true,
+  "originalDeployedParityAccepted": false
 }

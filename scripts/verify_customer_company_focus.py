@@ -1,4 +1,4 @@
-"""Exact separately executed Company12 proof; no full or consumer acceptance."""
+"""Exact separately executed Company16 proof; no full or consumer acceptance."""
 import collections
 import hashlib
 import json
@@ -24,22 +24,22 @@ def exact_records(doc, parent, name, count):
     return direct
 
 def validate(raw, selected):
-    need(len(selected) == 12 and hashlib.sha256(json.dumps(selected[:10], sort_keys=True, separators=(',', ':')).encode()).hexdigest() == '50cd45577fef1457123ef9333f22ec2cd7b01eb38076a121da7a6e2be5833c60', 'Frozen original10 name/GUID identities retained')
-    authored = ['Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyPrimitiveNameHttpTests.PrimitiveNameMembers_RefuseWithoutChangingPhysicalGraphOrCache', 'Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyPrimitiveNameHttpTests.WholeBodyPrimitive_RefusesWithoutChangingPhysicalGraphOrCache']
-    need([row['name'] for row in selected[10:]] == authored and all(row['testId'] is None for row in selected[10:]), 'Two authored compiled Facts; no invented actual GUIDs')
+    need(len(selected) == 16 and hashlib.sha256(json.dumps(selected[:12], sort_keys=True, separators=(',', ':')).encode()).hexdigest() == '50407090793a119dfbf6486f4576b3e3f8b0c023d6f31e3216f4a78ed300275c', 'Frozen original12 name/GUID identities retained')
+    authored = ['Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyOrdinaryPrimitiveHttpTests.OrdinaryPrimitiveNames_PersistExactLexemesAndOnlyIntendedGraphAndCacheEffects', 'Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyOrdinaryPrimitiveHttpTests.OrdinaryNumericNames_PreserveOverflowAndSpellingOrRefuseOver256Units', 'Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyOrdinaryPrimitiveHttpTests.OrdinaryPrimitiveNames_InvalidAuthorityCannotChangeGraphOrCache', 'Legacy.Maliev.CustomerService.Tests.Controllers.CompanyOrdinaryPrimitiveReferenceTests.OrdinaryNameConverter_MatchesPinnedReferenceLexemesAcrossCulturesAndSegmentedInput']
+    need([row['name'] for row in selected[12:]] == authored and all(row['testId'] is None for row in selected[12:]), 'Four authored compiled Facts; no invented actual GUIDs')
     expected_names = [row['name'] for row in selected]
-    expected_known = [(row['name'], shared.guid(row['testId'])) for row in selected[:10]]
+    expected_known = [(row['name'], shared.guid(row['testId'])) for row in selected[:12]]
     doc = E.fromstring(raw)
     need(doc.tag == '{' + NS['t'] + '}TestRun', 'Exact TRX TestRun root')
     containers = [exact_records(doc, doc, name, 1)[0] for name in ('Results', 'TestDefinitions', 'TestEntries')]
-    results, definitions, entries = [exact_records(doc, parent, name, 12) for parent, name in zip(containers, ('UnitTestResult', 'UnitTest', 'TestEntry'))]
-    need(all(len(parent) == 12 for parent in containers), 'Only canonical records in join containers')
+    results, definitions, entries = [exact_records(doc, parent, name, 16) for parent, name in zip(containers, ('UnitTestResult', 'UnitTest', 'TestEntry'))]
+    need(all(len(parent) == 16 for parent in containers), 'Only canonical records in join containers')
     all_methods = doc.findall('.//t:TestMethod', NS)
-    need(len(all_methods) == 12 and len([r for r in doc.iter() if r.tag.rsplit('}', 1)[-1] == 'TestMethod']) == 12, 'Exactly12 global compiled methods')
-    need(len(doc.findall('.//t:Execution', NS)) == 12 and len([r for r in doc.iter() if r.tag.rsplit('}', 1)[-1] == 'Execution']) == 12, 'Exactly12 global definition executions')
-    need(len(results) == len(definitions) == len(entries) == 12, 'Exactly12 complete joins required')
+    need(len(all_methods) == 16 and len([r for r in doc.iter() if r.tag.rsplit('}', 1)[-1] == 'TestMethod']) == 16, 'Exactly16 global compiled methods')
+    need(len(doc.findall('.//t:Execution', NS)) == 16 and len([r for r in doc.iter() if r.tag.rsplit('}', 1)[-1] == 'Execution']) == 16, 'Exactly16 global definition executions')
+    need(len(results) == len(definitions) == len(entries) == 16, 'Exactly16 complete joins required')
     by_id = {shared.guid(row.get('id')): row for row in definitions}
-    need(len(by_id) == 12, 'Unique12 definition GUIDs')
+    need(len(by_id) == 16, 'Unique16 definition GUIDs')
     pairs = []
     identities = []
     for row in results:
@@ -60,18 +60,18 @@ def validate(raw, selected):
         pairs.append((test_id, execution_id))
         identities.append((name, test_id))
     entry_pairs = [(shared.guid(row.get('testId')), shared.guid(row.get('executionId'))) for row in entries]
-    need(len({row[0] for row in pairs}) == len({row[1] for row in pairs}) == len({row[0] for row in entry_pairs}) == len({row[1] for row in entry_pairs}) == 12, 'Unique tests/executions')
+    need(len({row[0] for row in pairs}) == len({row[1] for row in pairs}) == len({row[0] for row in entry_pairs}) == len({row[1] for row in entry_pairs}) == 16, 'Unique tests/executions')
     need(collections.Counter(pairs) == collections.Counter(entry_pairs), 'Entry execution bijection')
-    need(collections.Counter(name for name, _ in identities) == collections.Counter(expected_names), 'Exact12 compiled names')
-    need(collections.Counter((name, test_id) for name, test_id in identities if name not in authored) == collections.Counter(expected_known), 'Frozen actual10 GUID/name multiset')
+    need(collections.Counter(name for name, _ in identities) == collections.Counter(expected_names), 'Exact16 compiled names')
+    need(collections.Counter((name, test_id) for name, test_id in identities if name not in authored) == collections.Counter(expected_known), 'Frozen actual12 GUID/name multiset')
     summaries = exact_records(doc, doc, 'ResultSummary', 1)
     need(len(summaries) == 1 and summaries[0].get('outcome') in {'Passed', 'Completed'}, 'Passing summary required')
     counters = exact_records(doc, summaries[0], 'Counters', 1)
-    expected_counters = dict(total='12', executed='12', passed='12', **{key: '0' for key in shared.NONPASSING})
+    expected_counters = dict(total='16', executed='16', passed='16', **{key: '0' for key in shared.NONPASSING})
     need(len(counters[0]) == 0 and counters[0].attrib == expected_counters, 'Exactly16 canonical clean counters')
     need(doc.find('.//t:ErrorInfo', NS) is None, 'ErrorInfo forbidden')
     need(all(row.get('outcome') in {'Passed', 'Completed', 'Information'} for row in doc.findall('.//t:RunInfo', NS)), 'RunInfo outcome required')
-    return {'selectedCount': 12, 'summaryOutcome': summaries[0].get('outcome'), 'executionBijection': True, 'all16CountersCanonical': True, 'original10NameGuidRowsFrozen': True, 'authored2ObservedNameGuidRows': [{'name': name, 'testId': test_id} for name, test_id in identities if name in authored], 'full560IdentityJoinAccepted': False}
+    return {'selectedCount': 16, 'summaryOutcome': summaries[0].get('outcome'), 'executionBijection': True, 'all16CountersCanonical': True, 'original12NameGuidRowsFrozen': True, 'authored4ObservedNameGuidRows': [{'name': name, 'testId': test_id} for name, test_id in identities if name in authored], 'full564IdentityJoinAccepted': False}
 
 def validate_build(build):
     need('Build succeeded.' in build and re.search(r'0 Warning\(s\)', build) and re.search(r'0 Error\(s\)', build) and not re.search(r'\b[1-9]\d* (?:Warning|Error)\(s\)', build), 'Actual strict Release0WE')
@@ -88,7 +88,7 @@ def verify():
     structure = validate(raw, manifest['selected'])
     build = (FOLDER / 'build.log').read_text()
     validate_build(build)
-    result = {'actualFocusedPassed': 12, 'failed': 0, 'skipped': 0, 'trxSha256': hashlib.sha256(raw).hexdigest(), 'strictStructure': structure, 'original10IdentityRun': manifest['identityRun'], 'githubSha': os.environ.get('GITHUB_SHA'), 'runId': os.environ.get('GITHUB_RUN_ID'), 'strictRelease0WE': True, 'full560Accepted': False, 'consumerAccepted': False, 'originalPrimitiveParityAccepted': False, 'authored2ActualGuidsCollectedFromThisTrx': True, 'full560IdentityJoinAccepted': False}
+    result = {'actualFocusedPassed': 16, 'failed': 0, 'skipped': 0, 'trxSha256': hashlib.sha256(raw).hexdigest(), 'strictStructure': structure, 'original12IdentityRun': manifest['identityRun'], 'githubSha': os.environ.get('GITHUB_SHA'), 'runId': os.environ.get('GITHUB_RUN_ID'), 'strictRelease0WE': True, 'full564Accepted': False, 'consumerAccepted': False, 'originalPrimitiveParityAccepted': False, 'authored4ActualGuidsCollectedFromThisTrx': True, 'full564IdentityJoinAccepted': False}
     (FOLDER / 'focused-proof.json').write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps(result))
 
