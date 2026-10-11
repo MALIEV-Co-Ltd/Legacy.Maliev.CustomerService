@@ -1,4 +1,4 @@
-"""Synthetic Company12 parser controls; no native, Docker, HTTP or acceptance."""
+"""Synthetic Company16 parser controls; no native, Docker, HTTP or acceptance."""
 import copy
 import json
 import uuid
@@ -21,11 +21,11 @@ for index, row in enumerate(selected):
     E.SubElement(definition, q('TestMethod'), className=row['name'].split('(', 1)[0].rsplit('.', 1)[0], name=row['name'].split('(', 1)[0].rsplit('.', 1)[1])
     E.SubElement(entries, q('TestEntry'), testId=test_id, executionId=execution)
 summary = E.SubElement(root, q('ResultSummary'), outcome='Completed')
-E.SubElement(summary, q('Counters'), **dict(total='12', executed='12', passed='12', **{key: '0' for key in verifier.shared.NONPASSING}))
+E.SubElement(summary, q('Counters'), **dict(total='16', executed='16', passed='16', **{key: '0' for key in verifier.shared.NONPASSING}))
 count = 0
 for label in ('Completed', 'Passed'):
     summary.set('outcome', label)
-    assert verifier.validate(E.tostring(root), selected)['selectedCount'] == 12
+    assert verifier.validate(E.tostring(root), selected)['selectedCount'] == 16
     count += 1
 
 def check(label, mutate):
@@ -80,7 +80,7 @@ print(str(build_count) + ' build controls passed; synthetic only, no native exec
 # New authored rows must retain their exact compiled class/method and cannot invent actual GUIDs.
 check('new Fact foreign compiled class', lambda r: r.findall('t:TestDefinitions/t:UnitTest/t:TestMethod', verifier.NS)[-1].set('className', 'Other'))
 check('new Fact foreign compiled method', lambda r: r.findall('t:TestDefinitions/t:UnitTest/t:TestMethod', verifier.NS)[-1].set('name', 'Other'))
-for label, index in [('invented authored actual GUID', 10), ('replaced frozen actual GUID', 0)]:
+for label, index in [('invented authored actual GUID', 12), ('replaced frozen actual GUID', 0)]:
     altered = copy.deepcopy(selected)
     altered[index]['testId'] = str(uuid.uuid4())
     try:

@@ -25,7 +25,7 @@ public sealed class CustomerCompanyPrimitiveNameHttpTests(CustomerDetailAuthorit
             ("MissingMember", "{}"),
             ("ObjectMember", "{\"Name\":{\"privateMarker\":\"synthetic-private-member\"}}"),
             ("ArrayMember", "{\"Name\":[\"synthetic-private-member\"]}"),
-        ]);
+        ], skipOrdinaryPrimitiveMembers: true);
 
     [Fact]
     public Task WholeBodyPrimitive_RefusesWithoutChangingPhysicalGraphOrCache() =>
@@ -39,7 +39,7 @@ public sealed class CustomerCompanyPrimitiveNameHttpTests(CustomerDetailAuthorit
             ("ArrayBody", "[\"synthetic-private-member\"]"),
         ]);
 
-    private async Task RefuseMatrixAsync((string Label, string Json)[] cases)
+    private async Task RefuseMatrixAsync((string Label, string Json)[] cases, bool skipOrdinaryPrimitiveMembers = false)
     {
         using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(120));
         var token = deadline.Token;
@@ -75,6 +75,7 @@ public sealed class CustomerCompanyPrimitiveNameHttpTests(CustomerDetailAuthorit
 
             foreach (var item in cases)
             {
+                if (skipOrdinaryPrimitiveMembers && !scoped && item.Label is ("BooleanTrue" or "BooleanFalse" or "Integer" or "Decimal" or "Exponent")) continue;
                 var path = route switch
                 {
                     "create" => "/customers/companies/",
