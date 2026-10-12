@@ -163,8 +163,8 @@
     },
     {
       "path": ".github/workflows/_build-and-test.yml",
-      "bytes": 3307,
-      "sha256": "8d23ba2835adfca5b07dd3c8b0c9072418fc60f4c2f3b957fea9493c87feb51c"
+      "bytes": 4041,
+      "sha256": "918154200b335f47a28cdc8e48c2c837e0851eed0e6e272b96ec41e2b91cb61a"
     },
     {
       "path": ".github/workflows/ci-develop.yml",
@@ -528,8 +528,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressLiteralLineHttpTests.cs",
-      "bytes": 27600,
-      "sha256": "34bef4ecaa0191a2279ff469bc6b98f6bacb7d179f38cbd24685e29d61201f77"
+      "bytes": 34799,
+      "sha256": "d585b98e72cc59d06f544eabf0cb27815e5fffb0de148adc53cefcdf589312ca"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressOriginalNullBoundaryTests.cs",
@@ -1533,18 +1533,18 @@
     },
     {
       "path": "scripts/customer-default-page-focused-manifest.json",
-      "bytes": 63911,
-      "sha256": "592dd0a6d6cec5eb4f8afd125e6d8305d16e8faee8eff6ffd5a07bf923b3ba96"
+      "bytes": 64122,
+      "sha256": "f82f75941eb61e57c615f21d08d27f5f135fd62a91f0c31f662d0d5f4236d63b"
     },
     {
       "path": "scripts/customer-email-focused-manifest.json",
-      "bytes": 84378,
-      "sha256": "ade32107fdd90f0b08c0e8cc35e6efb740db48e69880e067eccc59e08ceabb04"
+      "bytes": 84589,
+      "sha256": "bc5b84203c8acfeec979217f7f40c08629794c0653b967ab45bba685ca36f6dd"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCompanyMvcJsonMetadata.cs",
-      "bytes": 3428,
-      "sha256": "fa0ec89cfb0b7d4c574182d44b4190c4617f30617a8175ca6c52da319d580c9e"
+      "bytes": 3497,
+      "sha256": "b30573d7cc0f3d04756384f77a09bbb52ed7d211f8cfdaab0c31f33ee5608b33"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryMvcMetadataControls.cs",
@@ -1610,6 +1610,11 @@
       "path": "docs/company-tax-registrar-primitive-mvc-20261011.md",
       "bytes": 5720,
       "sha256": "2d16414b3628a55841cf361e8483f9ef9028544b10d0af3136a26fd013dcb252"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/OrdinaryAddressPrimitiveMvcJsonMetadata.cs",
+      "bytes": 2220,
+      "sha256": "22b42384d4cfb3661bcd75af05752e9d099467a671b14749646a68f0bf27cf53"
     }
   ],
   "frozenDependencyPins": [

@@ -16,6 +16,119 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
     [Theory]
     [InlineData("create")]
     [InlineData("update")]
+    public async Task OrdinaryOptionalFields_RefusalsAndStringBoundariesPreserveGraphAndCaches(string route)
+    {
+        using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(180));
+        var token = deadline.Token;
+        await using var host = fixture.Start();
+        using var client = fixture.Client(host, "relation-editor");
+        client.Timeout = TimeSpan.FromSeconds(15);
+        var cache = host.Services.GetRequiredService<IDistributedCache>();
+        var longNumber = new string('1', 257);
+        var cases = new[] { (Raw: "{}", Status: HttpStatusCode.BadRequest),
+            (Raw: "[]", Status: HttpStatusCode.BadRequest),
+            (Raw: longNumber, Status: HttpStatusCode.InternalServerError),
+            (Raw: JsonSerializer.Serialize(longNumber), Status: HttpStatusCode.InternalServerError),
+            (Raw: "\"\\ud800\"", Status: HttpStatusCode.BadRequest) };
+        foreach (var field in new[] { "Building", "AddressLine2", "City", "State", "PostalCode" })
+        {
+            foreach (var item in cases)
+            {
+                await SeedAsync(route, token);
+                var before = await PhysicalSnapshotAsync(token);
+                var cached = await PrimeAsync(cache, token);
+                using var request = new HttpRequestMessage(route == "create" ? HttpMethod.Post : HttpMethod.Put,
+                    route == "create" ? "/customers/1/addresses" : "/customers/Addresses/1")
+                {
+                    Content = new StringContent("{\"AddressLine1\":\"road\",\"CountryId\":764,\"" + field + "\":" + item.Raw + "}", Encoding.UTF8, "application/json"),
+                };
+                using var response = await client.SendAsync(request, token);
+                Assert.Equal(item.Status, response.StatusCode);
+                Assert.Equal(before, await PhysicalSnapshotAsync(token));
+                await AssertCacheAsync(cache, cached, [], token);
+            }
+            await SeedAsync(route, token);
+            var authorityBefore = await PhysicalSnapshotAsync(token);
+            var authorityCache = await PrimeAsync(cache, token);
+            using var denied = fixture.Client(host, "denied");
+            using var denialRequest = new HttpRequestMessage(route == "create" ? HttpMethod.Post : HttpMethod.Put,
+                route == "create" ? "/customers/1/addresses" : "/customers/Addresses/1")
+            {
+                Content = new StringContent("{\"AddressLine1\":\"road\",\"CountryId\":764,\"" + field + "\":true}", Encoding.UTF8, "application/json"),
+            };
+            using var denial = await denied.SendAsync(denialRequest, token);
+            Assert.Equal(HttpStatusCode.Forbidden, denial.StatusCode);
+            Assert.Equal(authorityBefore, await PhysicalSnapshotAsync(token));
+            await AssertCacheAsync(cache, authorityCache, [], token);
+        }
+    }
+
+    [Theory]
+    [InlineData("create")]
+    [InlineData("update")]
+    public async Task OrdinaryOptionalFields_PreservePrimitiveLexemesAndMatchReferenceStrings(string route)
+    {
+        using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(180));
+        var token = deadline.Token;
+        await using var host = fixture.Start();
+        using var client = fixture.Client(host, "relation-editor");
+        client.Timeout = TimeSpan.FromSeconds(15);
+        var cache = host.Services.GetRequiredService<IDistributedCache>();
+        var fields = new[] { "Building", "AddressLine2", "City", "State", "PostalCode" };
+        var primitives = new[] { (Token: "42", Literal: "42"), (Token: "-0", Literal: "-0"),
+            (Token: "1.50", Literal: "1.50"), (Token: "1e+2", Literal: "1e+2"),
+            (Token: "true", Literal: "true"), (Token: "false", Literal: "false") };
+        var baselineOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web)
+        {
+            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+            PropertyNamingPolicy = null,
+            DictionaryKeyPolicy = null,
+        };
+        foreach (var field in fields)
+            foreach (var item in primitives)
+            {
+                var reference = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string?>>("{\"" + field + "\":" + item.Token + "}");
+                Assert.Equal(item.Literal, reference![field]);
+                var primitivePayload = "{\"AddressLine1\":\"  Fixture road  \",\"CountryId\":764,\"" + field + "\":" + item.Token + "}";
+                Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<UpsertAddressRequest>(primitivePayload, baselineOptions));
+                foreach (var submitted in new[] { item.Token, JsonSerializer.Serialize(item.Literal) })
+                {
+                    await SeedAsync(route, token);
+                    var before = await PhysicalSnapshotAsync(token);
+                    var cached = await PrimeAsync(cache, token);
+                    var payload = "{\"AddressLine1\":\"  Fixture road  \",\"CountryId\":764,\"" + field + "\":" + submitted + "}";
+                    using var request = new HttpRequestMessage(route == "create" ? HttpMethod.Post : HttpMethod.Put,
+                        route == "create" ? "/customers/1/addresses" : "/customers/Addresses/1")
+                    {
+                        Content = new StringContent(payload, Encoding.UTF8, "application/json"),
+                    };
+                    using var response = await client.SendAsync(request, token);
+                    Assert.Equal(route == "create" ? HttpStatusCode.Created : HttpStatusCode.NoContent, response.StatusCode);
+                    var id = 1;
+                    if (route == "create")
+                    {
+                        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync(token));
+                        id = json.RootElement.GetProperty("Id").GetInt32();
+                        Assert.Equal(item.Literal, json.RootElement.GetProperty(field).GetString());
+                        Assert.Equal("  Fixture road  ", json.RootElement.GetProperty("AddressLine1").GetString());
+                        Assert.EndsWith($"/customers/1/addresses/{id}", response.Headers.Location!.ToString(), StringComparison.OrdinalIgnoreCase);
+                    }
+                    await using var db = fixture.Context();
+                    var stored = await db.Addresses.AsNoTracking().SingleAsync(value => value.Id == id, token);
+                    Assert.Equal(item.Literal, typeof(Address).GetProperty(field)!.GetValue(stored));
+                    Assert.Equal("  Fixture road  ", stored.AddressLine1);
+                    Assert.Equal(764, stored.CountryId);
+                    foreach (var other in fields.Where(value => value != field))
+                        Assert.Null(typeof(Address).GetProperty(other)!.GetValue(stored));
+                    AssertGraph(before, await PhysicalSnapshotAsync(token), route, id);
+                    await AssertCacheAsync(cache, cached, route == "create" ? [1] : [1, 2], token);
+                }
+            }
+    }
+
+    [Theory]
+    [InlineData("create")]
+    [InlineData("update")]
     [InlineData("billing-create")]
     [InlineData("billing-update")]
     [InlineData("shipping-create")]
