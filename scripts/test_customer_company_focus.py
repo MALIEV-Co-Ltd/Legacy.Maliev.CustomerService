@@ -1,4 +1,4 @@
-"""Synthetic Company27 parser controls; no native, Docker, HTTP or acceptance."""
+"""Synthetic Company30 parser controls; no native, Docker, HTTP or acceptance."""
 import copy
 import json
 import uuid
@@ -21,11 +21,11 @@ for index, row in enumerate(selected):
     E.SubElement(definition, q('TestMethod'), codeBase='/source/Legacy.Maliev.CustomerService.Tests/bin/Release/net10.0/Legacy.Maliev.CustomerService.Tests.dll', className=row['name'].split('(', 1)[0].rsplit('.', 1)[0], name=row['name'].split('(', 1)[0].rsplit('.', 1)[1])
     E.SubElement(entries, q('TestEntry'), testId=test_id, executionId=execution)
 summary = E.SubElement(root, q('ResultSummary'), outcome='Completed')
-E.SubElement(summary, q('Counters'), **dict(total='27', executed='27', passed='27', **{key: '0' for key in verifier.shared.NONPASSING}))
+E.SubElement(summary, q('Counters'), **dict(total='30', executed='30', passed='30', **{key: '0' for key in verifier.shared.NONPASSING}))
 count = 0
 for label in ('Completed', 'Passed'):
     summary.set('outcome', label)
-    assert verifier.validate(E.tostring(root), selected)['selectedCount'] == 27
+    assert verifier.validate(E.tostring(root), selected)['selectedCount'] == 30
     count += 1
 
 def check(label, mutate):
@@ -80,7 +80,7 @@ print(str(build_count) + ' build controls passed; synthetic only, no native exec
 # New authored rows must retain their exact compiled class/method and cannot invent actual GUIDs.
 check('new Fact foreign compiled class', lambda r: r.findall('t:TestDefinitions/t:UnitTest/t:TestMethod', verifier.NS)[-1].set('className', 'Other'))
 check('new Fact foreign compiled method', lambda r: r.findall('t:TestDefinitions/t:UnitTest/t:TestMethod', verifier.NS)[-1].set('name', 'Other'))
-for label, index in [('invented authored actual GUID', 25), ('replaced frozen actual GUID', 0), ('replaced accepted prior4 GUID', 12)]:
+for label, index in [('invented authored actual GUID', 27), ('replaced frozen actual GUID', 0), ('replaced accepted prior4 GUID', 12)]:
     altered = copy.deepcopy(selected)
     altered[index]['testId'] = str(uuid.uuid4())
     try:
@@ -127,11 +127,11 @@ check('nested counters leaf', lambda r: E.SubElement(r.find('t:ResultSummary/t:C
 print(str(count) + ' total Company parser controls passed; strict global/direct structural joins')
 
 # Preserve the new draft's exact authored rows and all accepted16; synthetic only.
-for index in range(16, 27):
+for index in range(16, 30):
     check('wrong new DLL ' + str(index), lambda r, index=index: r.findall('t:TestDefinitions/t:UnitTest/t:TestMethod', verifier.NS)[index].set('codeBase', '/source/bin/Debug/net10.0/Legacy.Maliev.CustomerService.Tests.dll'))
     check('wrong new compiled class ' + str(index), lambda r, index=index: r.findall('t:TestDefinitions/t:UnitTest/t:TestMethod', verifier.NS)[index].set('className', 'Other'))
     check('missing authored result ' + str(index), lambda r, index=index: r.find('t:Results', verifier.NS).remove(r.findall('t:Results/t:UnitTestResult', verifier.NS)[index]))
 check('missing accepted prior16', lambda r: r.find('t:Results', verifier.NS).remove(r.findall('t:Results/t:UnitTestResult', verifier.NS)[15]))
 check('wrong old Release DLL', lambda r: r.find('t:TestDefinitions/t:UnitTest/t:TestMethod', verifier.NS).set('codeBase', '/source/bin/Release/net9.0/Legacy.Maliev.CustomerService.Tests.dll'))
 check('missing codeBase', lambda r: r.find('t:TestDefinitions/t:UnitTest/t:TestMethod', verifier.NS).attrib.pop('codeBase'))
-print(str(count) + ' total Company27 parser controls passed; no native runtime acceptance')
+print(str(count) + ' total Company30 parser controls passed; no native runtime acceptance')

@@ -117,16 +117,31 @@
     },
     {
       "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CompanyTaxRegistrarPrimitiveOracleTests.PairedFields_RecordPinnedPrimitiveOracleAndFreezeCurrentReadControllerWriteBoundaries",
-      "testId": null,
-      "identityDisposition": "Authored test-only Fact; actual compiled GUID/behavior NOT RUN"
+      "testId": "7473a283-57d0-7cb0-afd6-e77589be13ca",
+      "identityDisposition": "Actual accepted protected main38163000979 GUID/name; retained intentional primitive transition"
     },
     {
       "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CompanyTaxRegistrarPrimitiveStorageTests.PairedFields_SeparateCurrentDeserializeControllerAndDisposablePostgreSqlStorageOutcomes",
+      "testId": "13292ef0-9ea1-de21-4225-afc44c32cde8",
+      "identityDisposition": "Actual accepted protected main38163000979 GUID/name; retained intentional primitive transition"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyFieldPrimitiveHttpTests.OrdinaryPairedFields_PersistPrimitiveLexemesAndMatchEquivalentStrings",
       "testId": null,
-      "identityDisposition": "Authored test-only Fact; actual compiled GUID/behavior NOT RUN"
+      "identityDisposition": "Authored real-host Fact; native GUID/behavior NOT RUN"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyFieldPrimitiveHttpTests.OrdinaryPairedFields_RefusedShapesAndStorageBoundariesMatchEquivalentStringPipeline",
+      "testId": null,
+      "identityDisposition": "Authored real-host Fact; native GUID/behavior NOT RUN"
+    },
+    {
+      "name": "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyFieldPrimitiveHttpTests.OrdinaryPairedFields_AuthorityScopedPolicyAndStaleVersionsPreserveGraphCache",
+      "testId": null,
+      "identityDisposition": "Authored real-host Fact; native GUID/behavior NOT RUN"
     }
   ],
-  "filter": "FullyQualifiedName~CustomerCompanyLiteralNameHttpTests|FullyQualifiedName~CustomerCompanyPrimitiveNameHttpTests|FullyQualifiedName~CustomerCompanyOrdinaryPrimitiveHttpTests|FullyQualifiedName~CompanyOrdinaryPrimitiveReferenceTests|FullyQualifiedName~CustomerCompanyOrdinaryDuplicateNullHttpTests|FullyQualifiedName~CompanyOrdinaryDuplicateNullReferenceTests|FullyQualifiedName~CompanyOrdinaryMvcMetadataControls|FullyQualifiedName~CompanyOrdinaryTaxRegistrarReferenceTests|FullyQualifiedName~CompanyOrdinaryTaxRegistrarMetadataTests|FullyQualifiedName~CompanyTaxRegistrarPrimitiveOracleTests|FullyQualifiedName~CompanyTaxRegistrarPrimitiveStorageTests",
+  "filter": "FullyQualifiedName~CustomerCompanyLiteralNameHttpTests|FullyQualifiedName~CustomerCompanyPrimitiveNameHttpTests|FullyQualifiedName~CustomerCompanyOrdinaryPrimitiveHttpTests|FullyQualifiedName~CompanyOrdinaryPrimitiveReferenceTests|FullyQualifiedName~CustomerCompanyOrdinaryDuplicateNullHttpTests|FullyQualifiedName~CompanyOrdinaryDuplicateNullReferenceTests|FullyQualifiedName~CompanyOrdinaryMvcMetadataControls|FullyQualifiedName~CompanyOrdinaryTaxRegistrarReferenceTests|FullyQualifiedName~CompanyOrdinaryTaxRegistrarMetadataTests|FullyQualifiedName~CompanyTaxRegistrarPrimitiveOracleTests|FullyQualifiedName~CompanyTaxRegistrarPrimitiveStorageTests|FullyQualifiedName~CustomerCompanyFieldPrimitiveHttpTests",
   "identityRun": 38141658691,
   "identityHead": "c23dc09c074b66441032962917dfa815c61950f1",
   "sourceBase": "d35f49916f1ca4d55797a63d4724570776e143e2",
@@ -168,8 +183,8 @@
     },
     {
       "path": ".github/workflows/customer-company-focused-proof.yml",
-      "bytes": 7345,
-      "sha256": "1e12a309a6c90a0f48ff7615d01f138a98234481bae9b1e163f3a95a58c04a86"
+      "bytes": 7598,
+      "sha256": "61a65a8fc51707bfcb9a0574a7c3112f0fc23cdaa393f8c00081254b500cb96f"
     },
     {
       "path": ".github/workflows/customer-default-page-focused-proof.yml",
@@ -1069,7 +1084,7 @@
     {
       "path": "scripts/test_customer_company_focus.py",
       "bytes": 9461,
-      "sha256": "51aaab0c3d8c411fe944db7e720730ece7d5bb94bd50e6fb76a6674b783e0524"
+      "sha256": "b43b988dd19a6e0baf2b1d9ed8cadaba6c0bb8a4bce7fabd66bb96e17303a15d"
     },
     {
       "path": "scripts/test_customer_default_focus_resources.py",
@@ -1108,8 +1123,8 @@
     },
     {
       "path": "scripts/verify_customer_company_focus.py",
-      "bytes": 7831,
-      "sha256": "316035f5a4f52093bd33433395b8d5d4cf9a521418b0474f21d949cbfa9fbeff"
+      "bytes": 8213,
+      "sha256": "c88250b597e2a0855e10f885cb50fe5d703eca3c1a1e5aee094995f00de9dffe"
     },
     {
       "path": "scripts/verify_customer_default_page_focus.py",
@@ -1518,23 +1533,23 @@
     },
     {
       "path": "scripts/customer-default-page-focused-manifest.json",
-      "bytes": 63285,
-      "sha256": "079d505724a2435067d79c53450399ea13a7bd3407c02f74f3d6f2f5d56c2ba1"
+      "bytes": 63911,
+      "sha256": "592dd0a6d6cec5eb4f8afd125e6d8305d16e8faee8eff6ffd5a07bf923b3ba96"
     },
     {
       "path": "scripts/customer-email-focused-manifest.json",
-      "bytes": 83752,
-      "sha256": "7abe55a57c7d53a6802154af22649a758c5ce599eee7493be338bf934889a456"
+      "bytes": 84378,
+      "sha256": "ade32107fdd90f0b08c0e8cc35e6efb740db48e69880e067eccc59e08ceabb04"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCompanyMvcJsonMetadata.cs",
-      "bytes": 2630,
-      "sha256": "34769ded6a8de5c51b19eb6ef350eb30dd899904dd5179f60b4303dc82acc712"
+      "bytes": 3428,
+      "sha256": "fa0ec89cfb0b7d4c574182d44b4190c4617f30617a8175ca6c52da319d580c9e"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryMvcMetadataControls.cs",
-      "bytes": 22297,
-      "sha256": "dbae9d497648ca601659ac4e5dddacb28616884989df23d28619f39c5a71a784"
+      "bytes": 23064,
+      "sha256": "79f642df873c4cc395a3e7415bd045ebe030f3a6eab30c5261e61c69b9b0eb3a"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryDuplicateNullReferenceTests.cs",
@@ -1543,8 +1558,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryDuplicateNullHttpTests.cs",
-      "bytes": 38248,
-      "sha256": "a04d258048d22a42ad4407cc9ee5b70f62b8bc8ca465f35fe1126dca8d1154f5"
+      "bytes": 39430,
+      "sha256": "f8a0859c64a769e3aadf832f1a96494baee49bb139018073b1f400feff1ee397"
     },
     {
       "path": "docs/company-ordinary-duplicate-null-mvc-compatibility-20261011.md",
@@ -1553,13 +1568,13 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryTaxRegistrarReferenceTests.cs",
-      "bytes": 16203,
-      "sha256": "e8c3b66401f61197183c046d2cea4f71180eb07739e44bd80d4cd1aecaf0dfc2"
+      "bytes": 17815,
+      "sha256": "54ea20197ba3fe01cf631f4ea9172e2e6fc797b23aa2bf731aef273382dd9ef3"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryTaxRegistrarMetadataTests.cs",
-      "bytes": 33983,
-      "sha256": "735dedb6c53b02a7c1c9f7e68e350fb6a3f4f271d44f9e8118874a2bc5ba8409"
+      "bytes": 35193,
+      "sha256": "70291e55b6953c58f53e82bb36ef1649cb9358562f26e133f28afb8810f60bf7"
     },
     {
       "path": "docs/company-ordinary-tax-registrar-null-mvc-compatibility-20261011.md",
@@ -1568,18 +1583,33 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveOracleTests.cs",
-      "bytes": 19628,
-      "sha256": "a0b776e7d715a8c0484d1cb8d5625dffa50eee879196467e2265912e08f1e597"
+      "bytes": 24177,
+      "sha256": "6e015c495dd2387d9e1d0b608b70e789c4449be764f6c53538260544f994563c"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveStorageTests.cs",
-      "bytes": 9298,
-      "sha256": "fa5d1418c2b39bd588c5e9920ad872c824e72adb2a59d82023420a48674f5a17"
+      "bytes": 8959,
+      "sha256": "d9812622cce23d298c1be9c1d806dd99f90feb92924a37ee75e997648315f866"
     },
     {
       "path": "docs/company-paired-field-primitive-proof-only-20261011.md",
       "bytes": 3204,
       "sha256": "0ba5fb6b313c9dbe2e7f3f8db51183b2b726f4345caba40d8ca470a8c3c7921f"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCompanyFieldPrimitiveJsonConverter.cs",
+      "bytes": 1066,
+      "sha256": "755c9f223d0726766d5a5c57f4e30aa7c4e531ff3926d5946a0700332d076624"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyFieldPrimitiveHttpTests.cs",
+      "bytes": 29932,
+      "sha256": "3262955101ecb456265adaae9d33b19814a6d055a1a6ef2b1e205d2dc248a854"
+    },
+    {
+      "path": "docs/company-tax-registrar-primitive-mvc-20261011.md",
+      "bytes": 5720,
+      "sha256": "2d16414b3628a55841cf361e8483f9ef9028544b10d0af3136a26fd013dcb252"
     }
   ],
   "frozenDependencyPins": [
@@ -1971,11 +2001,13 @@
   "inputSourceBase": "1637dae7ce7fc839d1431ac7f807729a907e48a3",
   "sourceDefinedStrictJsonSubset": true,
   "originalDeployedParityAccepted": false,
-  "currentAcceptedMainRun": 38155703761,
+  "currentAcceptedMainRun": 38163000979,
   "frozenAccepted16Sha256": "46983af8d84e34b5233e4cfb70a781b48801e311520d48816608c8ae8e9a2b6c",
-  "forecastFullOnly": 575,
+  "forecastFullOnly": 578,
   "accepted21MainIdentityRun": 38151436950,
   "frozenAccepted21Sha256": "5d57191218ade04707f4b01248b0c5561a1265acaecdecdfcb68608700cf3c6b",
   "accepted25MainIdentityRun": 38155703761,
-  "frozenAccepted25Sha256": "243feaf18fcdad1c5d8e103566e9062fa122971e2705d4bf59e3fb79f4c1e5a9"
+  "frozenAccepted25Sha256": "243feaf18fcdad1c5d8e103566e9062fa122971e2705d4bf59e3fb79f4c1e5a9",
+  "accepted27MainIdentityRun": 38163000979,
+  "frozenAccepted27Sha256": "d3221929789b5c987ff50d4c5fd75af76408f0db8ef0db409425f8e430a46426"
 }

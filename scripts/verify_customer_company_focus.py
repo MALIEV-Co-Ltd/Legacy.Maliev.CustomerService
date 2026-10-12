@@ -1,4 +1,4 @@
-"""Exact separately executed Company27 proof; no full or consumer acceptance."""
+"""Exact separately executed Company30 proof; no full or consumer acceptance."""
 import collections
 import hashlib
 import json
@@ -24,24 +24,25 @@ def exact_records(doc, parent, name, count):
     return direct
 
 def validate(raw, selected):
-    need(len(selected) == 27 and hashlib.sha256(json.dumps(selected[:16], sort_keys=True, separators=(',', ':')).encode()).hexdigest() == '46983af8d84e34b5233e4cfb70a781b48801e311520d48816608c8ae8e9a2b6c', 'Frozen accepted16 actual name/GUID identities retained')
+    need(len(selected) == 30 and hashlib.sha256(json.dumps(selected[:16], sort_keys=True, separators=(',', ':')).encode()).hexdigest() == '46983af8d84e34b5233e4cfb70a781b48801e311520d48816608c8ae8e9a2b6c', 'Frozen accepted16 actual name/GUID identities retained')
     need(hashlib.sha256(json.dumps(selected[:21], sort_keys=True, separators=(',', ':')).encode()).hexdigest() == '5d57191218ade04707f4b01248b0c5561a1265acaecdecdfcb68608700cf3c6b', 'Frozen accepted21 actual main name/GUID identities retained')
     need(hashlib.sha256(json.dumps(selected[:25], sort_keys=True, separators=(',', ':')).encode()).hexdigest() == '243feaf18fcdad1c5d8e103566e9062fa122971e2705d4bf59e3fb79f4c1e5a9', 'Frozen accepted25 actual main names/GUIDs retained')
-    authored = ['Legacy.Maliev.CustomerService.Tests.Controllers.CompanyTaxRegistrarPrimitiveOracleTests.PairedFields_RecordPinnedPrimitiveOracleAndFreezeCurrentReadControllerWriteBoundaries', 'Legacy.Maliev.CustomerService.Tests.Controllers.CompanyTaxRegistrarPrimitiveStorageTests.PairedFields_SeparateCurrentDeserializeControllerAndDisposablePostgreSqlStorageOutcomes']
-    need([row['name'] for row in selected[25:]] == authored and all(row['testId'] is None for row in selected[25:]), 'Two authored compiled Facts; no invented actual GUIDs')
+    need(hashlib.sha256(json.dumps(selected[:27], sort_keys=True, separators=(',', ':')).encode()).hexdigest() == 'd3221929789b5c987ff50d4c5fd75af76408f0db8ef0db409425f8e430a46426', 'Frozen accepted27 actual main names/GUIDs retained')
+    authored = ['Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyFieldPrimitiveHttpTests.OrdinaryPairedFields_PersistPrimitiveLexemesAndMatchEquivalentStrings', 'Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyFieldPrimitiveHttpTests.OrdinaryPairedFields_RefusedShapesAndStorageBoundariesMatchEquivalentStringPipeline', 'Legacy.Maliev.CustomerService.Tests.Controllers.CustomerCompanyFieldPrimitiveHttpTests.OrdinaryPairedFields_AuthorityScopedPolicyAndStaleVersionsPreserveGraphCache']
+    need([row['name'] for row in selected[27:]] == authored and all(row['testId'] is None for row in selected[27:]), 'Three authored compiled Facts; no invented actual GUIDs')
     expected_names = [row['name'] for row in selected]
-    expected_known = [(row['name'], shared.guid(row['testId'])) for row in selected[:25]]
+    expected_known = [(row['name'], shared.guid(row['testId'])) for row in selected[:27]]
     doc = E.fromstring(raw)
     need(doc.tag == '{' + NS['t'] + '}TestRun', 'Exact TRX TestRun root')
     containers = [exact_records(doc, doc, name, 1)[0] for name in ('Results', 'TestDefinitions', 'TestEntries')]
-    results, definitions, entries = [exact_records(doc, parent, name, 27) for parent, name in zip(containers, ('UnitTestResult', 'UnitTest', 'TestEntry'))]
-    need(all(len(parent) == 27 for parent in containers), 'Only canonical records in join containers')
+    results, definitions, entries = [exact_records(doc, parent, name, 30) for parent, name in zip(containers, ('UnitTestResult', 'UnitTest', 'TestEntry'))]
+    need(all(len(parent) == 30 for parent in containers), 'Only canonical records in join containers')
     all_methods = doc.findall('.//t:TestMethod', NS)
-    need(len(all_methods) == 27 and len([r for r in doc.iter() if r.tag.rsplit('}', 1)[-1] == 'TestMethod']) == 27, 'Exactly27 global compiled methods')
-    need(len(doc.findall('.//t:Execution', NS)) == 27 and len([r for r in doc.iter() if r.tag.rsplit('}', 1)[-1] == 'Execution']) == 27, 'Exactly27 global definition executions')
-    need(len(results) == len(definitions) == len(entries) == 27, 'Exactly27 complete joins required')
+    need(len(all_methods) == 30 and len([r for r in doc.iter() if r.tag.rsplit('}', 1)[-1] == 'TestMethod']) == 30, 'Exactly30 global compiled methods')
+    need(len(doc.findall('.//t:Execution', NS)) == 30 and len([r for r in doc.iter() if r.tag.rsplit('}', 1)[-1] == 'Execution']) == 30, 'Exactly30 global definition executions')
+    need(len(results) == len(definitions) == len(entries) == 30, 'Exactly30 complete joins required')
     by_id = {shared.guid(row.get('id')): row for row in definitions}
-    need(len(by_id) == 27, 'Unique27 definition GUIDs')
+    need(len(by_id) == 30, 'Unique30 definition GUIDs')
     pairs = []
     identities = []
     for row in results:
@@ -64,18 +65,18 @@ def validate(raw, selected):
         pairs.append((test_id, execution_id))
         identities.append((name, test_id))
     entry_pairs = [(shared.guid(row.get('testId')), shared.guid(row.get('executionId'))) for row in entries]
-    need(len({row[0] for row in pairs}) == len({row[1] for row in pairs}) == len({row[0] for row in entry_pairs}) == len({row[1] for row in entry_pairs}) == 27, 'Unique tests/executions')
+    need(len({row[0] for row in pairs}) == len({row[1] for row in pairs}) == len({row[0] for row in entry_pairs}) == len({row[1] for row in entry_pairs}) == 30, 'Unique tests/executions')
     need(collections.Counter(pairs) == collections.Counter(entry_pairs), 'Entry execution bijection')
-    need(collections.Counter(name for name, _ in identities) == collections.Counter(expected_names), 'Exact27 compiled names')
-    need(collections.Counter((name, test_id) for name, test_id in identities if name not in authored) == collections.Counter(expected_known), 'Frozen actual25 GUID/name multiset')
+    need(collections.Counter(name for name, _ in identities) == collections.Counter(expected_names), 'Exact30 compiled names')
+    need(collections.Counter((name, test_id) for name, test_id in identities if name not in authored) == collections.Counter(expected_known), 'Frozen actual27 GUID/name multiset')
     summaries = exact_records(doc, doc, 'ResultSummary', 1)
     need(len(summaries) == 1 and summaries[0].get('outcome') in {'Passed', 'Completed'}, 'Passing summary required')
     counters = exact_records(doc, summaries[0], 'Counters', 1)
-    expected_counters = dict(total='27', executed='27', passed='27', **{key: '0' for key in shared.NONPASSING})
-    need(len(counters[0]) == 0 and counters[0].attrib == expected_counters, 'Exactly27 canonical clean counters')
+    expected_counters = dict(total='30', executed='30', passed='30', **{key: '0' for key in shared.NONPASSING})
+    need(len(counters[0]) == 0 and counters[0].attrib == expected_counters, 'Exactly30 canonical clean counters')
     need(doc.find('.//t:ErrorInfo', NS) is None, 'ErrorInfo forbidden')
     need(all(row.get('outcome') in {'Passed', 'Completed', 'Information'} for row in doc.findall('.//t:RunInfo', NS)), 'RunInfo outcome required')
-    return {'selectedCount': 27, 'summaryOutcome': summaries[0].get('outcome'), 'executionBijection': True, 'all27CountersCanonical': True, 'accepted21NameGuidRowsFrozen': True, 'authored2ObservedNameGuidRows': [{'name': name, 'testId': test_id} for name, test_id in identities if name in authored], 'full575IdentityJoinAccepted': False}
+    return {'selectedCount': 30, 'summaryOutcome': summaries[0].get('outcome'), 'executionBijection': True, 'all30CountersCanonical': True, 'accepted21NameGuidRowsFrozen': True, 'authored3ObservedNameGuidRows': [{'name': name, 'testId': test_id} for name, test_id in identities if name in authored], 'full578IdentityJoinAccepted': False}
 
 def validate_build(build):
     need('Build succeeded.' in build and re.search(r'0 Warning\(s\)', build) and re.search(r'0 Error\(s\)', build) and not re.search(r'\b[1-9]\d* (?:Warning|Error)\(s\)', build), 'Actual strict Release0WE')
@@ -92,7 +93,7 @@ def verify():
     structure = validate(raw, manifest['selected'])
     build = (FOLDER / 'build.log').read_text()
     validate_build(build)
-    result = {'actualFocusedPassed': 27, 'failed': 0, 'skipped': 0, 'trxSha256': hashlib.sha256(raw).hexdigest(), 'strictStructure': structure, 'accepted21MainIdentityRun': manifest['accepted21MainIdentityRun'], 'githubSha': os.environ.get('GITHUB_SHA'), 'runId': os.environ.get('GITHUB_RUN_ID'), 'strictRelease0WE': True, 'full575Accepted': False, 'consumerAccepted': False, 'originalPrimitiveParityAccepted': False, 'authored2ActualGuidsCollectedFromThisTrx': True, 'full575IdentityJoinAccepted': False}
+    result = {'actualFocusedPassed': 30, 'failed': 0, 'skipped': 0, 'trxSha256': hashlib.sha256(raw).hexdigest(), 'strictStructure': structure, 'accepted21MainIdentityRun': manifest['accepted21MainIdentityRun'], 'githubSha': os.environ.get('GITHUB_SHA'), 'runId': os.environ.get('GITHUB_RUN_ID'), 'strictRelease0WE': True, 'full578Accepted': False, 'consumerAccepted': False, 'originalPrimitiveParityAccepted': False, 'authored3ActualGuidsCollectedFromThisTrx': True, 'full578IdentityJoinAccepted': False}
     (FOLDER / 'focused-proof.json').write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps(result))
 

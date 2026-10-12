@@ -82,7 +82,28 @@ public sealed class CompanyOrdinaryTaxRegistrarReferenceTests(ITestOutputHelper 
                             {
                                 var json = "{\"Name\":\"ok\"," + members + "}";
                                 Assert.Throws<JsonException>(() => Read(json, baseline, segmented));
-                                Assert.Throws<JsonException>(() => Read(json, candidate, segmented));
+                                if (invalid is "{}" or "[]")
+                                    Assert.Throws<JsonException>(() => Read(json, candidate, segmented));
+                                else
+                                {
+                                    var reference = Newtonsoft.Json.JsonConvert.DeserializeObject<MutableReference>(json,
+                                        new Newtonsoft.Json.JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore })!;
+                                    var expected = new UpsertCompanyRequest(reference.Name!, reference.TaxNumber, reference.Registrar);
+                                    var actual = Read(json, candidate, segmented);
+                                    Assert.Equal(expected, actual);
+                                    Assert.True(details(actual));
+                                    Assert.Equal(JsonSerializer.Serialize(expected, baseline), JsonSerializer.Serialize(actual, candidate));
+                                    output.WriteLine(JsonSerializer.Serialize(new
+                                    {
+                                        Kind = "older-reference-primitive-transition",
+                                        Culture = culture,
+                                        Field = field,
+                                        Token = invalid,
+                                        Segmented = segmented,
+                                        CandidateDecodedWriteMatchPinnedReference = true,
+                                        FrozenNameOnlyBaselineRead = "System.Text.Json.JsonException",
+                                    }));
+                                }
                             }
                     foreach (var malformed in new[] { "\"\\uD800\"", "\"\\uDC00\"", "\"\\uDC00\\uD800\"" })
                         foreach (var members in Occurrences(field, malformed))

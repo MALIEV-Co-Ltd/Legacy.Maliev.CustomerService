@@ -37,21 +37,9 @@ public sealed class CompanyTaxRegistrarPrimitiveStorageTests(CustomerDetailAutho
                 catch (JsonException error) { readError = error.GetType().FullName; }
                 if (item.ReadRejects)
                 {
-                    Assert.Equal(typeof(JsonException).FullName, readError);
-                    Assert.Null(request);
-                    Assert.Equal(before, await SnapshotAsync(token));
-                    Assert.Equal(cached, await cache.GetAsync("customer:1", token));
-                    output.WriteLine(JsonSerializer.Serialize(new
-                    {
-                        Kind = "storage-stage",
-                        Field = field,
-                        Case = item.Label,
-                        Deserialize = readError,
-                        Controller = "NOT RUN",
-                        PostgreSqlStorage = "NOT RUN",
-                        GraphCacheUnchanged = true,
-                    }));
-                    continue;
+                    var json = "{\"Name\":\"ok\"," + item.Members + "}";
+                    Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<UpsertCompanyRequest>(json,
+                        CompanyTaxRegistrarPrimitiveOracleTests.Options(true)));
                 }
                 Assert.Null(readError);
                 var value = Assert.IsType<UpsertCompanyRequest>(request);
@@ -122,6 +110,7 @@ public sealed class CompanyTaxRegistrarPrimitiveStorageTests(CustomerDetailAutho
                     Kind = "storage-stage",
                     Field = field,
                     Case = item.Label,
+                    AcceptedBaselineDeserialize = item.ReadRejects ? "System.Text.Json.JsonException before controller/storage" : "Succeeded",
                     Deserialize = "Succeeded",
                     Controller = "Existing HasCompanyDetails returned true; no HTTP action invoked",
                     PostgreSqlStorage = storageError ?? "Direct disposable context insert/readback succeeded",
@@ -141,8 +130,8 @@ public sealed class CompanyTaxRegistrarPrimitiveStorageTests(CustomerDetailAutho
         var emoji = string.Concat(Enumerable.Repeat("😀", 129));
         yield return new("literal-129-pairs", $"\"{field}\":" + JsonSerializer.Serialize(emoji), emoji);
         yield return new("long-literal-bounded-null", $"\"{field}\":" + JsonSerializer.Serialize(new string('x', 257)) + $",\"{field}\":\"bounded\",\"{field}\":null", "bounded");
-        yield return new("integer-token", $"\"{field}\":42", null, ReadRejects: true);
-        yield return new("long-numeric-bounded-null", $"\"{field}\":" + new string('1', 257) + $",\"{field}\":\"bounded\",\"{field}\":null", null, ReadRejects: true);
+        yield return new("integer-token", $"\"{field}\":42", "42", ReadRejects: true);
+        yield return new("long-numeric-bounded-null", $"\"{field}\":" + new string('1', 257) + $",\"{field}\":\"bounded\",\"{field}\":null", "bounded", ReadRejects: true);
     }
 
     private async Task<string> SnapshotAsync(CancellationToken token)

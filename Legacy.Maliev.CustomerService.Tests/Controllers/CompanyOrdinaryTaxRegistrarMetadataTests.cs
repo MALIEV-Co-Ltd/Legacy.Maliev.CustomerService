@@ -59,7 +59,17 @@ public sealed class CompanyOrdinaryTaxRegistrarMetadataTests
                 var body = "{\"Name\":\"first\",\"" + field + "\":" + invalid + ",\"" + field + "\":\"later\",\"" + field + "\":null}";
                 var baseline = Read(body, typeof(UpsertCompanyRequest), Options());
                 Assert.Equal(typeof(JsonException).FullName, baseline.ReadError);
-                Assert.Equal(baseline, Read(body, typeof(UpsertCompanyRequest), Proposed()));
+                var candidate = Read(body, typeof(UpsertCompanyRequest), Proposed());
+                if (invalid is "42" or "true")
+                {
+                    var expected = new UpsertCompanyRequest("first", field == "TaxNumber" ? "later" : null,
+                        field == "Registrar" ? "later" : null);
+                    Assert.Null(candidate.ReadError);
+                    Assert.Equal(Fields(expected), candidate.DecodedFields);
+                    Assert.Null(candidate.WriteError);
+                    Assert.Equal(Write(expected, Options()).Json, candidate.Json);
+                }
+                else Assert.Equal(baseline, candidate);
             }
 
         var inactiveBodies = cases.Select(item => item.Body).Concat(new[]
@@ -322,7 +332,15 @@ public sealed class CompanyOrdinaryTaxRegistrarMetadataTests
                     continue;
                 }
                 Assert.Same(property, proposedInfo.Properties.Single(item => item.Name == field));
-                Assert.Same(proposalProbe.Converters[field], property.CustomConverter);
+                if (proposalProbe.Converters[field] is not null || proposalProbe.Setters[field] is null)
+                    Assert.Same(proposalProbe.Converters[field], property.CustomConverter);
+                else
+                {
+                    Assert.NotNull(property.CustomConverter);
+                    Assert.Equal("Legacy.Maliev.CustomerService.Api.OrdinaryCompanyFieldPrimitiveJsonConverter", property.CustomConverter.GetType().FullName);
+                    Assert.False(Assert.IsAssignableFrom<JsonConverter<string>>(property.CustomConverter).HandleNull);
+                    Assert.Same(JsonSerializerOptions.Default.GetConverter(typeof(string)), proposal.GetConverter(typeof(string)));
+                }
                 if (proposalProbe.Setters[field] is null)
                     Assert.Null(property.Set);
                 else

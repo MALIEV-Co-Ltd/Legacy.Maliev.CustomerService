@@ -55,6 +55,7 @@ public sealed class CustomerCompanyOrdinaryDuplicateNullHttpTests(CustomerDetail
                     {
                         var json = "{\"Name\":\"ok\",\"" + field + "\":\"first\",\"" + field + "\":" + invalid
                             + ",\"" + field + "\":null,\"" + field + "\":\"later\"}";
+                        if (invalid is not ("{}" or "[]")) continue; // Retained primitive cases move to successful ordinary writes below.
                         await RefuseAsync(editor, cache, route, "tax-registrar-invalid/" + field + "/" + invalid,
                             json, versions, HttpStatusCode.BadRequest, before, cached, token);
                     }
@@ -97,6 +98,7 @@ public sealed class CustomerCompanyOrdinaryDuplicateNullHttpTests(CustomerDetail
             output.WriteLine(JsonSerializer.Serialize(new { Route = route, Case = "tax-registrar-scoped-last-null", Status = (int)response.StatusCode }));
             output.WriteLine(JsonSerializer.Serialize(new { Route = route, Case = "tax-registrar-scoped-stale", Status = (int)stale.StatusCode }));
         }
+        await WriteMatrixAsync(PrimitiveEarlierCases());
     }
 
     [Fact]
@@ -115,8 +117,12 @@ public sealed class CustomerCompanyOrdinaryDuplicateNullHttpTests(CustomerDetail
             var before = await PhysicalSnapshotAsync(token);
             var cached = await PrimeAsync(cache, token);
             foreach (var item in RefusalCases())
-                await RefuseAsync(client, cache, route, item.Label, item.Json, default, HttpStatusCode.BadRequest, before, cached, token);
+                if (item.Label is not ("other-field-control-33" or "other-field-control-34"))
+                    await RefuseAsync(client, cache, route, item.Label, item.Json, default, HttpStatusCode.BadRequest, before, cached, token);
         }
+        await WriteMatrixAsync(RefusalCases().Where(item => item.Label is "other-field-control-33" or "other-field-control-34")
+            .Select(item => new PositiveCase(item.Label, item.Json, "ok", item.Label == "other-field-control-33" ? "42" : null,
+                item.Label == "other-field-control-34" ? "true" : null)).ToArray());
     }
 
     [Fact]
@@ -386,6 +392,14 @@ public sealed class CustomerCompanyOrdinaryDuplicateNullHttpTests(CustomerDetail
     }
 
     private sealed record PositiveCase(string Label, string Json, string Name, string? Tax, string? Registrar);
+
+    private static PositiveCase[] PrimitiveEarlierCases() =>
+        (from field in new[] { "TaxNumber", "Registrar" }
+         from primitive in new[] { "true", "42", "1e309" }
+         let json = "{\"Name\":\"ok\",\"" + field + "\":\"first\",\"" + field + "\":" + primitive
+             + ",\"" + field + "\":null,\"" + field + "\":\"later\"}"
+         select new PositiveCase("tax-registrar-invalid/" + field + "/" + primitive, json, "ok",
+             field == "TaxNumber" ? "later" : null, field == "Registrar" ? "later" : null)).ToArray();
 
     private static PositiveCase[] NullablePositiveCases() =>
     [
