@@ -12,7 +12,7 @@ internal static class OrdinaryCompanyMvcJsonMetadata
 
     internal static IJsonTypeInfoResolver? Compose(IJsonTypeInfoResolver? resolver) =>
         resolver?.GetType() == typeof(DefaultJsonTypeInfoResolver)
-            ? resolver.WithAddedModifier(Configure)
+            ? resolver.WithAddedModifier(Configure).WithAddedModifier(OrdinaryAddressPrimitiveMvcJsonMetadata.Configure)
             : resolver;
 
     internal static void Configure(JsonTypeInfo typeInfo)

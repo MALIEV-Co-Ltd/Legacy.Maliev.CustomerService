@@ -34,8 +34,8 @@
     },
     {
       "path": ".github/workflows/_build-and-test.yml",
-      "bytes": 3307,
-      "sha256": "8d23ba2835adfca5b07dd3c8b0c9072418fc60f4c2f3b957fea9493c87feb51c"
+      "bytes": 4153,
+      "sha256": "2e2cd26731a1cba1d87162abaa8eca0da9dd6b30fcb5df6baa84bfdaf4bb0168"
     },
     {
       "path": ".github/workflows/ci-develop.yml",
@@ -399,8 +399,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressLiteralLineHttpTests.cs",
-      "bytes": 27600,
-      "sha256": "34bef4ecaa0191a2279ff469bc6b98f6bacb7d179f38cbd24685e29d61201f77"
+      "bytes": 34799,
+      "sha256": "d585b98e72cc59d06f544eabf0cb27815e5fffb0de148adc53cefcdf589312ca"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressOriginalNullBoundaryTests.cs",
@@ -644,8 +644,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Workflows/WorkflowContractTests.cs",
-      "bytes": 24730,
-      "sha256": "b607f39c3b69581e9e4f9ecd9b2d0794dcc8b5be8a3a0a98b914bbb9872bb141"
+      "bytes": 29764,
+      "sha256": "dd95c4fcb3215ae8fc46788cc3085dd314ae825a3d269990d23980c35777d97e"
     },
     {
       "path": "Legacy.Maliev.CustomerService.slnx",
@@ -1404,8 +1404,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCompanyMvcJsonMetadata.cs",
-      "bytes": 3428,
-      "sha256": "fa0ec89cfb0b7d4c574182d44b4190c4617f30617a8175ca6c52da319d580c9e"
+      "bytes": 3497,
+      "sha256": "b30573d7cc0f3d04756384f77a09bbb52ed7d211f8cfdaab0c31f33ee5608b33"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryMvcMetadataControls.cs",
@@ -1471,6 +1471,11 @@
       "path": "docs/company-tax-registrar-primitive-mvc-20261011.md",
       "bytes": 5720,
       "sha256": "2d16414b3628a55841cf361e8483f9ef9028544b10d0af3136a26fd013dcb252"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/OrdinaryAddressPrimitiveMvcJsonMetadata.cs",
+      "bytes": 2220,
+      "sha256": "22b42384d4cfb3661bcd75af05752e9d099467a671b14749646a68f0bf27cf53"
     }
   ],
   "futureTestIdsInvented": false,

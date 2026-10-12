@@ -26,6 +26,9 @@ jobs:
       VSTestCollect: XPlat Code Coverage
       VSTestLogger: trx
       VSTestResultsDirectory: ${{ github.workspace }}/runner-results
+      MSBUILDDISABLENODEREUSE: '1'
+      DOTNET_CLI_USE_MSBUILD_SERVER: '0'
+      UseSharedCompilation: 'false'
     steps:
       - name: Check out CustomerService
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -50,6 +53,16 @@ jobs:
         with:
           solution: Legacy.Maliev.CustomerService.slnx
           use-local-maliev-dependencies: 'true'
+      - name: Admitted ordinary Address primitive focused regressions
+        timeout-minutes: 10
+        env:
+          GITHUB_ACTIONS: 'false'
+        run: |
+          set -euo pipefail
+          python3 -B scripts/test_customer_address_focus.py
+          python3 -B scripts/verify_customer_address_focus.py guard
+          timeout --signal=TERM --kill-after=5s 600s dotnet test Legacy.Maliev.CustomerService.slnx -c Release --no-build --no-restore --filter "FullyQualifiedName~CustomerAddressLiteralLineHttpTests|FullyQualifiedName~OrdinaryAddressPrimitiveMetadataTests" --logger trx --results-directory runner-address-focused
+          python3 -B scripts/verify_customer_address_focus.py verify
       - name: Run exact separately admitted Customer consumer phases
         if: inputs.customer-consumer-custody != ''
         timeout-minutes: 30
@@ -70,6 +83,7 @@ jobs:
           name: customer-validation-${{ github.sha }}
           path: |
             runner-results
+            runner-address-focused
             ${{ runner.temp }}/customer-consumer-phases
           if-no-files-found: warn
           retention-days: 7
