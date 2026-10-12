@@ -26,6 +26,9 @@ jobs:
       VSTestCollect: XPlat Code Coverage
       VSTestLogger: trx
       VSTestResultsDirectory: ${{ github.workspace }}/runner-results
+      MSBUILDDISABLENODEREUSE: '1'
+      DOTNET_CLI_USE_MSBUILD_SERVER: '0'
+      UseSharedCompilation: 'false'
     steps:
       - name: Check out CustomerService
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1

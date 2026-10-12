@@ -17,8 +17,8 @@
     },
     {
       "path": ".github/workflows/_build-and-test.yml",
-      "bytes": 4041,
-      "sha256": "918154200b335f47a28cdc8e48c2c837e0851eed0e6e272b96ec41e2b91cb61a"
+      "bytes": 4153,
+      "sha256": "2e2cd26731a1cba1d87162abaa8eca0da9dd6b30fcb5df6baa84bfdaf4bb0168"
     },
     {
       "path": ".github/workflows/ci-develop.yml",
@@ -687,8 +687,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Workflows/WorkflowContractTests.cs",
-      "bytes": 28877,
-      "sha256": "c76e7247ae81a15476f5b08846097c89d860cced5a908afb4a8db3719b5ddba3"
+      "bytes": 29764,
+      "sha256": "dd95c4fcb3215ae8fc46788cc3085dd314ae825a3d269990d23980c35777d97e"
     },
     {
       "path": "Legacy.Maliev.CustomerService.slnx",
@@ -853,12 +853,12 @@
     {
       "path": "scripts/customer-default-page-focused-manifest.json",
       "bytes": 64122,
-      "sha256": "6b5267b75377d237f3fb41efe452d2cea5bb02ceb1d2271cc46fb9ee5cdde3e6"
+      "sha256": "1515ebadf61656cb9cf9419d1df6a1c3100d1898d6bc4c42bc849b90b7e56726"
     },
     {
       "path": "scripts/customer-email-focused-manifest.json",
       "bytes": 84589,
-      "sha256": "04f36283889586f5f2118406b44ed5f3a9e4e17ba979ed1ce6ebb0a7a695cb78"
+      "sha256": "2fecd1dfe42d8564846d21fe1842305601887f7530d55d679dfa9cf9262165bf"
     },
     {
       "path": "scripts/customer-kernel-packet/README.md",

@@ -46,6 +46,12 @@ public sealed class WorkflowContractTests
         AssertMutationRejected(address, string.Empty);
         AssertMutationRejected(address, address + address);
         AssertMutationRejected(action + address, address + action);
+        AssertMutationRejected("      MSBUILDDISABLENODEREUSE: '1'\n", string.Empty);
+        AssertMutationRejected("      MSBUILDDISABLENODEREUSE: '1'\n", "      MSBUILDDISABLENODEREUSE: '0'\n");
+        AssertMutationRejected("      DOTNET_CLI_USE_MSBUILD_SERVER: '0'\n", string.Empty);
+        AssertMutationRejected("      DOTNET_CLI_USE_MSBUILD_SERVER: '0'\n", "      DOTNET_CLI_USE_MSBUILD_SERVER: '1'\n");
+        AssertMutationRejected("      UseSharedCompilation: 'false'\n", string.Empty);
+        AssertMutationRejected("      UseSharedCompilation: 'false'\n", "      UseSharedCompilation: 'true'\n");
         AssertMutationRejected("timeout-minutes: 10", "timeout-minutes: 11");
         AssertMutationRejected("GITHUB_ACTIONS: 'false'", "GITHUB_ACTIONS: 'true'");
         AssertMutationRejected("set -euo pipefail", "set -eu");
@@ -255,15 +261,18 @@ internal static partial class WorkflowContractValidator
         ValidateConsumerCaller(steps.Children[5]);
 
         var environment = RequireMapping(validateJob, "env");
-        if (environment.Children.Count != 4)
+        if (environment.Children.Count != 7)
         {
-            throw new InvalidOperationException("Validate environment must contain only dependency root and evidence properties.");
+            throw new InvalidOperationException("Validate environment must contain only dependency root, evidence properties, and exact finite build-server lifecycle controls.");
         }
 
         RequireScalarValue(environment, "MalievWorkspaceRoot", "${{ github.workspace }}/.dependencies");
         RequireScalarValue(environment, "VSTestCollect", "XPlat Code Coverage");
         RequireScalarValue(environment, "VSTestLogger", "trx");
         RequireScalarValue(environment, "VSTestResultsDirectory", "${{ github.workspace }}/runner-results");
+        RequireScalarValue(environment, "MSBUILDDISABLENODEREUSE", "1");
+        RequireScalarValue(environment, "DOTNET_CLI_USE_MSBUILD_SERVER", "0");
+        RequireScalarValue(environment, "UseSharedCompilation", "false");
 
         var scaffold = RequireMapping(steps.Children[6], "scaffold guard");
         if (scaffold.Children.Count != 3)
