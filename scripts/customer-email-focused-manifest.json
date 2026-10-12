@@ -943,8 +943,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Workflows/WorkflowContractTests.cs",
-      "bytes": 24730,
-      "sha256": "b607f39c3b69581e9e4f9ecd9b2d0794dcc8b5be8a3a0a98b914bbb9872bb141"
+      "bytes": 28877,
+      "sha256": "c76e7247ae81a15476f5b08846097c89d860cced5a908afb4a8db3719b5ddba3"
     },
     {
       "path": "Legacy.Maliev.CustomerService.slnx",

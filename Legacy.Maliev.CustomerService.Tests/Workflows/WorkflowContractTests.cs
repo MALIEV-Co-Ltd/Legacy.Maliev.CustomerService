@@ -37,11 +37,30 @@ public sealed class WorkflowContractTests
 
         var consumer = ReadWorkflowStep("Run exact separately admitted Customer consumer phases", "Validate safe scaffold orchestration");
         var scaffold = ReadWorkflowStep("Validate safe scaffold orchestration", "Gate owned production coverage");
-        var action = ReadWorkflowStep("Validate .NET solution", "Run exact separately admitted Customer consumer phases");
+        var action = ReadWorkflowStep("Validate .NET solution", "Admitted ordinary Address primitive focused regressions");
         AssertMutationRejected(consumer, string.Empty);
         AssertMutationRejected(consumer, consumer + consumer);
         AssertMutationRejected(consumer + scaffold, scaffold + consumer);
         AssertMutationRejected(action, action + action);
+        var address = ReadWorkflowStep("Admitted ordinary Address primitive focused regressions", "Run exact separately admitted Customer consumer phases");
+        AssertMutationRejected(address, string.Empty);
+        AssertMutationRejected(address, address + address);
+        AssertMutationRejected(action + address, address + action);
+        AssertMutationRejected("timeout-minutes: 10", "timeout-minutes: 11");
+        AssertMutationRejected("GITHUB_ACTIONS: 'false'", "GITHUB_ACTIONS: 'true'");
+        AssertMutationRejected("set -euo pipefail", "set -eu");
+        AssertMutationRejected("python3 -B scripts/test_customer_address_focus.py\n", "");
+        AssertMutationRejected("python3 -B scripts/verify_customer_address_focus.py guard\n", "");
+        AssertMutationRejected("python3 -B scripts/verify_customer_address_focus.py verify", "python3 -B scripts/verify_customer_address_focus.py guard");
+        AssertMutationRejected("600s dotnet test", "601s dotnet test");
+        AssertMutationRejected("--signal=TERM --kill-after=5s 600s", "--signal=KILL --kill-after=5s 600s");
+        AssertMutationRejected("--no-build --no-restore", "--no-restore");
+        AssertMutationRejected("-c Release --no-build", "-c Debug --no-build");
+        AssertMutationRejected("FullyQualifiedName~CustomerAddressLiteralLineHttpTests|FullyQualifiedName~OrdinaryAddressPrimitiveMetadataTests", "FullyQualifiedName~CustomerAddressLiteralLineHttpTests");
+        AssertMutationRejected("--logger trx --results-directory runner-address-focused", "--logger trx --results-directory runner-results");
+        AssertMutationRejected("            runner-address-focused\n", "");
+        AssertMutationRejected(address, address.Replace("        run: |", "        if: always()\n        run: |", StringComparison.Ordinal));
+        AssertMutationRejected(address, address.Replace("          GITHUB_ACTIONS: 'false'", "          GITHUB_ACTIONS: 'false'\n          UNREVIEWED: 'true'", StringComparison.Ordinal));
     }
 
     [Theory]
@@ -223,16 +242,17 @@ internal static partial class WorkflowContractValidator
         }
 
         RequireScalarValue(validateJob, "name", "validate");
-        RejectDuplicatedValidationActionsAndCommands(jobs);
 
         var steps = RequireSequence(validateJob, "steps");
-        if (steps.Children.Count != 8)
+        if (steps.Children.Count != 9)
         {
-            throw new InvalidOperationException("Validate job must contain four validation, one optional custody caller, one scaffold guard, and two evidence steps.");
+            throw new InvalidOperationException("Validate job must contain four shared validation steps, one exact admitted Address focus, one optional custody caller, one scaffold guard, and two evidence steps.");
         }
 
         ValidateConsumerInputs(root);
-        ValidateConsumerCaller(steps.Children[4]);
+        ValidateAddressFocusedCaller(steps.Children[4]);
+        RejectDuplicatedValidationActionsAndCommands(jobs, steps.Children[4]);
+        ValidateConsumerCaller(steps.Children[5]);
 
         var environment = RequireMapping(validateJob, "env");
         if (environment.Children.Count != 4)
@@ -245,7 +265,7 @@ internal static partial class WorkflowContractValidator
         RequireScalarValue(environment, "VSTestLogger", "trx");
         RequireScalarValue(environment, "VSTestResultsDirectory", "${{ github.workspace }}/runner-results");
 
-        var scaffold = RequireMapping(steps.Children[5], "scaffold guard");
+        var scaffold = RequireMapping(steps.Children[6], "scaffold guard");
         if (scaffold.Children.Count != 3)
         {
             throw new InvalidOperationException("Scaffold guard must contain only name, shell, and run.");
@@ -254,7 +274,7 @@ internal static partial class WorkflowContractValidator
         RequireScalarValue(scaffold, "name", "Validate safe scaffold orchestration");
         RequireScalarValue(scaffold, "shell", "pwsh");
         RequireScalarValue(scaffold, "run", "./tooling/Test-CustomerScaffoldContract.ps1 -EvidencePath ./runner-results/customer-scaffold-orchestration.json");
-        var gate = RequireMapping(steps.Children[6], "coverage gate");
+        var gate = RequireMapping(steps.Children[7], "coverage gate");
         if (gate.Children.Count != 2)
         {
             throw new InvalidOperationException("Coverage gate must contain only name and run.");
@@ -262,7 +282,7 @@ internal static partial class WorkflowContractValidator
 
         RequireScalarValue(gate, "name", "Gate owned production coverage");
         RequireScalarValue(gate, "run", "python3 scripts/verify-runner-coverage.py runner-results");
-        var evidence = RequireMapping(steps.Children[7], "evidence upload");
+        var evidence = RequireMapping(steps.Children[8], "evidence upload");
         if (evidence.Children.Count != 4)
         {
             throw new InvalidOperationException("Evidence upload must contain exactly name, if, uses and with.");
@@ -279,9 +299,9 @@ internal static partial class WorkflowContractValidator
 
         RequireScalarValue(evidenceInputs, "name", "customer-validation-${{ github.sha }}");
         var evidencePaths = RequireScalar(GetRequired(evidenceInputs, "path")).TrimEnd('\r', '\n');
-        if (!string.Equals(evidencePaths, "runner-results\n${{ runner.temp }}/customer-consumer-phases", StringComparison.Ordinal))
+        if (!string.Equals(evidencePaths, "runner-results\nrunner-address-focused\n${{ runner.temp }}/customer-consumer-phases", StringComparison.Ordinal))
         {
-            throw new InvalidOperationException("Evidence upload must retain exactly validation and consumer phase results.");
+            throw new InvalidOperationException("Evidence upload must retain exactly full validation, Address focus, and consumer phase results.");
         }
         RequireScalarValue(evidenceInputs, "if-no-files-found", "warn");
         RequireScalarValue(evidenceInputs, "retention-days", "7");
@@ -321,6 +341,32 @@ internal static partial class WorkflowContractValidator
                 ["solution"] = "Legacy.Maliev.CustomerService.slnx",
                 ["use-local-maliev-dependencies"] = "true",
             });
+    }
+
+    private static void ValidateAddressFocusedCaller(YamlNode node)
+    {
+        var caller = RequireMapping(node, "Address focused caller");
+        var expectedKeys = new HashSet<string>(["name", "timeout-minutes", "env", "run"], StringComparer.Ordinal);
+        if (!caller.Children.Keys.Select(RequireScalar).ToHashSet(StringComparer.Ordinal).SetEquals(expectedKeys))
+        {
+            throw new InvalidOperationException("Address focus must contain exactly name, timeout-minutes, env, and run.");
+        }
+
+        RequireScalarValue(caller, "name", "Admitted ordinary Address primitive focused regressions");
+        RequireScalarValue(caller, "timeout-minutes", "10");
+        var environment = RequireMapping(caller, "env");
+        if (environment.Children.Count != 1)
+        {
+            throw new InvalidOperationException("Only the guarded Address focus may override GITHUB_ACTIONS.");
+        }
+
+        RequireScalarValue(environment, "GITHUB_ACTIONS", "false");
+        var command = RequireScalar(GetRequired(caller, "run")).TrimEnd('\r', '\n');
+        const string expectedCommand = "set -euo pipefail\npython3 -B scripts/test_customer_address_focus.py\npython3 -B scripts/verify_customer_address_focus.py guard\ntimeout --signal=TERM --kill-after=5s 600s dotnet test Legacy.Maliev.CustomerService.slnx -c Release --no-build --no-restore --filter \"FullyQualifiedName~CustomerAddressLiteralLineHttpTests|FullyQualifiedName~OrdinaryAddressPrimitiveMetadataTests\" --logger trx --results-directory runner-address-focused\npython3 -B scripts/verify_customer_address_focus.py verify";
+        if (!string.Equals(command, expectedCommand, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException("Address focus must use the exact guarded, bounded, filtered no-build command and strict evidence verifier.");
+        }
     }
 
     private static void ValidateConsumerInputs(YamlMappingNode root)
@@ -434,7 +480,7 @@ internal static partial class WorkflowContractValidator
         }
     }
 
-    private static void RejectDuplicatedValidationActionsAndCommands(YamlMappingNode jobs)
+    private static void RejectDuplicatedValidationActionsAndCommands(YamlMappingNode jobs, YamlNode validatedAddressFocus)
     {
         foreach (var jobNode in jobs.Children.Values.OfType<YamlMappingNode>())
         {
@@ -456,7 +502,8 @@ internal static partial class WorkflowContractValidator
                     }
                 }
 
-                if (GetOptional(stepNode, "run") is YamlScalarNode runNode)
+                if (!ReferenceEquals(stepNode, validatedAddressFocus)
+                    && GetOptional(stepNode, "run") is YamlScalarNode runNode)
                 {
                     RejectDuplicatedDotNetCommand(runNode.Value ?? string.Empty);
                 }
