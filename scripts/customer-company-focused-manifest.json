@@ -278,8 +278,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Program.cs",
-      "bytes": 2820,
-      "sha256": "06522eb966de6533e4a7daf4018c6e93a35952d392be6c23734676a8a54c4370"
+      "bytes": 3175,
+      "sha256": "340c961cd439f3bbb7df45dc4fffbee07e077135a326e5b666e172b20afb36b4"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Properties/launchSettings.json",
@@ -1618,13 +1618,13 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCustomerContactInputFormatter.cs",
-      "bytes": 10885,
-      "sha256": "9e8e590ca56c43e11d3f1210311775977a0629f63eb4b60f9f703f555fed970f"
+      "bytes": 20732,
+      "sha256": "531a6674386ef09eb56ddbecba86622a29cd7e767058896e78a5477eff8da291"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerOptionalContactMvcBoundaryTests.cs",
-      "bytes": 39090,
-      "sha256": "42140a383d196a849b9a1f65ab1cfa0c2cb88202e38c66c93abf377fbc118c23"
+      "bytes": 53557,
+      "sha256": "f053fd50a5ba3c0f87805f510a81fa01ad5f3a350fff0828385c3db789aaab3c"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/OrdinaryAddressPrimitiveMetadataTests.cs",
@@ -1654,7 +1654,7 @@
     {
       "path": "scripts/verify_customer_optional_contact_boundary_focus.py",
       "bytes": 13380,
-      "sha256": "2cccc691880ce05dba3a671eb2f388d0a1161e135136e9c1ae783aadb1d87640"
+      "sha256": "2892fe4a516f7009be152b67d4a90a61f48bbb9bf398731dbb9da8da0234c89c"
     },
     {
       "path": "scripts/verify_customer_optional_contact_focus.py",

@@ -41,6 +41,8 @@ static async Task RunHostAsync(string[] startupArgs)
         options.JsonSerializerOptions.DictionaryKeyPolicy = null;
         Legacy.Maliev.CustomerService.Api.OrdinaryCustomerContactInputFormatter.ComposeOwned(options.JsonSerializerOptions);
     });
+    var ownedJsonConfiguration = builder.Services.Last(descriptor => descriptor.ServiceType ==
+        typeof(Microsoft.Extensions.Options.IConfigureOptions<Microsoft.AspNetCore.Mvc.JsonOptions>));
     builder.Services.AddSingleton<Microsoft.Extensions.Options.IPostConfigureOptions<Microsoft.AspNetCore.Mvc.MvcOptions>,
         Legacy.Maliev.CustomerService.Api.OrdinaryCustomerContactInputFormatter.Registration>();
     builder.Services.AddSingleton(TimeProvider.System);
@@ -51,6 +53,8 @@ static async Task RunHostAsync(string[] startupArgs)
     builder.Services.AddScoped<ICustomerRelationService, CustomerRelationService>();
     builder.Services.AddScoped<Legacy.Maliev.CustomerService.Api.CustomerCreateReplayService>();
 
+    Legacy.Maliev.CustomerService.Api.OrdinaryCustomerContactInputFormatter.TrackVersioningPostConfigure(
+        builder.Services, ownedJsonConfiguration);
     var app = builder.Build();
 
     app.UseStandardMiddleware();

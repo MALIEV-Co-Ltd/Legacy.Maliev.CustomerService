@@ -111,6 +111,7 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
     [Fact]
     public void CustomPoliciesConvertersResolversFactories_FallThroughWithoutMutation()
     {
+        AssertVersioningRegistrationOwnership();
         var factory = new ThrowingFactory();
         var (_, stockSelection, ownedSelection) = Formatters(after: options => options.JsonSerializerOptions.Converters.Add(factory));
         Assert.True(stockSelection.CanRead(Context("{}", "create")));
@@ -339,6 +340,7 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
     [Fact]
     public async Task FormattersAndGlobalOptions_RemainUnmodifiedAcrossReads()
     {
+        AssertVersioningMemberBehavior();
         var (source, native, adapter) = Formatters();
         var originalResolver = source.JsonSerializerOptions.TypeInfoResolver;
         var originalConverters = source.JsonSerializerOptions.Converters.ToArray();
@@ -387,6 +389,236 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
         var adapter = (TextInputFormatter)Activator.CreateInstance(type, BindingFlags.Instance | BindingFlags.NonPublic,
             binder: null, args: [source, native, NullLogger<SystemTextJsonInputFormatter>.Instance], culture: null)!;
         return (source, native, adapter);
+    }
+
+    private static void AssertVersioningRegistrationOwnership()
+    {
+        var formatterType = typeof(Program).Assembly.GetType("Legacy.Maliev.CustomerService.Api.OrdinaryCustomerContactInputFormatter", true)!;
+        var shape = formatterType.GetNestedType("VersioningOwnershipProfile", BindingFlags.NonPublic)!
+            .GetMethod("SameShape", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var firstTarget = new FactoryProbe();
+        var otherTarget = new FactoryProbe();
+        var expectedFactory = ServiceDescriptor.Singleton(typeof(BoundaryAnnotation), firstTarget.Create);
+        Assert.True((bool)shape.Invoke(null, [ServiceDescriptor.Singleton(typeof(BoundaryAnnotation), firstTarget.Create), expectedFactory])!);
+        Assert.False((bool)shape.Invoke(null, [ServiceDescriptor.Singleton(typeof(BoundaryAnnotation), otherTarget.Create), expectedFactory])!);
+        Assert.Equal(expectedFactory.ImplementationFactory!.Method, ((Func<IServiceProvider, object>)otherTarget.Create).Method);
+        Assert.Equal(0, firstTarget.Calls);
+        Assert.Equal(0, otherTarget.Calls);
+        using (var positive = VersioningFormatters())
+        {
+            Assert.True(positive.Services.IsReadOnly);
+            Assert.True(positive.Adapter.CanRead(Context("{}", "create")));
+            Assert.Equal(ServiceLifetime.Transient, positive.Services.First(item => item.ServiceType == typeof(IPostConfigureOptions<JsonOptions>)).Lifetime);
+            Assert.Same(positive.Source.JsonSerializerOptions, positive.Native.SerializerOptions);
+            Assert.Equal(new Guid("ae14e30a-df28-4e58-9f5a-1254d1b7817b"), typeof(Asp.Versioning.MvcApiVersioningOptions).Module.ModuleVersionId);
+            Assert.Equal(new Guid("e23c6dbb-ef2c-42b8-8bab-c8e6a254ec5c"), typeof(Asp.Versioning.ApiVersioningFeature).Module.ModuleVersionId);
+        }
+        using (var repeatedDescriptor = VersioningFormatters())
+        {
+            Assert.True(repeatedDescriptor.Adapter.CanRead(Context("{}", "create")));
+            var callbacks = repeatedDescriptor.Provider.GetServices<IPostConfigureOptions<JsonOptions>>().ToArray();
+            Assert.Equal(2, callbacks.Length);
+            // Transient resolution creates a new wrapper from the same tracked descriptor.
+            // Reprocessing these already-adopted options must revoke ownership.
+            callbacks[0].PostConfigure(Options.DefaultName, repeatedDescriptor.Source);
+            Assert.False(repeatedDescriptor.Adapter.CanRead(Context("{}", "create")));
+        }
+        using (var originalCallbackFault = VersioningFormatters())
+        {
+            Assert.True(originalCallbackFault.Adapter.CanRead(Context("{}", "create")));
+            var callbacks = originalCallbackFault.Provider.GetServices<IPostConfigureOptions<JsonOptions>>().ToArray();
+            Assert.Equal(2, callbacks.Length);
+            var resolver = originalCallbackFault.Source.JsonSerializerOptions.TypeInfoResolver;
+            originalCallbackFault.Source.JsonSerializerOptions.MakeReadOnly();
+            // The actual vendor callback faults on its normal resolver assignment.
+            // This is a repeated-processing fault, not a first-adoption fault.
+            Assert.Throws<InvalidOperationException>(() => callbacks[0].PostConfigure(Options.DefaultName, originalCallbackFault.Source));
+            Assert.Same(resolver, originalCallbackFault.Source.JsonSerializerOptions.TypeInfoResolver);
+            Assert.False(originalCallbackFault.Adapter.CanRead(Context("{}", "create")));
+        }
+        using (var mutable = VersioningFormatters(freeze: false))
+            Assert.False(mutable.Adapter.CanRead(Context("{}", "create")));
+        foreach (var after in new[] { false, true })
+        foreach (var mutation in new Action<IServiceCollection>[]
+        {
+            services => services.Configure<JsonOptions>(_ => { }),
+            services => services.PostConfigure<JsonOptions>(_ => { }),
+            services => services.AddSingleton<IHttpContextAccessor>(new HttpContextAccessor()),
+            services => services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(),
+            services => services.AddKeyedSingleton<IHttpContextAccessor, HttpContextAccessor>("other"),
+            services => services.AddKeyedSingleton<IPostConfigureOptions<JsonOptions>>("other", new EmptyPostConfigure()),
+            services => services.AddSingleton<Asp.Versioning.IAnnotation<MemberInfo, Asp.Versioning.ApiVersionRange>>(new BoundaryAnnotation()),
+            services =>
+            {
+                var descriptor = services.Single(item => item.ServiceType == typeof(Asp.Versioning.IAnnotation<MemberInfo, Asp.Versioning.ApiVersionRange>));
+                services.Remove(descriptor);
+                // A forwarding delegate must not be treated as the canonical vendor factory.
+                var factory = descriptor.ImplementationFactory!;
+                services.Add(ServiceDescriptor.Singleton(descriptor.ServiceType, provider => factory(provider)));
+            },
+            services =>
+            {
+                var descriptor = services.First(item => item.ServiceType == typeof(IPostConfigureOptions<JsonOptions>));
+                services.Add(descriptor);
+            },
+            services =>
+            {
+                var descriptor = services.Single(item => item.ServiceType == typeof(Asp.Versioning.IAnnotation<MemberInfo, Asp.Versioning.ApiVersionRange>));
+                services.Remove(descriptor);
+                var factory = descriptor.ImplementationFactory!;
+                var multicast = (Func<IServiceProvider, object>)Delegate.Combine(factory, factory);
+                services.Add(ServiceDescriptor.Singleton(descriptor.ServiceType, multicast));
+            },
+            services =>
+            {
+                var descriptor = services.Single(item => item.ServiceType == typeof(IHttpContextAccessor));
+                services.Remove(descriptor);
+                services.Add(descriptor);
+            },
+        })
+        {
+            using var candidate = VersioningFormatters(beforeTrack: after ? null : mutation, afterTrack: after ? mutation : null);
+            Assert.False(candidate.Adapter.CanRead(Context("{}", "create")));
+        }
+        var calls = 0;
+        string? observedName = null;
+        JsonOptions? observedOptions = null;
+        using (var unsupportedFactory = VersioningFormatters(beforeTrack: services =>
+        {
+            var descriptor = services.Single(item => item.ServiceType == typeof(IPostConfigureOptions<JsonOptions>));
+            var position = services.IndexOf(descriptor);
+            services[position] = ServiceDescriptor.Transient<IPostConfigureOptions<JsonOptions>>(provider =>
+                new ObservedPostConfigure((IPostConfigureOptions<JsonOptions>)ActivatorUtilities.CreateInstance(provider, descriptor.ImplementationType!),
+                    (name, options) => { calls++; observedName = name; observedOptions = options; }));
+        }))
+        {
+            Assert.Equal(1, calls);
+            Assert.Equal(Options.DefaultName, observedName);
+            Assert.Same(unsupportedFactory.Source, observedOptions);
+            Assert.False(unsupportedFactory.Adapter.CanRead(Context("{}", "create")));
+        }
+        using (var repeated = VersioningFormatters())
+        {
+            var type = typeof(Program).Assembly.GetType("Legacy.Maliev.CustomerService.Api.OrdinaryCustomerContactInputFormatter", true)!;
+            type.GetMethod("ComposeOwned", BindingFlags.Static | BindingFlags.NonPublic)!.Invoke(null, [repeated.Source.JsonSerializerOptions]);
+            Assert.False(repeated.Adapter.CanRead(Context("{}", "create")));
+        }
+        var thrown = new InvalidOperationException("fixed synthetic callback failure");
+        var throwCalls = 0;
+        Assert.Same(thrown, Assert.Throws<InvalidOperationException>(() =>
+        {
+            using var _ = VersioningFormatters(afterTrack: services => services.PostConfigure<JsonOptions>(options =>
+            {
+                throwCalls++;
+                options.JsonSerializerOptions.TypeInfoResolver = new DefaultJsonTypeInfoResolver();
+                throw thrown;
+            }));
+        }));
+        Assert.Equal(1, throwCalls);
+    }
+
+    private static void AssertVersioningMemberBehavior()
+    {
+        using var configured = VersioningFormatters();
+        var accessor = configured.Provider.GetRequiredService<IHttpContextAccessor>();
+        Assert.IsType<HttpContextAccessor>(accessor);
+        var annotations = configured.Provider.GetRequiredService<Asp.Versioning.IAnnotation<MemberInfo, Asp.Versioning.ApiVersionRange>>();
+        Assert.Equal("Asp.Versioning.AnnotationCache", annotations.GetType().FullName);
+        Assert.Same(annotations, configured.Provider.GetRequiredService<Asp.Versioning.IAnnotation<MemberInfo, Asp.Versioning.ApiVersionRange>>());
+        try
+        {
+            foreach (var major in new int?[] { null, 1, 2 })
+            {
+                var http = new DefaultHttpContext();
+                http.Features.Set<Asp.Versioning.IApiVersioningFeature>(new Asp.Versioning.ApiVersioningFeature(http)
+                {
+                    RequestedApiVersion = major is { } value ? new Asp.Versioning.ApiVersion(value, 0) : null,
+                });
+                accessor.HttpContext = http;
+                var options = new JsonSerializerOptions(configured.Source.JsonSerializerOptions);
+                var body = JsonSerializer.Serialize(new VersionedContactBoundary { Annotated = "visible", Ordinary = "always" }, options);
+                using var json = JsonDocument.Parse(body);
+                Assert.Equal(major != 1, json.RootElement.TryGetProperty("Annotated", out _));
+                Assert.Equal("always", json.RootElement.GetProperty("Ordinary").GetString());
+                const string annotated = "{\"Annotated\":\"received\",\"Ordinary\":\"always\"}";
+                if (major == 1)
+                    Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<VersionedContactBoundary>(annotated, options));
+                else
+                    Assert.Equal("received", JsonSerializer.Deserialize<VersionedContactBoundary>(annotated, options)!.Annotated);
+                var ordinary = JsonSerializer.Deserialize<VersionedContactBoundary>("{\"Ordinary\":\"always\"}", options)!;
+                Assert.Null(ordinary.Annotated);
+                Assert.Equal("always", ordinary.Ordinary);
+            }
+        }
+        finally { accessor.HttpContext = null; }
+    }
+
+    private static VersioningBoundary VersioningFormatters(Action<IServiceCollection>? beforeTrack = null,
+        Action<IServiceCollection>? afterTrack = null, bool freeze = true)
+    {
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddApiVersioning().AddMvc();
+        services.AddControllers().AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            options.JsonSerializerOptions.PropertyNamingPolicy = null;
+            options.JsonSerializerOptions.DictionaryKeyPolicy = null;
+            var formatterType = typeof(Program).Assembly.GetType("Legacy.Maliev.CustomerService.Api.OrdinaryCustomerContactInputFormatter", true)!;
+            formatterType.GetMethod("ComposeOwned", BindingFlags.Static | BindingFlags.NonPublic)!.Invoke(null, [options.JsonSerializerOptions]);
+        });
+        var own = services.Last(descriptor => descriptor.ServiceType == typeof(IConfigureOptions<JsonOptions>));
+        beforeTrack?.Invoke(services);
+        var type = typeof(Program).Assembly.GetType("Legacy.Maliev.CustomerService.Api.OrdinaryCustomerContactInputFormatter", true)!;
+        var before = services.ToArray();
+        type.GetMethod("TrackVersioningPostConfigure", BindingFlags.Static | BindingFlags.NonPublic)!.Invoke(null, [services, own]);
+        Assert.All(before.Where(descriptor => descriptor.ServiceType != typeof(IPostConfigureOptions<JsonOptions>)), descriptor => Assert.Contains(descriptor, services));
+        afterTrack?.Invoke(services);
+        if (freeze) services.MakeReadOnly();
+        var provider = services.BuildServiceProvider();
+        try
+        {
+            var source = provider.GetRequiredService<IOptions<JsonOptions>>().Value;
+            var native = new SystemTextJsonInputFormatter(source, NullLogger<SystemTextJsonInputFormatter>.Instance);
+            var adapter = (TextInputFormatter)Activator.CreateInstance(type, BindingFlags.Instance | BindingFlags.NonPublic,
+                binder: null, args: [source, native, NullLogger<SystemTextJsonInputFormatter>.Instance], culture: null)!;
+            return new VersioningBoundary(services, provider, source, native, adapter);
+        }
+        catch { provider.Dispose(); throw; }
+    }
+
+    private sealed record VersioningBoundary(ServiceCollection Services, ServiceProvider Provider, JsonOptions Source,
+        SystemTextJsonInputFormatter Native, TextInputFormatter Adapter) : IDisposable
+    {
+        public void Dispose() => Provider.Dispose();
+    }
+
+    private sealed class ObservedPostConfigure(IPostConfigureOptions<JsonOptions> inner, Action<string?, JsonOptions> observe) : IPostConfigureOptions<JsonOptions>
+    {
+        public void PostConfigure(string? name, JsonOptions options) { observe(name, options); inner.PostConfigure(name, options); }
+    }
+
+    private sealed class EmptyPostConfigure : IPostConfigureOptions<JsonOptions>
+    {
+        public void PostConfigure(string? name, JsonOptions options) { }
+    }
+
+    private sealed class BoundaryAnnotation : Asp.Versioning.IAnnotation<MemberInfo, Asp.Versioning.ApiVersionRange>
+    {
+        public bool TryGet(MemberInfo key, out Asp.Versioning.ApiVersionRange value) { value = Asp.Versioning.ApiVersionRange.Empty; return false; }
+    }
+
+    private sealed class FactoryProbe
+    {
+        public int Calls { get; private set; }
+        public object Create(IServiceProvider provider) { Calls++; return new BoundaryAnnotation(); }
+    }
+
+    private sealed class VersionedContactBoundary
+    {
+        [Asp.Versioning.VisibleInApiVersion("[2.0,)")]
+        public string? Annotated { get; set; }
+        public string? Ordinary { get; set; }
     }
 
     private static InputFormatterContext Context(string body, string action, Encoding? encoding = null,

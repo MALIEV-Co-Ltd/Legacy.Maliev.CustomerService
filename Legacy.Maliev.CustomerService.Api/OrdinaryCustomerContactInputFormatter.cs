@@ -186,7 +186,150 @@ internal sealed class OrdinaryCustomerContactInputFormatter : TextInputFormatter
         }
     }
 
-    private sealed record Ownership(DefaultJsonTypeInfoResolver Reflection, IJsonTypeInfoResolver Composed);
+    internal static void TrackVersioningPostConfigure(IServiceCollection services, ServiceDescriptor ownConfiguration)
+    {
+        var profile = new VersioningOwnershipProfile(services, ownConfiguration);
+        profile.Install();
+    }
+
+    private sealed record Ownership(DefaultJsonTypeInfoResolver Reflection, IJsonTypeInfoResolver Composed, bool VersioningApplied = false);
+
+    // This is a closed registration profile, not permission to adopt an arbitrary final resolver.
+    // Template registration creates descriptor metadata only: no provider, factory invocation, or service resolution.
+    private sealed class VersioningOwnershipProfile(IServiceCollection services, ServiceDescriptor ownConfiguration)
+    {
+        private static readonly Type Annotation = typeof(Asp.Versioning.IAnnotation<MemberInfo, Asp.Versioning.ApiVersionRange>);
+        private static readonly Type PostConfigure = typeof(IPostConfigureOptions<JsonOptions>);
+        private static readonly Type Configure = typeof(IConfigureOptions<JsonOptions>);
+        private readonly ServiceDescriptor[] captured = services.ToArray();
+        private ServiceDescriptor? vendorDescriptor;
+        private ServiceDescriptor? trackedDescriptor;
+        private ServiceDescriptor? denialDescriptor;
+        private ServiceDescriptor? annotationDescriptor;
+        private ServiceDescriptor? accessorDescriptor;
+        private Type? annotationImplementation;
+        private bool supported;
+
+        internal void Install()
+        {
+            var mvcAssembly = typeof(Asp.Versioning.MvcApiVersioningOptions).Assembly;
+            var httpAssembly = typeof(Asp.Versioning.ApiVersioningFeature).Assembly;
+            if (mvcAssembly.ManifestModule.ModuleVersionId == new Guid("ae14e30a-df28-4e58-9f5a-1254d1b7817b")
+                && httpAssembly.ManifestModule.ModuleVersionId == new Guid("e23c6dbb-ef2c-42b8-8bab-c8e6a254ec5c"))
+            {
+                var template = new ServiceCollection();
+                template.AddApiVersioning().AddMvc();
+                var vendor = template.Single(item => item.ServiceType == PostConfigure);
+                var annotation = template.Single(item => item.ServiceType == Annotation);
+                var accessor = template.Single(item => item.ServiceType == typeof(IHttpContextAccessor));
+                annotationImplementation = httpAssembly.GetType("Asp.Versioning.AnnotationCache", throwOnError: false);
+                vendorDescriptor = Single(PostConfigure);
+                annotationDescriptor = Single(Annotation);
+                accessorDescriptor = Single(typeof(IHttpContextAccessor));
+                supported = annotationImplementation is not null
+                    && SameShape(vendorDescriptor, vendor) && vendorDescriptor!.ImplementationType is not null
+                    && vendorDescriptor.Lifetime == ServiceLifetime.Transient
+                    && SameShape(annotationDescriptor, annotation) && SameShape(accessorDescriptor, accessor)
+                    && ReferenceEquals(Single(Configure), ownConfiguration)
+                    && services.IndexOf(ownConfiguration) > services.IndexOf(vendorDescriptor)
+                    && services.Where(item => item.ServiceType == PostConfigure || item.ServiceType == Annotation || item.ServiceType == typeof(IHttpContextAccessor))
+                        .Select(item => item.ServiceType).SequenceEqual(template.Where(item => item.ServiceType == PostConfigure || item.ServiceType == Annotation || item.ServiceType == typeof(IHttpContextAccessor)).Select(item => item.ServiceType));
+                if (supported)
+                {
+                    var implementation = vendorDescriptor!.ImplementationType!;
+                    trackedDescriptor = ServiceDescriptor.Transient(PostConfigure, provider =>
+                    {
+                        // Normal activation remains unconditional. Unsupported dependencies retain vendor behavior.
+                        var original = (IPostConfigureOptions<JsonOptions>)ActivatorUtilities.CreateInstance(provider, implementation);
+                        var qualified = FinalProfile() && DefaultProvider(provider)
+                            && provider.GetRequiredService(Annotation).GetType() == annotationImplementation
+                            && provider.GetRequiredService<IHttpContextAccessor>().GetType() == typeof(HttpContextAccessor);
+                        return new TrackedPostConfigure(original, this, qualified);
+                    });
+                    services[services.IndexOf(vendorDescriptor)] = trackedDescriptor;
+                }
+            }
+            denialDescriptor = ServiceDescriptor.Transient<IPostConfigureOptions<JsonOptions>>(_ => new DenyUnqualified(this));
+            services.Add(denialDescriptor);
+        }
+
+        private ServiceDescriptor? Single(Type type)
+        {
+            var descriptors = services.Where(item => item.ServiceType == type).ToArray();
+            return descriptors.Length == 1 && !descriptors[0].IsKeyedService ? descriptors[0] : null;
+        }
+
+        private static bool SameShape(ServiceDescriptor? actual, ServiceDescriptor expected)
+        {
+            if (actual is null || actual.IsKeyedService || expected.IsKeyedService
+                || actual.ServiceType != expected.ServiceType || actual.Lifetime != expected.Lifetime
+                || actual.ImplementationType != expected.ImplementationType
+                || !ReferenceEquals(actual.ImplementationInstance, expected.ImplementationInstance)) return false;
+            var left = actual.ImplementationFactory;
+            var right = expected.ImplementationFactory;
+            if (left is null || right is null) return left is null && right is null;
+            return left.GetInvocationList().Length == 1 && right.GetInvocationList().Length == 1
+                && left.Method == right.Method && ReferenceEquals(left.Target, right.Target);
+        }
+
+        private bool FinalProfile()
+        {
+            if (!supported || !services.IsReadOnly || trackedDescriptor is null || denialDescriptor is null
+                || !ReferenceEquals(Single(Configure), ownConfiguration)
+                || !ReferenceEquals(Single(Annotation), annotationDescriptor)
+                || !ReferenceEquals(Single(typeof(IHttpContextAccessor)), accessorDescriptor)) return false;
+            var callbacks = services.Where(item => item.ServiceType == PostConfigure).ToArray();
+            if (callbacks.Length != 2 || !ReferenceEquals(callbacks[0], trackedDescriptor)
+                || !ReferenceEquals(callbacks[1], denialDescriptor)) return false;
+            // Preserve every captured relevant descriptor and its relative registration position.
+            var relevant = new[] { Configure, PostConfigure, Annotation, typeof(IHttpContextAccessor) };
+            var expected = captured.Where(item => relevant.Contains(item.ServiceType))
+                .Select(item => ReferenceEquals(item, vendorDescriptor) ? trackedDescriptor : item).Append(denialDescriptor).ToArray();
+            var actual = services.Where(item => relevant.Contains(item.ServiceType)).ToArray();
+            return expected.Length == actual.Length && expected.Zip(actual).All(pair => ReferenceEquals(pair.First, pair.Second));
+        }
+
+        private static bool DefaultProvider(IServiceProvider provider) =>
+            provider.GetType() == typeof(ServiceProvider).Assembly.GetType("Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope", false)
+            || provider.GetType() == typeof(ServiceProvider);
+
+        private static bool OrdinaryPolicy(JsonSerializerOptions options) =>
+            options.DefaultIgnoreCondition == JsonIgnoreCondition.WhenWritingNull
+            && options.PropertyNameCaseInsensitive && options.PropertyNamingPolicy is null
+            && options.DictionaryKeyPolicy is null && options.ReferenceHandler is null
+            && !options.RespectRequiredConstructorParameters && !options.RespectNullableAnnotations
+            && options.PreferredObjectCreationHandling == JsonObjectCreationHandling.Replace
+            && !options.IgnoreReadOnlyProperties && options.Converters.Count == 0;
+
+        private sealed class TrackedPostConfigure(IPostConfigureOptions<JsonOptions> original, VersioningOwnershipProfile profile, bool qualified)
+            : IPostConfigureOptions<JsonOptions>
+        {
+            public void PostConfigure(string? name, JsonOptions options)
+            {
+                var serializer = options.JsonSerializerOptions;
+                var before = serializer.TypeInfoResolver;
+                var owned = qualified && profile.FinalProfile() && Owners.TryGetValue(serializer, out var ownership)
+                    && !ownership.VersioningApplied && ownership.Reflection.Modifiers.Count == 0
+                    && ReferenceEquals(before, ownership.Composed) && OrdinaryPolicy(serializer);
+                Owners.TryGetValue(serializer, out var previous);
+                // Revoke first; failures or partial mutations cannot leave an accepted marker behind.
+                Owners.Remove(serializer);
+                original.PostConfigure(name, options);
+                if (owned && profile.FinalProfile() && previous is not null
+                    && previous.Reflection.Modifiers.Count == 0 && OrdinaryPolicy(serializer)
+                    && serializer.TypeInfoResolver is { } after && !ReferenceEquals(before, after))
+                    Owners.Add(serializer, new Ownership(previous.Reflection, after, VersioningApplied: true));
+            }
+        }
+
+        private sealed class DenyUnqualified(VersioningOwnershipProfile profile) : IPostConfigureOptions<JsonOptions>
+        {
+            public void PostConfigure(string? name, JsonOptions options)
+            {
+                if (!profile.FinalProfile()) Owners.Remove(options.JsonSerializerOptions);
+            }
+        }
+    }
 
     internal sealed class Registration(IOptions<JsonOptions> source, ILoggerFactory loggers) : IPostConfigureOptions<MvcOptions>
     {
