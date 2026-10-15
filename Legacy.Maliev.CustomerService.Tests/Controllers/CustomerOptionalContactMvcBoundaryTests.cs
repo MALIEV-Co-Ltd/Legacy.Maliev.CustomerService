@@ -13,8 +13,13 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
+using Xunit.Abstractions;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
@@ -22,7 +27,7 @@ namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 public sealed class CustomerOptionalContactBoundaryCollection;
 
 [Collection("Customer optional contact boundaries")]
-public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthorityFixture fixture)
+public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthorityFixture fixture, ITestOutputHelper output)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
     private const string Valid = "{\"FirstName\":\"Contact\",\"LastName\":\"Boundary\",\"Email\":\"contact@example.test\",\"CompanyId\":1,\"BillingAddressId\":1,\"ShippingAddressId\":1";
@@ -131,8 +136,10 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
     {
         foreach (var allowMessages in new[] { false, true })
         foreach (var encoding in new[] { Encoding.UTF8, Encoding.Unicode })
-        foreach (var body in new[] { "", " ", "null", "{", "[]", Valid + "}", Valid + ",\"Telephone\":{}}", Valid + ",\"Telephone\":[]}", Valid + ",\"CompanyId\":\"bad\"}" })
+        foreach (var item in new[] { "", " ", "null", "{", "[]", Valid + "}", Valid + ",\"Telephone\":{}}", Valid + ",\"Telephone\":[]}", Valid + ",\"CompanyId\":\"bad\"}" }
+            .Select((body, index) => (Body: body, CaseIndex: index)))
         {
+            var body = item.Body;
             var (_, native, adapter) = Formatters(after: options => options.AllowInputFormatterExceptionMessages = allowMessages);
             var expectedContext = Context(body, "create", encoding);
             var actualContext = Context(body, "create", encoding);
@@ -140,6 +147,17 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
             var actual = await adapter.ReadAsync(actualContext);
             Assert.Equal(expected.HasError, actual.HasError);
             Assert.Equal(expected.IsModelSet, actual.IsModelSet);
+            var expectedErrors = Errors(expectedContext);
+            var actualErrors = Errors(actualContext);
+            if (!expectedErrors.SequenceEqual(actualErrors, StringComparer.Ordinal))
+                WriteFailureDiagnostic("fixed-synthetic-error-differential", () => new
+                {
+                    item.CaseIndex,
+                    Encoding = encoding.WebName,
+                    AllowExceptionMessages = allowMessages,
+                    ExpectedErrors = expectedErrors,
+                    ActualErrors = actualErrors,
+                });
             Assert.Equal(Errors(expectedContext), Errors(actualContext));
             Assert.True(actualContext.HttpContext.Request.Body.CanRead);
         }
@@ -244,6 +262,11 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
             using var request = new HttpRequestMessage(update ? HttpMethod.Put : HttpMethod.Post, update ? "/customers/1" : "/customers")
             { Content = new StringContent(Valid + ",\"Telephone\":true,\"Telephone\":null,\"Mobile\":1E+03,\"Fax\":\"00123\"}", Encoding.UTF8, "application/json") };
             using var response = await client.SendAsync(request, timeout.Token);
+            if (response.StatusCode != (update ? HttpStatusCode.NoContent : HttpStatusCode.Created))
+            {
+                WriteFailureDiagnostic("public-host-options-constructed-probe", () => DescribeHost(host, update));
+                await WriteResponseShapeAsync(response, update, timeout.Token);
+            }
             Assert.Equal(update ? HttpStatusCode.NoContent : HttpStatusCode.Created, response.StatusCode);
             var id = 1;
             if (!update)
@@ -362,6 +385,112 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
         var metadata = new EmptyModelMetadataProvider().GetMetadataForType(modelType ?? typeof(UpsertCustomerRequest));
         return new InputFormatterContext(http, string.Empty, new ModelStateDictionary(), metadata,
             (stream, selectedEncoding) => new StreamReader(stream, selectedEncoding), emptyDefault);
+    }
+
+    private void WriteFailureDiagnostic(string label, Func<object> describe)
+    {
+        try { output.WriteLine("ContactBoundaryDiagnostic " + label + ": " + JsonSerializer.Serialize(describe())); }
+        catch (Exception failure)
+        {
+            // Diagnostic failures must not replace the original assertion that follows.
+            try { output.WriteLine("ContactBoundaryDiagnostic unavailable: " + failure.GetType().FullName); }
+            catch (Exception) { }
+        }
+    }
+
+    private static object DescribeHost(WebApplicationFactory<Program> host, bool update)
+    {
+        var mvc = host.Services.GetRequiredService<IOptions<MvcOptions>>().Value;
+        var source = host.Services.GetRequiredService<IOptions<JsonOptions>>().Value.JsonSerializerOptions;
+        var stock = mvc.InputFormatters.OfType<SystemTextJsonInputFormatter>()
+            .SingleOrDefault(formatter => formatter.GetType() == typeof(SystemTextJsonInputFormatter));
+        var adapter = mvc.InputFormatters.OfType<TextInputFormatter>().SingleOrDefault(formatter =>
+            formatter.GetType().Assembly == typeof(Program).Assembly
+            && formatter.GetType().FullName == "Legacy.Maliev.CustomerService.Api.OrdinaryCustomerContactInputFormatter");
+        var method = update ? nameof(CustomersController.UpdateCustomerAsync) : nameof(CustomersController.CreateCustomerAsync);
+        var descriptor = host.Services.GetRequiredService<IActionDescriptorCollectionProvider>().ActionDescriptors.Items
+            .OfType<ControllerActionDescriptor>().Single(action => action.ControllerTypeInfo.AsType() == typeof(CustomersController)
+                && action.MethodInfo.Name == method);
+        var probe = Context("{}", update ? "update" : "create");
+        using var probeBody = probe.HttpContext.Request.Body;
+        probe.HttpContext.SetEndpoint(new Endpoint(_ => Task.CompletedTask, new EndpointMetadataCollection(descriptor), "diagnostic-probe"));
+        return new
+        {
+            FormatterOrder = mvc.InputFormatters.Select((formatter, index) => new { Index = index, Type = formatter.GetType().FullName }).ToArray(),
+            AdapterPresent = adapter is not null,
+            SourceStockOptionsSameReference = stock is not null && ReferenceEquals(source, stock.SerializerOptions),
+            ResolverType = source.TypeInfoResolver?.GetType().FullName,
+            ConverterTypes = source.Converters.Select(converter => converter.GetType().FullName).ToArray(),
+            IgnoreCondition = source.DefaultIgnoreCondition.ToString(),
+            source.PropertyNameCaseInsensitive,
+            NamingPolicyType = source.PropertyNamingPolicy?.GetType().FullName,
+            DictionaryNamingPolicyType = source.DictionaryKeyPolicy?.GetType().FullName,
+            ReferenceHandlerType = source.ReferenceHandler?.GetType().FullName,
+            source.RespectRequiredConstructorParameters,
+            source.RespectNullableAnnotations,
+            CreationHandling = source.PreferredObjectCreationHandling.ToString(),
+            source.IgnoreReadOnlyProperties,
+            ConstructedProbe = new
+            {
+                ActualRequestEvidence = false,
+                BodyRead = false,
+                DescriptorMethod = descriptor.MethodInfo.Name,
+                Eligible = adapter?.CanRead(probe),
+            },
+        };
+    }
+
+    private async Task WriteResponseShapeAsync(HttpResponseMessage response, bool update, CancellationToken token)
+    {
+        try
+        {
+            using var deadline = CancellationTokenSource.CreateLinkedTokenSource(token);
+            deadline.CancelAfter(TimeSpan.FromSeconds(2));
+            await using var stream = await response.Content.ReadAsStreamAsync(deadline.Token);
+            var bytes = new byte[8193];
+            var length = 0;
+            while (length < bytes.Length)
+            {
+                var read = await stream.ReadAsync(bytes.AsMemory(length), deadline.Token);
+                if (read == 0) break;
+                length += read;
+            }
+            if (length == bytes.Length)
+            {
+                WriteFailureDiagnostic("response-shape-bounded", () => new { LimitReached = true, Status = (int)response.StatusCode });
+                return;
+            }
+            using var document = JsonDocument.Parse(bytes.AsMemory(0, length));
+            var root = document.RootElement;
+            string[] fields = ["$", "request", "FirstName", "LastName", "Email", "Telephone", "Mobile", "Fax", "DateOfBirth",
+                "CompanyId", "BillingAddressId", "ShippingAddressId", "$.Telephone", "$.Mobile", "$.Fax", "$.CompanyId"];
+            WriteFailureDiagnostic("response-structure-only", () => new
+            {
+                Operation = update ? "ordinary-update" : "ordinary-create",
+                Status = (int)response.StatusCode,
+                MediaType = response.Content.Headers.ContentType?.MediaType?.ToLowerInvariant() switch
+                {
+                    "application/problem+json" => "problem-json",
+                    "application/json" => "json",
+                    "text/plain" => "text",
+                    null => "missing",
+                    _ => "other",
+                },
+                RootKind = root.ValueKind.ToString(),
+                // Whitelist structural field names only; never emit response string values or extensions.
+                ErrorFields = root.ValueKind == JsonValueKind.Object && root.TryGetProperty("errors", out var errors)
+                    && errors.ValueKind == JsonValueKind.Object ? errors.EnumerateObject().Take(16).Select(property => new
+                    {
+                        Field = fields.Contains(property.Name, StringComparer.Ordinal) ? property.Name : "unrecognized",
+                        Kind = property.Value.ValueKind.ToString(),
+                        Count = property.Value.ValueKind == JsonValueKind.Array ? property.Value.GetArrayLength() : 0,
+                    }).ToArray() : null,
+            });
+        }
+        catch (Exception failure)
+        {
+            WriteFailureDiagnostic("response-structure-unavailable", () => new { FailureType = failure.GetType().FullName });
+        }
     }
 
     private static string[] Errors(InputFormatterContext context) => context.ModelState.OrderBy(pair => pair.Key, StringComparer.Ordinal)

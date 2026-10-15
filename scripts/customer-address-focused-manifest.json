@@ -1502,8 +1502,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerOptionalContactMvcBoundaryTests.cs",
-      "bytes": 25675,
-      "sha256": "110655ab1709d54fb034c0c5603b57e1300ea22bb89f62a984f5ded2aa41c862"
+      "bytes": 33116,
+      "sha256": "f501d94616c83e7048e09e419d91663e13e92bc7d035114cbe9b111d38cfad09"
     },
     {
       "path": "scripts/test_customer_optional_contact_boundary_focus.py",
@@ -1513,7 +1513,7 @@
     {
       "path": "scripts/verify_customer_optional_contact_boundary_focus.py",
       "bytes": 13380,
-      "sha256": "7f6af01073cfbe73d602fc304951dbfbd973b5f6a8ab1889e3fb4e1cafbf85da"
+      "sha256": "277198a5cd8eb5059951f46604412e157a082055ff716912e1a5bdbc79ff1430"
     }
   ],
   "frozenDependencyPins": [
