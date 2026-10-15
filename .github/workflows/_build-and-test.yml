@@ -70,6 +70,7 @@ jobs:
           GITHUB_ACTIONS: 'false'
         run: |
           set -euo pipefail
+          export GITHUB_ACTIONS=false
           python3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/restore-admission.log
           timeout --signal=TERM --kill-after=5s 180s dotnet restore Legacy.Maliev.CustomerService.slnx -p:UseLocalMalievDependencies=true 2>&1 | tee runner-optional-contact-focused/restore.log
       - name: Build optional contact focused Release baseline
@@ -79,6 +80,7 @@ jobs:
           GITHUB_ACTIONS: 'false'
         run: |
           set -euo pipefail
+          export GITHUB_ACTIONS=false
           python3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/build-admission.log
           timeout --signal=TERM --kill-after=5s 180s dotnet build Legacy.Maliev.CustomerService.slnx -p:UseLocalMalievDependencies=true -c Release --no-restore -warnaserror -p:UseSharedCompilation=false 2>&1 | tee runner-optional-contact-focused/build.log
       - name: Run exact two optional contact comparison cases
@@ -91,6 +93,7 @@ jobs:
           CUSTOMER_FOCUSED_SOURCE_HEAD: '${{ github.event.pull_request.head.sha || github.sha }}'
         run: |
           set -euo pipefail
+          export GITHUB_ACTIONS=false
           python3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/test-admission.log
           python3 -B scripts/verify_customer_optional_contact_focus.py begin
           set +e

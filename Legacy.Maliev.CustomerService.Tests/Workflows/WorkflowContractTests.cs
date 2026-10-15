@@ -102,6 +102,14 @@ public sealed class WorkflowContractTests
             AssertMutationRejected(stage, stage.Replace(localBinding, "-p:UseRemoteMalievDependencies=true", StringComparison.Ordinal));
         }
 
+        foreach (var stage in new[] { restore, build, focus })
+        {
+            const string shellBinding = "          export GITHUB_ACTIONS=false\n";
+            AssertMutationRejected(stage, stage.Replace(shellBinding, string.Empty, StringComparison.Ordinal));
+            AssertMutationRejected(stage, stage.Replace("export GITHUB_ACTIONS=false", "export GITHUB_ACTIONS=true", StringComparison.Ordinal));
+            AssertMutationRejected(stage, stage.Replace("export GITHUB_ACTIONS=false", "export OTHER_GITHUB_ACTIONS=false", StringComparison.Ordinal));
+        }
+
         AssertMutationRejected("dotnet-version: 10.0.x", "dotnet-version: 11.0.x");
         AssertMutationRejected("setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68", "setup-dotnet@main");
         AssertMutationRejected("timeout-minutes: 4", "timeout-minutes: 5");
@@ -433,19 +441,19 @@ internal static partial class WorkflowContractValidator
             "set -euo pipefail\ntest ! -e runner-optional-contact-focused\nmkdir runner-optional-contact-focused\npython3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/controls-admission.log\n(ulimit -v 262144; timeout --signal=TERM --kill-after=5s 60s python3 -B scripts/test_customer_optional_contact_focus.py) 2>&1 | tee runner-optional-contact-focused/controls.log\npython3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/sdk-admission.log",
             new Dictionary<string, string>(StringComparer.Ordinal));
         ValidateOptionalContactRun(steps.Children[5], "Restore optional contact focused baseline", "4",
-            "set -euo pipefail\npython3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/restore-admission.log\ntimeout --signal=TERM --kill-after=5s 180s dotnet restore Legacy.Maliev.CustomerService.slnx -p:UseLocalMalievDependencies=true 2>&1 | tee runner-optional-contact-focused/restore.log",
+            "set -euo pipefail\nexport GITHUB_ACTIONS=false\npython3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/restore-admission.log\ntimeout --signal=TERM --kill-after=5s 180s dotnet restore Legacy.Maliev.CustomerService.slnx -p:UseLocalMalievDependencies=true 2>&1 | tee runner-optional-contact-focused/restore.log",
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 ["GITHUB_ACTIONS"] = "false",
             });
         ValidateOptionalContactRun(steps.Children[6], "Build optional contact focused Release baseline", "4",
-            "set -euo pipefail\npython3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/build-admission.log\ntimeout --signal=TERM --kill-after=5s 180s dotnet build Legacy.Maliev.CustomerService.slnx -p:UseLocalMalievDependencies=true -c Release --no-restore -warnaserror -p:UseSharedCompilation=false 2>&1 | tee runner-optional-contact-focused/build.log",
+            "set -euo pipefail\nexport GITHUB_ACTIONS=false\npython3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/build-admission.log\ntimeout --signal=TERM --kill-after=5s 180s dotnet build Legacy.Maliev.CustomerService.slnx -p:UseLocalMalievDependencies=true -c Release --no-restore -warnaserror -p:UseSharedCompilation=false 2>&1 | tee runner-optional-contact-focused/build.log",
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 ["GITHUB_ACTIONS"] = "false",
             });
         ValidateOptionalContactRun(steps.Children[7], "Run exact two optional contact comparison cases", "10",
-            "set -euo pipefail\npython3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/test-admission.log\npython3 -B scripts/verify_customer_optional_contact_focus.py begin\nset +e\ntimeout --signal=TERM --kill-after=5s 540s dotnet test Legacy.Maliev.CustomerService.slnx -p:UseLocalMalievDependencies=true -c Release --no-build --no-restore --filter \"FullyQualifiedName=Legacy.Maliev.CustomerService.Tests.Controllers.CustomerNameLiteralHttpTests.SourceOptionalContact_OrdinaryCreateAndUpdateComparePinnedReference\" --logger trx --results-directory runner-optional-contact-focused/results 2>&1 | tee runner-optional-contact-focused/test.log\nstatus=(\"${PIPESTATUS[@]}\")\nset -e\npython3 -B scripts/verify_customer_optional_contact_focus.py verify --test-exit \"${status[0]}\" --tee-exit \"${status[1]}\"\npython3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/full-admission.log",
+            "set -euo pipefail\nexport GITHUB_ACTIONS=false\npython3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/test-admission.log\npython3 -B scripts/verify_customer_optional_contact_focus.py begin\nset +e\ntimeout --signal=TERM --kill-after=5s 540s dotnet test Legacy.Maliev.CustomerService.slnx -p:UseLocalMalievDependencies=true -c Release --no-build --no-restore --filter \"FullyQualifiedName=Legacy.Maliev.CustomerService.Tests.Controllers.CustomerNameLiteralHttpTests.SourceOptionalContact_OrdinaryCreateAndUpdateComparePinnedReference\" --logger trx --results-directory runner-optional-contact-focused/results 2>&1 | tee runner-optional-contact-focused/test.log\nstatus=(\"${PIPESTATUS[@]}\")\nset -e\npython3 -B scripts/verify_customer_optional_contact_focus.py verify --test-exit \"${status[0]}\" --tee-exit \"${status[1]}\"\npython3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/full-admission.log",
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 ["GITHUB_ACTIONS"] = "false",
