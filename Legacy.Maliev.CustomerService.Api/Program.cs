@@ -39,8 +39,10 @@ static async Task RunHostAsync(string[] startupArgs)
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
         options.JsonSerializerOptions.PropertyNamingPolicy = null;
         options.JsonSerializerOptions.DictionaryKeyPolicy = null;
-        options.JsonSerializerOptions.TypeInfoResolver = Legacy.Maliev.CustomerService.Api.OrdinaryCompanyMvcJsonMetadata.Compose(options.JsonSerializerOptions.TypeInfoResolver);
+        Legacy.Maliev.CustomerService.Api.OrdinaryCustomerContactInputFormatter.ComposeOwned(options.JsonSerializerOptions);
     });
+    builder.Services.AddSingleton<Microsoft.Extensions.Options.IPostConfigureOptions<Microsoft.AspNetCore.Mvc.MvcOptions>,
+        Legacy.Maliev.CustomerService.Api.OrdinaryCustomerContactInputFormatter.Registration>();
     builder.Services.AddSingleton(TimeProvider.System);
     builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
     builder.Services.AddScoped<ICustomerCache, DistributedCustomerCache>();

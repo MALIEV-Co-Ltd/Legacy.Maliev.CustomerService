@@ -1,0 +1,430 @@
+using System.Globalization;
+using System.Net;
+using System.Reflection;
+using System.Runtime.ExceptionServices;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
+using Legacy.Maliev.CustomerService.Api.Controllers;
+using Legacy.Maliev.CustomerService.Application.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Logging.Abstractions;
+
+namespace Legacy.Maliev.CustomerService.Tests.Controllers;
+
+[CollectionDefinition("Customer optional contact boundaries", DisableParallelization = true)]
+public sealed class CustomerOptionalContactBoundaryCollection;
+
+[Collection("Customer optional contact boundaries")]
+public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthorityFixture fixture)
+    : IClassFixture<CustomerDetailAuthorityFixture>
+{
+    private const string Valid = "{\"FirstName\":\"Contact\",\"LastName\":\"Boundary\",\"Email\":\"contact@example.test\",\"CompanyId\":1,\"BillingAddressId\":1,\"ShippingAddressId\":1";
+
+    [Fact]
+    public void DescriptorAndHeaderSelection_PreserveStrictRoutesAndUnknownEndpoints()
+    {
+        var (_, native, adapter) = Formatters();
+        Assert.True(adapter.CanRead(Context(Valid + ",\"Telephone\":true}", "create")));
+        Assert.True(adapter.CanRead(Context(Valid + ",\"Telephone\":true}", "update")));
+        foreach (var mode in new[] { "versioned", "unknown" })
+            Assert.False(adapter.CanRead(Context(Valid + ",\"Telephone\":true}", mode)));
+        foreach (var values in new[] { new[] { "" }, new[] { "invalid" }, new[] { Guid.NewGuid().ToString() }, new[] { "a", "b" } })
+        {
+            var context = Context("{}", "create");
+            context.HttpContext.Request.Headers["Idempotency-Key"] = values;
+            Assert.False(adapter.CanRead(context));
+            Assert.True(native.CanRead(context));
+        }
+        var wrongVerb = Context("{}", "create");
+        wrongVerb.HttpContext.Request.Method = "GET";
+        Assert.False(adapter.CanRead(wrongVerb));
+        var forgedPath = Context("{}", "versioned");
+        forgedPath.HttpContext.Request.Path = "/customers";
+        Assert.False(adapter.CanRead(forgedPath));
+        var otherType = Context("{}", "create", modelType: typeof(UpsertCompanyRequest));
+        Assert.False(adapter.CanRead(otherType));
+        var media = Context("{}", "create");
+        media.HttpContext.Request.ContentType = "text/plain";
+        Assert.False(adapter.CanRead(media));
+    }
+
+    [Fact]
+    public async Task OrdinaryFields_MatchReferenceAndIgnoreOnlyContactDuplicateNulls()
+    {
+        var (_, _, adapter) = Formatters();
+        var oldCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            foreach (var culture in new[] { "en-US", "de-DE", "th-TH" })
+            {
+                CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(culture);
+                foreach (var field in new[] { "Telephone", "Mobile", "Fax" })
+                foreach (var raw in new[] { "true", "false", "42", "1.500", "1E+03", "-0", "9223372036854775808123456789", "\"00123\"", "\" ก้ 😀 \\t \"", "\"\"", "null" })
+                {
+                    var body = Valid + $",\"{field}\":{raw},\"{field}\":null}}";
+                    var reference = Newtonsoft.Json.JsonConvert.DeserializeObject<ReferenceContact>(body,
+                        new Newtonsoft.Json.JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore })!;
+                    var result = await adapter.ReadAsync(Context(body, "create"));
+                    Assert.False(result.HasError);
+                    var model = Assert.IsType<UpsertCustomerRequest>(result.Model);
+                    Assert.Equal(reference.Telephone, model.Telephone);
+                    Assert.Equal(reference.Mobile, model.Mobile);
+                    Assert.Equal(reference.Fax, model.Fax);
+                }
+            }
+        }
+        finally { CultureInfo.CurrentCulture = oldCulture; }
+        foreach (var raw in new[] { "{}", "[]" })
+        {
+            var result = await adapter.ReadAsync(Context(Valid + ",\"Telephone\":" + raw + "}", "create"));
+            Assert.True(result.HasError);
+        }
+        var untouched = await adapter.ReadAsync(Context(Valid + ",\"FirstName\":null,\"Telephone\":true}", "create"));
+        Assert.Null(Assert.IsType<UpsertCustomerRequest>(untouched.Model).FirstName);
+    }
+
+    [Fact]
+    public void CustomPoliciesConvertersResolversFactories_FallThroughWithoutMutation()
+    {
+        var factory = new ThrowingFactory();
+        var (_, stockSelection, ownedSelection) = Formatters(after: options => options.JsonSerializerOptions.Converters.Add(factory));
+        Assert.True(stockSelection.CanRead(Context("{}", "create")));
+        Assert.False(ownedSelection.CanRead(Context("{}", "create")));
+        Assert.Equal(0, factory.Calls);
+        foreach (var configure in new Action<JsonOptions>[]
+        {
+            options => options.JsonSerializerOptions.Converters.Add(new CustomString()),
+            options => options.JsonSerializerOptions.Converters.Add(new CustomRequest()),
+            options => options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            options => options.JsonSerializerOptions.PropertyNameCaseInsensitive = false,
+            options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve,
+            options => options.JsonSerializerOptions.RespectRequiredConstructorParameters = true,
+            options => options.JsonSerializerOptions.RespectNullableAnnotations = true,
+            options => options.JsonSerializerOptions.PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate,
+            options => options.JsonSerializerOptions.TypeInfoResolver = new DefaultJsonTypeInfoResolver(),
+        })
+        {
+            var (source, _, adapter) = Formatters(after: configure);
+            var resolver = source.JsonSerializerOptions.TypeInfoResolver;
+            var converters = source.JsonSerializerOptions.Converters.ToArray();
+            Assert.False(adapter.CanRead(Context("{}", "create")));
+            Assert.Same(resolver, source.JsonSerializerOptions.TypeInfoResolver);
+            Assert.Equal(converters, source.JsonSerializerOptions.Converters);
+        }
+        var (_, _, customFactory) = Formatters(before: options =>
+        {
+            var resolver = Assert.IsType<DefaultJsonTypeInfoResolver>(options.JsonSerializerOptions.TypeInfoResolver);
+            resolver.Modifiers.Add(info => { if (info.Type == typeof(UpsertCustomerRequest)) info.CreateObject = () => new UpsertCustomerRequest("custom", "factory", null, null, null, "factory@example.test", null, null, null, null); });
+        });
+        Assert.False(customFactory.CanRead(Context("{}", "create")));
+    }
+
+    [Fact]
+    public async Task DifferentialBodies_KeepEncodingEmptyMalformedAndPrivacyBehavior()
+    {
+        foreach (var allowMessages in new[] { false, true })
+        foreach (var encoding in new[] { Encoding.UTF8, Encoding.Unicode })
+        foreach (var body in new[] { "", " ", "null", "{", "[]", Valid + "}", Valid + ",\"Telephone\":{}}", Valid + ",\"Telephone\":[]}", Valid + ",\"CompanyId\":\"bad\"}" })
+        {
+            var (_, native, adapter) = Formatters(after: options => options.AllowInputFormatterExceptionMessages = allowMessages);
+            var expectedContext = Context(body, "create", encoding);
+            var actualContext = Context(body, "create", encoding);
+            var expected = await native.ReadAsync(expectedContext);
+            var actual = await adapter.ReadAsync(actualContext);
+            Assert.Equal(expected.HasError, actual.HasError);
+            Assert.Equal(expected.IsModelSet, actual.IsModelSet);
+            Assert.Equal(Errors(expectedContext), Errors(actualContext));
+            Assert.True(actualContext.HttpContext.Request.Body.CanRead);
+        }
+        foreach (var emptyDefault in new[] { false, true })
+        {
+            var (_, native, adapter) = Formatters();
+            var expected = await native.ReadAsync(Context("", "create", canHaveBody: false, emptyDefault: emptyDefault));
+            var actual = await adapter.ReadAsync(Context("", "create", canHaveBody: false, emptyDefault: emptyDefault));
+            Assert.Equal(expected.IsModelSet, actual.IsModelSet);
+            Assert.Equal(expected.HasError, actual.HasError);
+        }
+        var (_, builtin, candidate) = Formatters();
+        var a = Context("{}", "create"); a.HttpContext.Request.ContentType = "application/json; charset=iso-8859-1";
+        var b = Context("{}", "create"); b.HttpContext.Request.ContentType = a.HttpContext.Request.ContentType;
+        Assert.Equal((await builtin.ReadAsync(a)).HasError, (await candidate.ReadAsync(b)).HasError);
+        Assert.Equal(Errors(a), Errors(b));
+    }
+
+    [Fact]
+    public async Task DifferentialExceptionalConverters_KeepFormatOverflowAndCancellation()
+    {
+        foreach (var overflow in new[] { false, true })
+        {
+            var (_, native, adapter) = Formatters(after: options => options.JsonSerializerOptions.Converters.Add(new ThrowingDate(overflow)));
+            var a = Context(Valid + ",\"DateOfBirth\":\"x\"}", "create");
+            var b = Context(Valid + ",\"DateOfBirth\":\"x\"}", "create");
+            Assert.Equal((await native.ReadAsync(a)).HasError, (await adapter.ReadAsync(b)).HasError);
+            Assert.Equal(Errors(a), Errors(b));
+        }
+        var (_, builtin, candidate) = Formatters();
+        var expected = Context("{}", "create"); expected.HttpContext.Request.Body = new CanceledStream();
+        var actual = Context("{}", "create"); actual.HttpContext.Request.Body = new CanceledStream();
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => builtin.ReadAsync(expected));
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => candidate.ReadAsync(actual));
+    }
+
+    [Fact]
+    public async Task ConcurrentReads_IsolateOrdinaryVersionedReplayAndDefaultSerialization()
+    {
+        var (_, native, adapter) = Formatters();
+        var body = Valid + ",\"Telephone\":true}";
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+        var gate = new ReadGate(24, timeout.Token);
+        var tasks = Enumerable.Range(0, 24).Select(async index =>
+        {
+            var mode = index % 3 == 1 ? "versioned" : "create";
+            var context = Context(body, mode);
+            if (index % 3 == 2) context.HttpContext.Request.Headers["Idempotency-Key"] = Guid.NewGuid().ToString();
+            using var stream = new CoordinatedStream(Encoding.UTF8.GetBytes(body), gate);
+            context.HttpContext.Request.Body = stream;
+            var eligible = adapter.CanRead(context);
+            Assert.Equal(index % 3 == 0, eligible);
+            var result = await (eligible ? adapter : native).ReadAsync(context);
+            Assert.Equal(index % 3 != 0, result.HasError);
+        }).ToArray();
+        ExceptionDispatchInfo? primaryFailure = null;
+        Exception? cleanupFailure = null;
+        try { await gate.AllEntered.Task.WaitAsync(timeout.Token); }
+        catch (Exception failure) { primaryFailure = ExceptionDispatchInfo.Capture(failure); }
+        finally
+        {
+            gate.Release.TrySetResult(true);
+            // Cleanup must not inherit an already-cancelled admission token.
+            var settled = Task.WhenAll(tasks);
+            try
+            {
+                try { await settled.WaitAsync(TimeSpan.FromSeconds(10)); }
+                catch (TimeoutException)
+                {
+                    // Every gate has its own finite token. Observe the original tasks even
+                    // when the independent cleanup budget fails, then retain that failure.
+                    try { await settled; }
+                    catch (Exception failure) { cleanupFailure = settled.Exception ?? failure; }
+                    throw;
+                }
+            }
+            catch (Exception failure) { cleanupFailure ??= settled.Exception ?? failure; }
+        }
+        if (primaryFailure is not null)
+        {
+            if (cleanupFailure is not null)
+                primaryFailure.SourceException.Data["ObservedCleanupFailure"] = cleanupFailure.ToString();
+            primaryFailure.Throw();
+        }
+        if (cleanupFailure is not null) ExceptionDispatchInfo.Capture(cleanupFailure).Throw();
+        Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<UpsertCustomerRequest>(body));
+        var record = new UpsertCustomerRequest("A", "B", "001", null, null, "a@b.test", null, null, null, null);
+        var before = JsonSerializer.Serialize(record);
+        await adapter.ReadAsync(Context(body, "create"));
+        Assert.Equal(before, JsonSerializer.Serialize(record));
+    }
+
+    [Fact]
+    public async Task RealHttp_OrdinaryCreateAndUpdatePreserveLiteralContactsAndState()
+    {
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(120));
+        foreach (var update in new[] { false, true })
+        {
+            await fixture.ResetAsync();
+            await using var host = fixture.Start();
+            using var client = fixture.Client(host, "customer-lifecycle");
+            using var request = new HttpRequestMessage(update ? HttpMethod.Put : HttpMethod.Post, update ? "/customers/1" : "/customers")
+            { Content = new StringContent(Valid + ",\"Telephone\":true,\"Telephone\":null,\"Mobile\":1E+03,\"Fax\":\"00123\"}", Encoding.UTF8, "application/json") };
+            using var response = await client.SendAsync(request, timeout.Token);
+            Assert.Equal(update ? HttpStatusCode.NoContent : HttpStatusCode.Created, response.StatusCode);
+            var id = 1;
+            if (!update)
+            {
+                using var created = JsonDocument.Parse(await response.Content.ReadAsStringAsync(timeout.Token));
+                id = created.RootElement.GetProperty("Id").GetInt32();
+            }
+            using var read = await client.GetAsync($"/customers/{id}", timeout.Token);
+            using var wire = JsonDocument.Parse(await read.Content.ReadAsStringAsync(timeout.Token));
+            Assert.Equal("true", wire.RootElement.GetProperty("Telephone").GetString());
+            Assert.Equal("1E+03", wire.RootElement.GetProperty("Mobile").GetString());
+            Assert.Equal("00123", wire.RootElement.GetProperty("Fax").GetString());
+            Assert.False(wire.RootElement.TryGetProperty("telephone", out _));
+        }
+    }
+
+    [Fact]
+    public async Task RealHttp_ReplayVersionedAndDeniedWritesStayStrictAndUnchanged()
+    {
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(120));
+        await fixture.ResetAsync();
+        await using var host = fixture.Start();
+        using var client = fixture.Client(host, "customer-lifecycle");
+        var before = await fixture.SnapshotAsync();
+        foreach (var target in new[] { "versioned", "replay-empty", "replay-multiple", "replay-valid" })
+        {
+            using var request = new HttpRequestMessage(target == "versioned" ? HttpMethod.Put : HttpMethod.Post,
+                target == "versioned" ? "/customers/1/versioned" : "/customers")
+            { Content = new StringContent(Valid + ",\"Telephone\":true}", Encoding.UTF8, "application/json") };
+            if (target != "versioned") request.Headers.TryAddWithoutValidation("Idempotency-Key",
+                target == "replay-empty" ? new[] { "" } : target == "replay-multiple" ? new[] { "a", "b" } : new[] { Guid.NewGuid().ToString() });
+            using var response = await client.SendAsync(request, timeout.Token);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(before, await fixture.SnapshotAsync());
+        }
+        using var anonymous = fixture.Client(host, "anonymous");
+        using var denied = fixture.Client(host, "denied");
+        foreach (var restricted in new[] { anonymous, denied })
+        {
+            using var response = await restricted.PostAsync("/customers", new StringContent(Valid + ",\"Telephone\":true}", Encoding.UTF8, "application/json"), timeout.Token);
+            Assert.Contains(response.StatusCode, new[] { HttpStatusCode.Unauthorized, HttpStatusCode.Forbidden });
+            Assert.Equal(before, await fixture.SnapshotAsync());
+        }
+    }
+
+    [Fact]
+    public async Task FormattersAndGlobalOptions_RemainUnmodifiedAcrossReads()
+    {
+        var (source, native, adapter) = Formatters();
+        var originalResolver = source.JsonSerializerOptions.TypeInfoResolver;
+        var originalConverters = source.JsonSerializerOptions.Converters.ToArray();
+        var nativeOptions = native.SerializerOptions;
+        await adapter.ReadAsync(Context(Valid + ",\"Telephone\":true}", "create"));
+        Assert.Same(nativeOptions, native.SerializerOptions);
+        Assert.Same(originalResolver, source.JsonSerializerOptions.TypeInfoResolver);
+        Assert.Equal(originalConverters, source.JsonSerializerOptions.Converters);
+        Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<UpsertCustomerRequest>(Valid + ",\"Telephone\":true}", source.JsonSerializerOptions));
+    }
+
+    [Fact]
+    public async Task StreamAndPipeSwitch_DifferentialReaderLeavesRequestBodyOpen()
+    {
+        // Exercise the actual process setting without mutating global AppContext state.
+        // The opposite branch requires a separately admitted process configured before startup.
+        var existed = AppContext.TryGetSwitch("Microsoft.AspNetCore.UseStreamBasedJsonParsing", out var previous);
+        var (_, native, adapter) = Formatters();
+        foreach (var contentType in new[] { "application/json", "text/json", "application/problem+json" })
+        {
+            var a = Context(Valid + "}", "create"); a.HttpContext.Request.ContentType = contentType;
+            var b = Context(Valid + "}", "create"); b.HttpContext.Request.ContentType = contentType;
+            Assert.Equal(native.CanRead(a), adapter.CanRead(b));
+            var expected = await native.ReadAsync(a);
+            var actual = await adapter.ReadAsync(b);
+            Assert.Equal(expected.Model, actual.Model);
+            Assert.True(b.HttpContext.Request.Body.CanRead);
+        }
+        Assert.Equal(existed, AppContext.TryGetSwitch("Microsoft.AspNetCore.UseStreamBasedJsonParsing", out var current));
+        Assert.Equal(previous, current);
+    }
+
+    private static (JsonOptions Source, SystemTextJsonInputFormatter Native, TextInputFormatter Adapter) Formatters(
+        Action<JsonOptions>? before = null, Action<JsonOptions>? after = null)
+    {
+        var source = new JsonOptions();
+        source.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        source.JsonSerializerOptions.PropertyNamingPolicy = null;
+        source.JsonSerializerOptions.DictionaryKeyPolicy = null;
+        before?.Invoke(source);
+        var type = typeof(Program).Assembly.GetType("Legacy.Maliev.CustomerService.Api.OrdinaryCustomerContactInputFormatter", throwOnError: true)!;
+        type.GetMethod("ComposeOwned", BindingFlags.Static | BindingFlags.NonPublic)!.Invoke(null, [source.JsonSerializerOptions]);
+        after?.Invoke(source);
+        var native = new SystemTextJsonInputFormatter(source, NullLogger<SystemTextJsonInputFormatter>.Instance);
+        var adapter = (TextInputFormatter)Activator.CreateInstance(type, BindingFlags.Instance | BindingFlags.NonPublic,
+            binder: null, args: [source, native, NullLogger<SystemTextJsonInputFormatter>.Instance], culture: null)!;
+        return (source, native, adapter);
+    }
+
+    private static InputFormatterContext Context(string body, string action, Encoding? encoding = null,
+        bool canHaveBody = true, bool emptyDefault = false, Type? modelType = null)
+    {
+        encoding ??= Encoding.UTF8;
+        var http = new DefaultHttpContext();
+        http.Request.Method = action == "create" ? "POST" : "PUT";
+        http.Request.ContentType = "application/json; charset=" + encoding.WebName;
+        http.Request.Body = new MemoryStream(encoding.GetBytes(body));
+        http.Request.ContentLength = encoding.GetByteCount(body);
+        http.Features.Set<IHttpRequestBodyDetectionFeature>(new BodyFeature(canHaveBody));
+        var method = action == "create" ? nameof(CustomersController.CreateCustomerAsync)
+            : action == "versioned" ? nameof(CustomersController.UpdateCustomerVersionedAsync) : nameof(CustomersController.UpdateCustomerAsync);
+        if (action != "unknown")
+        {
+            var descriptor = new ControllerActionDescriptor { ControllerTypeInfo = typeof(CustomersController).GetTypeInfo(),
+                MethodInfo = typeof(CustomersController).GetMethod(method)! };
+            http.SetEndpoint(new Endpoint(_ => Task.CompletedTask, new EndpointMetadataCollection(descriptor), "boundary"));
+        }
+        var metadata = new EmptyModelMetadataProvider().GetMetadataForType(modelType ?? typeof(UpsertCustomerRequest));
+        return new InputFormatterContext(http, string.Empty, new ModelStateDictionary(), metadata,
+            (stream, selectedEncoding) => new StreamReader(stream, selectedEncoding), emptyDefault);
+    }
+
+    private static string[] Errors(InputFormatterContext context) => context.ModelState.OrderBy(pair => pair.Key, StringComparer.Ordinal)
+        .SelectMany(pair => pair.Value!.Errors.Select(error => pair.Key + "|" + error.ErrorMessage + "|" + error.Exception?.GetType().FullName)).ToArray();
+    private sealed record BodyFeature(bool CanHaveBody) : IHttpRequestBodyDetectionFeature;
+    private sealed class ReferenceContact { public string? Telephone { get; set; } public string? Mobile { get; set; } public string? Fax { get; set; } }
+    private sealed class CustomString : JsonConverter<string>
+    {
+        public override string Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => "custom";
+        public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options) => writer.WriteStringValue(value);
+    }
+    private sealed class ThrowingFactory : JsonConverterFactory
+    {
+        internal int Calls { get; private set; }
+        public override bool CanConvert(Type typeToConvert)
+        {
+            Calls++;
+            throw new InvalidOperationException("Selection must not invoke custom converter code.");
+        }
+        public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options) =>
+            throw new InvalidOperationException("Selection must not create custom converters.");
+    }
+    private sealed class CustomRequest : JsonConverter<UpsertCustomerRequest>
+    {
+        public override UpsertCustomerRequest Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => throw new JsonException("custom");
+        public override void Write(Utf8JsonWriter writer, UpsertCustomerRequest value, JsonSerializerOptions options) => throw new NotSupportedException();
+    }
+    private sealed class ThrowingDate(bool overflow) : JsonConverter<DateTime>
+    {
+        public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) =>
+            throw (overflow ? (Exception)new OverflowException("controlled") : new FormatException("controlled"));
+        public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options) => throw new NotSupportedException();
+    }
+    private sealed class CanceledStream : MemoryStream
+    {
+        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) => ValueTask.FromCanceled<int>(new CancellationToken(true));
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => Task.FromCanceled<int>(new CancellationToken(true));
+    }
+
+    private sealed class ReadGate(int participants, CancellationToken timeout)
+    {
+        private int remaining = participants;
+        internal TaskCompletionSource<bool> AllEntered { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource<bool> Release { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal async Task EnterAsync()
+        {
+            if (Interlocked.Decrement(ref remaining) == 0) AllEntered.TrySetResult(true);
+            await Release.Task.WaitAsync(timeout);
+        }
+    }
+
+    private sealed class CoordinatedStream(byte[] bytes, ReadGate gate) : MemoryStream(bytes)
+    {
+        private int entered;
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            if (Interlocked.Exchange(ref entered, 1) == 0) await gate.EnterAsync();
+            return await base.ReadAsync(buffer, cancellationToken);
+        }
+        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            if (Interlocked.Exchange(ref entered, 1) == 0) await gate.EnterAsync();
+            return await base.ReadAsync(buffer, offset, count, cancellationToken);
+        }
+    }
+}
