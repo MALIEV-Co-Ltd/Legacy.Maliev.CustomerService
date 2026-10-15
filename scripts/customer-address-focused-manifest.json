@@ -17,8 +17,8 @@
     },
     {
       "path": ".github/workflows/_build-and-test.yml",
-      "bytes": 7582,
-      "sha256": "fcf8b2abf3f953973061443d350eaec166cd6378b1a125bb27fc34885c7b64a5"
+      "bytes": 7687,
+      "sha256": "3ed3292b0e27c150cde8325b625118b807f640e6b0640b3c336d4a8768ef9a3a"
     },
     {
       "path": ".github/workflows/ci-develop.yml",
@@ -687,8 +687,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Workflows/WorkflowContractTests.cs",
-      "bytes": 40512,
-      "sha256": "742b31581abc2fe29ca1c4dc6e6124bea3576b61256d771f91c3555c8cda17f7"
+      "bytes": 41165,
+      "sha256": "df5c6b2fae14dd868699c4e88c3fa808ba3753149de0d6c7b34bde293e418790"
     },
     {
       "path": "Legacy.Maliev.CustomerService.slnx",
