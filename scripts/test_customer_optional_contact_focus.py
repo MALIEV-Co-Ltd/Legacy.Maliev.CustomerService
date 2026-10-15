@@ -50,6 +50,13 @@ def fixture(start_ns):
     return root
 
 
+def late_logger_times(doc, start_ns):
+    times = doc.find(f'{{{NS}}}Times')
+    times.set('creation', utc(start_ns + 3_000_000_000))
+    times.set('queuing', utc(start_ns + 3_001_000_000))
+    return times
+
+
 class FocusDocumentControls(unittest.TestCase):
     def setUp(self):
         self.start = time.time_ns() - 10_000_000_000
@@ -190,6 +197,28 @@ class FocusDocumentControls(unittest.TestCase):
                     v.validate_trx(raw)
 
 
+    def test_late_logger_creation_uses_earliest_run_time(self):
+        times = late_logger_times(self.doc, self.start)
+        report = v.validate_trx(self.raw())
+        self.assertEqual(v.stamp(times.get('start')), report['startNs'])
+        self.assertLess(report['startNs'], v.stamp(times.get('creation')))
+
+    def test_misordered_or_out_of_run_times_rejected(self):
+        mutations = [
+            ('reversed-creation-queue', lambda doc: doc.find(f'{{{NS}}}Times').set('creation', utc(self.start + 3_000_000_000))),
+            ('queue-after-finish', lambda doc: doc.find(f'{{{NS}}}Times').set('queuing', utc(self.start + 5_000_000_000))),
+            ('run-start-after-finish', lambda doc: doc.find(f'{{{NS}}}Times').set('start', utc(self.start + 5_000_000_000))),
+            ('case-start-before-run', lambda doc: doc.find(f'{{{NS}}}Results/{{{NS}}}UnitTestResult').set('startTime', utc(self.start + 1_000_000_000))),
+            ('case-end-after-run', lambda doc: doc.find(f'{{{NS}}}Results/{{{NS}}}UnitTestResult').set('endTime', utc(self.start + 5_000_000_000))),
+            ('reversed-case', lambda doc: doc.find(f'{{{NS}}}Results/{{{NS}}}UnitTestResult').set('endTime', utc(self.start + 1_000_000_000))),
+        ]
+        for label, mutate in mutations:
+            with self.subTest(case=label):
+                self.doc = fixture(self.start)
+                mutate(self.doc)
+                self.reject()
+
+
 class FocusReceiptControls(unittest.TestCase):
     def setUp(self):
         parent = os.environ.get('CUSTOMER_OPTIONAL_PURE_TMP')
@@ -317,6 +346,38 @@ class FocusReceiptControls(unittest.TestCase):
         for patch in ({'sourceHead': 'main'}, {'runId': '0'}, {'runAttempt': True}, {'extra': 'x'}):
             with self.subTest(patch=patch), self.assertRaises(v.VerificationError):
                 v.begin(self.root, self.out, dict(self.context, **patch), now_ns=self.started)
+
+
+    def test_fresh_late_logger_creation_receipt_accepted(self):
+        self.prepare()
+        path = self.write_trx()
+        doc = E.fromstring(path.read_bytes())
+        times = late_logger_times(doc, self.started)
+        path.write_bytes(E.tostring(doc, encoding='utf-8'))
+        os.utime(path, ns=(self.started + 5_000_000_000, self.started + 5_000_000_000))
+        report = self.verify()
+        self.assertEqual(v.stamp(times.get('start')), report['startNs'])
+        self.assertLess(report['startNs'], v.stamp(times.get('creation')))
+
+    def test_stale_run_start_rejected_with_recent_logger_times(self):
+        self.prepare()
+        path = self.write_trx()
+        doc = E.fromstring(path.read_bytes())
+        doc.find(f'{{{NS}}}Times').set('start', utc(self.started - 1_000_000_000))
+        path.write_bytes(E.tostring(doc, encoding='utf-8'))
+        os.utime(path, ns=(self.started + 5_000_000_000, self.started + 5_000_000_000))
+        with self.assertRaises(v.VerificationError):
+            self.verify()
+
+    def test_future_finish_rejected_with_fresh_mtime(self):
+        self.prepare()
+        path = self.write_trx()
+        doc = E.fromstring(path.read_bytes())
+        doc.find(f'{{{NS}}}Times').set('finish', utc(self.started + 9_000_000_000))
+        path.write_bytes(E.tostring(doc, encoding='utf-8'))
+        os.utime(path, ns=(self.started + 5_000_000_000, self.started + 5_000_000_000))
+        with self.assertRaises(v.VerificationError):
+            self.verify()
 
 
 if __name__ == '__main__':

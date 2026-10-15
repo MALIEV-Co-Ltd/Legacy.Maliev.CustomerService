@@ -1487,13 +1487,13 @@
     },
     {
       "path": "scripts/verify_customer_optional_contact_focus.py",
-      "bytes": 12674,
-      "sha256": "b6871ab86dfd17c0d0f932e2bfed99c1d1dc291f0c50f26e26197b9d0ba2cc3e"
+      "bytes": 12715,
+      "sha256": "6ce320af531b7ba0c4663fe118dd10fde286e5ee757060d4d713affa38ded79b"
     },
     {
       "path": "scripts/test_customer_optional_contact_focus.py",
-      "bytes": 14244,
-      "sha256": "8190e0059b7109b5668d609870c1ac5756d38ee98ed42873b3cea24fcce26b78"
+      "bytes": 17382,
+      "sha256": "eb494b14a2d94f0683b6259a45073d88a98b7b5b25a3aaa8ae213d2a92a95959"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCustomerContactInputFormatter.cs",
@@ -1507,13 +1507,13 @@
     },
     {
       "path": "scripts/test_customer_optional_contact_boundary_focus.py",
-      "bytes": 15019,
-      "sha256": "76393df2bbae99705b9d9d8abde5074897e12c5f9a72c37beab7dccb2c002b14"
+      "bytes": 18157,
+      "sha256": "685be05f502078dd5ddce8d3811aa233a83a3b9ae91299a1503566a849f3a61c"
     },
     {
       "path": "scripts/verify_customer_optional_contact_boundary_focus.py",
-      "bytes": 13380,
-      "sha256": "d20ef91e0ad5eb932be66fa56422a11792f04f38ded058d7172856e69ee5062a"
+      "bytes": 13421,
+      "sha256": "183f1a1c936a99ac18ed0fbdda0e9b20c9949afbea4fbf9327a1f5f9cf56b240"
     }
   ],
   "frozenDependencyPins": [

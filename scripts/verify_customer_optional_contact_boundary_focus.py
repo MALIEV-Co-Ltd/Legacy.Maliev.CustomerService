@@ -118,12 +118,13 @@ def validate_trx(raw):
                  ('Passed', 'Completed', 'Information'), 'No adverse runner information')
     times = exact(doc, doc, 'Times', 1)[0]
     creation, queuing, start, finish = [stamp(times.get(key)) for key in ('creation', 'queuing', 'start', 'finish')]
-    need(creation <= queuing <= start <= finish and all(start <= t <= finish for t in result_times),
+    need(creation <= queuing <= finish and start <= finish
+         and all(start <= t <= finish for t in result_times),
          'Ordered complete run times')
     return {'tests': 10, 'caseNames': NAMES,
             'testIds': sorted(identities), 'executionIds': sorted(executions),
             'actualIdentities': [{'name': name, 'testId': key} for key, name in identities.items()],
-            'startNs': creation, 'finishNs': finish, 'executionBijection': True}
+            'startNs': min(creation, queuing, start), 'finishNs': finish, 'executionBijection': True}
 
 
 def digest(path):
