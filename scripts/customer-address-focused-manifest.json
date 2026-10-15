@@ -1497,13 +1497,13 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCustomerContactInputFormatter.cs",
-      "bytes": 9942,
-      "sha256": "821384f4b88fe3b3091918463347744467176afbdac1ac62f3fbde87f2c963f7"
+      "bytes": 10885,
+      "sha256": "9e8e590ca56c43e11d3f1210311775977a0629f63eb4b60f9f703f555fed970f"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerOptionalContactMvcBoundaryTests.cs",
-      "bytes": 33116,
-      "sha256": "f501d94616c83e7048e09e419d91663e13e92bc7d035114cbe9b111d38cfad09"
+      "bytes": 39090,
+      "sha256": "42140a383d196a849b9a1f65ab1cfa0c2cb88202e38c66c93abf377fbc118c23"
     },
     {
       "path": "scripts/test_customer_optional_contact_boundary_focus.py",
@@ -1513,7 +1513,7 @@
     {
       "path": "scripts/verify_customer_optional_contact_boundary_focus.py",
       "bytes": 13380,
-      "sha256": "277198a5cd8eb5059951f46604412e157a082055ff716912e1a5bdbc79ff1430"
+      "sha256": "2cccc691880ce05dba3a671eb2f388d0a1161e135136e9c1ae783aadb1d87640"
     }
   ],
   "frozenDependencyPins": [

@@ -154,13 +154,35 @@ internal sealed class OrdinaryCustomerContactInputFormatter : TextInputFormatter
             || info.Options.Converters.Count != 0
             || !ReferenceEquals(info.Options.GetConverter(typeof(string)), DefaultString))
             return;
-        info.CreateObject = static () => new UpsertCustomerRequest(null!, null!, null, null, null, null!, null, null, null, null);
         foreach (var property in slots)
         {
             var slot = property!;
-            var assign = slot.Set!;
-            slot.CustomConverter = new OrdinaryCompanyFieldPrimitiveJsonConverter(DefaultString);
-            slot.Set = (instance, value) => { if (value is not null) assign(instance, value); };
+            // Every read owns fresh options/metadata and a distinct converter for each contact slot.
+            // Keep constructor argument binding so framework rejection diagnostics retain their context.
+            slot.CustomConverter = new ContactPrimitiveJsonConverter(DefaultString);
+        }
+    }
+
+    private sealed class ContactPrimitiveJsonConverter(JsonConverter<string> literal) : JsonConverter<string>
+    {
+        private readonly OrdinaryCompanyFieldPrimitiveJsonConverter primitive = new(literal);
+        private string? lastNonNull;
+
+        public override bool HandleNull => true;
+
+        public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType == JsonTokenType.Null) return lastNonNull;
+            var value = primitive.Read(ref reader, typeToConvert, options);
+            if (value is not null) lastNonNull = value;
+            return value;
+        }
+
+        public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options)
+        {
+            // Write behavior is independent of read history, including the explicit HandleNull path.
+            if (value is null) writer.WriteNullValue();
+            else literal.Write(writer, value, options);
         }
     }
 
