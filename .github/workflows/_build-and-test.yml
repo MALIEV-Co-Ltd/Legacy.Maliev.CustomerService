@@ -48,6 +48,57 @@ jobs:
           ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
           path: .dependencies/Legacy.Maliev.CompatibilityContracts
           persist-credentials: false
+      - name: Guard optional contact focused SDK setup
+        timeout-minutes: 2
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e runner-optional-contact-focused
+          mkdir runner-optional-contact-focused
+          python3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/controls-admission.log
+          (ulimit -v 262144; timeout --signal=TERM --kill-after=5s 60s python3 -B scripts/test_customer_optional_contact_focus.py) 2>&1 | tee runner-optional-contact-focused/controls.log
+          python3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/sdk-admission.log
+      - name: Set up optional contact focused SDK
+        timeout-minutes: 4
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+        with:
+          dotnet-version: 10.0.x
+      - name: Restore optional contact focused baseline
+        timeout-minutes: 4
+        shell: bash
+        env:
+          GITHUB_ACTIONS: 'false'
+        run: |
+          set -euo pipefail
+          python3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/restore-admission.log
+          timeout --signal=TERM --kill-after=5s 180s dotnet restore Legacy.Maliev.CustomerService.slnx 2>&1 | tee runner-optional-contact-focused/restore.log
+      - name: Build optional contact focused Release baseline
+        timeout-minutes: 4
+        shell: bash
+        env:
+          GITHUB_ACTIONS: 'false'
+        run: |
+          set -euo pipefail
+          python3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/build-admission.log
+          timeout --signal=TERM --kill-after=5s 180s dotnet build Legacy.Maliev.CustomerService.slnx -c Release --no-restore -warnaserror -p:UseSharedCompilation=false 2>&1 | tee runner-optional-contact-focused/build.log
+      - name: Run exact two optional contact comparison cases
+        timeout-minutes: 10
+        shell: bash
+        env:
+          GITHUB_ACTIONS: 'false'
+          VSTestCollect: ''
+          VSTestResultsDirectory: '${{ github.workspace }}/runner-optional-contact-focused/results'
+          CUSTOMER_FOCUSED_SOURCE_HEAD: '${{ github.event.pull_request.head.sha || github.sha }}'
+        run: |
+          set -euo pipefail
+          python3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/test-admission.log
+          python3 -B scripts/verify_customer_optional_contact_focus.py begin
+          set +e
+          timeout --signal=TERM --kill-after=5s 540s dotnet test Legacy.Maliev.CustomerService.slnx -c Release --no-build --no-restore --filter "FullyQualifiedName=Legacy.Maliev.CustomerService.Tests.Controllers.CustomerNameLiteralHttpTests.SourceOptionalContact_OrdinaryCreateAndUpdateComparePinnedReference" --logger trx --results-directory runner-optional-contact-focused/results 2>&1 | tee runner-optional-contact-focused/test.log
+          status=("${PIPESTATUS[@]}")
+          set -e
+          python3 -B scripts/verify_customer_optional_contact_focus.py verify --test-exit "${status[0]}" --tee-exit "${status[1]}"
+          python3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/full-admission.log
       - name: Validate .NET solution
         uses: MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e5732037fe94b7ed6e5be2cd4c23dbf6ef5e2617
         with:
@@ -84,6 +135,7 @@ jobs:
           path: |
             runner-results
             runner-address-focused
+            runner-optional-contact-focused
             ${{ runner.temp }}/customer-consumer-phases
           if-no-files-found: warn
           retention-days: 7

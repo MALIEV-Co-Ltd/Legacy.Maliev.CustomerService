@@ -17,8 +17,8 @@
     },
     {
       "path": ".github/workflows/_build-and-test.yml",
-      "bytes": 4153,
-      "sha256": "2e2cd26731a1cba1d87162abaa8eca0da9dd6b30fcb5df6baa84bfdaf4bb0168"
+      "bytes": 7582,
+      "sha256": "fcf8b2abf3f953973061443d350eaec166cd6378b1a125bb27fc34885c7b64a5"
     },
     {
       "path": ".github/workflows/ci-develop.yml",
@@ -537,8 +537,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerNameLiteralHttpTests.cs",
-      "bytes": 19601,
-      "sha256": "458ba5373b8d6581ae1ac2a21d17ee69a0e7867dfbfb88b466032d2a4b0555d5"
+      "bytes": 28478,
+      "sha256": "455f13553cacfbb3da04408c41e970fbb044f409590f81c480d817f826b2802e"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerProductionPipelineHttpTests.cs",
@@ -687,8 +687,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Workflows/WorkflowContractTests.cs",
-      "bytes": 29764,
-      "sha256": "dd95c4fcb3215ae8fc46788cc3085dd314ae825a3d269990d23980c35777d97e"
+      "bytes": 40512,
+      "sha256": "742b31581abc2fe29ca1c4dc6e6124bea3576b61256d771f91c3555c8cda17f7"
     },
     {
       "path": "Legacy.Maliev.CustomerService.slnx",
@@ -1484,6 +1484,16 @@
       "path": "scripts/test_customer_address_focus.py",
       "bytes": 4297,
       "sha256": "507b40972b7f8a08a833a404529f312db2b6f5fb1739ba3d9fbbe0066eac4a22"
+    },
+    {
+      "path": "scripts/verify_customer_optional_contact_focus.py",
+      "bytes": 12674,
+      "sha256": "b6871ab86dfd17c0d0f932e2bfed99c1d1dc291f0c50f26e26197b9d0ba2cc3e"
+    },
+    {
+      "path": "scripts/test_customer_optional_contact_focus.py",
+      "bytes": 14244,
+      "sha256": "8190e0059b7109b5668d609870c1ac5756d38ee98ed42873b3cea24fcce26b78"
     }
   ],
   "frozenDependencyPins": [
