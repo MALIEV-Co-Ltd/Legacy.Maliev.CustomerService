@@ -69,6 +69,84 @@ public sealed class WorkflowContractTests
         AssertMutationRejected(address, address.Replace("          GITHUB_ACTIONS: 'false'", "          GITHUB_ACTIONS: 'false'\n          UNREVIEWED: 'true'", StringComparison.Ordinal));
     }
 
+    [Fact]
+    public void BuildAndTest_RejectsAnyAlteredOptionalContactPrelude()
+    {
+        var boundary = ReadWorkflowStep("Run exact ten optional contact boundary facts", "Run exact two optional contact comparison cases");
+        AssertMutationRejected(boundary, boundary.Replace("--no-build --no-restore", "--no-restore", StringComparison.Ordinal));
+        AssertMutationRejected(boundary, boundary.Replace("--test-exit \"${status[0]}\"", "--test-exit 0", StringComparison.Ordinal));
+        AssertMutationRejected(boundary, boundary.Replace("--tee-exit \"${status[1]}\"", "--tee-exit 0", StringComparison.Ordinal));
+        AssertMutationRejected(boundary, boundary.Replace("CustomerOptionalContactMvcBoundaryTests", "OtherBoundaryTests", StringComparison.Ordinal));
+        AssertMutationRejected(boundary, boundary.Replace("runner-optional-contact-boundary/results", "runner-results", StringComparison.Ordinal));
+        AssertMutationRejected(boundary, boundary.Replace("scripts/test_customer_optional_contact_boundary_focus.py", "scripts/other.py", StringComparison.Ordinal));
+        AssertMutationRejected(boundary, boundary.Replace("scripts/verify_customer_optional_contact_boundary_focus.py begin", "scripts/verify_customer_optional_contact_boundary_focus.py guard", StringComparison.Ordinal));
+        AssertMutationRejected(boundary, boundary.Replace("        env:", "        env:\n          EXTRA: 'true'", StringComparison.Ordinal));
+        AssertMutationRejected(boundary, string.Empty);
+        var guard = ReadWorkflowStep("Guard optional contact focused SDK setup", "Set up optional contact focused SDK");
+        var sdk = ReadWorkflowStep("Set up optional contact focused SDK", "Restore optional contact focused baseline");
+        var restore = ReadWorkflowStep("Restore optional contact focused baseline", "Build optional contact focused Release baseline");
+        var build = ReadWorkflowStep("Build optional contact focused Release baseline", "Run exact ten optional contact boundary facts");
+        var focus = ReadWorkflowStep("Run exact two optional contact comparison cases", "Validate .NET solution");
+        AssertMutationRejected(build + boundary + focus, build + focus + boundary);
+        AssertMutationRejected(boundary, boundary + boundary);
+        AssertMutationRejected(boundary, boundary.Replace("        timeout-minutes: 10", "        timeout-minutes: 11", StringComparison.Ordinal));
+        foreach (var stage in new[] { guard, sdk, restore, build, focus })
+        {
+            AssertMutationRejected(stage, string.Empty);
+            AssertMutationRejected(stage, stage + stage);
+            AssertMutationRejected(stage, stage.Replace("      - name: ", "      - name: Lookalike ", StringComparison.Ordinal));
+            AssertMutationRejected(stage, stage.Replace("        with:", "        if: always()\n        with:", StringComparison.Ordinal)
+                .Replace("        shell: bash", "        shell: pwsh", StringComparison.Ordinal));
+        }
+
+        AssertMutationRejected(guard + sdk, sdk + guard);
+        foreach (var stage in new[] { guard, restore, build, focus })
+        {
+            AssertMutationRejected(stage, stage.Replace("set -euo pipefail", "set -euo pipefail\n          dotnet build Foreign.slnx", StringComparison.Ordinal));
+        }
+
+        AssertMutationRejected(restore + build, build + restore);
+        AssertMutationRejected(build + boundary + focus, focus + boundary + build);
+        foreach (var stage in new[] { restore, build, focus })
+        {
+            const string localBinding = "-p:UseLocalMalievDependencies=true";
+            AssertMutationRejected(stage, stage.Replace(localBinding, string.Empty, StringComparison.Ordinal));
+            AssertMutationRejected(stage, stage.Replace(localBinding, "-p:UseLocalMalievDependencies=false", StringComparison.Ordinal));
+            AssertMutationRejected(stage, stage.Replace(localBinding, "-p:UseRemoteMalievDependencies=true", StringComparison.Ordinal));
+        }
+
+        foreach (var stage in new[] { restore, build, focus })
+        {
+            const string shellBinding = "          export GITHUB_ACTIONS=false\n";
+            AssertMutationRejected(stage, stage.Replace(shellBinding, string.Empty, StringComparison.Ordinal));
+            AssertMutationRejected(stage, stage.Replace("export GITHUB_ACTIONS=false", "export GITHUB_ACTIONS=true", StringComparison.Ordinal));
+            AssertMutationRejected(stage, stage.Replace("export GITHUB_ACTIONS=false", "export OTHER_GITHUB_ACTIONS=false", StringComparison.Ordinal));
+        }
+
+        AssertMutationRejected("dotnet-version: 10.0.x", "dotnet-version: 11.0.x");
+        AssertMutationRejected("setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68", "setup-dotnet@main");
+        AssertMutationRejected("timeout-minutes: 4", "timeout-minutes: 5");
+        AssertMutationRejected("timeout-minutes: 2", "timeout-minutes: 3");
+        AssertMutationRejected("scripts/test_customer_optional_contact_focus.py", "scripts/test_customer_address_focus.py");
+        AssertMutationRejected("scripts/verify_customer_optional_contact_focus.py guard", "scripts/verify_customer_optional_contact_focus.py verify");
+        AssertMutationRejected("180s dotnet restore", "181s dotnet restore");
+        AssertMutationRejected("180s dotnet build", "181s dotnet build");
+        AssertMutationRejected("-warnaserror -p:UseSharedCompilation=false", "-p:UseSharedCompilation=true");
+        AssertMutationRejected("540s dotnet test", "541s dotnet test");
+        AssertMutationRejected("FullyQualifiedName=Legacy.Maliev.CustomerService.Tests.Controllers.CustomerNameLiteralHttpTests.SourceOptionalContact_OrdinaryCreateAndUpdateComparePinnedReference", "FullyQualifiedName~CustomerNameLiteralHttpTests");
+        AssertMutationRejected("scripts/verify_customer_optional_contact_focus.py begin", "scripts/verify_customer_optional_contact_focus.py guard");
+        AssertMutationRejected("status=(\"${PIPESTATUS[@]}\")", "status=(0 0)");
+        AssertMutationRejected("--test-exit \"${status[0]}\"", "--test-exit 0");
+        AssertMutationRejected("--tee-exit \"${status[1]}\"", "--tee-exit 0");
+        AssertMutationRejected("            runner-optional-contact-focused\n", string.Empty);
+        AssertMutationRejected(focus, focus.Replace("          VSTestCollect: ''", "          VSTestCollect: 'Other'", StringComparison.Ordinal));
+        AssertMutationRejected(focus, focus.Replace("        env:", "        env:\n          EXTRA: 'true'", StringComparison.Ordinal));
+        AssertMutationRejected("          CUSTOMER_FOCUSED_SOURCE_HEAD: '${{ github.event.pull_request.head.sha || github.sha }}'", "          CUSTOMER_FOCUSED_SOURCE_HEAD: 'main'");
+        AssertMutationRejected(restore, restore + "      - run: dotnet build Foreign.slnx\n");
+        AssertMutationRejected(focus, focus + "      - uses: actions/cache@main\n");
+        AssertMutationRejected("  validate:\n", "  foreign:\n    runs-on: ubuntu-latest\n    steps:\n      - run: dotnet test Foreign.slnx\n  validate:\n");
+    }
+
     [Theory]
     [InlineData("shell: pwsh", "shell: bash")]
     [InlineData("./tooling/Test-CustomerScaffoldContract.ps1", "./tooling/UnreviewedScaffold.ps1")]
@@ -250,15 +328,17 @@ internal static partial class WorkflowContractValidator
         RequireScalarValue(validateJob, "name", "validate");
 
         var steps = RequireSequence(validateJob, "steps");
-        if (steps.Children.Count != 9)
+        if (steps.Children.Count != 15)
         {
-            throw new InvalidOperationException("Validate job must contain four shared validation steps, one exact admitted Address focus, one optional custody caller, one scaffold guard, and two evidence steps.");
+            throw new InvalidOperationException("Validate job must contain four shared validation steps, five exact optional contact prelude steps, one exact admitted Address focus, one optional custody caller, one scaffold guard, and two evidence steps.");
         }
 
         ValidateConsumerInputs(root);
-        ValidateAddressFocusedCaller(steps.Children[4]);
-        RejectDuplicatedValidationActionsAndCommands(jobs, steps.Children[4]);
-        ValidateConsumerCaller(steps.Children[5]);
+        ValidateOptionalContactPrelude(steps);
+        ValidateOptionalContactBoundary(steps.Children[7]);
+        ValidateAddressFocusedCaller(steps.Children[10]);
+        RejectDuplicatedValidationActionsAndCommands(jobs, steps.Children[10], steps.Children[4], steps.Children[5], steps.Children[6], steps.Children[7], steps.Children[8]);
+        ValidateConsumerCaller(steps.Children[11]);
 
         var environment = RequireMapping(validateJob, "env");
         if (environment.Children.Count != 7)
@@ -274,7 +354,7 @@ internal static partial class WorkflowContractValidator
         RequireScalarValue(environment, "DOTNET_CLI_USE_MSBUILD_SERVER", "0");
         RequireScalarValue(environment, "UseSharedCompilation", "false");
 
-        var scaffold = RequireMapping(steps.Children[6], "scaffold guard");
+        var scaffold = RequireMapping(steps.Children[12], "scaffold guard");
         if (scaffold.Children.Count != 3)
         {
             throw new InvalidOperationException("Scaffold guard must contain only name, shell, and run.");
@@ -283,7 +363,7 @@ internal static partial class WorkflowContractValidator
         RequireScalarValue(scaffold, "name", "Validate safe scaffold orchestration");
         RequireScalarValue(scaffold, "shell", "pwsh");
         RequireScalarValue(scaffold, "run", "./tooling/Test-CustomerScaffoldContract.ps1 -EvidencePath ./runner-results/customer-scaffold-orchestration.json");
-        var gate = RequireMapping(steps.Children[7], "coverage gate");
+        var gate = RequireMapping(steps.Children[13], "coverage gate");
         if (gate.Children.Count != 2)
         {
             throw new InvalidOperationException("Coverage gate must contain only name and run.");
@@ -291,7 +371,7 @@ internal static partial class WorkflowContractValidator
 
         RequireScalarValue(gate, "name", "Gate owned production coverage");
         RequireScalarValue(gate, "run", "python3 scripts/verify-runner-coverage.py runner-results");
-        var evidence = RequireMapping(steps.Children[8], "evidence upload");
+        var evidence = RequireMapping(steps.Children[14], "evidence upload");
         if (evidence.Children.Count != 4)
         {
             throw new InvalidOperationException("Evidence upload must contain exactly name, if, uses and with.");
@@ -308,7 +388,7 @@ internal static partial class WorkflowContractValidator
 
         RequireScalarValue(evidenceInputs, "name", "customer-validation-${{ github.sha }}");
         var evidencePaths = RequireScalar(GetRequired(evidenceInputs, "path")).TrimEnd('\r', '\n');
-        if (!string.Equals(evidencePaths, "runner-results\nrunner-address-focused\n${{ runner.temp }}/customer-consumer-phases", StringComparison.Ordinal))
+        if (!string.Equals(evidencePaths, "runner-results\nrunner-address-focused\nrunner-optional-contact-focused\nrunner-optional-contact-boundary\n${{ runner.temp }}/customer-consumer-phases", StringComparison.Ordinal))
         {
             throw new InvalidOperationException("Evidence upload must retain exactly full validation, Address focus, and consumer phase results.");
         }
@@ -343,13 +423,113 @@ internal static partial class WorkflowContractValidator
                 ["persist-credentials"] = "false",
             });
         ValidateStep(
-            steps.Children[3],
+            steps.Children[9],
             SharedValidationAction,
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 ["solution"] = "Legacy.Maliev.CustomerService.slnx",
                 ["use-local-maliev-dependencies"] = "true",
             });
+    }
+
+    private static void ValidateOptionalContactBoundary(YamlNode node)
+    {
+        ValidateOptionalContactRun(node, "Run exact ten optional contact boundary facts", "10",
+            "set -euo pipefail\nexport GITHUB_ACTIONS=false\npython3 -B scripts/verify_customer_optional_contact_boundary_focus.py guard\ntest ! -e runner-optional-contact-boundary\nmkdir runner-optional-contact-boundary\n(ulimit -v 262144; timeout --signal=TERM --kill-after=5s 60s python3 -B scripts/test_customer_optional_contact_boundary_focus.py) 2>&1 | tee runner-optional-contact-boundary/controls.log\npython3 -B scripts/verify_customer_optional_contact_boundary_focus.py guard\npython3 -B scripts/verify_customer_optional_contact_boundary_focus.py begin\nset +e\ntimeout --signal=TERM --kill-after=5s 540s dotnet test Legacy.Maliev.CustomerService.slnx -p:UseLocalMalievDependencies=true -c Release --no-build --no-restore --filter \"FullyQualifiedName~Legacy.Maliev.CustomerService.Tests.Controllers.CustomerOptionalContactMvcBoundaryTests\" --logger trx --results-directory runner-optional-contact-boundary/results 2>&1 | tee runner-optional-contact-boundary/test.log\nstatus=(\"${PIPESTATUS[@]}\")\nset -e\npython3 -B scripts/verify_customer_optional_contact_boundary_focus.py verify --test-exit \"${status[0]}\" --tee-exit \"${status[1]}\"",
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                ["GITHUB_ACTIONS"] = "false",
+                ["VSTestCollect"] = "",
+                ["VSTestResultsDirectory"] = "${{ github.workspace }}/runner-optional-contact-boundary/results",
+                ["CUSTOMER_FOCUSED_SOURCE_HEAD"] = "${{ github.event.pull_request.head.sha || github.sha }}",
+            });
+    }
+
+    private static void ValidateOptionalContactPrelude(YamlSequenceNode steps)
+    {
+        var sdk = RequireMapping(steps.Children[4], "focused SDK");
+        var sdkKeys = new HashSet<string>(["name", "timeout-minutes", "uses", "with"], StringComparer.Ordinal);
+        if (!sdk.Children.Keys.Select(RequireScalar).ToHashSet(StringComparer.Ordinal).SetEquals(sdkKeys))
+        {
+            throw new InvalidOperationException("Focused SDK setup must have exact bounded keys.");
+        }
+
+        RequireScalarValue(sdk, "name", "Set up optional contact focused SDK");
+        RequireScalarValue(sdk, "timeout-minutes", "4");
+        RequireScalarValue(sdk, "uses", "actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68");
+        var sdkInputs = RequireMapping(sdk, "with");
+        if (sdkInputs.Children.Count != 1)
+        {
+            throw new InvalidOperationException("Focused SDK setup must contain one exact version input.");
+        }
+
+        RequireScalarValue(sdkInputs, "dotnet-version", "10.0.x");
+        ValidateOptionalContactRun(steps.Children[3], "Guard optional contact focused SDK setup", "2",
+            "set -euo pipefail\ntest ! -e runner-optional-contact-focused\nmkdir runner-optional-contact-focused\npython3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/controls-admission.log\n(ulimit -v 262144; timeout --signal=TERM --kill-after=5s 60s python3 -B scripts/test_customer_optional_contact_focus.py) 2>&1 | tee runner-optional-contact-focused/controls.log\npython3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/sdk-admission.log",
+            new Dictionary<string, string>(StringComparer.Ordinal));
+        ValidateOptionalContactRun(steps.Children[5], "Restore optional contact focused baseline", "4",
+            "set -euo pipefail\nexport GITHUB_ACTIONS=false\npython3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/restore-admission.log\ntimeout --signal=TERM --kill-after=5s 180s dotnet restore Legacy.Maliev.CustomerService.slnx -p:UseLocalMalievDependencies=true 2>&1 | tee runner-optional-contact-focused/restore.log",
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                ["GITHUB_ACTIONS"] = "false",
+            });
+        ValidateOptionalContactRun(steps.Children[6], "Build optional contact focused Release baseline", "4",
+            "set -euo pipefail\nexport GITHUB_ACTIONS=false\npython3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/build-admission.log\ntimeout --signal=TERM --kill-after=5s 180s dotnet build Legacy.Maliev.CustomerService.slnx -p:UseLocalMalievDependencies=true -c Release --no-restore -warnaserror -p:UseSharedCompilation=false 2>&1 | tee runner-optional-contact-focused/build.log",
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                ["GITHUB_ACTIONS"] = "false",
+            });
+        ValidateOptionalContactRun(steps.Children[8], "Run exact two optional contact comparison cases", "10",
+            "set -euo pipefail\nexport GITHUB_ACTIONS=false\npython3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/test-admission.log\npython3 -B scripts/verify_customer_optional_contact_focus.py begin\nset +e\ntimeout --signal=TERM --kill-after=5s 540s dotnet test Legacy.Maliev.CustomerService.slnx -p:UseLocalMalievDependencies=true -c Release --no-build --no-restore --filter \"FullyQualifiedName=Legacy.Maliev.CustomerService.Tests.Controllers.CustomerNameLiteralHttpTests.SourceOptionalContact_OrdinaryCreateAndUpdateComparePinnedReference\" --logger trx --results-directory runner-optional-contact-focused/results 2>&1 | tee runner-optional-contact-focused/test.log\nstatus=(\"${PIPESTATUS[@]}\")\nset -e\npython3 -B scripts/verify_customer_optional_contact_focus.py verify --test-exit \"${status[0]}\" --tee-exit \"${status[1]}\"\npython3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/full-admission.log",
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                ["GITHUB_ACTIONS"] = "false",
+                ["VSTestCollect"] = "",
+                ["VSTestResultsDirectory"] = "${{ github.workspace }}/runner-optional-contact-focused/results",
+                ["CUSTOMER_FOCUSED_SOURCE_HEAD"] = "${{ github.event.pull_request.head.sha || github.sha }}",
+            });
+    }
+
+    private static void ValidateOptionalContactRun(
+        YamlNode node,
+        string name,
+        string minutes,
+        string command,
+        IReadOnlyDictionary<string, string> expectedEnvironment)
+    {
+        var step = RequireMapping(node, "optional contact prelude");
+        var expectedKeys = new HashSet<string>(["name", "timeout-minutes", "shell", "run"], StringComparer.Ordinal);
+        if (expectedEnvironment.Count != 0)
+        {
+            expectedKeys.Add("env");
+        }
+
+        if (!step.Children.Keys.Select(RequireScalar).ToHashSet(StringComparer.Ordinal).SetEquals(expectedKeys))
+        {
+            throw new InvalidOperationException("Optional contact prelude has unreviewed keys.");
+        }
+
+        RequireScalarValue(step, "name", name);
+        RequireScalarValue(step, "timeout-minutes", minutes);
+        RequireScalarValue(step, "shell", "bash");
+        if (!string.Equals(RequireScalar(GetRequired(step, "run")).TrimEnd('\r', '\n'), command, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException("Optional contact prelude must retain its complete exact guarded command.");
+        }
+
+        if (expectedEnvironment.Count != 0)
+        {
+            var environment = RequireMapping(step, "env");
+            if (environment.Children.Count != expectedEnvironment.Count)
+            {
+                throw new InvalidOperationException("Optional contact prelude environment is not exact.");
+            }
+
+            foreach (var expected in expectedEnvironment)
+            {
+                RequireScalarValue(environment, expected.Key, expected.Value);
+            }
+        }
     }
 
     private static void ValidateAddressFocusedCaller(YamlNode node)
@@ -489,7 +669,7 @@ internal static partial class WorkflowContractValidator
         }
     }
 
-    private static void RejectDuplicatedValidationActionsAndCommands(YamlMappingNode jobs, YamlNode validatedAddressFocus)
+    private static void RejectDuplicatedValidationActionsAndCommands(YamlMappingNode jobs, YamlNode validatedAddressFocus, YamlNode validatedSdk, params YamlNode[] validatedPrelude)
     {
         foreach (var jobNode in jobs.Children.Values.OfType<YamlMappingNode>())
         {
@@ -504,7 +684,7 @@ internal static partial class WorkflowContractValidator
                 if (GetOptional(stepNode, "uses") is YamlScalarNode usesNode)
                 {
                     var action = usesNode.Value ?? string.Empty;
-                    if (action.StartsWith("actions/setup-dotnet@", StringComparison.OrdinalIgnoreCase)
+                    if ((!ReferenceEquals(stepNode, validatedSdk) && action.StartsWith("actions/setup-dotnet@", StringComparison.OrdinalIgnoreCase))
                         || action.StartsWith("actions/cache@", StringComparison.OrdinalIgnoreCase))
                     {
                         throw new InvalidOperationException($"Caller duplicates shared action {action}.");
@@ -512,6 +692,7 @@ internal static partial class WorkflowContractValidator
                 }
 
                 if (!ReferenceEquals(stepNode, validatedAddressFocus)
+                    && !validatedPrelude.Any(validated => ReferenceEquals(stepNode, validated))
                     && GetOptional(stepNode, "run") is YamlScalarNode runNode)
                 {
                     RejectDuplicatedDotNetCommand(runNode.Value ?? string.Empty);

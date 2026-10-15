@@ -39,8 +39,12 @@ static async Task RunHostAsync(string[] startupArgs)
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
         options.JsonSerializerOptions.PropertyNamingPolicy = null;
         options.JsonSerializerOptions.DictionaryKeyPolicy = null;
-        options.JsonSerializerOptions.TypeInfoResolver = Legacy.Maliev.CustomerService.Api.OrdinaryCompanyMvcJsonMetadata.Compose(options.JsonSerializerOptions.TypeInfoResolver);
+        Legacy.Maliev.CustomerService.Api.OrdinaryCustomerContactInputFormatter.ComposeOwned(options.JsonSerializerOptions);
     });
+    var ownedJsonConfiguration = builder.Services.Last(descriptor => descriptor.ServiceType ==
+        typeof(Microsoft.Extensions.Options.IConfigureOptions<Microsoft.AspNetCore.Mvc.JsonOptions>));
+    builder.Services.AddSingleton<Microsoft.Extensions.Options.IPostConfigureOptions<Microsoft.AspNetCore.Mvc.MvcOptions>,
+        Legacy.Maliev.CustomerService.Api.OrdinaryCustomerContactInputFormatter.Registration>();
     builder.Services.AddSingleton(TimeProvider.System);
     builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
     builder.Services.AddScoped<ICustomerCache, DistributedCustomerCache>();
@@ -49,6 +53,8 @@ static async Task RunHostAsync(string[] startupArgs)
     builder.Services.AddScoped<ICustomerRelationService, CustomerRelationService>();
     builder.Services.AddScoped<Legacy.Maliev.CustomerService.Api.CustomerCreateReplayService>();
 
+    Legacy.Maliev.CustomerService.Api.OrdinaryCustomerContactInputFormatter.TrackVersioningPostConfigure(
+        builder.Services, ownedJsonConfiguration);
     var app = builder.Build();
 
     app.UseStandardMiddleware();
