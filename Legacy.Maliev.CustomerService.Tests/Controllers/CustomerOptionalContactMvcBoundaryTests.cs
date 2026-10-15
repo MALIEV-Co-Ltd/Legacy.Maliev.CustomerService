@@ -315,6 +315,16 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
         await fixture.ResetAsync();
         await using var host = fixture.Start();
         using var client = fixture.Client(host, "customer-lifecycle");
+        // ClientHandler.Append removes a single empty value; inject a present empty key after that copy.
+        using var emptyHeaderClient = new HttpClient(host.Server.CreateHandler(context =>
+        {
+            Assert.False(context.Request.Headers.ContainsKey("Idempotency-Key"));
+            context.Request.Headers["Idempotency-Key"] = new Microsoft.Extensions.Primitives.StringValues(string.Empty);
+            Assert.True(context.Request.Headers.ContainsKey("Idempotency-Key"));
+            Assert.Equal(1, context.Request.Headers["Idempotency-Key"].Count);
+            Assert.Equal(string.Empty, context.Request.Headers["Idempotency-Key"][0]);
+        })) { BaseAddress = client.BaseAddress };
+        emptyHeaderClient.DefaultRequestHeaders.Authorization = client.DefaultRequestHeaders.Authorization;
         var before = await fixture.SnapshotAsync();
         foreach (var target in new[] { "versioned", "replay-empty", "replay-multiple", "replay-valid" })
         {
@@ -323,7 +333,9 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
             { Content = new StringContent(Valid + ",\"Telephone\":true}", Encoding.UTF8, "application/json") };
             if (target != "versioned") request.Headers.TryAddWithoutValidation("Idempotency-Key",
                 target == "replay-empty" ? new[] { "" } : target == "replay-multiple" ? new[] { "a", "b" } : new[] { Guid.NewGuid().ToString() });
-            using var response = await client.SendAsync(request, timeout.Token);
+            using var response = await (target == "replay-empty" ? emptyHeaderClient : client).SendAsync(request, timeout.Token);
+            if (response.StatusCode != HttpStatusCode.BadRequest)
+                WriteFailureDiagnostic("strict-route-status", () => new { Case = target, ExpectedStatus = 400, ActualStatus = (int)response.StatusCode });
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.Equal(before, await fixture.SnapshotAsync());
         }
@@ -529,7 +541,7 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
         {
             foreach (var major in new int?[] { null, 1, 2 })
             {
-                var http = new DefaultHttpContext();
+                var http = new DefaultHttpContext { RequestServices = configured.Provider };
                 http.Features.Set<Asp.Versioning.IApiVersioningFeature>(new Asp.Versioning.ApiVersioningFeature(http)
                 {
                     RequestedApiVersion = major is { } value ? new Asp.Versioning.ApiVersion(value, 0) : null,
