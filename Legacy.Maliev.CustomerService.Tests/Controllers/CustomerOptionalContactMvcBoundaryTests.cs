@@ -558,7 +558,7 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        services.AddApiVersioning().AddMvc();
+        services.AddApiVersioning(options => options.ApiVersionReader = new Asp.Versioning.QueryStringApiVersionReader()).AddMvc();
         services.AddControllers().AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;

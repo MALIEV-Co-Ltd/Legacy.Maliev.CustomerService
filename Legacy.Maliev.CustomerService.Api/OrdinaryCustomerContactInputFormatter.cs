@@ -218,7 +218,7 @@ internal sealed class OrdinaryCustomerContactInputFormatter : TextInputFormatter
                 && httpAssembly.ManifestModule.ModuleVersionId == new Guid("e23c6dbb-ef2c-42b8-8bab-c8e6a254ec5c"))
             {
                 var template = new ServiceCollection();
-                template.AddApiVersioning().AddMvc();
+                template.AddApiVersioning(options => options.ApiVersionReader = new Asp.Versioning.QueryStringApiVersionReader()).AddMvc();
                 var vendor = template.Single(item => item.ServiceType == PostConfigure);
                 var annotation = template.Single(item => item.ServiceType == Annotation);
                 var accessor = template.Single(item => item.ServiceType == typeof(IHttpContextAccessor));
