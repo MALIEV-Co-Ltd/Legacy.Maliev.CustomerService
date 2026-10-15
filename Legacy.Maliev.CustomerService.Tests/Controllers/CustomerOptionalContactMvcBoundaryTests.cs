@@ -71,18 +71,18 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
             {
                 CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(culture);
                 foreach (var field in new[] { "Telephone", "Mobile", "Fax" })
-                foreach (var raw in new[] { "true", "false", "42", "1.500", "1E+03", "-0", "9223372036854775808123456789", "\"00123\"", "\" ก้ 😀 \\t \"", "\"\"", "null" })
-                {
-                    var body = Valid + $",\"{field}\":{raw},\"{field}\":null}}";
-                    var reference = Newtonsoft.Json.JsonConvert.DeserializeObject<ReferenceContact>(body,
-                        new Newtonsoft.Json.JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore })!;
-                    var result = await adapter.ReadAsync(Context(body, "create"));
-                    Assert.False(result.HasError);
-                    var model = Assert.IsType<UpsertCustomerRequest>(result.Model);
-                    Assert.Equal(reference.Telephone, model.Telephone);
-                    Assert.Equal(reference.Mobile, model.Mobile);
-                    Assert.Equal(reference.Fax, model.Fax);
-                }
+                    foreach (var raw in new[] { "true", "false", "42", "1.500", "1E+03", "-0", "9223372036854775808123456789", "\"00123\"", "\" ก้ 😀 \\t \"", "\"\"", "null" })
+                    {
+                        var body = Valid + $",\"{field}\":{raw},\"{field}\":null}}";
+                        var reference = Newtonsoft.Json.JsonConvert.DeserializeObject<ReferenceContact>(body,
+                            new Newtonsoft.Json.JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore })!;
+                        var result = await adapter.ReadAsync(Context(body, "create"));
+                        Assert.False(result.HasError);
+                        var model = Assert.IsType<UpsertCustomerRequest>(result.Model);
+                        Assert.Equal(reference.Telephone, model.Telephone);
+                        Assert.Equal(reference.Mobile, model.Mobile);
+                        Assert.Equal(reference.Fax, model.Fax);
+                    }
             }
         }
         finally { CultureInfo.CurrentCulture = oldCulture; }
@@ -149,32 +149,32 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
     public async Task DifferentialBodies_KeepEncodingEmptyMalformedAndPrivacyBehavior()
     {
         foreach (var allowMessages in new[] { false, true })
-        foreach (var encoding in new[] { Encoding.UTF8, Encoding.Unicode })
-        foreach (var item in new[] { "", " ", "null", "{", "[]", Valid + "}", Valid + ",\"Telephone\":{}}", Valid + ",\"Telephone\":[]}", Valid + ",\"CompanyId\":\"bad\"}" }
-            .Select((body, index) => (Body: body, CaseIndex: index)))
-        {
-            var body = item.Body;
-            var (_, native, adapter) = Formatters(after: options => options.AllowInputFormatterExceptionMessages = allowMessages);
-            var expectedContext = Context(body, "create", encoding);
-            var actualContext = Context(body, "create", encoding);
-            var expected = await native.ReadAsync(expectedContext);
-            var actual = await adapter.ReadAsync(actualContext);
-            Assert.Equal(expected.HasError, actual.HasError);
-            Assert.Equal(expected.IsModelSet, actual.IsModelSet);
-            var expectedErrors = Errors(expectedContext);
-            var actualErrors = Errors(actualContext);
-            if (!expectedErrors.SequenceEqual(actualErrors, StringComparer.Ordinal))
-                WriteFailureDiagnostic("fixed-synthetic-error-differential", () => new
+            foreach (var encoding in new[] { Encoding.UTF8, Encoding.Unicode })
+                foreach (var item in new[] { "", " ", "null", "{", "[]", Valid + "}", Valid + ",\"Telephone\":{}}", Valid + ",\"Telephone\":[]}", Valid + ",\"CompanyId\":\"bad\"}" }
+                    .Select((body, index) => (Body: body, CaseIndex: index)))
                 {
-                    item.CaseIndex,
-                    Encoding = encoding.WebName,
-                    AllowExceptionMessages = allowMessages,
-                    ExpectedErrors = expectedErrors,
-                    ActualErrors = actualErrors,
-                });
-            Assert.Equal(Errors(expectedContext), Errors(actualContext));
-            Assert.True(actualContext.HttpContext.Request.Body.CanRead);
-        }
+                    var body = item.Body;
+                    var (_, native, adapter) = Formatters(after: options => options.AllowInputFormatterExceptionMessages = allowMessages);
+                    var expectedContext = Context(body, "create", encoding);
+                    var actualContext = Context(body, "create", encoding);
+                    var expected = await native.ReadAsync(expectedContext);
+                    var actual = await adapter.ReadAsync(actualContext);
+                    Assert.Equal(expected.HasError, actual.HasError);
+                    Assert.Equal(expected.IsModelSet, actual.IsModelSet);
+                    var expectedErrors = Errors(expectedContext);
+                    var actualErrors = Errors(actualContext);
+                    if (!expectedErrors.SequenceEqual(actualErrors, StringComparer.Ordinal))
+                        WriteFailureDiagnostic("fixed-synthetic-error-differential", () => new
+                        {
+                            item.CaseIndex,
+                            Encoding = encoding.WebName,
+                            AllowExceptionMessages = allowMessages,
+                            ExpectedErrors = expectedErrors,
+                            ActualErrors = actualErrors,
+                        });
+                    Assert.Equal(Errors(expectedContext), Errors(actualContext));
+                    Assert.True(actualContext.HttpContext.Request.Body.CanRead);
+                }
         foreach (var emptyDefault in new[] { false, true })
         {
             var (_, native, adapter) = Formatters();
@@ -323,7 +323,8 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
             Assert.True(context.Request.Headers.ContainsKey("Idempotency-Key"));
             Assert.Equal(1, context.Request.Headers["Idempotency-Key"].Count);
             Assert.Equal(string.Empty, context.Request.Headers["Idempotency-Key"][0]);
-        })) { BaseAddress = client.BaseAddress };
+        }))
+        { BaseAddress = client.BaseAddress };
         emptyHeaderClient.DefaultRequestHeaders.Authorization = client.DefaultRequestHeaders.Authorization;
         var before = await fixture.SnapshotAsync();
         foreach (var target in new[] { "versioned", "replay-empty", "replay-multiple", "replay-valid" })
@@ -451,8 +452,8 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
         using (var mutable = VersioningFormatters(freeze: false))
             Assert.False(mutable.Adapter.CanRead(Context("{}", "create")));
         foreach (var after in new[] { false, true })
-        foreach (var mutation in new Action<IServiceCollection>[]
-        {
+            foreach (var mutation in new Action<IServiceCollection>[]
+            {
             services => services.Configure<JsonOptions>(_ => { }),
             services => services.PostConfigure<JsonOptions>(_ => { }),
             services => services.AddSingleton<IHttpContextAccessor>(new HttpContextAccessor()),
@@ -487,11 +488,11 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
                 services.Remove(descriptor);
                 services.Add(descriptor);
             },
-        })
-        {
-            using var candidate = VersioningFormatters(beforeTrack: after ? null : mutation, afterTrack: after ? mutation : null);
-            Assert.False(candidate.Adapter.CanRead(Context("{}", "create")));
-        }
+            })
+            {
+                using var candidate = VersioningFormatters(beforeTrack: after ? null : mutation, afterTrack: after ? mutation : null);
+                Assert.False(candidate.Adapter.CanRead(Context("{}", "create")));
+            }
         var calls = 0;
         string? observedName = null;
         JsonOptions? observedOptions = null;
@@ -647,8 +648,11 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
             : action == "versioned" ? nameof(CustomersController.UpdateCustomerVersionedAsync) : nameof(CustomersController.UpdateCustomerAsync);
         if (action != "unknown")
         {
-            var descriptor = new ControllerActionDescriptor { ControllerTypeInfo = typeof(CustomersController).GetTypeInfo(),
-                MethodInfo = typeof(CustomersController).GetMethod(method)! };
+            var descriptor = new ControllerActionDescriptor
+            {
+                ControllerTypeInfo = typeof(CustomersController).GetTypeInfo(),
+                MethodInfo = typeof(CustomersController).GetMethod(method)!
+            };
             http.SetEndpoint(new Endpoint(_ => Task.CompletedTask, new EndpointMetadataCollection(descriptor), "boundary"));
         }
         var metadata = new EmptyModelMetadataProvider().GetMetadataForType(modelType ?? typeof(UpsertCustomerRequest));
