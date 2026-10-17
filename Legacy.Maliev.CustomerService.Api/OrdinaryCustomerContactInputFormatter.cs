@@ -13,30 +13,26 @@ using Microsoft.Extensions.Options;
 
 namespace Legacy.Maliev.CustomerService.Api;
 
-/// <summary>Reads only ordinary unkeyed customer writes with isolated contact compatibility metadata.</summary>
+/// <summary>Reads the original inert Customer and Address envelopes only for owned ordinary write actions.</summary>
 internal sealed class OrdinaryCustomerContactInputFormatter : TextInputFormatter, IInputFormatterExceptionPolicy
 {
     private static readonly ConditionalWeakTable<JsonSerializerOptions, Ownership> Owners = new();
-    private static readonly JsonConverter<string> DefaultString =
-        (JsonConverter<string>)JsonSerializerOptions.Default.GetConverter(typeof(string));
     private static readonly MethodInfo Create = typeof(CustomersController).GetMethod(
         nameof(CustomersController.CreateCustomerAsync), [typeof(UpsertCustomerRequest), typeof(CancellationToken)])!;
     private static readonly MethodInfo Update = typeof(CustomersController).GetMethod(
         nameof(CustomersController.UpdateCustomerAsync), [typeof(int), typeof(UpsertCustomerRequest), typeof(CancellationToken)])!;
     private readonly JsonOptions source;
     private readonly SystemTextJsonInputFormatter original;
-    private readonly ILogger<SystemTextJsonInputFormatter> logger;
-    private readonly bool streamParsing;
+    private readonly CustomerOriginalBodyReader reader;
 
     internal OrdinaryCustomerContactInputFormatter(JsonOptions source, SystemTextJsonInputFormatter original,
         ILogger<SystemTextJsonInputFormatter> logger)
     {
         this.source = source;
         this.original = original;
-        this.logger = logger;
+        reader = CustomerOriginalBodyReader.Create(logger);
         foreach (var encoding in original.SupportedEncodings) SupportedEncodings.Add(encoding);
         foreach (var mediaType in original.SupportedMediaTypes) SupportedMediaTypes.Add(mediaType);
-        streamParsing = AppContext.TryGetSwitch("Microsoft.AspNetCore.UseStreamBasedJsonParsing", out var enabled) && enabled;
     }
 
     InputFormatterExceptionPolicy IInputFormatterExceptionPolicy.ExceptionPolicy =>
@@ -54,21 +50,30 @@ internal sealed class OrdinaryCustomerContactInputFormatter : TextInputFormatter
             Owners.Add(options, new Ownership(reflection, composed));
     }
 
-    protected override bool CanReadType(Type type) => type == typeof(UpsertCustomerRequest);
+    protected override bool CanReadType(Type type) => type == typeof(UpsertCustomerRequest) || type == typeof(UpsertAddressRequest);
 
     public override bool CanRead(InputFormatterContext context) =>
         Eligible(context) && OwnsPolicy() && base.CanRead(context);
 
+    private static readonly MethodInfo AddressCreate = typeof(AddressesController).GetMethod(
+        nameof(AddressesController.CreateCustomerAddressAsync), [typeof(int), typeof(UpsertAddressRequest), typeof(CancellationToken)])!;
+    private static readonly MethodInfo AddressUpdate = typeof(AddressesController).GetMethod(
+        nameof(AddressesController.UpdateAddressAsync), [typeof(int), typeof(UpsertAddressRequest), typeof(CancellationToken)])!;
+
     private static bool Eligible(InputFormatterContext context)
     {
-        if (context.ModelType != typeof(UpsertCustomerRequest)
-            || context.HttpContext.GetEndpoint()?.Metadata.GetMetadata<ControllerActionDescriptor>() is not { } action
-            || action.ControllerTypeInfo.AsType() != typeof(CustomersController))
+        if (context.HttpContext.GetEndpoint()?.Metadata.GetMetadata<ControllerActionDescriptor>() is not { } action)
             return false;
         var request = context.HttpContext.Request;
-        return action.MethodInfo == Create && HttpMethods.IsPost(request.Method)
-                && !request.Headers.ContainsKey("Idempotency-Key")
-            || action.MethodInfo == Update && HttpMethods.IsPut(request.Method);
+        if (context.ModelType == typeof(UpsertCustomerRequest)
+            && action.ControllerTypeInfo.AsType() == typeof(CustomersController))
+            return action.MethodInfo == Create && HttpMethods.IsPost(request.Method)
+                    && !request.Headers.ContainsKey("Idempotency-Key")
+                || action.MethodInfo == Update && HttpMethods.IsPut(request.Method);
+        return context.ModelType == typeof(UpsertAddressRequest)
+            && action.ControllerTypeInfo.AsType() == typeof(AddressesController)
+            && (action.MethodInfo == AddressCreate && HttpMethods.IsPost(request.Method)
+                || action.MethodInfo == AddressUpdate && HttpMethods.IsPut(request.Method));
     }
 
     private bool OwnsPolicy()
@@ -90,100 +95,21 @@ internal sealed class OrdinaryCustomerContactInputFormatter : TextInputFormatter
             && options.Converters.Count == 0;
     }
 
+    public override Task<InputFormatterResult> ReadAsync(InputFormatterContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        // Let the local stock reader select encoding and sanitize its failures
+        // before the outer formatter can add caller-controlled charset text.
+        return Eligible(context) && OwnsPolicy() ? reader.ReadAsync(context) : base.ReadAsync(context);
+    }
+
     public override async Task<InputFormatterResult> ReadRequestBodyAsync(InputFormatterContext context, Encoding encoding)
     {
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(encoding);
         if (!Eligible(context) || !OwnsPolicy())
             return await original.ReadRequestBodyAsync(context, encoding);
-
-        // Copy all serializer settings, then modify only private metadata. Never mutate the shared resolver or options.
-        var options = new JsonSerializerOptions(original.SerializerOptions);
-        options.TypeInfoResolver = options.TypeInfoResolver!.WithAddedModifier(ConfigureContacts);
-        options.MakeReadOnly();
-        object? model;
-        Stream? transcoder = null;
-        try
-        {
-            // Match the ASP.NET Core v10 formatter's pipe/stream switch and exception contract (MIT licensed framework source).
-            if (encoding.CodePage == Encoding.UTF8.CodePage)
-            {
-                model = streamParsing
-                    ? await JsonSerializer.DeserializeAsync(context.HttpContext.Request.Body, context.ModelType, options)
-                    : await JsonSerializer.DeserializeAsync(context.HttpContext.Request.BodyReader, context.ModelType, options);
-            }
-            else
-            {
-                transcoder = Encoding.CreateTranscodingStream(context.HttpContext.Request.Body, encoding, Encoding.UTF8, leaveOpen: true);
-                model = await JsonSerializer.DeserializeAsync(transcoder, context.ModelType, options);
-            }
-        }
-        catch (JsonException exception)
-        {
-            Exception safe = source.AllowInputFormatterExceptionMessages
-                ? new InputFormatterException(exception.Message, exception) : exception;
-            context.ModelState.TryAddModelError(exception.Path ?? string.Empty, safe, context.Metadata);
-            logger.LogDebug(new EventId(1, "SystemTextJsonInputException"), "JSON input formatter threw an exception: {Message}", exception.Message);
-            return InputFormatterResult.Failure();
-        }
-        catch (Exception exception) when (exception is FormatException or OverflowException)
-        {
-            context.ModelState.TryAddModelError(string.Empty, exception, context.Metadata);
-            logger.LogDebug(new EventId(1, "SystemTextJsonInputException"), "JSON input formatter threw an exception: {Message}", exception.Message);
-            return InputFormatterResult.Failure();
-        }
-        finally
-        {
-            if (transcoder is not null) await transcoder.DisposeAsync();
-        }
-        if (model is null && !context.TreatEmptyInputAsDefaultValue)
-            return InputFormatterResult.NoValue();
-        logger.LogDebug(new EventId(2, "SystemTextJsonInputSuccess"), "JSON input formatter succeeded, deserializing to type '{TypeName}'", context.ModelType.FullName);
-        return InputFormatterResult.Success(model);
-    }
-
-    private static void ConfigureContacts(JsonTypeInfo info)
-    {
-        if (info.Type != typeof(UpsertCustomerRequest) || info.Kind != JsonTypeInfoKind.Object
-            || info.IsReadOnly || info.CreateObject is not null)
-            return;
-        var slots = new[] { nameof(UpsertCustomerRequest.Telephone), nameof(UpsertCustomerRequest.Mobile), nameof(UpsertCustomerRequest.Fax) }
-            .Select(name => info.Properties.SingleOrDefault(property => property.Name == name)).ToArray();
-        if (slots.Any(property => property is null || property.PropertyType != typeof(string)
-            || property.Set is null || property.CustomConverter is not null)
-            || info.Options.Converters.Count != 0
-            || !ReferenceEquals(info.Options.GetConverter(typeof(string)), DefaultString))
-            return;
-        foreach (var property in slots)
-        {
-            var slot = property!;
-            // Every read owns fresh options/metadata and a distinct converter for each contact slot.
-            // Keep constructor argument binding so framework rejection diagnostics retain their context.
-            slot.CustomConverter = new ContactPrimitiveJsonConverter(DefaultString);
-        }
-    }
-
-    private sealed class ContactPrimitiveJsonConverter(JsonConverter<string> literal) : JsonConverter<string>
-    {
-        private readonly OrdinaryCompanyFieldPrimitiveJsonConverter primitive = new(literal);
-        private string? lastNonNull;
-
-        public override bool HandleNull => true;
-
-        public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            if (reader.TokenType == JsonTokenType.Null) return lastNonNull;
-            var value = primitive.Read(ref reader, typeToConvert, options);
-            if (value is not null) lastNonNull = value;
-            return value;
-        }
-
-        public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options)
-        {
-            // Write behavior is independent of read history, including the explicit HandleNull path.
-            if (value is null) writer.WriteNullValue();
-            else literal.Write(writer, value, options);
-        }
+        return await reader.ReadAsync(context);
     }
 
     internal static void TrackVersioningPostConfigure(IServiceCollection services, ServiceDescriptor ownConfiguration)

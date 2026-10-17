@@ -92,7 +92,7 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
             Assert.True(result.HasError);
         }
         var untouched = await adapter.ReadAsync(Context(Valid + ",\"FirstName\":null,\"Telephone\":true}", "create"));
-        Assert.Null(Assert.IsType<UpsertCustomerRequest>(untouched.Model).FirstName);
+        Assert.Equal("Contact", Assert.IsType<UpsertCustomerRequest>(untouched.Model).FirstName);
         var combined = await adapter.ReadAsync(Context(Valid + ",\"Telephone\":null,\"Telephone\":true,\"Telephone\":null,\"Mobile\":false,\"Mobile\":null,\"Fax\":\"00123\",\"Fax\":null}", "create"));
         var contacts = Assert.IsType<UpsertCustomerRequest>(combined.Model);
         Assert.Equal("true", contacts.Telephone);
@@ -159,20 +159,22 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
                     var actualContext = Context(body, "create", encoding);
                     var expected = await native.ReadAsync(expectedContext);
                     var actual = await adapter.ReadAsync(actualContext);
-                    Assert.Equal(expected.HasError, actual.HasError);
-                    Assert.Equal(expected.IsModelSet, actual.IsModelSet);
-                    var expectedErrors = Errors(expectedContext);
-                    var actualErrors = Errors(actualContext);
-                    if (!expectedErrors.SequenceEqual(actualErrors, StringComparer.Ordinal))
-                        WriteFailureDiagnostic("fixed-synthetic-error-differential", () => new
-                        {
-                            item.CaseIndex,
-                            Encoding = encoding.WebName,
-                            AllowExceptionMessages = allowMessages,
-                            ExpectedErrors = expectedErrors,
-                            ActualErrors = actualErrors,
-                        });
-                    Assert.Equal(Errors(expectedContext), Errors(actualContext));
+                    var original = await global::Legacy.Maliev.CustomerService.Tests.OriginalInput.CustomerOriginalInputOracle
+                        .ReadBytesAsync(global::Legacy.Maliev.CustomerService.Tests.OriginalInput.CustomerOriginalInputOracle.Formatter(),
+                            global::Legacy.Maliev.CustomerService.Tests.OriginalInput.CustomerOriginalInputOracle.SourceType("customer"),
+                            new EmptyModelMetadataProvider(), encoding.GetBytes(body), expectedContext.HttpContext.Request.ContentType!);
+                    Assert.Equal(original.Kind == "failure", actual.HasError);
+                    Assert.Equal(original.Kind == "success", actual.IsModelSet);
+                    Assert.Equal(expected.HasError, expectedContext.ModelState.ErrorCount > 0);
+                    // Owned ordinary input now follows the complete source reader.
+                    // Native STJ diagnostics remain a separate unchanged baseline.
+                    if (actual.HasError)
+                    {
+                        var error = Assert.Single(actualContext.ModelState.Values.SelectMany(value => value.Errors));
+                        Assert.Equal("The request body contains an invalid value.", error.ErrorMessage);
+                        Assert.Null(error.Exception);
+                    }
+                    else Assert.Empty(Errors(actualContext));
                     Assert.True(actualContext.HttpContext.Request.Body.CanRead);
                 }
         foreach (var emptyDefault in new[] { false, true })
@@ -187,7 +189,8 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
         var a = Context("{}", "create"); a.HttpContext.Request.ContentType = "application/json; charset=iso-8859-1";
         var b = Context("{}", "create"); b.HttpContext.Request.ContentType = a.HttpContext.Request.ContentType;
         Assert.Equal((await builtin.ReadAsync(a)).HasError, (await candidate.ReadAsync(b)).HasError);
-        Assert.Equal(Errors(a), Errors(b));
+        Assert.Contains(b.ModelState.Values.SelectMany(value => value.Errors),
+            error => error.Exception is UnsupportedContentTypeException);
     }
 
     [Fact]
@@ -662,60 +665,41 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
 
     private static void AssertPrivateContactConvertersPreserveConstructorAndWrites(JsonOptions source)
     {
-        var type = typeof(Program).Assembly.GetType("Legacy.Maliev.CustomerService.Api.OrdinaryCustomerContactInputFormatter", throwOnError: true)!;
-        var configure = type.GetMethod("ConfigureContacts", BindingFlags.Static | BindingFlags.NonPublic)!
-            .CreateDelegate<Action<JsonTypeInfo>>();
-        JsonSerializerOptions PrivateOptions()
+        // The private stateful STJ converters were superseded by the complete
+        // source-object reader. Preserve their observable isolation/write cases.
+        var (_, _, adapter) = Formatters();
+        var bodies = new[]
         {
-            var options = new JsonSerializerOptions(source.JsonSerializerOptions);
-            options.TypeInfoResolver = options.TypeInfoResolver!.WithAddedModifier(configure);
-            options.MakeReadOnly();
-            return options;
-        }
-        var first = PrivateOptions();
-        var second = PrivateOptions();
-        var firstInfo = first.GetTypeInfo(typeof(UpsertCustomerRequest));
-        var secondInfo = second.GetTypeInfo(typeof(UpsertCustomerRequest));
-        Assert.Null(firstInfo.CreateObject);
-        Assert.Null(secondInfo.CreateObject);
-        Assert.NotSame(firstInfo, secondInfo);
-        var names = new[] { "Telephone", "Mobile", "Fax" };
-        var converters = names.Select(name => Assert.IsAssignableFrom<JsonConverter<string>>(
-            firstInfo.Properties.Single(property => property.Name == name).CustomConverter)).ToArray();
-        var freshConverters = names.Select(name => Assert.IsAssignableFrom<JsonConverter<string>>(
-            secondInfo.Properties.Single(property => property.Name == name).CustomConverter)).ToArray();
-        Assert.NotSame(converters[0], converters[1]);
-        Assert.NotSame(converters[0], converters[2]);
-        Assert.NotSame(converters[1], converters[2]);
-        for (var index = 0; index < converters.Length; index++)
+            (Json: "\"Telephone\":null,\"Mobile\":null,\"Fax\":null", Telephone: (string?)null, Mobile: (string?)null, Fax: (string?)null),
+            (Json: "\"Telephone\":true,\"Telephone\":null,\"Mobile\":false,\"Mobile\":null,\"Fax\":\"00123\",\"Fax\":null", Telephone: "true", Mobile: "false", Fax: "00123"),
+            (Json: "\"Telephone\":\"\",\"Telephone\":null", Telephone: "", Mobile: (string?)null, Fax: (string?)null),
+        };
+        var baseline = JsonSerializer.Serialize(new UpsertCustomerRequest(
+            "A", "B", "written-only", null, null, "a@b.test", null, null, null, null), source.JsonSerializerOptions);
+        foreach (var body in bodies)
         {
-            Assert.True(converters[index].HandleNull);
-            Assert.NotSame(converters[index], freshConverters[index]);
-            Assert.Null(ReadContactToken(converters[index], "null", first));
-            Assert.Null(ReadContactToken(freshConverters[index], "null", second));
+            var context = Context(Valid + "," + body.Json + "}", "create");
+            using var stream = context.HttpContext.Request.Body;
+            var result = adapter.ReadAsync(context).GetAwaiter().GetResult();
+            Assert.False(result.HasError);
+            var value = Assert.IsType<UpsertCustomerRequest>(result.Model);
+            Assert.Equal(body.Telephone, value.Telephone);
+            Assert.Equal(body.Mobile, value.Mobile);
+            Assert.Equal(body.Fax, value.Fax);
+            foreach (var field in new[] { "Telephone", "Mobile", "Fax" })
+                Assert.Null(source.JsonSerializerOptions.GetTypeInfo(typeof(UpsertCustomerRequest)).Properties
+                    .Single(property => property.Name == field).CustomConverter);
+            Assert.Equal(baseline, JsonSerializer.Serialize(new UpsertCustomerRequest(
+                "A", "B", "written-only", null, null, "a@b.test", null, null, null, null), source.JsonSerializerOptions));
         }
-        // Direct converter calls model one logical read; this does not authorize shared request options.
-        Assert.Equal("true", ReadContactToken(converters[0], "true", first));
-        Assert.Equal("false", ReadContactToken(converters[1], "false", first));
-        Assert.Equal("00123", ReadContactToken(converters[2], "\"00123\"", first));
-        Assert.Equal("null", WriteContactToken(converters[0], null!, first));
-        Assert.Equal("true", ReadContactToken(converters[0], "null", first));
-        Assert.Equal(JsonSerializer.Serialize("written-only", source.JsonSerializerOptions), WriteContactToken(converters[0], "written-only", first));
-        Assert.Equal("true", ReadContactToken(converters[0], "null", first));
         foreach (var rejected in new[] { "{}", "[]" })
         {
-            Assert.Throws<InvalidOperationException>(() => ReadContactToken(converters[0], rejected, first));
-            Assert.Equal("true", ReadContactToken(converters[0], "null", first));
-        }
-        Assert.Equal("false", ReadContactToken(converters[1], "null", first));
-        Assert.Equal("00123", ReadContactToken(converters[2], "null", first));
-        Assert.Equal(string.Empty, ReadContactToken(converters[0], "\"\"", first));
-        Assert.Equal(string.Empty, ReadContactToken(converters[0], "null", first));
-        for (var index = 0; index < names.Length; index++)
-        {
-            Assert.Null(ReadContactToken(freshConverters[index], "null", second));
-            Assert.Null(source.JsonSerializerOptions.GetTypeInfo(typeof(UpsertCustomerRequest)).Properties
-                .Single(property => property.Name == names[index]).CustomConverter);
+            var context = Context(Valid + ",\"Telephone\":" + rejected + "}", "create");
+            using var stream = context.HttpContext.Request.Body;
+            Assert.True(adapter.ReadAsync(context).GetAwaiter().GetResult().HasError);
+            var reset = Context(Valid + ",\"Telephone\":null}", "create");
+            using var resetStream = reset.HttpContext.Request.Body;
+            Assert.Null(Assert.IsType<UpsertCustomerRequest>(adapter.ReadAsync(reset).GetAwaiter().GetResult().Model).Telephone);
         }
     }
 
