@@ -427,8 +427,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressLiteralLineHttpTests.cs",
-      "bytes": 34799,
-      "sha256": "d585b98e72cc59d06f544eabf0cb27815e5fffb0de148adc53cefcdf589312ca"
+      "bytes": 38370,
+      "sha256": "a8ed5e37ccc50ddb9bff19ae1054fc69e926b352e6d30f84d29ee935d26a16a0"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressOriginalNullBoundaryTests.cs",
