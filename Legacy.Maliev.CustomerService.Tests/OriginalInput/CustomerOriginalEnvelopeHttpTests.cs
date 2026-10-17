@@ -151,7 +151,7 @@ public sealed class CustomerOriginalEnvelopeHttpTests(CustomerDetailAuthorityFix
             Assert.NotNull(version.Headers.ETag);
             request.Headers.TryAddWithoutValidation("If-Match", version.Headers.ETag!.ToString());
         }
-        else request.Headers.Add("Idempotency-Key", "6a75d230-c1a3-44f1-8d2d-2acf97ff8071");
+        else request.Headers.Add("Idempotency-Key", Guid.NewGuid().ToString());
         using var response = await client.SendAsync(request, token);
         Assert.Equal(versioned ? HttpStatusCode.NoContent : HttpStatusCode.Created, response.StatusCode);
         var id = 1;
