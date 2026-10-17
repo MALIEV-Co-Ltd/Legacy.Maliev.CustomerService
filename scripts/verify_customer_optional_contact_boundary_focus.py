@@ -11,7 +11,7 @@ import uuid
 import xml.etree.ElementTree as E
 SOURCE_PATH = 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerOptionalContactMvcBoundaryTests.cs'
 MANIFEST_PATH = 'scripts/customer-address-focused-manifest.json'
-REVIEWED_SOURCE_SHA256 = 'db197c7adfdacfa3013cc8edb3043e8a192ec50c1e9689512e396945b925e484'
+REVIEWED_SOURCE_SHA256 = '5b4d045cd5e480c76436b627dd2b90bcf051851dda356fbe1d6c8407364f3fa0'
 NS = 'http://microsoft.com/schemas/VisualStudio/TeamTest/2010'
 CLASS = 'Legacy.Maliev.CustomerService.Tests.Controllers.CustomerOptionalContactMvcBoundaryTests'
 METHODS = ['DescriptorAndHeaderSelection_PreserveStrictRoutesAndUnknownEndpoints', 'OrdinaryFields_MatchReferenceAndIgnoreOnlyContactDuplicateNulls', 'CustomPoliciesConvertersResolversFactories_FallThroughWithoutMutation', 'DifferentialBodies_KeepEncodingEmptyMalformedAndPrivacyBehavior', 'DifferentialExceptionalConverters_KeepFormatOverflowAndCancellation', 'ConcurrentReads_IsolateOrdinaryVersionedReplayAndDefaultSerialization', 'RealHttp_OrdinaryCreateAndUpdatePreserveLiteralContactsAndState', 'RealHttp_ReplayVersionedAndDeniedWritesStayStrictAndUnchanged', 'FormattersAndGlobalOptions_RemainUnmodifiedAcrossReads', 'StreamAndPipeSwitch_DifferentialReaderLeavesRequestBodyOpen']
