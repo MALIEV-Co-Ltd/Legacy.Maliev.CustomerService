@@ -186,9 +186,22 @@ public sealed class CustomerAddressOriginalEnvelopeHttpTests(CustomerDetailAutho
         {
             Customers = await db.Customers.AsNoTracking().OrderBy(row => row.Id).Select(row => new
             {
-                row.Id, row.FirstName, row.LastName, row.FullName, row.Email, row.Telephone, row.Mobile, row.Fax,
-                row.DateOfBirth, row.CompanyId, row.BillingAddressId, row.ShippingAddressId,
-                row.InternalRemark, row.CreatedDate, row.ModifiedDate, Revision = EF.Property<uint>(row, "xmin"),
+                row.Id,
+                row.FirstName,
+                row.LastName,
+                row.FullName,
+                row.Email,
+                row.Telephone,
+                row.Mobile,
+                row.Fax,
+                row.DateOfBirth,
+                row.CompanyId,
+                row.BillingAddressId,
+                row.ShippingAddressId,
+                row.InternalRemark,
+                row.CreatedDate,
+                row.ModifiedDate,
+                Revision = EF.Property<uint>(row, "xmin"),
             }).ToArrayAsync(token),
             Companies = await db.Companies.AsNoTracking().OrderBy(row => row.Id).ToArrayAsync(token),
             Addresses = await db.Addresses.AsNoTracking().Where(row => !excludeAddress.HasValue || row.Id != excludeAddress.Value)

@@ -1542,13 +1542,13 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CustomerOriginalEnvelopeHttpTests.cs",
-      "bytes": 14800,
-      "sha256": "835f8d87d45f9d57712f68049d4a96e85571bb1cbb03d4395aa3b61f8eae7c81"
+      "bytes": 15060,
+      "sha256": "939b165a848a4b341b6062d49194923a8f2aa177c93b993c439dc9ea972c8947"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CustomerAddressOriginalEnvelopeHttpTests.cs",
-      "bytes": 12606,
-      "sha256": "7215c121726285a6dcf3654bf215a5706cd4bd103b35ff22522fe97f3c404133"
+      "bytes": 12814,
+      "sha256": "6a8f1d87fd108fa305c5037ad26676b7d4e96296e59da756daea07c228e28d0a"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CustomerOriginalBodyResourceTests.cs",
