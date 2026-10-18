@@ -177,6 +177,218 @@ public sealed class CustomerDefaultPageHttpTests(CustomerDetailAuthorityFixture 
         Assert.Equal(cachedBefore, await cache.GetAsync("customer:1", cancellation));
     }
 
+
+    // These source-parity cases are additive during the hosted RED stage. The original
+    // approved-cap cases above remain intact until Root reviews the actual failures.
+    [Theory]
+    [InlineData(false, false, false)]
+    [InlineData(false, false, true)]
+    [InlineData(false, true, false)]
+    [InlineData(false, true, true)]
+    [InlineData(true, false, false)]
+    [InlineData(true, false, true)]
+    [InlineData(true, true, false)]
+    [InlineData(true, true, true)]
+    public async Task OrdinaryDefaultSize_SourceParityReturnsEntireCohort(
+        bool filtered, bool emptySize, bool descending)
+    {
+        using var lifetime = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+        var cancellation = lifetime.Token;
+        var (allIds, matchingIds, companyId) = await SeedSourcePagingCohortAsync(cancellation);
+        var ids = filtered ? matchingIds : allIds;
+        if (descending) ids = ids.Reverse().ToArray();
+        Assert.Equal(filtered ? 1000 : 1010, ids.Length);
+        var query = "/customers?sort=" + (descending ? "CustomerId_Descending" : "CustomerId_Ascending")
+            + (filtered ? "&search=" + Uri.EscapeDataString(Needle) : string.Empty)
+            + (emptySize ? "&size=" : string.Empty);
+        await AssertSourcePagingReadOnlyAsync(async (client, token) =>
+        {
+            var actual = await AssertPageAsync(client, query, ids, matchingIds, companyId, 1, ids.Length, token);
+            Assert.Equal(ids.Length, actual.Length);
+            Assert.Equal(ids[0], actual[0]);
+            Assert.Equal(ids[^1], actual[^1]);
+            using var exhausted = await client.GetAsync(query + "&index=2", token);
+            Assert.Equal(HttpStatusCode.NotFound, exhausted.StatusCode);
+        }, cancellation);
+    }
+
+    [Theory]
+    [InlineData(false, 251)]
+    [InlineData(false, 1000)]
+    [InlineData(false, int.MaxValue)]
+    [InlineData(true, 251)]
+    [InlineData(true, 1000)]
+    [InlineData(true, int.MaxValue)]
+    public async Task OrdinaryPositiveSize_SourceParityDoesNotApplyUpperCap(bool filtered, int size)
+    {
+        using var lifetime = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+        var cancellation = lifetime.Token;
+        var (allIds, matchingIds, companyId) = await SeedSourcePagingCohortAsync(cancellation);
+        var ids = filtered ? matchingIds : allIds;
+        var query = "/customers?size=" + size
+            + (filtered ? "&search=" + Uri.EscapeDataString(Needle) : string.Empty);
+        var pages = size == 251 ? (filtered ? 4 : 5) : size == 1000 && !filtered ? 2 : 1;
+        await AssertSourcePagingReadOnlyAsync(async (client, token) =>
+        {
+            var combined = new List<int>();
+            for (var page = 1; page <= pages; page++)
+            {
+                combined.AddRange(await AssertPageAsync(client, query + "&index=" + page,
+                    ids, matchingIds, companyId, page, size, token));
+            }
+
+            Assert.Equal(ids, combined.ToArray());
+            Assert.Equal(ids.Length, combined.Distinct().Count());
+            using var exhausted = await client.GetAsync(query + "&index=" + (pages + 1), token);
+            Assert.Equal(HttpStatusCode.NotFound, exhausted.StatusCode);
+        }, cancellation);
+    }
+
+    [Theory]
+    [InlineData(0, false)]
+    [InlineData(1, false)]
+    [InlineData(int.MaxValue, false)]
+    [InlineData(0, true)]
+    [InlineData(1, true)]
+    [InlineData(int.MaxValue, true)]
+    public async Task OrdinaryZeroSize_SourceParityReturnsNotFound(int index, bool noMatch)
+    {
+        using var lifetime = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+        var cancellation = lifetime.Token;
+        await fixture.ResetAsync();
+        var query = "/customers?size=0&index=" + index
+            + (noMatch ? "&search=absent-source-paging-witness" : string.Empty);
+        await AssertSourcePagingReadOnlyAsync(async (client, token) =>
+        {
+            using var response = await client.GetAsync(query, token);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }, cancellation);
+    }
+
+    [Theory]
+    [InlineData("anonymous", HttpStatusCode.Unauthorized)]
+    [InlineData("full", HttpStatusCode.Forbidden)]
+    [InlineData("wrong-signature", HttpStatusCode.Unauthorized)]
+    [InlineData("expired", HttpStatusCode.Unauthorized)]
+    public async Task OrdinarySourcePaging_InvalidAuthorityStillCannotRead(
+        string authority, HttpStatusCode expected)
+    {
+        using var lifetime = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+        var cancellation = lifetime.Token;
+        await fixture.ResetAsync();
+        await AssertSourcePagingReadOnlyAsync(async (client, token) =>
+        {
+            foreach (var query in new[]
+            {
+                "/customers?size=", "/customers?size=0", "/customers?size=251",
+                "/customers?size=1000", "/customers?size=2147483647&search=Before",
+            })
+            {
+                using var response = await client.GetAsync(query, token);
+                Assert.Equal(expected, response.StatusCode);
+            }
+        }, cancellation, authority);
+    }
+
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(int.MinValue)]
+    public async Task OrdinaryNegativeSize_PreservesAcceptedLowerClamp(int size)
+    {
+        using var lifetime = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+        var cancellation = lifetime.Token;
+        await fixture.ResetAsync();
+        await AssertSourcePagingReadOnlyAsync(async (client, token) =>
+        {
+            foreach (var index in new[] { 0, -1, 1 })
+            {
+                await AssertPageAsync(client, $"/customers?size={size}&index={index}",
+                    [1], [], 0, 1, 1, token);
+            }
+
+            using var distant = await client.GetAsync($"/customers?size={size}&index={int.MaxValue}", token);
+            Assert.Equal(HttpStatusCode.NotFound, distant.StatusCode);
+        }, cancellation);
+    }
+
+    private async Task<(int[] AllIds, int[] MatchingIds, int CompanyId)> SeedSourcePagingCohortAsync(
+        CancellationToken cancellation)
+    {
+        await fixture.ResetAsync();
+        await using var db = fixture.Context();
+        var company = new Company { Name = "Shared default-page company", TaxNumber = "Synthetic tax" };
+        var matches = Enumerable.Range(0, 1000).Select(value => new Customer
+        {
+            FirstName = Needle,
+            LastName = "Member",
+            Email = $"source-match-{value}@example.test",
+            Company = company,
+            BillingAddressId = 1,
+            ShippingAddressId = 1,
+            InternalRemark = "synthetic staff-only match",
+        }).ToArray();
+        db.Customers.AddRange(matches);
+        db.Customers.AddRange(Enumerable.Range(0, 9).Select(value => new Customer
+        {
+            FirstName = "Distractor",
+            LastName = "Member",
+            Email = $"source-distractor-{value}@example.test",
+            InternalRemark = "synthetic staff-only distractor",
+        }));
+        await db.SaveChangesAsync(cancellation);
+        var matchingIds = matches.Select(row => row.Id).Order().ToArray();
+        var allIds = await db.Customers.OrderBy(row => row.Id).Select(row => row.Id).ToArrayAsync(cancellation);
+        Assert.Equal(1000, matchingIds.Length);
+        Assert.Equal(1010, allIds.Length);
+        return (allIds, matchingIds, company.Id);
+    }
+
+    private async Task AssertSourcePagingReadOnlyAsync(
+        Func<HttpClient, CancellationToken, Task> read,
+        CancellationToken cancellation,
+        string authority = "directory")
+    {
+        var before = await SourcePagingPhysicalSnapshotAsync(cancellation);
+        await using var host = fixture.Start();
+        await fixture.SeedOldAsync(host);
+        var cache = host.Services.GetRequiredService<IDistributedCache>();
+        byte[] unrelatedCache = [0, 1, 127, 255];
+        await cache.SetAsync("customer:2", unrelatedCache, cancellation);
+        var cachedBefore = await cache.GetAsync("customer:1", cancellation);
+        Assert.NotNull(cachedBefore);
+        using var client = fixture.Client(host, authority);
+        try
+        {
+            await read(client, cancellation);
+        }
+        finally
+        {
+            Assert.Equal(before, await SourcePagingPhysicalSnapshotAsync(cancellation));
+            Assert.Equal(cachedBefore, await cache.GetAsync("customer:1", cancellation));
+            Assert.Equal(unrelatedCache, await cache.GetAsync("customer:2", cancellation));
+        }
+    }
+
+    private async Task<string> SourcePagingPhysicalSnapshotAsync(CancellationToken cancellation)
+    {
+        await using var db = fixture.Context();
+        await db.Database.OpenConnectionAsync(cancellation);
+        var snapshots = new List<string>();
+        foreach (var table in new[]
+        {
+            "Customer", "Company", "Address", "CustomerCreateOperation", "QuotationProfileCompletionOperation",
+        })
+        {
+            await using var command = db.Database.GetDbConnection().CreateCommand();
+            command.CommandText = "SELECT COALESCE(jsonb_agg(to_jsonb(t) || "
+                + "jsonb_build_object('_physical_xmin', t.xmin::text) ORDER BY to_jsonb(t)::text), "
+                + "'[]'::jsonb)::text FROM \"" + table + "\" AS t";
+            snapshots.Add(table + ":" + (string)(await command.ExecuteScalarAsync(cancellation))!);
+        }
+
+        return string.Join("\n", snapshots);
+    }
+
     private static async Task<int[]> AssertPageAsync(
         HttpClient client, string path, int[] ids, int[] matchingIds, int companyId,
         int page, int size, CancellationToken cancellation)
