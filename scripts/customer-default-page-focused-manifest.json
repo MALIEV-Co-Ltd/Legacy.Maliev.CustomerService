@@ -14,7 +14,7 @@
     "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.DistantPage_ReturnsNotFoundWithoutOffsetOverflowOrStoredMutation(index: 2147483647, size: 250)",
     "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.DistantPage_ReturnsNotFoundWithoutOffsetOverflowOrStoredMutation(index: 2147483646, size: 250)"
   ],
-  "filter": "FullyQualifiedName~CustomerDefaultPageHttpTests",
+  "filter": "FullyQualifiedName=Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.OmittedSize_ReturnsFilteredCohortUpToApprovedCapWithExplicitPagingUnchanged|FullyQualifiedName=Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.OmittedSize_InvalidDirectoryAuthorityCannotReadOrMutateProfiles|FullyQualifiedName=Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.DistantPage_ReturnsNotFoundWithoutOffsetOverflowOrStoredMutation",
   "sourceBase": "d76e7c79564065aac6f64bbd26ddeab6b4c9ff9e",
   "codePins": [
     {
@@ -34,8 +34,8 @@
     },
     {
       "path": ".github/workflows/_build-and-test.yml",
-      "bytes": 4153,
-      "sha256": "2e2cd26731a1cba1d87162abaa8eca0da9dd6b30fcb5df6baa84bfdaf4bb0168"
+      "bytes": 9493,
+      "sha256": "bbf57b035b2e360adee12c13e1fc2ae9df217131f10c6ab775ccaa2bd1c9e193"
     },
     {
       "path": ".github/workflows/ci-develop.yml",
@@ -109,8 +109,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Controllers/CompaniesController.cs",
-      "bytes": 4136,
-      "sha256": "dcc403df88f05c503a34e5656136a2f803cb94afc14bef31203dc54358839a54"
+      "bytes": 4165,
+      "sha256": "159245eab0708896ec81997cdddf659c318884966a3256e76b158caa66dbd918"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Controllers/CustomerRelationsController.cs",
@@ -119,8 +119,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Controllers/CustomersController.cs",
-      "bytes": 12471,
-      "sha256": "344cf12fa44af63ee577db20ac91a110270fd752caa68e10563c7422e88895f1"
+      "bytes": 12484,
+      "sha256": "fb70eb9ca0083a80eb72c6237292d821288d30c3f30e084502f3c6bd934e9f86"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Controllers/EmailsController.cs",
@@ -144,13 +144,13 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Legacy.Maliev.CustomerService.Api.csproj",
-      "bytes": 1761,
-      "sha256": "2e3761fbacb75bf275b7147006818ad54e025492e04d0ac96e578f0f9700f198"
+      "bytes": 2110,
+      "sha256": "9e790f3acaca923a954b8d53839d00a057bb6b6bf8ba816cab08094611c1c255"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Program.cs",
-      "bytes": 2654,
-      "sha256": "e799e5baa1ae72e73af2990cf3d6f852a537df12a4cbbeab5b0cfbb7da70dc40"
+      "bytes": 3175,
+      "sha256": "340c961cd439f3bbb7df45dc4fffbee07e077135a326e5b666e172b20afb36b4"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Properties/launchSettings.json",
@@ -234,8 +234,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Application/Services/CustomerApplicationService.cs",
-      "bytes": 7662,
-      "sha256": "24974aed8e278d395478f77046cc8f95efbb3504696855f594c35599c79c74f6"
+      "bytes": 7655,
+      "sha256": "0992f77b30e8bd3fb18123242e8bcd22c93e3292434edd50ff56aac558989028"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Application/Services/CustomerRelationService.cs",
@@ -269,8 +269,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Data/CustomerRepository.cs",
-      "bytes": 22860,
-      "sha256": "8fa964cbaac788c8b1805ceec4f5ac0c3c4044b91a4bc1feee78d85948f7c838"
+      "bytes": 22853,
+      "sha256": "e2ded23908eaf7143806d8e551375d5f45f764d17765f2657daa17f43f0f2c8c"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Data/DistributedCustomerCache.cs",
@@ -399,8 +399,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressLiteralLineHttpTests.cs",
-      "bytes": 34799,
-      "sha256": "d585b98e72cc59d06f544eabf0cb27815e5fffb0de148adc53cefcdf589312ca"
+      "bytes": 38370,
+      "sha256": "a8ed5e37ccc50ddb9bff19ae1054fc69e926b352e6d30f84d29ee935d26a16a0"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressOriginalNullBoundaryTests.cs",
@@ -429,8 +429,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLiteralNameHttpTests.cs",
-      "bytes": 17226,
-      "sha256": "2b00d66dc6e5de061bd11f2b52b68d16e29fd08b6ca09996255d211d70336249"
+      "bytes": 17727,
+      "sha256": "4ee7555694c46b99b60f942a967cd802422c80e8d036fc23620fde3fb33e6eeb"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryPrimitiveHttpTests.cs",
@@ -459,8 +459,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDefaultPageHttpTests.cs",
-      "bytes": 13181,
-      "sha256": "78c4e0ff951dccffe37a948713fb7e73ab5b3d7a13adb50912243d1e8dfe11c5"
+      "bytes": 22988,
+      "sha256": "2884283608b57c31d4ad7302094a695d372538e5746198846afa85f7c20059ec"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDetailAuthorityFixture.cs",
@@ -499,8 +499,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerNameLiteralHttpTests.cs",
-      "bytes": 19601,
-      "sha256": "458ba5373b8d6581ae1ac2a21d17ee69a0e7867dfbfb88b466032d2a4b0555d5"
+      "bytes": 28478,
+      "sha256": "455f13553cacfbb3da04408c41e970fbb044f409590f81c480d817f826b2802e"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerProductionPipelineHttpTests.cs",
@@ -644,8 +644,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Workflows/WorkflowContractTests.cs",
-      "bytes": 29764,
-      "sha256": "dd95c4fcb3215ae8fc46788cc3085dd314ae825a3d269990d23980c35777d97e"
+      "bytes": 45423,
+      "sha256": "939529b2687142f04c8cd785537e127b9bfa5c585113fd539272a8fcbaa8bfad"
     },
     {
       "path": "Legacy.Maliev.CustomerService.slnx",
@@ -1419,8 +1419,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryDuplicateNullHttpTests.cs",
-      "bytes": 39430,
-      "sha256": "f8a0859c64a769e3aadf832f1a96494baee49bb139018073b1f400feff1ee397"
+      "bytes": 40525,
+      "sha256": "9e9c81daaf479b4d11dc8b7a8a71f7230af3a009a082680a9fe1fd874901e2ae"
     },
     {
       "path": "docs/company-ordinary-duplicate-null-mvc-compatibility-20261011.md",
@@ -1464,8 +1464,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyFieldPrimitiveHttpTests.cs",
-      "bytes": 29932,
-      "sha256": "3262955101ecb456265adaae9d33b19814a6d055a1a6ef2b1e205d2dc248a854"
+      "bytes": 31911,
+      "sha256": "e554b1f2e142b4929d6f38a0127f61120536500782681b22fc9ec046043a40ea"
     },
     {
       "path": "docs/company-tax-registrar-primitive-mvc-20261011.md",

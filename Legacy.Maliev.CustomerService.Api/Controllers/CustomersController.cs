@@ -139,7 +139,7 @@ public sealed class CustomersController(ICustomerService service) : ControllerBa
         CancellationToken cancellationToken)
     {
         var result = await service.GetCustomersAsync(sort, search, index, size, cancellationToken);
-        return result is null ? NotFound() : result;
+        return result is null || size == 0 ? NotFound() : result;
     }
 
     /// <summary>
