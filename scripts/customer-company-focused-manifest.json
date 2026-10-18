@@ -273,8 +273,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Legacy.Maliev.CustomerService.Api.csproj",
-      "bytes": 1761,
-      "sha256": "2e3761fbacb75bf275b7147006818ad54e025492e04d0ac96e578f0f9700f198"
+      "bytes": 2110,
+      "sha256": "9e790f3acaca923a954b8d53839d00a057bb6b6bf8ba816cab08094611c1c255"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Program.cs",
@@ -528,8 +528,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressLiteralLineHttpTests.cs",
-      "bytes": 34799,
-      "sha256": "d585b98e72cc59d06f544eabf0cb27815e5fffb0de148adc53cefcdf589312ca"
+      "bytes": 38370,
+      "sha256": "a8ed5e37ccc50ddb9bff19ae1054fc69e926b352e6d30f84d29ee935d26a16a0"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressOriginalNullBoundaryTests.cs",
@@ -558,8 +558,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLiteralNameHttpTests.cs",
-      "bytes": 17226,
-      "sha256": "2b00d66dc6e5de061bd11f2b52b68d16e29fd08b6ca09996255d211d70336249"
+      "bytes": 17727,
+      "sha256": "4ee7555694c46b99b60f942a967cd802422c80e8d036fc23620fde3fb33e6eeb"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryPrimitiveHttpTests.cs",
@@ -1558,8 +1558,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryDuplicateNullHttpTests.cs",
-      "bytes": 39430,
-      "sha256": "f8a0859c64a769e3aadf832f1a96494baee49bb139018073b1f400feff1ee397"
+      "bytes": 40525,
+      "sha256": "9e9c81daaf479b4d11dc8b7a8a71f7230af3a009a082680a9fe1fd874901e2ae"
     },
     {
       "path": "docs/company-ordinary-duplicate-null-mvc-compatibility-20261011.md",
@@ -1603,8 +1603,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyFieldPrimitiveHttpTests.cs",
-      "bytes": 29932,
-      "sha256": "3262955101ecb456265adaae9d33b19814a6d055a1a6ef2b1e205d2dc248a854"
+      "bytes": 31911,
+      "sha256": "e554b1f2e142b4929d6f38a0127f61120536500782681b22fc9ec046043a40ea"
     },
     {
       "path": "docs/company-tax-registrar-primitive-mvc-20261011.md",
@@ -1618,13 +1618,13 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCustomerContactInputFormatter.cs",
-      "bytes": 20818,
-      "sha256": "96c9dc19494af98c359df24e6468db2652bd6148c762f4ca42c8ae06118a1514"
+      "bytes": 17803,
+      "sha256": "aa0ca5ea5344d83bb54b2f88745fab02e2f0fa41e55eac8b431285ba160bf1ad"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerOptionalContactMvcBoundaryTests.cs",
-      "bytes": 55095,
-      "sha256": "db197c7adfdacfa3013cc8edb3043e8a192ec50c1e9689512e396945b925e484"
+      "bytes": 54566,
+      "sha256": "5b4d045cd5e480c76436b627dd2b90bcf051851dda356fbe1d6c8407364f3fa0"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/OrdinaryAddressPrimitiveMetadataTests.cs",
@@ -1654,7 +1654,7 @@
     {
       "path": "scripts/verify_customer_optional_contact_boundary_focus.py",
       "bytes": 13421,
-      "sha256": "1a624255ef0c1473be42e8f959a1bf865c7032b62c6073043b045421cb8ee8d0"
+      "sha256": "0f15b92f8dc5359417236910ca04cddc3b8ded65191310984c168137fd17c26b"
     },
     {
       "path": "scripts/verify_customer_optional_contact_focus.py",
