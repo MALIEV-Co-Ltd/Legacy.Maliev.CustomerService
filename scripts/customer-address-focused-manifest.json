@@ -452,8 +452,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyFieldPrimitiveHttpTests.cs",
-      "bytes": 29932,
-      "sha256": "3262955101ecb456265adaae9d33b19814a6d055a1a6ef2b1e205d2dc248a854"
+      "bytes": 31911,
+      "sha256": "e554b1f2e142b4929d6f38a0127f61120536500782681b22fc9ec046043a40ea"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLifecycleHttpTests.cs",
@@ -462,13 +462,13 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLiteralNameHttpTests.cs",
-      "bytes": 17226,
-      "sha256": "2b00d66dc6e5de061bd11f2b52b68d16e29fd08b6ca09996255d211d70336249"
+      "bytes": 17727,
+      "sha256": "4ee7555694c46b99b60f942a967cd802422c80e8d036fc23620fde3fb33e6eeb"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryDuplicateNullHttpTests.cs",
-      "bytes": 39430,
-      "sha256": "f8a0859c64a769e3aadf832f1a96494baee49bb139018073b1f400feff1ee397"
+      "bytes": 40525,
+      "sha256": "9e9c81daaf479b4d11dc8b7a8a71f7230af3a009a082680a9fe1fd874901e2ae"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryPrimitiveHttpTests.cs",
@@ -1497,8 +1497,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCustomerContactInputFormatter.cs",
-      "bytes": 16982,
-      "sha256": "d5a75b0d9f227fcb20463d1230c519bae605a397b8e9028da4cf5d7a2a028235"
+      "bytes": 17803,
+      "sha256": "aa0ca5ea5344d83bb54b2f88745fab02e2f0fa41e55eac8b431285ba160bf1ad"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerOptionalContactMvcBoundaryTests.cs",
@@ -1522,8 +1522,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/CustomerOriginalBodyReader.cs",
-      "bytes": 8280,
-      "sha256": "f5fc1f8a83f007f303d0d39a57ad9cfa7394f8e2f1f4418b0920ac669fc22bf2"
+      "bytes": 8534,
+      "sha256": "26d93a9a5bbc61b2dfb13c1516ec925e955e68c01d92c324795f75b98dcaf16f"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CustomerOriginalInputOracle.cs",
@@ -1554,6 +1554,21 @@
       "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CustomerOriginalBodyResourceTests.cs",
       "bytes": 18308,
       "sha256": "7db2d8df934afad437a6fbd49068264feec359bc0f67e587e2f39b119e62e38d"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CompanyOriginalBodyReaderTests.cs",
+      "bytes": 45649,
+      "sha256": "d687150bd58498e0a57935faf35a753a2e8acf2b988201dd4cefd8c3dba48bb6"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CompanyOriginalEnvelopeHttpTests.cs",
+      "bytes": 15105,
+      "sha256": "a831e9d49d36e0eac5540462085363897be46e58468626b8e8f74f18ab7b7108"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CompanyOriginalBodyResourceTests.cs",
+      "bytes": 17435,
+      "sha256": "7c930a8d2a80bdbcd12435fbbd6a9d0e30c7b9dfbd678c0d9a7aa0648d8cdafa"
     }
   ],
   "frozenDependencyPins": [

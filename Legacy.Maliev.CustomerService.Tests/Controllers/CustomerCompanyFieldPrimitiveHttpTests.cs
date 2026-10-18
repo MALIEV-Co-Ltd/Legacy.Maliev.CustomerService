@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Legacy.Maliev.CustomerService.Application.Models;
+using Legacy.Maliev.CustomerService.Tests.OriginalInput;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Options;
@@ -107,6 +108,33 @@ public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthori
                     }
                     foreach (var item in BoundaryCases())
                     {
+                        if (item.SourceValue is { } normalized)
+                        {
+                            var json = Payload(field, item.Token, "");
+                            var source = await CustomerOriginalInputOracle.ReadAsync("company", json);
+                            Assert.Equal("success", source.Kind);
+                            var model = Assert.IsType<SourceCompany>(source.Model);
+                            Assert.Equal(normalized, field == "TaxNumber" ? model.TaxNumber : model.Registrar);
+                            var expected = new PositiveCase(item.Label, "", "ok",
+                                field == "TaxNumber" ? normalized : null, field == "Registrar" ? normalized : null);
+                            var accepted = await PersistAsync(client, cache, route, json, expected, segmented, token);
+                            var equivalent = await PersistAsync(client, cache, route,
+                                Payload(field, JsonSerializer.Serialize(normalized), ""), expected, segmented, token);
+                            Assert.Equal(accepted, equivalent);
+                            output.WriteLine(JsonSerializer.Serialize(new
+                            {
+                                Kind = "http-source-normalized-string-pair",
+                                Field = field,
+                                Route = route,
+                                Case = item.Label,
+                                BodyWrittenInOneByteSegments = segmented,
+                                PrimitiveOrLiteral = accepted,
+                                EquivalentString = equivalent,
+                                Graph = "intended effects only",
+                                Cache = "exact eviction"
+                            }));
+                            continue;
+                        }
                         var first = await RollbackAsync(client, cache, route, Payload(field, item.Token, ""), segmented, item.Storage, token);
                         var second = await RollbackAsync(client, cache, route, Payload(field, item.StringToken, ""), segmented, item.Storage, token);
                         Assert.Equal(first, second);
@@ -357,9 +385,9 @@ public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthori
             new("final257-number", number, JsonSerializer.Serialize(number), true),
             new("final257-string", ascii, ascii, true),
             new("literal-nul", "\"a\\u0000b\"", "\"a\\u0000b\"", true),
-            new("malformed-high", "\"\\uD800\"", "\"\\uD800\"", false),
-            new("malformed-low", "\"\\uDC00\"", "\"\\uDC00\"", false),
-            new("malformed-reversed", "\"\\uDC00\\uD800\"", "\"\\uDC00\\uD800\"", false),
+            new("malformed-high", "\"\\uD800\"", "\"\\uD800\"", false, "\uFFFD"),
+            new("malformed-low", "\"\\uDC00\"", "\"\\uDC00\"", false, "\uFFFD"),
+            new("malformed-reversed", "\"\\uDC00\\uD800\"", "\"\\uDC00\\uD800\"", false, "\uFFFD\uFFFD"),
         ];
     }
 
@@ -389,7 +417,7 @@ public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthori
     }
 
     private sealed record PrimitiveCase(string Label, string Token, string Lexeme, string? Final, string Suffix);
-    private sealed record BoundaryCase(string Label, string Token, string StringToken, bool Storage);
+    private sealed record BoundaryCase(string Label, string Token, string StringToken, bool Storage, string? SourceValue = null);
     private sealed record FailureObservation(int? Status, string? MediaType, string Category, string Shape);
 
     private static void AssertActualMvc(WebApplicationFactory<Program> host)

@@ -2,6 +2,7 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using Legacy.Maliev.CustomerService.Application.Models;
+using Legacy.Maliev.CustomerService.Tests.OriginalInput;
 using Legacy.Maliev.CustomerService.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -47,8 +48,8 @@ public sealed class CustomerCompanyLiteralNameHttpTests(CustomerDetailAuthorityF
             ("Combining257", string.Concat(Enumerable.Repeat("ก้", 128)) + "้", false, false, null),
             ("TrailingSpace257", new string('a', 256) + " ", false, false, null),
             ("NulNotStorable", "company\0name", false, false, null),
-            ("LoneHighSurrogateJson", null, false, false, "\"\\ud800\""),
-            ("LoneLowSurrogateJson", null, false, false, "\"\\udc00\""),
+            ("LoneHighSurrogateJson", "\uFFFD", !scoped, false, "\"\\ud800\""),
+            ("LoneLowSurrogateJson", "\uFFFD", !scoped, false, "\"\\udc00\""),
             ("EmptyTaxOnly", "", true, true, null),
             ("WhitespaceTaxOnly", " \t\u00a0 ", true, true, null),
             ("NullName", null, false, true, null),
@@ -59,6 +60,13 @@ public sealed class CustomerCompanyLiteralNameHttpTests(CustomerDetailAuthorityF
             var before = await PhysicalSnapshotAsync(token);
             var cacheBefore = await PrimeAsync(cache, token);
             var versions = scoped ? await VersionsAsync(client, create ? "new" : "1", token) : default;
+            if (!scoped && item.Raw is not null)
+            {
+                // Original JSON normalizes lone escaped surrogates before storage validation.
+                var source = await CustomerOriginalInputOracle.ReadAsync("company", "{\"Name\":" + item.Raw + "}");
+                Assert.Equal("success", source.Kind);
+                Assert.Equal(item.Name, Assert.IsType<SourceCompany>(source.Model).Name);
+            }
             using var request = Request(route, item.Name, item.Raw, versions);
             using var result = await client.SendAsync(request, token);
             var accepted = item.Fits && (!scoped || !item.Blank);
