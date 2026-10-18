@@ -248,8 +248,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Controllers/CustomersController.cs",
-      "bytes": 12471,
-      "sha256": "344cf12fa44af63ee577db20ac91a110270fd752caa68e10563c7422e88895f1"
+      "bytes": 12484,
+      "sha256": "fb70eb9ca0083a80eb72c6237292d821288d30c3f30e084502f3c6bd934e9f86"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Controllers/EmailsController.cs",
@@ -363,8 +363,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Application/Services/CustomerApplicationService.cs",
-      "bytes": 7662,
-      "sha256": "24974aed8e278d395478f77046cc8f95efbb3504696855f594c35599c79c74f6"
+      "bytes": 7655,
+      "sha256": "0992f77b30e8bd3fb18123242e8bcd22c93e3292434edd50ff56aac558989028"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Application/Services/CustomerRelationService.cs",
@@ -398,8 +398,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Data/CustomerRepository.cs",
-      "bytes": 22860,
-      "sha256": "8fa964cbaac788c8b1805ceec4f5ac0c3c4044b91a4bc1feee78d85948f7c838"
+      "bytes": 22853,
+      "sha256": "e2ded23908eaf7143806d8e551375d5f45f764d17765f2657daa17f43f0f2c8c"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Data/DistributedCustomerCache.cs",
@@ -588,8 +588,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDefaultPageHttpTests.cs",
-      "bytes": 22703,
-      "sha256": "8ab953e77a59cbdcfb1bcd3509810dbdc9322757a0f687325db4e4968ce5be1c"
+      "bytes": 22988,
+      "sha256": "2884283608b57c31d4ad7302094a695d372538e5746198846afa85f7c20059ec"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDetailAuthorityFixture.cs",
@@ -1533,13 +1533,13 @@
     },
     {
       "path": "scripts/customer-default-page-focused-manifest.json",
-      "bytes": 64122,
-      "sha256": "1515ebadf61656cb9cf9419d1df6a1c3100d1898d6bc4c42bc849b90b7e56726"
+      "bytes": 64567,
+      "sha256": "a15feeae9a2981f212390c76a5a5607b92cf3cd87bf20586623f09b5770f1f12"
     },
     {
       "path": "scripts/customer-email-focused-manifest.json",
       "bytes": 84589,
-      "sha256": "2fecd1dfe42d8564846d21fe1842305601887f7530d55d679dfa9cf9262165bf"
+      "sha256": "07df867c7ace487f94f0e911a80d540b836eb0bd65d0d3f2a4e20c2cab11b71b"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCompanyMvcJsonMetadata.cs",
