@@ -758,8 +758,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDefaultPageHttpTests.cs",
-      "bytes": 13181,
-      "sha256": "78c4e0ff951dccffe37a948713fb7e73ab5b3d7a13adb50912243d1e8dfe11c5"
+      "bytes": 22703,
+      "sha256": "8ab953e77a59cbdcfb1bcd3509810dbdc9322757a0f687325db4e4968ce5be1c"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDetailAuthorityFixture.cs",
