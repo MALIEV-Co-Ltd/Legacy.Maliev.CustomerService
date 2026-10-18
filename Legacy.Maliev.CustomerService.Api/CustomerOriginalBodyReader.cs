@@ -28,6 +28,7 @@ internal sealed class CustomerOriginalBodyReader(NewtonsoftJsonInputFormatter so
     {
         var type = context.ModelType == typeof(UpsertCustomerRequest) ? typeof(OriginalCustomer)
             : context.ModelType == typeof(UpsertAddressRequest) ? typeof(OriginalAddress)
+            : context.ModelType == typeof(UpsertCompanyRequest) ? typeof(OriginalCompany)
             : throw new InvalidOperationException("The original body reader received an unowned contract.");
         var metadata = new EmptyModelMetadataProvider().GetMetadataForType(type);
         var state = new ModelStateDictionary(context.ModelState.MaxAllowedErrors);
@@ -52,6 +53,8 @@ internal sealed class CustomerOriginalBodyReader(NewtonsoftJsonInputFormatter so
             OriginalAddress address => InputFormatterResult.Success(new UpsertAddressRequest(
                 address.Building, address.AddressLine1, address.AddressLine2, address.City,
                 address.State, address.PostalCode, address.CountryId)),
+            OriginalCompany company => InputFormatterResult.Success(new UpsertCompanyRequest(
+                company.Name, company.TaxNumber, company.Registrar)),
             OriginalCustomer customer => InputFormatterResult.Success(new UpsertCustomerRequest(
                 customer.FirstName, customer.LastName, customer.Telephone, customer.Mobile,
                 customer.Fax, customer.Email, customer.DateOfBirth, customer.CompanyId,

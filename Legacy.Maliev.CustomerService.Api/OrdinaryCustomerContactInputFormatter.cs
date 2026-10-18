@@ -13,7 +13,7 @@ using Microsoft.Extensions.Options;
 
 namespace Legacy.Maliev.CustomerService.Api;
 
-/// <summary>Reads the original inert Customer and Address envelopes only for owned ordinary write actions.</summary>
+/// <summary>Reads the original inert Customer, Address and Company envelopes only for owned ordinary write actions.</summary>
 internal sealed class OrdinaryCustomerContactInputFormatter : TextInputFormatter, IInputFormatterExceptionPolicy
 {
     private static readonly ConditionalWeakTable<JsonSerializerOptions, Ownership> Owners = new();
@@ -50,7 +50,8 @@ internal sealed class OrdinaryCustomerContactInputFormatter : TextInputFormatter
             Owners.Add(options, new Ownership(reflection, composed));
     }
 
-    protected override bool CanReadType(Type type) => type == typeof(UpsertCustomerRequest) || type == typeof(UpsertAddressRequest);
+    protected override bool CanReadType(Type type) => type == typeof(UpsertCustomerRequest)
+        || type == typeof(UpsertAddressRequest) || type == typeof(UpsertCompanyRequest);
 
     public override bool CanRead(InputFormatterContext context) =>
         Eligible(context) && OwnsPolicy() && base.CanRead(context);
@@ -59,6 +60,11 @@ internal sealed class OrdinaryCustomerContactInputFormatter : TextInputFormatter
         nameof(AddressesController.CreateCustomerAddressAsync), [typeof(int), typeof(UpsertAddressRequest), typeof(CancellationToken)])!;
     private static readonly MethodInfo AddressUpdate = typeof(AddressesController).GetMethod(
         nameof(AddressesController.UpdateAddressAsync), [typeof(int), typeof(UpsertAddressRequest), typeof(CancellationToken)])!;
+
+    private static readonly MethodInfo CompanyCreate = typeof(CompaniesController).GetMethod(
+        nameof(CompaniesController.CreateCompanyAsync), [typeof(UpsertCompanyRequest), typeof(CancellationToken)])!;
+    private static readonly MethodInfo CompanyUpdate = typeof(CompaniesController).GetMethod(
+        nameof(CompaniesController.UpdateCompanyAsync), [typeof(int), typeof(UpsertCompanyRequest), typeof(CancellationToken)])!;
 
     private static bool Eligible(InputFormatterContext context)
     {
@@ -70,6 +76,10 @@ internal sealed class OrdinaryCustomerContactInputFormatter : TextInputFormatter
             return action.MethodInfo == Create && HttpMethods.IsPost(request.Method)
                     && !request.Headers.ContainsKey("Idempotency-Key")
                 || action.MethodInfo == Update && HttpMethods.IsPut(request.Method);
+        if (context.ModelType == typeof(UpsertCompanyRequest)
+            && action.ControllerTypeInfo.AsType() == typeof(CompaniesController))
+            return action.MethodInfo == CompanyCreate && HttpMethods.IsPost(request.Method)
+                || action.MethodInfo == CompanyUpdate && HttpMethods.IsPut(request.Method);
         return context.ModelType == typeof(UpsertAddressRequest)
             && action.ControllerTypeInfo.AsType() == typeof(AddressesController)
             && (action.MethodInfo == AddressCreate && HttpMethods.IsPost(request.Method)

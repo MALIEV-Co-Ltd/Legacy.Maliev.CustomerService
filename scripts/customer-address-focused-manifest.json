@@ -1497,8 +1497,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCustomerContactInputFormatter.cs",
-      "bytes": 16982,
-      "sha256": "d5a75b0d9f227fcb20463d1230c519bae605a397b8e9028da4cf5d7a2a028235"
+      "bytes": 17803,
+      "sha256": "aa0ca5ea5344d83bb54b2f88745fab02e2f0fa41e55eac8b431285ba160bf1ad"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerOptionalContactMvcBoundaryTests.cs",
@@ -1522,8 +1522,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/CustomerOriginalBodyReader.cs",
-      "bytes": 8280,
-      "sha256": "f5fc1f8a83f007f303d0d39a57ad9cfa7394f8e2f1f4418b0920ac669fc22bf2"
+      "bytes": 8534,
+      "sha256": "26d93a9a5bbc61b2dfb13c1516ec925e955e68c01d92c324795f75b98dcaf16f"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CustomerOriginalInputOracle.cs",
