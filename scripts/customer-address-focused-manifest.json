@@ -452,8 +452,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyFieldPrimitiveHttpTests.cs",
-      "bytes": 29932,
-      "sha256": "3262955101ecb456265adaae9d33b19814a6d055a1a6ef2b1e205d2dc248a854"
+      "bytes": 31911,
+      "sha256": "e554b1f2e142b4929d6f38a0127f61120536500782681b22fc9ec046043a40ea"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLifecycleHttpTests.cs",
@@ -462,13 +462,13 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLiteralNameHttpTests.cs",
-      "bytes": 17226,
-      "sha256": "2b00d66dc6e5de061bd11f2b52b68d16e29fd08b6ca09996255d211d70336249"
+      "bytes": 17727,
+      "sha256": "4ee7555694c46b99b60f942a967cd802422c80e8d036fc23620fde3fb33e6eeb"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryDuplicateNullHttpTests.cs",
-      "bytes": 39430,
-      "sha256": "f8a0859c64a769e3aadf832f1a96494baee49bb139018073b1f400feff1ee397"
+      "bytes": 40525,
+      "sha256": "9e9c81daaf479b4d11dc8b7a8a71f7230af3a009a082680a9fe1fd874901e2ae"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryPrimitiveHttpTests.cs",

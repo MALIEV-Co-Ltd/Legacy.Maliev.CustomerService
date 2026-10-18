@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Legacy.Maliev.CustomerService.Application.Models;
+using Legacy.Maliev.CustomerService.Tests.OriginalInput;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Options;
@@ -117,12 +118,31 @@ public sealed class CustomerCompanyOrdinaryDuplicateNullHttpTests(CustomerDetail
             var before = await PhysicalSnapshotAsync(token);
             var cached = await PrimeAsync(cache, token);
             foreach (var item in RefusalCases())
-                if (item.Label is not ("other-field-control-33" or "other-field-control-34"))
+                if (item.Label is not ("other-field-control-33" or "other-field-control-34"
+                    or "immediate-binding-error-26" or "immediate-binding-error-27" or "immediate-binding-error-28"))
                     await RefuseAsync(client, cache, route, item.Label, item.Json, default, HttpStatusCode.BadRequest, before, cached, token);
         }
-        await WriteMatrixAsync(RefusalCases().Where(item => item.Label is "other-field-control-33" or "other-field-control-34")
-            .Select(item => new PositiveCase(item.Label, item.Json, "ok", item.Label == "other-field-control-33" ? "42" : null,
-                item.Label == "other-field-control-34" ? "true" : null)).ToArray());
+        var sourceAccepted = RefusalCases().Where(item => item.Label is "other-field-control-33" or "other-field-control-34"
+            or "immediate-binding-error-26" or "immediate-binding-error-27" or "immediate-binding-error-28")
+            .Select(item => new PositiveCase(item.Label, item.Json, item.Label switch
+            {
+                "immediate-binding-error-26" => "last",
+                "immediate-binding-error-27" => "\uFFFD",
+                "immediate-binding-error-28" => "first",
+                _ => "ok"
+            }, item.Label == "other-field-control-33" ? "42" : null,
+                item.Label == "other-field-control-34" ? "true" : null)).ToArray();
+        foreach (var item in sourceAccepted)
+        {
+            // Keep every original input; only the obsolete native-reader expectation changes.
+            var source = await CustomerOriginalInputOracle.ReadAsync("company", item.Json);
+            Assert.Equal("success", source.Kind);
+            var model = Assert.IsType<SourceCompany>(source.Model);
+            Assert.Equal(item.Name, model.Name);
+            Assert.Equal(item.Tax, model.TaxNumber);
+            Assert.Equal(item.Registrar, model.Registrar);
+        }
+        await WriteMatrixAsync(sourceAccepted);
     }
 
     [Fact]
