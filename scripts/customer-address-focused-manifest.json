@@ -1554,6 +1554,21 @@
       "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CustomerOriginalBodyResourceTests.cs",
       "bytes": 18308,
       "sha256": "7db2d8df934afad437a6fbd49068264feec359bc0f67e587e2f39b119e62e38d"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CompanyOriginalBodyReaderTests.cs",
+      "bytes": 45649,
+      "sha256": "d687150bd58498e0a57935faf35a753a2e8acf2b988201dd4cefd8c3dba48bb6"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CompanyOriginalEnvelopeHttpTests.cs",
+      "bytes": 15069,
+      "sha256": "54619f7cd482c8b377960e96ce2cdbe3ec845d78801f83346d7046a2377c8a85"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CompanyOriginalBodyResourceTests.cs",
+      "bytes": 17435,
+      "sha256": "7c930a8d2a80bdbcd12435fbbd6a9d0e30c7b9dfbd678c0d9a7aa0648d8cdafa"
     }
   ],
   "frozenDependencyPins": [
