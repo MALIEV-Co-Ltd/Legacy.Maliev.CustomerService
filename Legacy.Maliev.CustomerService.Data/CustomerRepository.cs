@@ -93,7 +93,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
             return null;
         }
 
-        var resolvedPageSize = Math.Clamp(pageSize ?? total, 1, 250);
+        var resolvedPageSize = Math.Max(pageSize ?? total, 1);
         var offset = (pageIndex - 1L) * resolvedPageSize;
         if (offset >= total)
         {

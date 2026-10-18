@@ -69,13 +69,13 @@ public sealed class CustomerDefaultPageHttpTests(CustomerDetailAuthorityFixture 
             ("/customers?search=" + Uri.EscapeDataString(Needle) + "&", matchingIds),
         })
         {
-            var totalPages = (int)Math.Ceiling(ids.Length / 250d);
-            await AssertPageAsync(client, query, ids, matchingIds, companyId, 1, 250, cancellation);
+            const int totalPages = 1;
+            await AssertPageAsync(client, query, ids, matchingIds, companyId, 1, ids.Length, cancellation);
             var combined = new List<int>();
             for (var page = 1; page <= totalPages; page++)
             {
                 combined.AddRange(await AssertPageAsync(client, query + $"index={page}", ids,
-                    matchingIds, companyId, page, 250, cancellation));
+                    matchingIds, companyId, page, ids.Length, cancellation));
             }
 
             Assert.Equal(ids, combined.ToArray());
@@ -94,8 +94,16 @@ public sealed class CustomerDefaultPageHttpTests(CustomerDetailAuthorityFixture 
 
             foreach (var requestedSize in new[] { 0, -1, 251, 1000 })
             {
-                await AssertPageAsync(client, query + $"index=1&size={requestedSize}", ids,
-                    matchingIds, companyId, 1, Math.Clamp(requestedSize, 1, 250), cancellation);
+                if (requestedSize == 0)
+                {
+                    using var zero = await client.GetAsync(query + "index=1&size=0", cancellation);
+                    Assert.Equal(HttpStatusCode.NotFound, zero.StatusCode);
+                }
+                else
+                {
+                    await AssertPageAsync(client, query + $"index=1&size={requestedSize}", ids,
+                        matchingIds, companyId, 1, Math.Max(requestedSize, 1), cancellation);
+                }
             }
 
             foreach (var requestedIndex in new[] { 0, -1 })
@@ -178,8 +186,8 @@ public sealed class CustomerDefaultPageHttpTests(CustomerDetailAuthorityFixture 
     }
 
 
-    // These source-parity cases are additive during the hosted RED stage. The original
-    // approved-cap cases above remain intact until Root reviews the actual failures.
+    // Source-parity cases retain the reviewed hosted RED witnesses alongside the
+    // original paging inputs, authority checks, and distant-page controls above.
     [Theory]
     [InlineData(false, false, false)]
     [InlineData(false, false, true)]
