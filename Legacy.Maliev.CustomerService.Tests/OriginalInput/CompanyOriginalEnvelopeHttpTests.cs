@@ -234,9 +234,12 @@ public sealed class CompanyOriginalEnvelopeHttpTests(CustomerDetailAuthorityFixt
         await using var db = fixture.Context();
         db.Customers.Add(new Customer
         {
-            FirstName = "Unrelated", LastName = "Survivor", Email = "unrelated@example.test",
+            FirstName = "Unrelated",
+            LastName = "Survivor",
+            Email = "unrelated@example.test",
             Company = new Company { Name = "Survivor company", TaxNumber = "Other tax", Registrar = "Other registrar" },
-            BillingAddressId = 1, ShippingAddressId = 1
+            BillingAddressId = 1,
+            ShippingAddressId = 1
         });
         await db.SaveChangesAsync(token);
     }

@@ -1562,8 +1562,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CompanyOriginalEnvelopeHttpTests.cs",
-      "bytes": 15069,
-      "sha256": "54619f7cd482c8b377960e96ce2cdbe3ec845d78801f83346d7046a2377c8a85"
+      "bytes": 15105,
+      "sha256": "a831e9d49d36e0eac5540462085363897be46e58468626b8e8f74f18ab7b7108"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CompanyOriginalBodyResourceTests.cs",
