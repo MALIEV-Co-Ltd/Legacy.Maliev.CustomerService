@@ -640,7 +640,7 @@
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Workflows/PublicationDependencyTests.cs",
       "bytes": 3168,
-      "sha256": "9dc889fa3e630b62dd4d2bdf0b9cc1227e6229203d43b655d534b6a8027ca200"
+      "sha256": "e72eac56753270bfd4a5042088911470fd53e55cfe11224c2fb26d659146be13"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Workflows/WorkflowContractTests.cs",

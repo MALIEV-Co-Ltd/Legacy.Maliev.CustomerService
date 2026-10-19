@@ -683,7 +683,7 @@
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Workflows/PublicationDependencyTests.cs",
       "bytes": 3168,
-      "sha256": "9dc889fa3e630b62dd4d2bdf0b9cc1227e6229203d43b655d534b6a8027ca200"
+      "sha256": "e72eac56753270bfd4a5042088911470fd53e55cfe11224c2fb26d659146be13"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Workflows/WorkflowContractTests.cs",
@@ -853,12 +853,12 @@
     {
       "path": "scripts/customer-default-page-focused-manifest.json",
       "bytes": 64567,
-      "sha256": "0a3f07c1a148616678078d3a93f7ccbdd5795e8e30864e7c6cb0bb76c3980c89"
+      "sha256": "4dc0f782bc355aaed3e3dcd6fb413462e9b1d720a1f49eab2eb61e3ef16439d3"
     },
     {
       "path": "scripts/customer-email-focused-manifest.json",
       "bytes": 84589,
-      "sha256": "c7cdd3fe200e594a5f4b8fdf94332151d7ba8a73f1282389134dec7838fa4d7a"
+      "sha256": "6eee1c541dd3d4d0f44db65576521799da1637b03398739111640bfd3c014c07"
     },
     {
       "path": "scripts/customer-kernel-packet/README.md",
