@@ -23,6 +23,7 @@ static async Task RunHostAsync(string[] startupArgs)
     var builder = WebApplication.CreateBuilder(startupArgs);
 
     builder.AddServiceDefaults();
+    builder.AddPrivateRequestObservation("customer");
     builder.AddDefaultApiVersioning();
     builder.AddPostgresDbContext<CustomerDbContext>(connectionName: "CustomerDbContext");
     builder.AddStandardCache("legacy:customer:");
