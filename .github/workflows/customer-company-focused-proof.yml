@@ -70,7 +70,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults
-          ref: 086760fa0aae976a799dbcda1960d5c0981248cb
+          ref: c40a7f82cea347b949444dcd7fb730f2b8dc3c0e
           path: .dependencies/Legacy.Maliev.ServiceDefaults
           persist-credentials: false
       - name: Check out frozen Contracts

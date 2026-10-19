@@ -35,7 +35,7 @@
     {
       "path": ".github/workflows/_build-and-test.yml",
       "bytes": 9493,
-      "sha256": "bbf57b035b2e360adee12c13e1fc2ae9df217131f10c6ab775ccaa2bd1c9e193"
+      "sha256": "288cff32a5c939c76e007de5736bdb982216e7c62200594a89f77c0f66494c0d"
     },
     {
       "path": ".github/workflows/ci-develop.yml",
@@ -55,17 +55,17 @@
     {
       "path": ".github/workflows/customer-company-focused-proof.yml",
       "bytes": 7598,
-      "sha256": "61a65a8fc51707bfcb9a0574a7c3112f0fc23cdaa393f8c00081254b500cb96f"
+      "sha256": "917175f1960b535a471d5aa835cb95580760c492ebbf2104d178c77b39bd140b"
     },
     {
       "path": ".github/workflows/customer-default-page-focused-proof.yml",
       "bytes": 4894,
-      "sha256": "f0ad01dc165d4a08e4a704bd615d70febc6eaecc4f77c3f89062df3792724f2e"
+      "sha256": "6b7014bfe87165e4a941a295d64ccd836ccec1e4d4ec43d5e1d54af493e55ea5"
     },
     {
       "path": ".github/workflows/customer-email-focused-proof.yml",
       "bytes": 3723,
-      "sha256": "2e85ccf68009067c01ed30078fcb08046bb928c00d2abed9c74f3aadd17bcffe"
+      "sha256": "d90b9062c93f129bf7710391ea3225d2dcbe9c506671608296234f01a9eafb8d"
     },
     {
       "path": ".github/workflows/customer-source-intake.yml",
@@ -149,8 +149,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Program.cs",
-      "bytes": 3175,
-      "sha256": "340c961cd439f3bbb7df45dc4fffbee07e077135a326e5b666e172b20afb36b4"
+      "bytes": 3229,
+      "sha256": "94f908f40a4ded7d3bc9dcff7617cbc2ef30264e611e5fa7cb3b40e2a57ba318"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Properties/launchSettings.json",
@@ -1184,8 +1184,8 @@
     },
     {
       "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.Middleware.cs",
-      "bytes": 4406,
-      "sha256": "581473862acca83145d81eeb131dd842718f5955dd7b192221376d633c240683"
+      "bytes": 4847,
+      "sha256": "edb736abdd90c4dac4334781127a1a020a7c57c5b0ac8a2cb31686ca7686edef"
     },
     {
       "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.PrivateFailureObservation.cs",
@@ -1214,8 +1214,8 @@
     },
     {
       "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.cs",
-      "bytes": 13310,
-      "sha256": "645b99cdd4fca495da84f5b55ce93645b7e96641232d11ee387c9a520505c791"
+      "bytes": 13500,
+      "sha256": "73643c87d572e292a8bb5a9c29fe8476fd8ee817d74f80e1639cf3b5b707446e"
     },
     {
       "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/AuthServiceTokenExchangeHandler.cs",
@@ -1304,8 +1304,8 @@
     },
     {
       "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Logging/PrivateFailureConsoleFormatter.cs",
-      "bytes": 3637,
-      "sha256": "ae2e9d319bef69bef1d12e46498ce76b76ed2af13ed379830bede51a7ae13cf7"
+      "bytes": 4180,
+      "sha256": "2c4c9abe7a1f00219c1d302bc0bebe4891381b3555c21edecb7e1a0f38b1dbaf"
     },
     {
       "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Middleware/CorrelationIdMiddleware.cs",
