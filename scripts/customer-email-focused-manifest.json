@@ -379,7 +379,7 @@
     {
       "path": ".github/workflows/publish-image.yml",
       "bytes": 1270,
-      "sha256": "45094e59e1fbfc83f6b0c26937432047dde30022509c7b2a49a6a12709284f49"
+      "sha256": "d2744958aa04f9847a7881ee2b6ed7fb00d91f3d3087fc5094789904031921b9"
     },
     {
       "path": ".gitignore",
@@ -944,7 +944,7 @@
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Workflows/WorkflowContractTests.cs",
       "bytes": 45423,
-      "sha256": "939529b2687142f04c8cd785537e127b9bfa5c585113fd539272a8fcbaa8bfad"
+      "sha256": "198f6fcbd0576c370cd8888b03d66a92ccf8b37c450411850da09026b93ade6f"
     },
     {
       "path": "Legacy.Maliev.CustomerService.slnx",

@@ -63,7 +63,7 @@
     {
       "path": ".github/workflows/publish-image.yml",
       "bytes": 1270,
-      "sha256": "45094e59e1fbfc83f6b0c26937432047dde30022509c7b2a49a6a12709284f49"
+      "sha256": "d2744958aa04f9847a7881ee2b6ed7fb00d91f3d3087fc5094789904031921b9"
     },
     {
       "path": ".gitignore",
@@ -688,7 +688,7 @@
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Workflows/WorkflowContractTests.cs",
       "bytes": 45423,
-      "sha256": "939529b2687142f04c8cd785537e127b9bfa5c585113fd539272a8fcbaa8bfad"
+      "sha256": "198f6fcbd0576c370cd8888b03d66a92ccf8b37c450411850da09026b93ade6f"
     },
     {
       "path": "Legacy.Maliev.CustomerService.slnx",
@@ -853,12 +853,12 @@
     {
       "path": "scripts/customer-default-page-focused-manifest.json",
       "bytes": 64567,
-      "sha256": "718187ea07184259d46b6754a268e9e7cbeb017b2761ee709f8a9e0db6d9bdf5"
+      "sha256": "0a3f07c1a148616678078d3a93f7ccbdd5795e8e30864e7c6cb0bb76c3980c89"
     },
     {
       "path": "scripts/customer-email-focused-manifest.json",
       "bytes": 84589,
-      "sha256": "40a32aae2e180535acdc9545807fb26859e53ce38687715f4fb96a0c59a6bce1"
+      "sha256": "c7cdd3fe200e594a5f4b8fdf94332151d7ba8a73f1282389134dec7838fa4d7a"
     },
     {
       "path": "scripts/customer-kernel-packet/README.md",
