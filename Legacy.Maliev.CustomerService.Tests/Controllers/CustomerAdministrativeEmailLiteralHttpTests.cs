@@ -7,10 +7,16 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Checks literal administrative email writes, capacity validation, replay identity, stale versions, and authority refusals.</summary>
+/// <param name="fixture">The shared authority fixture supplying isolated customer graph setup, HTTP hosts, signed clients, and cache observations.</param>
 [Collection("Customer profile lifecycle")]
 public sealed class CustomerAdministrativeEmailLiteralHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Checks literal email storage across ordinary, keyed, and versioned writes without changing unrelated graph rows.</summary>
+    /// <param name="route">The administrative write selector: create, keyed-create, ordinary update, or versioned update.</param>
+    /// <param name="unicode">Whether to use tab and nonbreaking-space padding instead of ordinary spaces around the email.</param>
+    /// <returns>A task that completes after asserting literal storage and wire casing, unrelated graph preservation, exact keyed replay, and conflict for a changed trimmed payload.</returns>
     [Theory]
     [InlineData("create", false)]
     [InlineData("create", true)]
@@ -70,6 +76,9 @@ public sealed class CustomerAdministrativeEmailLiteralHttpTests(CustomerDetailAu
         }
     }
 
+    /// <summary>Checks that padded email length 256 is accepted and length 257 is refused without state or receipt changes.</summary>
+    /// <param name="route">The administrative write selector: create, keyed-create, ordinary update, or versioned update.</param>
+    /// <returns>A task that completes after asserting accepted capacity, sanitized bad-request rejection, and unchanged graph, caches, and replay receipts on refusal.</returns>
     [Theory]
     [InlineData("create")]
     [InlineData("keyed-create")]
@@ -114,6 +123,10 @@ public sealed class CustomerAdministrativeEmailLiteralHttpTests(CustomerDetailAu
         }
     }
 
+    /// <summary>Checks that literal email cannot bypass authority on any administrative write route.</summary>
+    /// <param name="authority">The anonymous, denied-permission, invalid-signature, or expired-token scenario used to construct the client.</param>
+    /// <param name="expected">The expected unauthorized or forbidden response for the selected actor.</param>
+    /// <returns>A task that completes after asserting the expected refusal on every write path and unchanged graph and cache.</returns>
     [Theory]
     [InlineData("anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("denied", HttpStatusCode.Forbidden)]
@@ -138,6 +151,9 @@ public sealed class CustomerAdministrativeEmailLiteralHttpTests(CustomerDetailAu
         Assert.True(await fixture.CacheExistsAsync());
     }
 
+    /// <summary>Checks that blank and malformed email values remain invalid despite literal-storage support.</summary>
+    /// <param name="email">The whitespace-only or missing-at-sign email submitted through every administrative write route.</param>
+    /// <returns>A task that completes after asserting bad-request responses and unchanged graph and cache.</returns>
     [Theory]
     [InlineData(" \t\u00a0 ")]
     [InlineData(" padded-without-at ")]
@@ -161,6 +177,8 @@ public sealed class CustomerAdministrativeEmailLiteralHttpTests(CustomerDetailAu
         Assert.True(await fixture.CacheExistsAsync());
     }
 
+    /// <summary>Checks that a stale email update leaves the winning literal value and explicitly primed committed cache untouched.</summary>
+    /// <returns>A task that completes after asserting precondition failure, retained winning email, and unchanged graph and cache bytes.</returns>
     [Fact]
     public async Task StaleVersion_RefusesLiteralEmailWithoutInvalidatingCommittedCache()
     {
@@ -190,6 +208,8 @@ public sealed class CustomerAdministrativeEmailLiteralHttpTests(CustomerDetailAu
         await AssertStoredAsync(1, " winner@example.test ", token);
     }
 
+    /// <summary>Checks that email lookup normalizes caller padding and case without rewriting plain stored email.</summary>
+    /// <returns>A task that completes after asserting the existing customer response and unchanged graph.</returns>
     [Fact]
     public async Task ExistingLookup_StillNormalizesCallerAndReturnsUnchangedPlainStoredEmail()
     {

@@ -9,10 +9,15 @@ using Xunit.Abstractions;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Verifies refused company-name and whole-body shapes across ordinary and scoped HTTP write lanes.</summary>
+/// <param name="fixture">The shared Customer authority fixture supplying disposable PostgreSQL and Redis, production hosts, and signed request clients.</param>
+/// <param name="output">The xUnit output sink recording reader, HTTP, graph, and cache comparison evidence.</param>
 [Collection("Customer company lifecycle")]
 public sealed class CustomerCompanyPrimitiveNameHttpTests(CustomerDetailAuthorityFixture fixture, ITestOutputHelper output)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Checks invalid Name members and scoped primitive rejection without changing the physical graph or caches.</summary>
+    /// <returns>A task that completes after verifying invalid Name members and scoped primitive rejection without changing the physical graph or caches.</returns>
     [Fact]
     public Task PrimitiveNameMembers_RefuseWithoutChangingPhysicalGraphOrCache() =>
         RefuseMatrixAsync([
@@ -27,6 +32,8 @@ public sealed class CustomerCompanyPrimitiveNameHttpTests(CustomerDetailAuthorit
             ("ArrayMember", "{\"Name\":[\"synthetic-private-member\"]}"),
         ], skipOrdinaryPrimitiveMembers: true);
 
+    /// <summary>Checks nonobject company roots are refused without changing the physical graph or caches.</summary>
+    /// <returns>A task that completes after verifying nonobject company roots are refused without changing the physical graph or caches.</returns>
     [Fact]
     public Task WholeBodyPrimitive_RefusesWithoutChangingPhysicalGraphOrCache() =>
         RefuseMatrixAsync([

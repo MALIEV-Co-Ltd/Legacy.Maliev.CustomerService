@@ -10,10 +10,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Legacy.Maliev.CustomerService.Tests.OriginalInput;
 
+/// <summary>Exercises full source-shaped company envelopes through registered HTTP input, storage, and cache boundaries.</summary>
+/// <param name="fixture">The shared fixture providing customer hosts and disposable persistence for these scenarios.</param>
 [Collection("Customer original body")]
 public sealed class CompanyOriginalEnvelopeHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Verifies that malformed typed envelope members are rejected before any physical graph or cache write.</summary>
+    /// <param name="update">Whether to update the stored company; false creates a company.</param>
+    /// <returns>A task representing completion of the company envelope HTTP, storage, and cache assertions.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -56,6 +61,9 @@ public sealed class CompanyOriginalEnvelopeHttpTests(CustomerDetailAuthorityFixt
         }
     }
 
+    /// <summary>Verifies that a valid recursive company envelope persists only its three request fields and preserves other physical rows.</summary>
+    /// <param name="update">Whether to update the stored company; false creates a company.</param>
+    /// <returns>A task representing completion of the company envelope HTTP, storage, and cache assertions.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -116,6 +124,9 @@ public sealed class CompanyOriginalEnvelopeHttpTests(CustomerDetailAuthorityFixt
         AssertWire(wire.RootElement, id);
     }
 
+    /// <summary>Verifies that source-shaped company JSON grammar reaches the registered HTTP endpoint and storage.</summary>
+    /// <param name="update">Whether to update the stored company; false creates a company.</param>
+    /// <returns>A task representing completion of the company envelope HTTP, storage, and cache assertions.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -158,6 +169,9 @@ public sealed class CompanyOriginalEnvelopeHttpTests(CustomerDetailAuthorityFixt
         }
     }
 
+    /// <summary>Verifies that malformed ignored company fields are rejected before a missing route target is looked up.</summary>
+    /// <param name="id">The nonexistent company identifier used to test input-validation ordering.</param>
+    /// <returns>A task representing completion of the company envelope HTTP, storage, and cache assertions.</returns>
     [Theory]
     [InlineData(-1)]
     [InlineData(int.MaxValue)]
@@ -181,6 +195,10 @@ public sealed class CompanyOriginalEnvelopeHttpTests(CustomerDetailAuthorityFixt
         await AssertCachesAsync(cache, true, token);
     }
 
+    /// <summary>Verifies that the company body reader preserves ordinary authentication and permission enforcement.</summary>
+    /// <param name="authority">The authentication and permission scenario used by the test client.</param>
+    /// <param name="expected">The expected HTTP status for the supplied scenario.</param>
+    /// <returns>A task representing completion of the company envelope HTTP, storage, and cache assertions.</returns>
     [Theory]
     [InlineData("anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("denied", HttpStatusCode.Forbidden)]
@@ -199,6 +217,9 @@ public sealed class CompanyOriginalEnvelopeHttpTests(CustomerDetailAuthorityFixt
         Assert.Equal(before, await SnapshotAsync(null, token));
     }
 
+    /// <summary>Verifies existing controller and storage refusals for invalid company bodies without graph or cache changes.</summary>
+    /// <param name="update">Whether to update the stored company; false creates a company.</param>
+    /// <returns>A task representing completion of the company envelope HTTP, storage, and cache assertions.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]

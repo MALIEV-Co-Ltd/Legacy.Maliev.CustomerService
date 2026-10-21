@@ -6,13 +6,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Serializes customer address creation and attachment lifecycle tests sharing graph state.</summary>
 [CollectionDefinition("Customer address attachment lifecycle", DisableParallelization = true)]
 public sealed class CustomerAddressAttachmentLifecycleCollection;
 
+/// <summary>Checks separate address creation, explicit consumer attachment, bound readback, cache invalidation, and refused writes.</summary>
+/// <param name="fixture">The shared authority fixture supplying isolated customer graph setup, HTTP hosts, signed clients, and cache observations.</param>
 [Collection("Customer address attachment lifecycle")]
 public sealed class CustomerAddressAttachmentLifecycleHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Checks the create-then-attach address workflow without implicit attachment or changes to the original address.</summary>
+    /// <param name="billing">Whether the returned new address identifier is attached as billing instead of shipping.</param>
+    /// <returns>A task that completes after asserting new address persistence, not found before attachment, selected binding and cache eviction, and unrelated-parent refusal.</returns>
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
@@ -85,6 +91,10 @@ public sealed class CustomerAddressAttachmentLifecycleHttpTests(CustomerDetailAu
         Assert.DoesNotContain("New road", await wrongParent.Content.ReadAsStringAsync(), StringComparison.Ordinal);
     }
 
+    /// <summary>Checks that invalid address-create authority preserves the existing graph and projection.</summary>
+    /// <param name="authority">The anonymous, invalid-signature, expired, or insufficient-permission client scenario.</param>
+    /// <param name="expected">The expected unauthorized or forbidden response for the selected actor.</param>
+    /// <returns>A task that completes after asserting the authority refusal, unchanged graph, and retained cache.</returns>
     [Theory]
     [InlineData("anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("wrong-signature", HttpStatusCode.Unauthorized)]
@@ -103,6 +113,9 @@ public sealed class CustomerAddressAttachmentLifecycleHttpTests(CustomerDetailAu
         Assert.True(await fixture.CacheExistsAsync());
     }
 
+    /// <summary>Checks that null, oversized, or invalid-scalar address create input cannot change graph or cache state.</summary>
+    /// <param name="body">The retained theory body identifying null or invalid input; the former blank-address case is replaced locally by an oversized address-line payload.</param>
+    /// <returns>A task that completes after asserting a bad-request response, unchanged graph, and retained cache.</returns>
     [Theory]
     [InlineData("null")]
     [InlineData("{\"AddressLine1\":\" \"}")]

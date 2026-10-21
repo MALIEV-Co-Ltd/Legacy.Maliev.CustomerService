@@ -6,6 +6,7 @@ using YamlDotNet.RepresentationModel;
 
 namespace Legacy.Maliev.CustomerService.Tests.Workflows;
 
+/// <summary>Verifies immutable build dependencies, optional focused-validation preludes, and workflow custody boundaries.</summary>
 public sealed class WorkflowContractTests
 {
     private static readonly string Workflow = File.ReadAllText(FindRepositoryFile(".github", "workflows", "_build-and-test.yml"));
@@ -14,6 +15,7 @@ public sealed class WorkflowContractTests
     private static readonly string DataProject = File.ReadAllText(
         FindRepositoryFile("Legacy.Maliev.CustomerService.Data", "Legacy.Maliev.CustomerService.Data.csproj"));
 
+    /// <summary>Checks the maintained workflow structure, admitted consumer phases, and exact address-focused evidence boundaries.</summary>
     [Fact]
     public void BuildAndTest_SatisfiesStructuralContract()
     {
@@ -69,6 +71,7 @@ public sealed class WorkflowContractTests
         AssertMutationRejected(address, address.Replace("          GITHUB_ACTIONS: 'false'", "          GITHUB_ACTIONS: 'false'\n          UNREVIEWED: 'true'", StringComparison.Ordinal));
     }
 
+    /// <summary>Checks rejection of reordered, missing, duplicated, or altered optional-contact setup, build, test, and evidence steps.</summary>
     [Fact]
     public void BuildAndTest_RejectsAnyAlteredOptionalContactPrelude()
     {
@@ -147,6 +150,9 @@ public sealed class WorkflowContractTests
         AssertMutationRejected("  validate:\n", "  foreign:\n    runs-on: ubuntu-latest\n    steps:\n      - run: dotnet test Foreign.slnx\n  validate:\n");
     }
 
+    /// <summary>Checks rejection of changes to the scaffold guard shell, script, or evidence destination.</summary>
+    /// <param name="original">The reviewed scaffold guard shell, script path, or evidence-output path located in the workflow.</param>
+    /// <param name="replacement">The altered shell, script, or evidence destination that structural validation must reject.</param>
     [Theory]
     [InlineData("shell: pwsh", "shell: bash")]
     [InlineData("./tooling/Test-CustomerScaffoldContract.ps1", "./tooling/UnreviewedScaffold.ps1")]
@@ -156,6 +162,7 @@ public sealed class WorkflowContractTests
         AssertMutationRejected(original, replacement);
     }
 
+    /// <summary>Checks that a commented hash cannot authorize a shared validation action referenced by its main branch.</summary>
     [Fact]
     public void BuildAndTest_RejectsSharedActionMainWithPinnedShaComment()
     {
@@ -164,6 +171,7 @@ public sealed class WorkflowContractTests
             "MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@main # e5732037fe94b7ed6e5be2cd4c23dbf6ef5e2617");
     }
 
+    /// <summary>Checks that a commented dependency hash cannot satisfy immutable checkout pinning.</summary>
     [Fact]
     public void BuildAndTest_RejectsCommentedDependencySha()
     {
@@ -172,6 +180,7 @@ public sealed class WorkflowContractTests
             "ref: main # c40a7f82cea347b949444dcd7fb730f2b8dc3c0e");
     }
 
+    /// <summary>Checks that the API references legacy ServiceDefaults without the retired Aspire project dependency.</summary>
     [Fact]
     public void ApiProject_UsesOnlyLegacyServiceDefaults()
     {
@@ -180,6 +189,7 @@ public sealed class WorkflowContractTests
         Assert.DoesNotContain("Include=\"Maliev.Aspire.ServiceDefaults\"", ApiProject, StringComparison.Ordinal);
     }
 
+    /// <summary>Checks EF design-time dependency ownership and explicit opt-in isolation from ordinary API builds.</summary>
     [Fact]
     public void EfDesignDependency_IsOwnedByDataProjectOnly()
     {
@@ -195,6 +205,7 @@ public sealed class WorkflowContractTests
         Assert.Contains("Microsoft.EntityFrameworkCore.Design", DataProject, StringComparison.Ordinal);
     }
 
+    /// <summary>Checks rejection of validation job permissions that escalate beyond read-only authority.</summary>
     [Fact]
     public void BuildAndTest_RejectsJobPermissionEscalation()
     {
@@ -203,6 +214,7 @@ public sealed class WorkflowContractTests
             "  validate:\n    permissions:\n      contents: write\n    name: validate");
     }
 
+    /// <summary>Checks rejection of secret references anywhere in the workflow, including comments.</summary>
     [Fact]
     public void BuildAndTest_RejectsSecretReferenceAnywhere()
     {
@@ -211,6 +223,8 @@ public sealed class WorkflowContractTests
         Assert.Throws<InvalidOperationException>(() => WorkflowContractValidator.Validate(mutated));
     }
 
+    /// <summary>Checks rejection of secret expressions in validation job environment values.</summary>
+    /// <param name="expression">The dotted or bracketed GitHub secrets expression injected into an environment value.</param>
     [Theory]
     [InlineData("${{secrets.X}}")]
     [InlineData("${{ secrets['X'] }}")]
@@ -221,6 +235,7 @@ public sealed class WorkflowContractTests
             $"    env:\n      MalievWorkspaceRoot: ${{{{ github.workspace }}}}/.dependencies\n      REVIEW_TOKEN: {expression}");
     }
 
+    /// <summary>Checks rejection of duplicated restore commands despite additional whitespace between tokens.</summary>
     [Fact]
     public void BuildAndTest_RejectsWhitespaceObfuscatedRestoreCommand()
     {
@@ -229,6 +244,7 @@ public sealed class WorkflowContractTests
             "          solution: Legacy.Maliev.CustomerService.slnx\n      - run: dotnet  restore Legacy.Maliev.CustomerService.slnx");
     }
 
+    /// <summary>Checks rejection when shared validation lacks its explicit local-dependency opt-in.</summary>
     [Fact]
     public void BuildAndTest_RejectsMissingLocalDependencyOptIn()
     {
@@ -237,6 +253,7 @@ public sealed class WorkflowContractTests
             string.Empty);
     }
 
+    /// <summary>Checks rejection of reserved GitHub Actions environment overrides on validation steps.</summary>
     [Fact]
     public void BuildAndTest_RejectsReservedGitHubActionsOverride()
     {

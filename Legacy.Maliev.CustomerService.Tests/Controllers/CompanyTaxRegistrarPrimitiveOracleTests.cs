@@ -12,8 +12,11 @@ using Xunit.Abstractions;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Compares company scalar projections with public Newtonsoft 13.0.3 reference behavior and frozen current metadata boundaries.</summary>
+/// <param name="output">The xUnit output sink recording public-reader, accepted-baseline, current metadata, and explicit historical-runtime limitations.</param>
 public sealed class CompanyTaxRegistrarPrimitiveOracleTests(ITestOutputHelper output)
 {
+    /// <summary>Checks scalar and Unicode projections, segmented input, converter precedence, controller decisions, and unchanged writers without historical provider-equivalence claims.</summary>
     [Fact]
     public void PairedFields_RecordPinnedPrimitiveOracleAndFreezeCurrentReadControllerWriteBoundaries()
     {

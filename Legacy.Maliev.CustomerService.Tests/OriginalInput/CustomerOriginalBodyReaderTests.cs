@@ -17,6 +17,8 @@ using Stj = System.Text.Json.JsonSerializer;
 
 namespace Legacy.Maliev.CustomerService.Tests.OriginalInput;
 
+/// <summary>Compares source-shaped Newtonsoft body reads with stock and candidate MVC readers for ordinary address and customer input.</summary>
+/// <param name="fixture">The shared fixture providing customer hosts and disposable persistence for these scenarios.</param>
 [Collection("Customer original body")]
 public sealed class CustomerOriginalBodyReaderTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
@@ -54,6 +56,8 @@ public sealed class CustomerOriginalBodyReaderTests(CustomerDetailAuthorityFixtu
         string? projection = null, string? nativeProjection = null) =>
         [kind, label, json, sourceKind, nativeKind, projection ?? Expected(kind), nativeProjection ?? projection ?? Expected(kind)];
 
+    /// <summary>Supplies ordinary body cases covering source grammar, duplicate values, primitive tokens, and typed graph members.</summary>
+    /// <returns>Theory rows containing JSON bodies, expected reader outcomes, and request-field projections.</returns>
     public static IEnumerable<object[]> Cases()
     {
         foreach (var kind in Kinds)
@@ -255,6 +259,15 @@ public sealed class CustomerOriginalBodyReaderTests(CustomerDetailAuthorityFixtu
             + "\"Customer\":[{\"$ref\":\"C\"}]}");
     }
 
+    /// <summary>Verifies binding outcomes and projected values before controller validation across the source-shaped, stock, and candidate readers.</summary>
+    /// <param name="kind">The address or customer body model to bind.</param>
+    /// <param name="label">The descriptive case label supplied by the theory data.</param>
+    /// <param name="json">The JSON body read by all three formatter paths.</param>
+    /// <param name="sourceKind">The expected outcome category of the source-shaped and candidate readers.</param>
+    /// <param name="nativeKind">The expected outcome category of the stock System.Text.Json reader.</param>
+    /// <param name="projection">The expected serialized request-field projection for source-shaped and candidate reads.</param>
+    /// <param name="nativeProjection">The expected serialized request-field projection for a successful stock read.</param>
+    /// <returns>A task representing completion of the source-shaped and MVC body-reader comparisons.</returns>
     [Theory]
     [MemberData(nameof(Cases))]
     public async Task FullSourceNativeAndCandidate_PinBindingBeforeControllerValidation(string kind, string label, string json,
@@ -288,6 +301,11 @@ public sealed class CustomerOriginalBodyReaderTests(CustomerDetailAuthorityFixtu
         _ = label;
     }
 
+    /// <summary>Verifies the shared depth limit of 32 for source-shaped, stock, and candidate body reads.</summary>
+    /// <param name="kind">The address or customer body model to bind.</param>
+    /// <param name="depth">The nesting depth of the unknown JSON member graph.</param>
+    /// <param name="expected">The expected reader outcome at the supplied nesting depth.</param>
+    /// <returns>A task representing completion of the source-shaped and MVC body-reader comparisons.</returns>
     [Theory]
     [InlineData("address", 31, "success")]
     [InlineData("address", 32, "success")]
@@ -309,6 +327,8 @@ public sealed class CustomerOriginalBodyReaderTests(CustomerDetailAuthorityFixtu
         Assert.Equal(expected, candidate.Kind);
     }
 
+    /// <summary>Supplies media type, charset, and byte-encoding combinations for ordinary body reads.</summary>
+    /// <returns>Theory rows containing model kinds, media types, encoding flags, and expected reader outcomes.</returns>
     public static IEnumerable<object[]> Encodings()
     {
         foreach (var kind in Kinds)
@@ -323,6 +343,12 @@ public sealed class CustomerOriginalBodyReaderTests(CustomerDetailAuthorityFixtu
         }
     }
 
+    /// <summary>Verifies supported JSON media and encoding behavior and safe errors for unsupported charsets.</summary>
+    /// <param name="kind">The address or customer body model to bind.</param>
+    /// <param name="contentType">The request media type and optional charset.</param>
+    /// <param name="unicode">Whether to encode the request bytes as UTF-16; false selects UTF-8.</param>
+    /// <param name="expected">The expected success, failure, or unsupported-media outcome.</param>
+    /// <returns>A task representing completion of the source-shaped and MVC body-reader comparisons.</returns>
     [Theory]
     [MemberData(nameof(Encodings))]
     public async Task StockMediaEncodingAndSafeUnsupportedCharset_ArePreserved(string kind, string contentType, bool unicode, string expected)
@@ -343,6 +369,8 @@ public sealed class CustomerOriginalBodyReaderTests(CustomerDetailAuthorityFixtu
         }
     }
 
+    /// <summary>Verifies source graph constructors and reference aliases while restricting candidate output to request fields.</summary>
+    /// <returns>A task representing completion of the source-shaped and MVC body-reader comparisons.</returns>
     [Fact]
     public async Task FrozenGraph_ConstructorsReferencesAndAllMembers_AreObservableOnlyInSourceObjects()
     {
@@ -375,6 +403,7 @@ public sealed class CustomerOriginalBodyReaderTests(CustomerDetailAuthorityFixtu
         Assert.Null(new SourceCustomer().Company);
     }
 
+    /// <summary>Verifies the frozen source graph has 30 scalars, six typed navigation edges, and unvalidated reference metadata.</summary>
     [Fact]
     public void FrozenSourceGraph_HasOnlyThirtyScalarsSixTypedEdgesAndObliviousUnvalidatedReferences()
     {
@@ -409,6 +438,8 @@ public sealed class CustomerOriginalBodyReaderTests(CustomerDetailAuthorityFixtu
         Assert.Equal(typeof(SourceCompany), typeof(SourceCustomer).GetProperty(nameof(SourceCustomer.Company))!.PropertyType);
     }
 
+    /// <summary>Verifies that pooled reads do not reuse reference identifiers or duplicate-null state across requests.</summary>
+    /// <returns>A task representing completion of the source-shaped and MVC body-reader comparisons.</returns>
     [Fact]
     public async Task PooledReaders_DoNotCarryReferencesOrNullHistoryIntoLaterRequests()
     {
@@ -429,6 +460,7 @@ public sealed class CustomerOriginalBodyReaderTests(CustomerDetailAuthorityFixtu
         }
     }
 
+    /// <summary>Verifies source-shaped MVC serializer defaults, depth, buffering, and additional-content behavior.</summary>
     [Fact]
     public void OfficialMvcSettings_RetainSourceDefaultsWithoutJsonConvertAdditionalContentBehavior()
     {
@@ -445,6 +477,8 @@ public sealed class CustomerOriginalBodyReaderTests(CustomerDetailAuthorityFixtu
         Assert.False(options.ReadJsonWithRequestCulture);
         Assert.Equal(30 * 1024, options.InputFormatterMemoryBufferThreshold);
     }
+    /// <summary>Verifies that the custom reader selects only ordinary address and unkeyed customer create or update actions.</summary>
+    /// <returns>A task representing completion of the source-shaped and MVC body-reader comparisons.</returns>
     [Fact]
     public async Task ExactSelectors_AdmitOnlyAddressAndUnkeyedOrdinaryCustomerActions()
     {
@@ -495,6 +529,8 @@ public sealed class CustomerOriginalBodyReaderTests(CustomerDetailAuthorityFixtu
         Assert.False(owned.CanRead(wrong));
     }
 
+    /// <summary>Verifies that unowned serializer options disable adapter selection and preserve stock direct-read failures.</summary>
+    /// <returns>A task representing completion of the source-shaped and MVC body-reader comparisons.</returns>
     [Fact]
     public async Task UnownedOptions_KeepAddressSelectionClosedAndDelegateDirectReadToStock()
     {
@@ -522,6 +558,8 @@ public sealed class CustomerOriginalBodyReaderTests(CustomerDetailAuthorityFixtu
         Assert.Equal(baseline.ModelState.Keys, candidate.ModelState.Keys);
     }
 
+    /// <summary>Verifies that MVC projection leaves direct System.Text.Json record construction, metadata, and serialization unchanged.</summary>
+    /// <returns>A task representing completion of the source-shaped and MVC body-reader comparisons.</returns>
     [Fact]
     public async Task InputProjection_DoesNotMutateDirectStjRecordsMetadataOrWrites()
     {
@@ -551,6 +589,8 @@ public sealed class CustomerOriginalBodyReaderTests(CustomerDetailAuthorityFixtu
         Assert.Empty(typeof(UpsertCustomerRequest).GetCustomAttributes<System.Text.Json.Serialization.JsonConverterAttribute>());
     }
 
+    /// <summary>Verifies that primitive spelling and date projection remain stable across English, German, and Thai request cultures.</summary>
+    /// <returns>A task representing completion of the source-shaped and MVC body-reader comparisons.</returns>
     [Fact]
     public async Task SourcePrimitiveLexemesAndDates_AreIndependentOfRequestCulture()
     {

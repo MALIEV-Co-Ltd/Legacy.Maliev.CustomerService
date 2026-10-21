@@ -11,10 +11,15 @@ using Xunit.Abstractions;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Separates company tax and registrar deserialization, controller validation, and disposable PostgreSQL storage observations.</summary>
+/// <param name="fixture">The shared fixture providing customer hosts and disposable persistence for these scenarios.</param>
+/// <param name="output">The xUnit output sink for recording comparison or process diagnostics.</param>
 [Collection("Customer company lifecycle")]
 public sealed class CompanyTaxRegistrarPrimitiveStorageTests(CustomerDetailAuthorityFixture fixture, ITestOutputHelper output)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Verifies tax and registrar primitive and length cases at separate deserialize, controller, and disposable PostgreSQL storage stages.</summary>
+    /// <returns>A task representing completion of the separate company deserialize, validation, and PostgreSQL storage assertions.</returns>
     [Fact]
     public async Task PairedFields_SeparateCurrentDeserializeControllerAndDisposablePostgreSqlStorageOutcomes()
     {
