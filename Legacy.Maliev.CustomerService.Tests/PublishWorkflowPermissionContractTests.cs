@@ -2,8 +2,10 @@ using System.Text.RegularExpressions;
 
 namespace Legacy.Maliev.CustomerService.Tests;
 
+/// <summary>Checks the publish workflow permission contract directly from its source.</summary>
 public sealed class PublishWorkflowPermissionContractTests
 {
+    /// <summary>Verifies that OIDC write permission is scoped to publish jobs and is absent from workflow-wide and deployment-gate permissions.</summary>
     [Fact]
     public void PublishWorkflow_ScopesOidcToPublishJobs()
     {

@@ -9,10 +9,13 @@ using Testcontainers.PostgreSql;
 
 namespace Legacy.Maliev.CustomerService.Tests.Data;
 
+/// <summary>Exercises native PostgreSQL xmin revisions and optimistic concurrency through repository and HTTP boundaries.</summary>
 public sealed class CustomerRevisionPostgresTests : IAsyncLifetime
 {
     private readonly PostgreSqlContainer postgres = new PostgreSqlBuilder("postgres:18-alpine").Build();
 
+    /// <summary>Starts PostgreSQL and applies the customer schema migrations for the revision scenarios.</summary>
+    /// <returns>A task that completes when PostgreSQL is running and customer migrations have been applied.</returns>
     public async Task InitializeAsync()
     {
         await postgres.StartAsync();
@@ -20,8 +23,12 @@ public sealed class CustomerRevisionPostgresTests : IAsyncLifetime
         await db.Database.MigrateAsync();
     }
 
+    /// <summary>Releases the PostgreSQL container used by the revision scenarios.</summary>
+    /// <returns>A task that completes after the disposable PostgreSQL container has been released.</returns>
     public Task DisposeAsync() => postgres.DisposeAsync().AsTask();
 
+    /// <summary>Verifies that native xmin mapping migrates without creating a user-defined xmin column.</summary>
+    /// <returns>A task representing completion of the PostgreSQL revision and concurrency assertions.</returns>
     [Fact]
     public async Task NativeXminMapping_MigratesWithoutCreatingAUserColumn()
     {
@@ -36,6 +43,8 @@ public sealed class CustomerRevisionPostgresTests : IAsyncLifetime
         Assert.Equal(0L, await command.ExecuteScalarAsync());
     }
 
+    /// <summary>Verifies versioned HTTP responses, malformed preconditions, stale-write rejection, and successful writes with refreshed revisions.</summary>
+    /// <returns>A task representing completion of the PostgreSQL revision and concurrency assertions.</returns>
     [Fact]
     public async Task VersionedHttpWrite_RejectsStaleAndMalformedWithoutMutation()
     {
@@ -80,6 +89,8 @@ public sealed class CustomerRevisionPostgresTests : IAsyncLifetime
         Assert.Equal("Fresh", (await finalRead.Content.ReadFromJsonAsync<CustomerResponse>())!.FirstName);
     }
 
+    /// <summary>Verifies that versioned resource authorization precedes concurrency-header parsing.</summary>
+    /// <returns>A task representing completion of the PostgreSQL revision and concurrency assertions.</returns>
     [Fact]
     public async Task VersionedHttpWrite_RequiresResourcePermissionBeforePreconditionParsing()
     {
@@ -100,6 +111,8 @@ public sealed class CustomerRevisionPostgresTests : IAsyncLifetime
         Assert.Equal(HttpStatusCode.Forbidden, forbiddenWrite.StatusCode);
     }
 
+    /// <summary>Verifies that competing contexts commit exactly one update from the same revision even when timestamps are identical.</summary>
+    /// <returns>A task representing completion of the PostgreSQL revision and concurrency assertions.</returns>
     [Fact]
     public async Task SameRevisionAcrossContexts_CommitsOneWriteDespiteFrozenTimestamp()
     {

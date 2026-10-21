@@ -10,10 +10,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Exercises literal company names across ordinary and scoped routes with storage, shared graph, and cache checks.</summary>
+/// <param name="fixture">The shared fixture providing customer hosts and disposable persistence for these scenarios.</param>
 [Collection("Customer company lifecycle")]
 public sealed class CustomerCompanyLiteralNameHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Verifies literal company-name storage and responses or refusal before writes while preserving shared graph and cache boundaries.</summary>
+    /// <param name="route">The ordinary or scoped create or update route under test.</param>
+    /// <returns>A task representing completion of the literal company-name HTTP, storage, and graph assertions.</returns>
     [Theory]
     [InlineData("create")]
     [InlineData("update")]
@@ -143,6 +148,10 @@ public sealed class CustomerCompanyLiteralNameHttpTests(CustomerDetailAuthorityF
         }
     }
 
+    /// <summary>Verifies that invalid authority cannot write company names through any ordinary or scoped route.</summary>
+    /// <param name="authority">The authentication and permission scenario used by the test client.</param>
+    /// <param name="expected">The expected HTTP status for the supplied scenario.</param>
+    /// <returns>A task representing completion of the literal company-name HTTP, storage, and graph assertions.</returns>
     [Theory]
     [InlineData("anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("wrong-signature", HttpStatusCode.Unauthorized)]
@@ -172,6 +181,8 @@ public sealed class CustomerCompanyLiteralNameHttpTests(CustomerDetailAuthorityF
         }
     }
 
+    /// <summary>Verifies that the company-name storage guard rejects isolated UTF-16 surrogates without normalization.</summary>
+    /// <param name="high">Whether to use an isolated high surrogate; false selects an isolated low surrogate.</param>
     [Theory]
     [InlineData(true)]
     [InlineData(false)]

@@ -6,8 +6,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Checks generic production exception responses and incident logging without literal customer-path disclosure.</summary>
 public sealed class ExceptionBoundaryContractTests
 {
+    /// <summary>Checks correlated generic 500 output and redacted incident logging for an unhandled customer request failure.</summary>
+    /// <returns>A task that completes after asserting the incident identifier, generic status and error fields, null details, and redacted logged path.</returns>
     [Fact]
     public async Task UnhandledFailure_EmitsCorrelatedGenericResponseWithoutLoggingLiteralCustomerPath()
     {

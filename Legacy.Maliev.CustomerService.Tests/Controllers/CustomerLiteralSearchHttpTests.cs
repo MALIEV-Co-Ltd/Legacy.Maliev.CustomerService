@@ -5,9 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Verifies literal customer directory search through normal authenticated HTTP and PostgreSQL.</summary>
+/// <param name="fixture">The shared Customer authority fixture supplying disposable PostgreSQL and Redis, production hosts, and signed request clients.</param>
 public sealed class CustomerLiteralSearchHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Provides searchable customer fields paired with literal SQL-pattern metacharacters.</summary>
+    /// <returns>Theory rows combining FirstName, LastName, Email, Mobile, Telephone, or Company with percent, underscore, or backslash.</returns>
     public static IEnumerable<object[]> LiteralFields()
     {
         foreach (var field in new[] { "FirstName", "LastName", "Email", "Mobile", "Telephone", "Company" })
@@ -15,6 +19,10 @@ public sealed class CustomerLiteralSearchHttpTests(CustomerDetailAuthorityFixtur
                 yield return [field, literal];
     }
 
+    /// <summary>Checks literal substring matches without treating percent, underscore, or backslash as search wildcards.</summary>
+    /// <param name="field">The FirstName, LastName, Email, Mobile, Telephone, or Company field containing the literal search character.</param>
+    /// <param name="literal">The percent, underscore, or backslash character whose literal occurrence must match.</param>
+    /// <returns>A task that completes after verifying literal substring matches without treating percent, underscore, or backslash as search wildcards.</returns>
     [Theory]
     [MemberData(nameof(LiteralFields))]
     public async Task Source_contains_search_matches_literal_characters_in_normal_http(string field, string literal)
@@ -50,6 +58,9 @@ public sealed class CustomerLiteralSearchHttpTests(CustomerDetailAuthorityFixtur
         Assert.False(item.TryGetProperty("PasswordHash", out _));
     }
 
+    /// <summary>Checks that an absent literal search character returns 404 without changing stored data.</summary>
+    /// <param name="literal">The percent, underscore, or backslash character absent from the seeded graph.</param>
+    /// <returns>A task that completes after verifying that an absent literal search character returns 404 without changing stored data.</returns>
     [Theory]
     [InlineData("%")]
     [InlineData("_")]
@@ -65,6 +76,9 @@ public sealed class CustomerLiteralSearchHttpTests(CustomerDetailAuthorityFixtur
         Assert.Equal(before, await fixture.SnapshotAsync());
     }
 
+    /// <summary>Checks that paging beyond the matching directory rows returns 404 without mutation.</summary>
+    /// <param name="search">The optional Before search text, or null to page the unfiltered directory.</param>
+    /// <returns>A task that completes after verifying that paging beyond the matching directory rows returns 404 without mutation.</returns>
     [Theory]
     [InlineData(null)]
     [InlineData("Before")]
@@ -80,6 +94,9 @@ public sealed class CustomerLiteralSearchHttpTests(CustomerDetailAuthorityFixtur
         Assert.Equal(snapshot, await fixture.SnapshotAsync());
     }
 
+    /// <summary>Checks numeric search matches both customer identity and text occurrences of the same number.</summary>
+    /// <param name="field">The FirstName, Email, Mobile, Telephone, or Company field seeded with a textual occurrence of 1.</param>
+    /// <returns>A task that completes after verifying numeric search matches both customer identity and text occurrences of the same number.</returns>
     [Theory]
     [InlineData("FirstName")]
     [InlineData("Email")]
@@ -115,6 +132,8 @@ public sealed class CustomerLiteralSearchHttpTests(CustomerDetailAuthorityFixtur
         Assert.Equal(new[] { 1, matchingId }, json.RootElement.GetProperty("Items").EnumerateArray()
             .Select(item => item.GetProperty("Id").GetInt32()).ToArray());
     }
+    /// <summary>Checks that an exhausted literal-filtered page returns 404 rather than unrelated rows or an empty success.</summary>
+    /// <returns>A task that completes after verifying that an exhausted literal-filtered page returns 404 rather than unrelated rows or an empty success.</returns>
     [Fact]
     public async Task Empty_page_after_literal_filter_does_not_return_unrelated_row_or_empty_success()
     {
@@ -135,6 +154,8 @@ public sealed class CustomerLiteralSearchHttpTests(CustomerDetailAuthorityFixtur
         using var beyond = await client.GetAsync("/customers?search=%25&index=2&size=1");
         Assert.Equal(HttpStatusCode.NotFound, beyond.StatusCode);
     }
+    /// <summary>Checks that escaped literal substring search remains case insensitive.</summary>
+    /// <returns>A task that completes after verifying that escaped literal substring search remains case insensitive.</returns>
     [Fact]
     public async Task Escaped_literal_search_remains_case_insensitive()
     {

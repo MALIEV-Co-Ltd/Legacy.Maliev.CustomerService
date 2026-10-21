@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Serializes actual scaffold runtime proof tests that require isolated hosted tool admission.</summary>
 [CollectionDefinition("Customer scaffold runtime", DisableParallelization = true)]
 public sealed class CustomerScaffoldRuntimeCollection;
 

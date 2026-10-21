@@ -3,12 +3,18 @@ using Xunit.Abstractions;
 
 namespace Legacy.Maliev.CustomerService.Tests.Startup;
 
+/// <summary>Serializes startup process scenarios that inspect application exit and diagnostic state.</summary>
 [CollectionDefinition("Customer startup process state", DisableParallelization = true)]
 public sealed class CustomerStartupProcessCollection;
 
+/// <summary>Exercises startup failure exit behavior and privacy of process output.</summary>
+/// <param name="output">The xUnit output sink for recording comparison or process diagnostics.</param>
 [Collection("Customer startup process state")]
 public sealed class CustomerStartupProcessTests(ITestOutputHelper output)
 {
+    /// <summary>Verifies that prehost configuration failure exits with code one and emits one sanitized private failure event.</summary>
+    /// <param name="missingRoot">Whether to use a nonexistent content root; false uses a root containing malformed configuration.</param>
+    /// <returns>A task representing completion of the startup process exit and diagnostic privacy assertions.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -27,6 +33,8 @@ public sealed class CustomerStartupProcessTests(ITestOutputHelper output)
         AssertPrivate(result);
     }
 
+    /// <summary>Verifies that host-start failure emits its private failure event without leaking configuration or exception details.</summary>
+    /// <returns>A task representing completion of the startup process exit and diagnostic privacy assertions.</returns>
     [Fact]
     public async Task Host_start_failure_does_not_leak_before_or_after_private_reporting()
     {

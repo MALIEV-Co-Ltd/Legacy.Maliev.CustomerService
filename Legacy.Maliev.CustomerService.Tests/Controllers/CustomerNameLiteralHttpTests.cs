@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Checks literal customer names, keyed creation replay, provider retries, lost acknowledgments, and ordinary optional contact projections.</summary>
+/// <param name="fixture">The shared authority fixture supplying isolated customer graph setup, HTTP hosts, signed clients, and cache observations.</param>
 [Collection("Customer profile lifecycle")]
 public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
@@ -12,6 +14,9 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
     private const string First = " \tสมชาย\u00a0 ";
     private const string Last = "\u00a0 ใจดี\t ";
 
+    /// <summary>Checks literal name persistence and readback during creation and optional keyed replay.</summary>
+    /// <param name="keyed">Whether to include an Idempotency-Key and verify that a repeated create returns the same customer.</param>
+    /// <returns>A task that completes after asserting exact names and location, one durable keyed operation when applicable, and restored original state after deletion.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -63,6 +68,9 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
         Assert.Equal(before, await fixture.SnapshotAsync());
     }
 
+    /// <summary>Checks literal name updates, cache eviction, retained relations, and optional stale-version refusal.</summary>
+    /// <param name="versioned">Whether to use the versioned update route with If-Match instead of an ordinary update.</param>
+    /// <returns>A task that completes after asserting literal storage and readback, advanced revision, unchanged relations, and refusal of a stale version when applicable.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -116,6 +124,10 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
         }
     }
 
+    /// <summary>Checks that padded customer names cannot bypass authentication or write permissions.</summary>
+    /// <param name="authority">The anonymous, denied-permission, invalid-signature, or expired-token scenario used to construct the client.</param>
+    /// <param name="status">The expected unauthorized or forbidden response for the selected actor.</param>
+    /// <returns>A task that completes after asserting refused creation and update statuses, unchanged graph, and retained cache.</returns>
     [Theory]
     [InlineData("anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("denied", HttpStatusCode.Forbidden)]
@@ -137,6 +149,10 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
         Assert.True(await fixture.CacheExistsAsync());
     }
 
+    /// <summary>Checks that whitespace-only first or last names remain invalid on all customer write paths.</summary>
+    /// <param name="first">The submitted first name, containing only whitespace in the first-name rejection case.</param>
+    /// <param name="last">The submitted last name, containing only whitespace in the last-name rejection case.</param>
+    /// <returns>A task that completes after asserting bad-request responses and unchanged graph.</returns>
     [Theory]
     [InlineData(" \t\u00a0", "Valid")]
     [InlineData("Valid", " \t\u00a0")]
@@ -154,6 +170,8 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
         Assert.Equal(before, await fixture.SnapshotAsync());
     }
 
+    /// <summary>Checks keyed creation and replay through the actual host retry-enabled provider while preserving literal names.</summary>
+    /// <returns>A task that completes after asserting retry-enabled configuration, equal replay identifiers, literal names, and one durable create receipt.</returns>
     [Fact]
     public async Task KeyedCreate_RealHostRetryProvider_PreservesLiteralNamesAndReplay()
     {
@@ -193,6 +211,9 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
         Assert.Equal(1, await db.CustomerCreateOperations.CountAsync(token));
     }
 
+    /// <summary>Checks keyed create rollback and fresh-context retry for permanent and transient save failures.</summary>
+    /// <param name="transient">Whether the first saved-change fault is a transient provider exception instead of a permanent invalid-operation failure.</param>
+    /// <returns>A task that completes after asserting rollback or retry behavior, two distinct attempt contexts, one customer creation, and one durable receipt.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -230,6 +251,9 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
         Assert.Equal(1, await stored.CustomerCreateOperations.CountAsync(row => row.Key == key, token));
     }
 
+    /// <summary>Checks recovery of a keyed create after a lost commit acknowledgment and optional cancellation.</summary>
+    /// <param name="cancel">Whether the first commit acknowledgment cancels the caller instead of throwing a transient provider failure.</param>
+    /// <returns>A task that completes after asserting one commit, literal replayed names, correct receipt binding, and conflicts for a different actor or payload.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -306,6 +330,9 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
     }
 
 
+    /// <summary>Checks ordinary optional contact writes against the pinned public Newtonsoft comparison projection.</summary>
+    /// <param name="update">Whether to update the seeded customer with PUT instead of creating a customer with POST.</param>
+    /// <returns>A task that completes after asserting source-shaped scalar and null projections, rejected-container isolation, literal persistence and readback, and retained relations.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]

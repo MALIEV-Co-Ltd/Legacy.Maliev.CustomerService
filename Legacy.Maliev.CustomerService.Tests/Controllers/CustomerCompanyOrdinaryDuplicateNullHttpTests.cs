@@ -15,16 +15,25 @@ using Xunit.Abstractions;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Verifies ordinary company duplicate-null projection and its graph, cache, authority, and scoped-policy boundaries.</summary>
+/// <param name="fixture">The shared Customer authority fixture supplying disposable PostgreSQL and Redis, production hosts, and signed request clients.</param>
+/// <param name="output">The xUnit output sink recording reader, HTTP, graph, and cache comparison evidence.</param>
 [Collection("Customer company lifecycle")]
 public sealed class CustomerCompanyOrdinaryDuplicateNullHttpTests(CustomerDetailAuthorityFixture fixture, ITestOutputHelper output)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Checks last-nonnull company names with only the intended persisted graph and cache effects.</summary>
+    /// <returns>A task that completes after verifying last-nonnull company names with only the intended persisted graph and cache effects.</returns>
     [Fact]
     public Task OrdinaryDuplicateNames_PersistLastNonNullNameAndOnlyIntendedGraphAndCacheEffects() => WriteMatrixAsync(PositiveCases());
 
+    /// <summary>Checks last-nonnull TaxNumber and Registrar strings with precise graph and cache effects.</summary>
+    /// <returns>A task that completes after verifying last-nonnull TaxNumber and Registrar strings with precise graph and cache effects.</returns>
     [Fact]
     public Task OrdinaryTaxRegistrar_PersistLastNonNullStringsAndOnlyIntendedGraphAndCacheEffects() => WriteMatrixAsync(NullablePositiveCases());
 
+    /// <summary>Checks TaxNumber and Registrar authority failures, structured-token rejection, scoped null policy, and stale-version preservation.</summary>
+    /// <returns>A task that completes after verifying TaxNumber and Registrar authority failures, structured-token rejection, scoped null policy, and stale-version preservation.</returns>
     [Fact]
     public async Task OrdinaryTaxRegistrar_InvalidAuthorityTokensAndScopedPolicyCannotMutateGraphOrCache()
     {
@@ -102,6 +111,8 @@ public sealed class CustomerCompanyOrdinaryDuplicateNullHttpTests(CustomerDetail
         await WriteMatrixAsync(PrimitiveEarlierCases());
     }
 
+    /// <summary>Checks invalid duplicate Name occurrences while retaining explicitly source-accepted text and scalar controls.</summary>
+    /// <returns>A task that completes after verifying invalid duplicate Name occurrences while retaining explicitly source-accepted text and scalar controls.</returns>
     [Fact]
     public async Task OrdinaryDuplicateNames_InvalidOccurrenceCannotHideBehindLaterValuesOrMutateGraph()
     {
@@ -145,6 +156,8 @@ public sealed class CustomerCompanyOrdinaryDuplicateNullHttpTests(CustomerDetail
         await WriteMatrixAsync(sourceAccepted);
     }
 
+    /// <summary>Checks duplicate-name authority rejection and scoped literal policy without unintended graph or cache effects.</summary>
+    /// <returns>A task that completes after verifying duplicate-name authority rejection and scoped literal policy without unintended graph or cache effects.</returns>
     [Fact]
     public async Task OrdinaryDuplicateNames_InvalidAuthorityAndScopedLiteralPolicyCannotChangeGraphOrCache()
     {

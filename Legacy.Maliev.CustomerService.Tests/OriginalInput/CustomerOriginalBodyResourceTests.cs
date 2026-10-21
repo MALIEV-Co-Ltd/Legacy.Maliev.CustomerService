@@ -15,6 +15,8 @@ using Microsoft.Extensions.Options;
 
 namespace Legacy.Maliev.CustomerService.Tests.OriginalInput;
 
+/// <summary>Verifies customer and address formatter stream ownership and spill cleanup across success, cancellation, and faults.</summary>
+/// <param name="postgres">The shared Customer authority fixture supplying disposable PostgreSQL and Redis, production hosts, and signed request clients.</param>
 [Collection("Customer original body")]
 public sealed class CustomerOriginalBodyResourceTests(CustomerDetailAuthorityFixture postgres)
     : IClassFixture<CustomerDetailAuthorityFixture>
@@ -23,6 +25,10 @@ public sealed class CustomerOriginalBodyResourceTests(CustomerDetailAuthorityFix
         ? "{\"FirstName\":\"N\",\"LastName\":\"Resource\",\"Email\":\"resource@example.test\",\"Telephone\":\"" + new string('ก', 40000) + "\"}"
         : "{\"Building\":\"N\",\"AddressLine2\":\"" + new string('ก', 40000) + "\"}");
 
+    /// <summary>Checks large fragmented body projection and owned spill cleanup without disposing caller input.</summary>
+    /// <param name="lane">The customer or address request-body lane selecting its DTO, source-shaped model, and large test payload.</param>
+    /// <param name="candidate">Whether to exercise the candidate formatter rather than the original source-shaped formatter.</param>
+    /// <returns>A task that completes after verifying large fragmented body projection and owned spill cleanup without disposing caller input.</returns>
     [Theory]
     [InlineData("customer", false)]
     [InlineData("customer", true)]
@@ -74,6 +80,10 @@ public sealed class CustomerOriginalBodyResourceTests(CustomerDetailAuthorityFix
         }
     }
 
+    /// <summary>Checks candidate cancellation before draining against the original reader's uncancelled drain behavior.</summary>
+    /// <param name="lane">The customer or address request-body lane selecting its DTO, source-shaped model, and large test payload.</param>
+    /// <param name="candidate">Whether to exercise the candidate formatter rather than the original source-shaped formatter.</param>
+    /// <returns>A task that completes after verifying candidate cancellation before draining against the original reader's uncancelled drain behavior.</returns>
     [Theory]
     [InlineData("customer", false)]
     [InlineData("customer", true)]
@@ -119,6 +129,10 @@ public sealed class CustomerOriginalBodyResourceTests(CustomerDetailAuthorityFix
         }
     }
 
+    /// <summary>Checks candidate I/O and size-limit failures release spill files and restore caller input without becoming malformed 400 errors.</summary>
+    /// <param name="lane">The customer or address request-body lane selecting its DTO, source-shaped model, and large test payload.</param>
+    /// <param name="fault">Whether the fragmented stream throws after 40,000 bytes rather than exceeding a 40,000-byte request-size limit.</param>
+    /// <returns>A task that completes after verifying candidate I/O and size-limit failures release spill files and restore caller input without becoming malformed 400 errors.</returns>
     [Theory]
     [InlineData("customer", true)]
     [InlineData("customer", false)]
@@ -147,6 +161,9 @@ public sealed class CustomerOriginalBodyResourceTests(CustomerDetailAuthorityFix
         }
     }
 
+    /// <summary>Checks charset rejection before body reads and restoration of the caller's seek position after success.</summary>
+    /// <param name="lane">The customer or address request-body lane selecting its DTO, source-shaped model, and large test payload.</param>
+    /// <returns>A task that completes after verifying charset rejection before body reads and restoration of the caller's seek position after success.</returns>
     [Theory]
     [InlineData("customer")]
     [InlineData("address")]
@@ -193,6 +210,9 @@ public sealed class CustomerOriginalBodyResourceTests(CustomerDetailAuthorityFix
         }
     }
 
+    /// <summary>Checks unexpected UTF-8 decoder faults and owned cleanup on both formatters.</summary>
+    /// <param name="lane">The customer or address request-body lane selecting its DTO, source-shaped model, and large test payload.</param>
+    /// <returns>A task that completes after verifying unexpected UTF-8 decoder faults and owned cleanup on both formatters.</returns>
     [Theory]
     [InlineData("customer")]
     [InlineData("address")]

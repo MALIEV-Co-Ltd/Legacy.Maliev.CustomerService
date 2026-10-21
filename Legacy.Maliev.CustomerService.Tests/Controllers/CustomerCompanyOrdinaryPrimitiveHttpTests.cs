@@ -9,14 +9,21 @@ using Xunit.Abstractions;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Checks ordinary company primitive text projection, numeric spelling and length boundaries, and authority isolation.</summary>
+/// <param name="fixture">The shared authority fixture supplying isolated customer graph setup, HTTP hosts, signed clients, and cache observations.</param>
+/// <param name="output">The test output sink recording route, raw scalar case, and response status for the bounded persistence matrix.</param>
 [Collection("Customer company lifecycle")]
 public sealed class CustomerCompanyOrdinaryPrimitiveHttpTests(CustomerDetailAuthorityFixture fixture, ITestOutputHelper output)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Checks that ordinary company boolean and numeric names persist their exact JSON text with only intended graph and cache effects.</summary>
+    /// <returns>A task that completes after asserting literal name and metadata storage, response casing, timestamps, graph isolation, and linked cache eviction.</returns>
     [Fact]
     public Task OrdinaryPrimitiveNames_PersistExactLexemesAndOnlyIntendedGraphAndCacheEffects() =>
         WriteMatrixAsync([("true", "true", true), ("false", "false", true), ("42", "42", true), ("1.5", "1.5", true), ("1e3", "1e3", true)]);
 
+    /// <summary>Checks numeric company names for overflow spelling, exponent and fraction text, and the 256-unit input bound.</summary>
+    /// <returns>A task that completes after asserting exact accepted numeric text or a sanitized oversized refusal with unchanged graph and cache bytes.</returns>
     [Fact]
     public Task OrdinaryNumericNames_PreserveOverflowAndSpellingOrRefuseOver256Units() =>
         WriteMatrixAsync([
@@ -27,6 +34,8 @@ public sealed class CustomerCompanyOrdinaryPrimitiveHttpTests(CustomerDetailAuth
             (new string('1', 257), new string('1', 257), false),
         ]);
 
+    /// <summary>Checks that invalid authority cannot persist primitive company names or affect graph and cache state.</summary>
+    /// <returns>A task that completes after asserting unauthorized or forbidden responses and unchanged rows and caches for ordinary create and update.</returns>
     [Fact]
     public async Task OrdinaryPrimitiveNames_InvalidAuthorityCannotChangeGraphOrCache()
     {

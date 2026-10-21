@@ -11,6 +11,7 @@ namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 /// <summary>Tax and registrar serializer contract differentials for the ordinary MVC policy.</summary>
 public sealed class CompanyOrdinaryTaxRegistrarMetadataTests
 {
+    /// <summary>Verifies ordinary tax and registrar binding while preserving resolver composition, custom metadata, serialization, and public record behavior.</summary>
     [Fact]
     public void OrdinaryTaxRegistrar_PreserveOptionsResolverWriteAndPublicRecordContracts()
     {

@@ -12,8 +12,11 @@ using Xunit.Abstractions;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Compares ordinary duplicate company-name binding with a pinned Newtonsoft 13 reference shape across cultures and segmented input.</summary>
+/// <param name="output">The xUnit output sink for recording comparison or process diagnostics.</param>
 public sealed class CompanyOrdinaryDuplicateNullReferenceTests(ITestOutputHelper output)
 {
+    /// <summary>Verifies ordered duplicate-null and escaped-name behavior against a pinned Newtonsoft 13 reference without claiming original-runtime equivalence.</summary>
     [Fact]
     public void OrdinaryDuplicateNames_MatchPinnedReferenceForOrderedNullAndEscapedCaseVariants()
     {

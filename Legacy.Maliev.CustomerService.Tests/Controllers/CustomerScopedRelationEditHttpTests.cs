@@ -14,12 +14,18 @@ using Npgsql;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Serializes scoped relation-edit tests sharing customer graph and cache state.</summary>
 [CollectionDefinition("Customer scoped relation edits", DisableParallelization = true)]
 public sealed class CustomerScopedRelationEditCollection;
 
+/// <summary>Checks customer-scoped metadata edits, atomic relation attachment, dual preconditions, concurrency, and uncertain commits.</summary>
+/// <param name="fixture">The shared authority fixture supplying isolated customer graph setup, HTTP hosts, signed clients, and cache observations.</param>
 [Collection("Customer scoped relation edits")]
 public sealed class CustomerScopedRelationEditHttpTests(CustomerDetailAuthorityFixture fixture) : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Checks a bound shared metadata edit, linked cache eviction, and refusal of a stale captured form.</summary>
+    /// <param name="kind">The selected customer relation: company, billing address, or shipping address.</param>
+    /// <returns>A task that completes after asserting updated relation metadata, renewed validators, stale-write refusal, and preserved customer profile fields.</returns>
     [Theory]
     [InlineData("company")]
     [InlineData("billing")]
@@ -62,6 +68,9 @@ public sealed class CustomerScopedRelationEditHttpTests(CustomerDetailAuthorityF
         Assert.Equal(2, await db.Addresses.CountAsync());
     }
 
+    /// <summary>Checks atomic creation and attachment of only the selected missing relation and refusal of a replayed new-relation form.</summary>
+    /// <param name="kind">The selected customer relation: company, billing address, or shipping address.</param>
+    /// <returns>A task that completes after asserting the new relation identifier, unchanged other attachments, and stale replay refusal.</returns>
     [Theory]
     [InlineData("company")]
     [InlineData("billing")]
@@ -101,6 +110,10 @@ public sealed class CustomerScopedRelationEditHttpTests(CustomerDetailAuthorityF
         Assert.Equal(before, await SnapshotAsync());
     }
 
+    /// <summary>Checks that an independent metadata or customer-profile change invalidates a captured relation version.</summary>
+    /// <param name="kind">The selected customer relation: company, billing address, or shipping address.</param>
+    /// <param name="profileChange">Whether to change the customer telephone instead of the selected relation metadata before reusing the captured validator.</param>
+    /// <returns>A task that completes after asserting precondition failure and an unchanged graph after the independent change.</returns>
     [Theory]
     [InlineData("company", false)]
     [InlineData("billing", false)]
@@ -131,6 +144,9 @@ public sealed class CustomerScopedRelationEditHttpTests(CustomerDetailAuthorityF
         Assert.Equal(before, await SnapshotAsync());
     }
 
+    /// <summary>Checks that an unbound relation identifier remains inaccessible despite valid versions and broad staff permissions.</summary>
+    /// <param name="kind">The selected customer relation: company, billing address, or shipping address.</param>
+    /// <returns>A task that completes after asserting not-found read and write responses and unchanged graph.</returns>
     [Theory]
     [InlineData("company")]
     [InlineData("billing")]
@@ -149,6 +165,11 @@ public sealed class CustomerScopedRelationEditHttpTests(CustomerDetailAuthorityF
         Assert.Equal(before, await SnapshotAsync());
     }
 
+    /// <summary>Checks that both customer-update and metadata-update authority are required before a scoped edit.</summary>
+    /// <param name="kind">The selected customer relation: company, billing address, or shipping address.</param>
+    /// <param name="authority">The anonymous, missing-customer-update, or missing-metadata-update authority scenario.</param>
+    /// <param name="expected">The expected unauthorized or forbidden response for the selected actor.</param>
+    /// <returns>A task that completes after asserting the expected authority refusal and unchanged graph.</returns>
     [Theory]
     [InlineData("company", "anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("billing", "anonymous", HttpStatusCode.Unauthorized)]
@@ -172,6 +193,11 @@ public sealed class CustomerScopedRelationEditHttpTests(CustomerDetailAuthorityF
         Assert.Equal(before, await SnapshotAsync());
     }
 
+    /// <summary>Checks that absent or malformed relation preconditions refuse an edit without mutation.</summary>
+    /// <param name="kind">The selected customer relation: company, billing address, or shipping address.</param>
+    /// <param name="version">The absent, wildcard, weak, or malformed If-Match value submitted with the relation edit.</param>
+    /// <param name="expected">The expected HTTP status for the selected missing or malformed precondition.</param>
+    /// <returns>A task that completes after asserting the precondition refusal status and unchanged graph.</returns>
     [Theory]
     [InlineData("company", null, 428)]
     [InlineData("billing", null, 428)]
@@ -190,6 +216,9 @@ public sealed class CustomerScopedRelationEditHttpTests(CustomerDetailAuthorityF
         Assert.Equal(before, await SnapshotAsync());
     }
 
+    /// <summary>Checks that a submitted RelationId field cannot mass-assign a different metadata attachment.</summary>
+    /// <param name="kind">The selected customer relation: company, billing address, or shipping address.</param>
+    /// <returns>A task that completes after asserting a bad-request response and unchanged graph.</returns>
     [Theory]
     [InlineData("company")]
     [InlineData("billing")]
@@ -211,6 +240,9 @@ public sealed class CustomerScopedRelationEditHttpTests(CustomerDetailAuthorityF
         Assert.Equal(before, await SnapshotAsync());
     }
 
+    /// <summary>Checks that concurrent scoped edits using the same relation version allow exactly one commit.</summary>
+    /// <param name="kind">The selected customer relation: company, billing address, or shipping address.</param>
+    /// <returns>A task that completes after asserting one no-content response and one precondition-failed response.</returns>
     [Theory]
     [InlineData("company")]
     [InlineData("billing")]
@@ -231,6 +263,9 @@ public sealed class CustomerScopedRelationEditHttpTests(CustomerDetailAuthorityF
         finally { foreach (var response in responses) response.Dispose(); }
     }
 
+    /// <summary>Checks that lost commit acknowledgment produces one uncertain failure and evicts every linked cache without replay.</summary>
+    /// <param name="kind">The selected customer relation: company, billing address, or shipping address.</param>
+    /// <returns>A task that completes after asserting one commit, an advanced relation validator, linked cache eviction, and sanitized 500 output.</returns>
     [Theory]
     [InlineData("company")]
     [InlineData("billing")]
@@ -252,6 +287,9 @@ public sealed class CustomerScopedRelationEditHttpTests(CustomerDetailAuthorityF
         Assert.DoesNotContain("synthetic-relation-ack", await response.Content.ReadAsStringAsync(), StringComparison.Ordinal);
     }
 
+    /// <summary>Checks that caller cancellation after commit preserves its token and evicts all linked caches without replay.</summary>
+    /// <param name="kind">The selected customer relation: company, billing address, or shipping address.</param>
+    /// <returns>A task that completes after asserting the caller cancellation token, exactly one commit, changed relation version, and linked cache eviction.</returns>
     [Theory]
     [InlineData("company")]
     [InlineData("billing")]
@@ -281,6 +319,9 @@ public sealed class CustomerScopedRelationEditHttpTests(CustomerDetailAuthorityF
         await AssertCachesAsync(host.Services, false);
     }
 
+    /// <summary>Checks that invalid replacement fields cannot change metadata or its customer attachment.</summary>
+    /// <param name="kind">The selected customer relation: company, billing address, or shipping address.</param>
+    /// <returns>A task that completes after asserting a bad-request response and unchanged graph.</returns>
     [Theory]
     [InlineData("company")]
     [InlineData("billing")]
@@ -304,6 +345,9 @@ public sealed class CustomerScopedRelationEditHttpTests(CustomerDetailAuthorityF
         Assert.Equal(before, await SnapshotAsync());
     }
 
+    /// <summary>Checks that a missing customer returns not found for relation reads and writes without creating metadata.</summary>
+    /// <param name="kind">The selected customer relation: company, billing address, or shipping address.</param>
+    /// <returns>A task that completes after asserting not-found responses and unchanged graph.</returns>
     [Theory]
     [InlineData("company")]
     [InlineData("billing")]
@@ -325,6 +369,10 @@ public sealed class CustomerScopedRelationEditHttpTests(CustomerDetailAuthorityF
         Assert.Equal(before, await SnapshotAsync());
     }
 
+    /// <summary>Checks that relation validators remain bound to their relation kind even when billing and shipping share one address.</summary>
+    /// <param name="kind">The selected customer relation: company, billing address, or shipping address.</param>
+    /// <param name="otherKind">The different relation kind supplying the validator incorrectly reused for the selected write.</param>
+    /// <returns>A task that completes after asserting precondition failure and unchanged graph.</returns>
     [Theory]
     [InlineData("company", "billing")]
     [InlineData("billing", "shipping")]
@@ -343,6 +391,9 @@ public sealed class CustomerScopedRelationEditHttpTests(CustomerDetailAuthorityF
 
     private readonly Dictionary<string, string> capturedRevisions = new(StringComparer.Ordinal);
 
+    /// <summary>Checks that an ordinary relation move before the customer row fence invalidates the pending metadata edit.</summary>
+    /// <param name="kind">The selected customer relation: company, billing address, or shipping address.</param>
+    /// <returns>A task that completes after asserting the completed profile move, refusal of the stale edit, and no additional metadata changes.</returns>
     [Theory]
     [InlineData("company")]
     [InlineData("billing")]
@@ -376,6 +427,9 @@ public sealed class CustomerScopedRelationEditHttpTests(CustomerDetailAuthorityF
         }
     }
 
+    /// <summary>Checks that the customer row fence blocks an ordinary relation move until the selected metadata edit commits.</summary>
+    /// <param name="kind">The selected customer relation: company, billing address, or shipping address.</param>
+    /// <returns>A task that completes after asserting database lock contention, metadata commit before the move, and preserved unrelated metadata.</returns>
     [Theory]
     [InlineData("company")]
     [InlineData("billing")]
@@ -471,6 +525,9 @@ public sealed class CustomerScopedRelationEditHttpTests(CustomerDetailAuthorityF
         }
     }
 
+    /// <summary>Checks that confirmed relation writes carry the customer revision forward while original untouched metadata validators remain usable.</summary>
+    /// <param name="missing">Whether the company and address relations start unbound and must be created instead of updating existing separate bindings.</param>
+    /// <returns>A task that completes after asserting successive relation saves, carried customer revisions, stale-profile refusal, and a profile save with the latest revision.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -534,6 +591,8 @@ public sealed class CustomerScopedRelationEditHttpTests(CustomerDetailAuthorityF
         Assert.Equal(relationIds["shipping"], stored.ShippingAddressId);
     }
 
+    /// <summary>Checks that a shared-address save returns committed counterpart validators for a deliberate subsequent edit.</summary>
+    /// <returns>A task that completes after asserting stale shipping refusal, success with the returned shipping validator, and the retained shared binding.</returns>
     [Fact]
     public async Task SharedAddressWrite_ReturnsOnlyKnownCommittedCounterpartValidatorForIntentionalNextEdit()
     {
@@ -559,6 +618,11 @@ public sealed class CustomerScopedRelationEditHttpTests(CustomerDetailAuthorityF
         Assert.Equal(1, (await db.Customers.SingleAsync(row => row.Id == 1)).BillingAddressId);
     }
 
+    /// <summary>Checks that the separate customer precondition is mandatory and fences scoped relation writes.</summary>
+    /// <param name="kind">The selected customer relation: company, billing address, or shipping address.</param>
+    /// <param name="customerVersion">The absent, wildcard, or stale X-Customer-If-Match header value supplied beside the valid relation validator.</param>
+    /// <param name="status">The expected HTTP refusal status for the selected customer precondition.</param>
+    /// <returns>A task that completes after asserting the refusal status and unchanged graph.</returns>
     [Theory]
     [InlineData("company", null, 428)]
     [InlineData("billing", null, 428)]

@@ -8,12 +8,19 @@ using Testcontainers.PostgreSql;
 
 namespace Legacy.Maliev.CustomerService.Tests.Data;
 
+/// <summary>Owns a PostgreSQL fixture for quotation snapshot, completion, and provisioning retry boundaries.</summary>
 public sealed class QuotationProfileRetryPostgresTests : IAsyncLifetime
 {
     private readonly PostgreSqlContainer postgres = new PostgreSqlBuilder("postgres:18-alpine").Build();
+    /// <summary>Starts the PostgreSQL container owned by these quotation retry tests.</summary>
+    /// <returns>A task that completes when the owned PostgreSQL container has started.</returns>
     public Task InitializeAsync() => postgres.StartAsync();
+    /// <summary>Releases the PostgreSQL container owned by these quotation retry tests.</summary>
+    /// <returns>A task that completes after the owned PostgreSQL container has been disposed.</returns>
     public Task DisposeAsync() => postgres.DisposeAsync().AsTask();
 
+    /// <summary>Checks whole-snapshot retries and cancellation without leaking tracked entities or creating completion receipts.</summary>
+    /// <returns>A task that completes after asserting two read attempt contexts, one controlled fault, an untracked result, cancellation propagation, and no receipts.</returns>
     [Fact]
     public async Task Read_RetriesWholeSnapshotAndHonorsCancellation()
     {
@@ -40,6 +47,9 @@ public sealed class QuotationProfileRetryPostgresTests : IAsyncLifetime
         Assert.Empty(await seed.QuotationProfileCompletionOperations.ToListAsync());
     }
 
+    /// <summary>Checks rollback or lost-acknowledgment completion retries using fresh contexts and one durable receipt.</summary>
+    /// <param name="lostCommit">Whether the injected fault occurs after commit acknowledgment instead of before the transaction commits.</param>
+    /// <returns>A task that completes after asserting successful completion, fresh attempt contexts, isolated company replacement, one durable receipt, and exact replay.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -88,6 +98,9 @@ public sealed class QuotationProfileRetryPostgresTests : IAsyncLifetime
         Assert.Equal(result, replay);
     }
 
+    /// <summary>Checks whole locked-graph provisioning retries without duplicating customer, company, or address resources.</summary>
+    /// <param name="lostCommit">Whether to lose the commit acknowledgment instead of failing before commit.</param>
+    /// <returns>A task that completes after asserting one resulting graph, two attempt contexts, retained canonical selection, no keyed-create receipt, and cancellation propagation.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]

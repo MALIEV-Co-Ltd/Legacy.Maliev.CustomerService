@@ -18,10 +18,15 @@ using Xunit.Abstractions;
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
 
+/// <summary>Verifies ordinary company TaxNumber and Registrar primitives against equivalent strings through real HTTP persistence.</summary>
+/// <param name="fixture">The shared Customer authority fixture supplying disposable PostgreSQL and Redis, production hosts, and signed request clients.</param>
+/// <param name="output">The xUnit output sink recording reader, HTTP, graph, and cache comparison evidence.</param>
 [Collection("Customer company lifecycle")]
 public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthorityFixture fixture, ITestOutputHelper output)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Checks culture-independent primitive lexeme persistence against equivalent strings for contiguous and segmented bodies.</summary>
+    /// <returns>A task that completes after verifying culture-independent primitive lexeme persistence against equivalent strings for contiguous and segmented bodies.</returns>
     [Fact]
     public async Task OrdinaryPairedFields_PersistPrimitiveLexemesAndMatchEquivalentStrings()
     {
@@ -75,6 +80,8 @@ public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthori
         }
     }
 
+    /// <summary>Checks structured-value rejection and storage boundaries against equivalent-string behavior without unintended graph or cache changes.</summary>
+    /// <returns>A task that completes after verifying structured-value rejection and storage boundaries against equivalent-string behavior without unintended graph or cache changes.</returns>
     [Fact]
     public async Task OrdinaryPairedFields_RefusedShapesAndStorageBoundariesMatchEquivalentStringPipeline()
     {
@@ -154,6 +161,8 @@ public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthori
                 }
     }
 
+    /// <summary>Checks company primitive authority failures, scoped literal policy, and stale-version refusal without unintended mutation.</summary>
+    /// <returns>A task that completes after verifying company primitive authority failures, scoped literal policy, and stale-version refusal without unintended mutation.</returns>
     [Fact]
     public async Task OrdinaryPairedFields_AuthorityScopedPolicyAndStaleVersionsPreserveGraphCache()
     {

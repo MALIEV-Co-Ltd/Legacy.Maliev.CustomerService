@@ -16,10 +16,14 @@ using Stj = System.Text.Json.JsonSerializer;
 
 namespace Legacy.Maliev.CustomerService.Tests.OriginalInput;
 
+/// <summary>Compares complete public source-shaped company bodies with native and candidate MVC readers before consumed-field projection.</summary>
+/// <param name="fixture">The shared authority fixture used to create candidate hosts and reconstruct native MVC formatter options.</param>
 [Collection("Customer original body")]
 public sealed class CompanyOriginalBodyReaderTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Provides company body cases for grammar, scalars, metadata, nested graphs, reference handling, and null history.</summary>
+    /// <returns>Theory rows containing a case label, exact JSON, source-shaped outcome, consumed three-field projection, and optional native outcome.</returns>
     public static IEnumerable<object?[]> Cases()
     {
         yield return ["ordinary", "{\"Name\":\"  Company envelope  \",\"TaxNumber\":\"123000\",\"Registrar\":\"Office\"}", "success", "[\"  Company envelope  \",\"123000\",\"Office\"]", "success"];
@@ -159,6 +163,13 @@ public sealed class CompanyOriginalBodyReaderTests(CustomerDetailAuthorityFixtur
         yield return ["complete recursive graph", "{\"$id\":\"K\",\"Name\":\"  Company envelope  \",\"TaxNumber\":\"123000\",\"Registrar\":\"Office\",\"Id\":999,\"CreatedDate\":\"1900-01-01\",\"ModifiedDate\":\"1900-01-01\",\"Customer\":[{\"$id\":\"C\",\"Id\":998,\"FirstName\":\"NeverPersist\",\"LastName\":\"Graph\",\"FullName\":\"forged full\",\"Telephone\":\"T\",\"Mobile\":\"M\",\"Fax\":\"F\",\"Email\":\"nested@example.test\",\"DateOfBirth\":\"2000-01-01\",\"CompanyId\":999,\"BillingAddressId\":997,\"ShippingAddressId\":997,\"CreatedDate\":\"1900-01-01\",\"ModifiedDate\":\"1900-01-01\",\"Company\":{\"$ref\":\"K\"},\"BillingAddress\":{\"$id\":\"A\",\"Id\":997,\"Building\":\"Nested\",\"AddressLine1\":\"forged road\",\"AddressLine2\":\"Line2\",\"City\":\"Bangkok\",\"State\":\"State\",\"PostalCode\":\"10100\",\"CountryId\":764,\"CreatedDate\":\"1900-01-01\",\"ModifiedDate\":\"1900-01-01\",\"CustomerBillingAddress\":[{\"$ref\":\"C\"}],\"CustomerShippingAddress\":[{\"$ref\":\"C\"}]},\"ShippingAddress\":{\"$ref\":\"A\"}}]}", "success", "[\"  Company envelope  \",\"123000\",\"Office\"]", "success"];
     }
 
+    /// <summary>Checks that complete source-shaped company validation occurs before projecting only name, tax number, and registrar.</summary>
+    /// <param name="label">The descriptive theory-case label retained for case identification.</param>
+    /// <param name="json">The exact company JSON submitted to the public source-shaped, native, and candidate readers.</param>
+    /// <param name="expectedKind">The expected source-shaped and candidate outcome, including success, failure, no-value, or a named thrown exception.</param>
+    /// <param name="expectedProjection">The serialized array of expected Name, TaxNumber, and Registrar values on a successful source-shaped or candidate read.</param>
+    /// <param name="nativeKind">The expected native MVC outcome when specified; null leaves the native outcome unasserted.</param>
+    /// <returns>A task that completes after asserting source-shaped and candidate outcomes and projections, optional native outcome, and sanitized candidate failure keys and messages.</returns>
     [Theory]
     [MemberData(nameof(Cases))]
     public async Task CompleteCompanySourceShape_IsParsedBeforeProjectingOnlyThreeFields(
@@ -191,6 +202,10 @@ public sealed class CompanyOriginalBodyReaderTests(CustomerDetailAuthorityFixtur
         _ = label;
     }
 
+    /// <summary>Checks that complete company bodies retain a maximum nesting depth of 32.</summary>
+    /// <param name="depth">The nesting depth of the synthetic unknown JSON member.</param>
+    /// <param name="expectedKind">The expected success or failure outcome for that nesting depth.</param>
+    /// <returns>A task that completes after asserting matching public source-shaped and candidate depth outcomes.</returns>
     [Theory]
     [InlineData(31, "success")]
     [InlineData(32, "success")]
@@ -205,6 +220,11 @@ public sealed class CompanyOriginalBodyReaderTests(CustomerDetailAuthorityFixtur
             host.Services, options, Encoding.UTF8.GetBytes(body))).Kind);
     }
 
+    /// <summary>Checks retained company JSON media, charset handling, and safe unsupported-charset failures.</summary>
+    /// <param name="contentType">The complete request media type and optional charset used for the company body.</param>
+    /// <param name="unicode">Whether to encode the valid company body as little-endian UTF-16 instead of UTF-8.</param>
+    /// <param name="expected">The expected success, failure, or unsupported media outcome.</param>
+    /// <returns>A task that completes after asserting public source-shaped and candidate outcomes, successful consumed values, and sanitized unsupported-charset errors.</returns>
     [Theory]
     [InlineData("application/json", false, "success")]
     [InlineData("text/json", false, "success")]
@@ -232,6 +252,8 @@ public sealed class CompanyOriginalBodyReaderTests(CustomerDetailAuthorityFixtur
         }
     }
 
+    /// <summary>Checks source-shaped company graph references and per-request reference and null-state isolation.</summary>
+    /// <returns>A task that completes after asserting source graph identity, candidate graph acceptance, unresolved next-request references, and empty-object null projection.</returns>
     [Fact]
     public async Task OriginalCompanyReferencesAndNullHistory_DoNotCrossRequestBoundaries()
     {
@@ -254,6 +276,8 @@ public sealed class CompanyOriginalBodyReaderTests(CustomerDetailAuthorityFixtur
         Assert.Equal(new string?[] { null, null, null }, CompanyOriginalBodyHarness.Values(empty.Model));
     }
 
+    /// <summary>Checks exact ordinary company action selection while keeping direct System.Text.Json and scoped relation contracts native.</summary>
+    /// <returns>A task that completes after asserting owned selection for ordinary actions, fallthrough for unknown and scoped actions, and unchanged direct serialization.</returns>
     [Fact]
     public async Task CompanySelection_IsExactOrdinaryActionAndLeavesDirectStjAndScopedContractsNative()
     {
