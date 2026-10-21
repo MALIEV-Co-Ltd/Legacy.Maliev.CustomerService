@@ -11,7 +11,8 @@ import uuid
 import xml.etree.ElementTree as E
 SOURCE_PATH = 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerNameLiteralHttpTests.cs'
 MANIFEST_PATH = 'scripts/customer-address-focused-manifest.json'
-REVIEWED_SOURCE_SHA256 = '455f13553cacfbb3da04408c41e970fbb044f409590f81c480d817f826b2802e'
+PRE_DOCUMENTATION_SOURCE_SHA256 = '455f13553cacfbb3da04408c41e970fbb044f409590f81c480d817f826b2802e'
+REVIEWED_SOURCE_SHA256 = '709f99eab651948736c7f43f5358f9da7133d19a2bbd919ee0b4a8514f2dfc98'
 NS = 'http://microsoft.com/schemas/VisualStudio/TeamTest/2010'
 CLASS = 'Legacy.Maliev.CustomerService.Tests.Controllers.CustomerNameLiteralHttpTests'
 METHOD = 'SourceOptionalContact_OrdinaryCreateAndUpdateComparePinnedReference'

@@ -1,5 +1,8 @@
 """Synthetic parser/receipt controls only; never historical or C# runtime proof."""
 import datetime as dt
+import copy
+import re
+import verify_customer_email_focused as pin_validator
 import hashlib
 import json
 import os
@@ -378,6 +381,225 @@ class FocusReceiptControls(unittest.TestCase):
         os.utime(path, ns=(self.started + 5_000_000_000, self.started + 5_000_000_000))
         with self.assertRaises(v.VerificationError):
             self.verify()
+
+
+DOC_TABLE_SHA256 = "5fd7c447d482be22a7e000e98ea93d85328f86cb221b61108a2411bacdd74c37"
+FROZEN = {
+    "scripts/customer-email-focused-manifest.json": (
+        292, "2bc9b3a7b97aecbc0b7e349d75fd2562003fa272d451b11135696f3e3cbf06d2",
+        "503f4633a7b3c3c1402b637b679738a116f543682dc0e91ffb18e743198f8f2c",
+        "78c9ddaedeca00252ab78ee0f71649540c0b5684"),
+    "scripts/customer-default-page-focused-manifest.json": (
+        292, "2bc9b3a7b97aecbc0b7e349d75fd2562003fa272d451b11135696f3e3cbf06d2",
+        "156edd1bac6be75718d7f9903b895f98bb90a4e5fae1ca44775388ed5f6b3b97",
+        "589979cc2c0a3d53619179efcd6dcd78f6514bfc"),
+    "scripts/customer-company-focused-manifest.json": (
+        304, "1a20fbcf9ed0e2ad199ad79aad296f46ec98dc179775497a52785962053576e3",
+        "74547f7ce39cba412a5c28af4c060727072c97f22c011155c08fa88dd25e045d",
+        "c8204c4c59e8e4017c1c35658081204fa7d6367a"),
+    "scripts/customer-address-focused-manifest.json": (
+        314, "10164ed9ab63d827a4bba42f45c2ecbfef2f30597f8aae51d9171407fa8aa513",
+        "122d9cbd9f8418db6c27f749f468ebf987f298d1e35b49618d5445566fbbd020",
+        "bfad4b519ca3ea3197e00eb8947e83d019a4f90c"),
+}
+LINEAGE = dict(
+    schemaVersion=1,
+    sourceCommit="03dc9a1271c16e6535934445e9dd6e3f30e8fffe",
+    predecessorHead="cd265781de9fe4dac67571c3f2ddde5456a49cc0",
+    documentationHead="71c97b38fbd57a07efc85eb95d942240aa72d079",
+    sourceProposalBlob="6bb241d703c507b1c6b09279b5b67bd79368645d",
+    independentReviewBlob="78e5073497e28034dc2d9a3ae4dd978150c2a750",
+)
+REPAIR_PATHS = {
+    "scripts/test_customer_optional_contact_focus.py",
+    "scripts/verify_customer_optional_contact_focus.py",
+    "scripts/verify_customer_optional_contact_boundary_focus.py",
+}
+PARENT_MANIFEST_PATHS = {
+    "scripts/customer-email-focused-manifest.json",
+    "scripts/customer-default-page-focused-manifest.json",
+}
+DOC_ROOT = Path(__file__).resolve().parents[1]
+
+def doc_need(value, message):
+    if not value:
+        raise ValueError(message)
+
+def doc_digest(value):
+    raw = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+def doc_pin_map(rows):
+    doc_need(type(rows) is list, "Pin rows must be a list")
+    result = {}
+    for row in rows:
+        doc_need(type(row) is dict and set(row) == {"path", "bytes", "sha256"}, "Exact pin row keys")
+        path = row["path"]
+        doc_need(type(path) is str and path and "\\" not in path and
+                 not path.startswith("/") and ":" not in path and
+                 all(part not in {"", ".", ".."} for part in path.split("/")), "Canonical relative pin path")
+        doc_need(path not in result, "Duplicate pin path")
+        doc_need(type(row["bytes"]) is int and row["bytes"] >= 0, "Canonical pin byte count")
+        doc_need(type(row["sha256"]) is str and re.fullmatch("[0-9a-f]{64}", row["sha256"]), "Canonical pin SHA256")
+        result[path] = row
+    return result
+
+def validate_documentation_successor(root, manifest_path, manifest):
+    doc_need(manifest_path in FROZEN and type(manifest) is dict, "Known focused manifest")
+    count, pins_sha, fields_sha, predecessor_blob = FROZEN[manifest_path]
+    old_rows = manifest.get("preDocumentationCodePins")
+    old = doc_pin_map(old_rows)
+    current_rows = manifest.get("codePins")
+    current = doc_pin_map(current_rows)
+    doc_need(len(old_rows) == count and doc_digest(old_rows) == pins_sha, "Exact historical pin evidence")
+    doc_need([row["path"] for row in current_rows] == [row["path"] for row in old_rows],
+             "Exact unchanged active pin roster and order")
+    preserved_fields = {key: value for key, value in manifest.items()
+                        if key not in {"codePins", "preDocumentationCodePins", "documentationSuccessor"}}
+    doc_need(doc_digest(preserved_fields) == fields_sha, "Unchanged focused identity and policy fields")
+    successor = manifest.get("documentationSuccessor")
+    expected_lineage = dict(LINEAGE, predecessorManifestBlob=predecessor_blob)
+    doc_need(type(successor) is dict and set(successor) == set(expected_lineage) | {"reviewedChanges"},
+             "Exact documentation successor metadata shape")
+    doc_need(type(successor["schemaVersion"]) is int, "Canonical successor schema version")
+    doc_need({key: value for key, value in successor.items() if key != "reviewedChanges"} == expected_lineage,
+             "Exact documentation successor lineage")
+    changes = successor["reviewedChanges"]
+    doc_need(type(changes) is list and len(changes) == 74 and doc_digest(changes) == DOC_TABLE_SHA256,
+             "Exact independently reviewed 74 documentation transitions")
+    # The fixed digest above covers each kind, Git blob, old tuple and new tuple.
+    new_doc_rows = [change["successor"] for change in changes]
+    reviewed = doc_pin_map(new_doc_rows)
+    doc_need(len(reviewed) == 74 and
+             all(change["path"] == change["successor"]["path"] for change in changes),
+             "Unique reviewed paths")
+    for change in changes:
+        path = change["path"]
+        if path in old:
+            doc_need(change["predecessor"] == old[path], "Historical row matches reviewed preimage")
+    for path, row in current.items():
+        if path in reviewed:
+            doc_need(row == reviewed[path], "Exact reviewed documentation postimage")
+        elif path in REPAIR_PATHS | PARENT_MANIFEST_PATHS:
+            # This path must already have existed in the historical roster.
+            # Read exact current bytes using the unchanged original primitive.
+            pin_validator.validate_code_pins(root, [row])
+        else:
+            doc_need(row == old[path], "Unapproved source/dependency/workflow/control repinning")
+    # Includes the new seven-case file and unlisted PrivateRequestObservation.
+    # It adds no codePins rows and grants no focused test-roster change.
+    pin_validator.validate_code_pins(root, new_doc_rows)
+    return reviewed
+
+class DocumentationSuccessorControls(unittest.TestCase):
+    def setUp(self):
+        self.profiles = {path: json.loads((DOC_ROOT / path).read_bytes()) for path in FROZEN}
+
+    def reject(self, path, manifest):
+        with self.assertRaises(ValueError):
+            validate_documentation_successor(DOC_ROOT, path, manifest)
+
+    def test_all_four_actual_manifests_have_exact_reviewed_successor(self):
+        for path, manifest in self.profiles.items():
+            with self.subTest(path=path):
+                self.assertEqual(74, len(validate_documentation_successor(DOC_ROOT, path, manifest)))
+
+    def test_active_pin_empty_drop_add_duplicate_rejected(self):
+        for path, original in self.profiles.items():
+            for mode in ("empty", "drop-first", "drop-last", "duplicate", "conflicting-duplicate", "add"):
+                with self.subTest(path=path, mode=mode):
+                    manifest = copy.deepcopy(original)
+                    rows = manifest["codePins"]
+                    if mode == "empty":
+                        rows.clear()
+                    elif mode == "drop-first":
+                        rows.pop(0)
+                    elif mode == "drop-last":
+                        rows.pop()
+                    elif mode in {"duplicate", "conflicting-duplicate"}:
+                        duplicate = dict(rows[0])
+                        if mode == "conflicting-duplicate":
+                            duplicate["sha256"] = "0" * 64
+                        rows.append(duplicate)
+                    else:
+                        rows.append(dict(path="unapproved.cs", bytes=0, sha256="0" * 64))
+                    self.reject(path, manifest)
+
+    def test_historical_pin_and_untouched_policy_mutations_rejected(self):
+        for path, original in self.profiles.items():
+            for mode in ("history-hash", "history-drop", "history-duplicate", "policy"):
+                with self.subTest(path=path, mode=mode):
+                    manifest = copy.deepcopy(original)
+                    if mode == "history-hash":
+                        manifest["preDocumentationCodePins"][0]["sha256"] = "0" * 64
+                    elif mode == "history-drop":
+                        manifest["preDocumentationCodePins"].pop()
+                    elif mode == "history-duplicate":
+                        manifest["preDocumentationCodePins"].append(copy.deepcopy(manifest["preDocumentationCodePins"][0]))
+                    else:
+                        manifest["unapprovedPolicyWaiver"] = True
+                    self.reject(path, manifest)
+
+    def test_review_table_lineage_and_documented_pin_mutations_rejected(self):
+        for path, original in self.profiles.items():
+            for mode in ("missing-table-row", "duplicate-table-row", "changed-table-row", "lineage", "active-doc-pin"):
+                with self.subTest(path=path, mode=mode):
+                    manifest = copy.deepcopy(original)
+                    successor = manifest["documentationSuccessor"]
+                    if mode == "missing-table-row":
+                        successor["reviewedChanges"].pop()
+                    elif mode == "duplicate-table-row":
+                        successor["reviewedChanges"].append(copy.deepcopy(successor["reviewedChanges"][0]))
+                    elif mode == "changed-table-row":
+                        successor["reviewedChanges"][0]["successor"]["sha256"] = "0" * 64
+                    elif mode == "lineage":
+                        successor["documentationHead"] = "0" * 40
+                    else:
+                        documented = {row["path"] for row in successor["reviewedChanges"]}
+                        next(row for row in manifest["codePins"] if row["path"] in documented)["sha256"] = "0" * 64
+                    self.reject(path, manifest)
+
+    def test_unapproved_dependency_workflow_and_negative_guard_repin_rejected(self):
+        categories = {
+            "dependency": lambda p: p.startswith(".dependencies/"),
+            "workflow": lambda p: p.startswith(".github/workflows/"),
+            "negative-control": lambda p: p == "scripts/test_customer_email_focused_validator.py",
+        }
+        for path, original in self.profiles.items():
+            for label, select in categories.items():
+                with self.subTest(path=path, category=label):
+                    manifest = copy.deepcopy(original)
+                    row = next(row for row in manifest["codePins"] if select(row["path"]))
+                    row["sha256"] = "0" * 64
+                    self.reject(path, manifest)
+
+    def test_exact_byte_helper_keeps_old_current_mismatch_and_content_refusals(self):
+        before = b"public void Check() { Assert.True(true); }\n"
+        current = b"/// <summary>Checks admission.</summary>\n" + before
+        pin = lambda data: dict(path="source.cs", bytes=len(data), sha256=hashlib.sha256(data).hexdigest())
+        with tempfile.TemporaryDirectory(prefix="customer-doc-pin-control-") as temporary:
+            root = Path(temporary)
+            source = root / "source.cs"
+            for actual, expected in ((before, before), (current, current)):
+                source.write_bytes(actual)
+                pin_validator.validate_code_pins(root, [pin(expected)])
+            for actual, expected in ((before, current), (current, before)):
+                source.write_bytes(actual)
+                with self.assertRaises(ValueError):
+                    pin_validator.validate_code_pins(root, [pin(expected)])
+            # Any byte change is refused, even a different XML comment.
+            for changed in (
+                current.replace(b"Assert.True(true)", b"Assert.True(false)"),
+                current.replace(b"public void", b"[Fact] public void"),
+                current.replace(b"Checks admission", b"Bypass admission"),
+                current + b"// extra",
+            ):
+                source.write_bytes(changed)
+                with self.assertRaises(ValueError):
+                    pin_validator.validate_code_pins(root, [pin(current)])
+            source.unlink()
+            with self.assertRaises(FileNotFoundError):
+                pin_validator.validate_code_pins(root, [pin(current)])
 
 
 if __name__ == '__main__':
