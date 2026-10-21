@@ -137,10 +137,10 @@ public interface ICustomerRepository
     /// <param name="sort">The optional legacy sort mode.</param>
     /// <param name="search">The optional customer search text.</param>
     /// <param name="pageIndex">The one-based page index.</param>
-    /// <param name="pageSize">The maximum number of records in the page.</param>
+    /// <param name="pageSize">The optional number of records per page; omitted values use the filtered count up to the existing cap.</param>
     /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
     /// <returns>A page of matching customer projections, or <see langword="null"/> when no page can be produced.</returns>
-    Task<PaginatedResponse<CustomerResponse>?> GetCustomersAsync(CustomerSortType? sort, string? search, int pageIndex, int pageSize, CancellationToken cancellationToken);
+    Task<PaginatedResponse<CustomerResponse>?> GetCustomersAsync(CustomerSortType? sort, string? search, int pageIndex, int? pageSize, CancellationToken cancellationToken);
     /// <summary>Persists a new customer entity using legacy-compatible fields.</summary>
     /// <param name="request">The customer details to persist.</param>
     /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>

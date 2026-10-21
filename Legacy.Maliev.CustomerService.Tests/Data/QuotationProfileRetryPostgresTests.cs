@@ -88,6 +88,46 @@ public sealed class QuotationProfileRetryPostgresTests : IAsyncLifetime
         Assert.Equal(result, replay);
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Provision_RetriesWholeLockedGraphWithoutDuplicatingResources(bool lostCommit)
+    {
+        await using var seed = new CustomerDbContext(new DbContextOptionsBuilder<CustomerDbContext>()
+            .UseNpgsql(postgres.GetConnectionString()).Options);
+        await seed.Database.MigrateAsync();
+        var fault = new CommitFault(lostCommit);
+        var attempts = new AttemptProbe();
+        await using var db = new CustomerDbContext(new DbContextOptionsBuilder<CustomerDbContext>()
+            .UseNpgsql(postgres.GetConnectionString(), options => options.EnableRetryOnFailure(2, TimeSpan.Zero, null))
+            .AddInterceptors(fault, attempts).Options);
+        var request = new InstantQuotationCustomerProfileRequest(
+            "Retry", "Profile", " Σ@example.test ", null, null, "Retry company", null,
+            new InstantQuotationAddressInput(null, "Retry road", null, null, null, null, 764), null, true);
+        var repository = new CustomerRepository(db, TimeProvider.System);
+        var result = await repository.ProvisionInstantQuotationProfileAsync(request, CancellationToken.None);
+        Assert.Equal(!lostCommit, result.CustomerCreated);
+        Assert.Equal(1, fault.FaultCount);
+        Assert.Equal(2, attempts.ContextIds.Count);
+        Assert.Empty(db.ChangeTracker.Entries());
+        var stored = await seed.Customers.AsNoTracking().SingleAsync();
+        Assert.Equal(result.CustomerId, stored.Id);
+        Assert.Equal("Σ@example.test", stored.Email);
+        Assert.Equal(stored.BillingAddressId, stored.ShippingAddressId);
+        Assert.Single(await seed.Addresses.ToListAsync());
+        Assert.Single(await seed.Companies.ToListAsync());
+        Assert.Empty(await seed.CustomerCreateOperations.ToListAsync());
+        var selected = await repository.ProvisionInstantQuotationProfileAsync(
+            request with { Email = "ς@EXAMPLE.TEST" }, CancellationToken.None);
+        Assert.Equal(result.CustomerId, selected.CustomerId);
+        Assert.False(selected.CustomerCreated);
+        Assert.Single(await seed.Customers.ToListAsync());
+        using var cancelled = new CancellationTokenSource();
+        await cancelled.CancelAsync();
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
+            repository.ProvisionInstantQuotationProfileAsync(request, cancelled.Token));
+    }
+
     private sealed class CommitFault(bool lostCommit) : DbTransactionInterceptor
     {
         public int FaultCount { get; private set; }

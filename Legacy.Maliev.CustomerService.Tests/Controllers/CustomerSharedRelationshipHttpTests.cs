@@ -193,7 +193,7 @@ public sealed class CustomerSharedRelationshipHttpTests(CustomerDetailAuthorityF
     {
         var route = kind == "company" ? $"/customers/companies/{id}" : $"/customers/addresses/{id}";
         var body = kind == "company" ? """{"Name":"After shared company","TaxNumber":"123"}""" : """{"AddressLine1":"After shared road","City":"Bangkok","CountryId":764}""";
-        if (invalid) body = kind == "company" ? """{"Name":""}""" : """{"AddressLine1":"","CountryId":764}""";
+        if (invalid) body = kind == "company" ? """{"Name":""}""" : JsonSerializer.Serialize(new { AddressLine1 = new string('a', 257), CountryId = 764 });
         return client.PutAsync(route, new StringContent(body, Encoding.UTF8, "application/json"));
     }
 }

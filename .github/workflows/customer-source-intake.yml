@@ -85,7 +85,7 @@ jobs:
           set -euo pipefail
           ulimit -v 262144
           ulimit -t 90
-          timeout --signal=TERM --kill-after=5s 90s python3 -B scripts/customer_source_intake.py fetch-materialize | tee "$RUNNER_TEMP/customer-source-intake.log"
+          timeout --signal=TERM --kill-after=5s 90s python3 -B scripts/customer-kernel-packet/input/customer_source_intake.py fetch-materialize | tee "$RUNNER_TEMP/customer-source-intake.log"
       - name: Parse frozen provider sources and run pure controls
         shell: bash
         run: |
@@ -95,6 +95,10 @@ jobs:
           cd /work/customer-source/envelope
           python3 -B -c 'import ast; from pathlib import Path; paths = list(Path(".").glob("*.py")); assert len(paths) == 10; [ast.parse(path.read_bytes(), filename=str(path)) for path in paths]; print("Parsed 10 frozen provider source modules")'
           timeout --signal=TERM --kill-after=5s 45s python3 -B -m unittest discover -p 'test_*.py' -v 2>&1 | tee "$RUNNER_TEMP/customer-provider-controls.log"
+      - name: Check closed current Customer carrier source joins
+        run: |
+          timeout --signal=TERM --kill-after=5s 20s python3 -B scripts/kernel_root_route.py source-check --packet scripts/customer-kernel-packet --harness scripts/customer-kernel-source/kernel_only.py
+          timeout --signal=TERM --kill-after=5s 20s python3 -B scripts/customer-kernel-packet/customer_native_build_driver.py source-check --packet-sha256 eccc5ddac7342c0297c177945030426fabca183455901021463d084d2eefe079 --source-directory /work/customer-source
       - name: Preserve actual source evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

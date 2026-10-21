@@ -105,7 +105,7 @@ public sealed class CustomerCrudHttpTests
         var request = new UpsertCustomerRequest(first, last, null, null, null, email, null, null, null, null);
         using var created = await client.PostAsync("/customers", Body(request));
         using var updated = await client.PutAsync("/customers/7", Body(request));
-        var address = new UpsertAddressRequest(null, " ", null, null, null, null, 764);
+        var address = new UpsertAddressRequest(null, new string('a', 257), null, null, null, null, 764);
         using var addressCreated = await client.PostAsync("/customers/7/addresses", Body(address));
         using var addressUpdated = await client.PutAsync("/customers/addresses/13", Body(address));
         Assert.Equal(HttpStatusCode.BadRequest, created.StatusCode);
