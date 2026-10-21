@@ -797,13 +797,13 @@
     },
     {
       "path": "docs/original-native-logging-source-cohort.json",
-      "bytes": 12064,
-      "sha256": "7ed08fa93fcfdb5df571d250c26cd4c35a8ccddb7702c0cfa4a6b0e1fde99b81"
+      "bytes": 11184,
+      "sha256": "2213325da9cba36b25ec01c19d3df772ad2ab52ee101809d8b1da0b47cf9d64a"
     },
     {
       "path": "docs/original-native-logging-source-cohort.md",
-      "bytes": 801,
-      "sha256": "30497becc0fa95d788cdbeb036016e4c71ce63285fd20f90cc94df0f17e0de5f"
+      "bytes": 759,
+      "sha256": "71f0f0dbb386da9beddbcd155dc84ed32599b871d3a96ffd28d8877a62548020"
     },
     {
       "path": "docs/publisher-validation-adoption-20261001.md",
@@ -853,12 +853,12 @@
     {
       "path": "scripts/customer-default-page-focused-manifest.json",
       "bytes": 64567,
-      "sha256": "4dc0f782bc355aaed3e3dcd6fb413462e9b1d720a1f49eab2eb61e3ef16439d3"
+      "sha256": "f523a3ea1f1d07a7477d3dfbbdc90154d34debcc98b8352f2e6616dd94576cce"
     },
     {
       "path": "scripts/customer-email-focused-manifest.json",
       "bytes": 84589,
-      "sha256": "6eee1c541dd3d4d0f44db65576521799da1637b03398739111640bfd3c014c07"
+      "sha256": "7ef97268a8ce4048bd04378d281039f153f0e0ba639adee9f9518ba4e8cfaa5c"
     },
     {
       "path": "scripts/customer-kernel-packet/README.md",
