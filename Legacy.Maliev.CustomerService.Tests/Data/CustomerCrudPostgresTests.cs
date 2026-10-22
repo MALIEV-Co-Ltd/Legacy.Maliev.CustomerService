@@ -10,8 +10,12 @@ using Testcontainers.PostgreSql;
 
 namespace Legacy.Maliev.CustomerService.Tests.Data;
 
+/// <summary>Verifies real PostgreSQL customer graph CRUD, relationship ownership, timestamps, and application cache boundaries.</summary>
+/// <param name="fixture">The shared disposable PostgreSQL fixture supplying fresh database contexts for customer graph tests.</param>
 public sealed class CustomerCrudPostgresTests(CustomerCrudPostgresFixture fixture) : IClassFixture<CustomerCrudPostgresFixture>
 {
+    /// <summary>Checks customer, company, and address CRUD with exact text, relationship ownership, timestamps, remarks, paging, and cache invalidation.</summary>
+    /// <returns>A task that completes after verifying customer, company, and address CRUD with exact text, relationship ownership, timestamps, remarks, paging, and cache invalidation.</returns>
     [Fact]
     public async Task CustomerGraph_CRUD_PreservesRelationshipsTimestampsAndCacheBoundaries()
     {
@@ -127,12 +131,19 @@ public sealed class CustomerCrudPostgresTests(CustomerCrudPostgresFixture fixtur
     }
 }
 
+/// <summary>Owns a disposable PostgreSQL container for customer graph persistence tests.</summary>
 public sealed class CustomerCrudPostgresFixture : IAsyncLifetime
 {
     private readonly PostgreSqlContainer postgres = new PostgreSqlBuilder("postgres:18-alpine").Build();
 
+    /// <summary>Starts the PostgreSQL container owned by the customer CRUD fixture.</summary>
+    /// <returns>A task that completes when the owned PostgreSQL container has started.</returns>
     public Task InitializeAsync() => postgres.StartAsync();
+    /// <summary>Disposes the PostgreSQL container owned by the customer CRUD fixture.</summary>
+    /// <returns>A task that completes when the owned PostgreSQL container has been disposed.</returns>
     public Task DisposeAsync() => postgres.DisposeAsync().AsTask();
+    /// <summary>Creates a fresh context connected to the fixture PostgreSQL database.</summary>
+    /// <returns>A new CustomerDbContext that the caller must dispose.</returns>
     public CustomerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<CustomerDbContext>()
         .UseNpgsql(postgres.GetConnectionString()).Options);
 }

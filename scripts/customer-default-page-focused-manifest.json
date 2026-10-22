@@ -14,7 +14,7 @@
     "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.DistantPage_ReturnsNotFoundWithoutOffsetOverflowOrStoredMutation(index: 2147483647, size: 250)",
     "Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.DistantPage_ReturnsNotFoundWithoutOffsetOverflowOrStoredMutation(index: 2147483646, size: 250)"
   ],
-  "filter": "FullyQualifiedName~CustomerDefaultPageHttpTests",
+  "filter": "FullyQualifiedName=Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.OmittedSize_ReturnsFilteredCohortUpToApprovedCapWithExplicitPagingUnchanged|FullyQualifiedName=Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.OmittedSize_InvalidDirectoryAuthorityCannotReadOrMutateProfiles|FullyQualifiedName=Legacy.Maliev.CustomerService.Tests.Controllers.CustomerDefaultPageHttpTests.DistantPage_ReturnsNotFoundWithoutOffsetOverflowOrStoredMutation",
   "sourceBase": "d76e7c79564065aac6f64bbd26ddeab6b4c9ff9e",
   "codePins": [
     {
@@ -34,8 +34,8 @@
     },
     {
       "path": ".github/workflows/_build-and-test.yml",
-      "bytes": 4153,
-      "sha256": "2e2cd26731a1cba1d87162abaa8eca0da9dd6b30fcb5df6baa84bfdaf4bb0168"
+      "bytes": 9493,
+      "sha256": "288cff32a5c939c76e007de5736bdb982216e7c62200594a89f77c0f66494c0d"
     },
     {
       "path": ".github/workflows/ci-develop.yml",
@@ -55,17 +55,17 @@
     {
       "path": ".github/workflows/customer-company-focused-proof.yml",
       "bytes": 7598,
-      "sha256": "61a65a8fc51707bfcb9a0574a7c3112f0fc23cdaa393f8c00081254b500cb96f"
+      "sha256": "917175f1960b535a471d5aa835cb95580760c492ebbf2104d178c77b39bd140b"
     },
     {
       "path": ".github/workflows/customer-default-page-focused-proof.yml",
       "bytes": 4894,
-      "sha256": "f0ad01dc165d4a08e4a704bd615d70febc6eaecc4f77c3f89062df3792724f2e"
+      "sha256": "6b7014bfe87165e4a941a295d64ccd836ccec1e4d4ec43d5e1d54af493e55ea5"
     },
     {
       "path": ".github/workflows/customer-email-focused-proof.yml",
       "bytes": 3723,
-      "sha256": "2e85ccf68009067c01ed30078fcb08046bb928c00d2abed9c74f3aadd17bcffe"
+      "sha256": "d90b9062c93f129bf7710391ea3225d2dcbe9c506671608296234f01a9eafb8d"
     },
     {
       "path": ".github/workflows/customer-source-intake.yml",
@@ -80,7 +80,7 @@
     {
       "path": ".github/workflows/publish-image.yml",
       "bytes": 1270,
-      "sha256": "45094e59e1fbfc83f6b0c26937432047dde30022509c7b2a49a6a12709284f49"
+      "sha256": "d2744958aa04f9847a7881ee2b6ed7fb00d91f3d3087fc5094789904031921b9"
     },
     {
       "path": ".gitignore",
@@ -109,8 +109,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Controllers/CompaniesController.cs",
-      "bytes": 4136,
-      "sha256": "dcc403df88f05c503a34e5656136a2f803cb94afc14bef31203dc54358839a54"
+      "bytes": 4165,
+      "sha256": "159245eab0708896ec81997cdddf659c318884966a3256e76b158caa66dbd918"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Controllers/CustomerRelationsController.cs",
@@ -119,8 +119,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Controllers/CustomersController.cs",
-      "bytes": 12471,
-      "sha256": "344cf12fa44af63ee577db20ac91a110270fd752caa68e10563c7422e88895f1"
+      "bytes": 12484,
+      "sha256": "fb70eb9ca0083a80eb72c6237292d821288d30c3f30e084502f3c6bd934e9f86"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Controllers/EmailsController.cs",
@@ -144,13 +144,13 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Legacy.Maliev.CustomerService.Api.csproj",
-      "bytes": 1761,
-      "sha256": "2e3761fbacb75bf275b7147006818ad54e025492e04d0ac96e578f0f9700f198"
+      "bytes": 2110,
+      "sha256": "9e790f3acaca923a954b8d53839d00a057bb6b6bf8ba816cab08094611c1c255"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Program.cs",
-      "bytes": 2654,
-      "sha256": "e799e5baa1ae72e73af2990cf3d6f852a537df12a4cbbeab5b0cfbb7da70dc40"
+      "bytes": 3829,
+      "sha256": "77f9d333ff5805e3518d45ee3a231849318220a8fdc7bc0396e77ea059f940e9"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Properties/launchSettings.json",
@@ -234,8 +234,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Application/Services/CustomerApplicationService.cs",
-      "bytes": 7662,
-      "sha256": "24974aed8e278d395478f77046cc8f95efbb3504696855f594c35599c79c74f6"
+      "bytes": 7655,
+      "sha256": "0992f77b30e8bd3fb18123242e8bcd22c93e3292434edd50ff56aac558989028"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Application/Services/CustomerRelationService.cs",
@@ -269,8 +269,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Data/CustomerRepository.cs",
-      "bytes": 22860,
-      "sha256": "8fa964cbaac788c8b1805ceec4f5ac0c3c4044b91a4bc1feee78d85948f7c838"
+      "bytes": 22853,
+      "sha256": "e2ded23908eaf7143806d8e551375d5f45f764d17765f2657daa17f43f0f2c8c"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Data/DistributedCustomerCache.cs",
@@ -374,248 +374,248 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Application/CustomerApplicationServiceTests.cs",
-      "bytes": 8464,
-      "sha256": "aa58ef4f2f1e967b27a11ae69e79a10afc43968686874951b3f0552ec5b8223a"
+      "bytes": 10854,
+      "sha256": "fefbdbc0722e53d7ecbdb6031703ee10ceca03044b317841eb31c4e8fb811206"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Caching/DistributedCustomerCacheTests.cs",
-      "bytes": 4136,
-      "sha256": "6d1ae93407571ef560f84e789ffd96e699a98c59bb3da456f833153b9a999778"
+      "bytes": 5443,
+      "sha256": "ad3a50cc0579463728227ba01b63b77cfe798ba8a08646400f3d782cef97b575"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryPrimitiveReferenceTests.cs",
-      "bytes": 3731,
-      "sha256": "7d0e989dc826b58ed30cdff410903cf8ac47c91e93629dc5a84fcdfa1ef2ec9e"
+      "bytes": 4156,
+      "sha256": "08dc434433b34d15921589846725f66d1fe68a95bc7af8c6e5d33e96b8291cff"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxOnlyHttpTests.cs",
-      "bytes": 9572,
-      "sha256": "14a8b7139444d71d9a5bf6e955876c0bcbd230a3f63bb4e1c1c08225db5cbade"
+      "bytes": 11640,
+      "sha256": "ee521a0794c38aa8f55197ed948e90abd2aeb195557710a9381d8f45b62d71d9"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressAttachmentLifecycleHttpTests.cs",
-      "bytes": 7742,
-      "sha256": "f8bc39206c5ae56c48deef7ad3f9747eec12c9fd4140c4c44fbd884d00e9efc0"
+      "bytes": 9523,
+      "sha256": "7ca9c16b7cd7395a124929ccf321f92f0d8aba96de387b4600647fa4cd61fbc2"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressLiteralLineHttpTests.cs",
-      "bytes": 34799,
-      "sha256": "d585b98e72cc59d06f544eabf0cb27815e5fffb0de148adc53cefcdf589312ca"
+      "bytes": 41935,
+      "sha256": "50b68a4cd9d4f3704fb8c80c762acd233dc9c214faff646f5a309c767edcd1f7"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressOriginalNullBoundaryTests.cs",
-      "bytes": 3795,
-      "sha256": "6da0b0d6d491c3a11be405e4006b8d5824b3280c35ed0c9358665628c57128b2"
+      "bytes": 5192,
+      "sha256": "050ca8e47808803a5676716e60b699099343515ff075fbd1ccdcda764c704dd7"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressPersistenceHttpTests.cs",
-      "bytes": 9594,
-      "sha256": "356d115ccc3f90676bf558e72a2bb0ba41590c0008c04f6cf0cbe357576b9608"
+      "bytes": 10593,
+      "sha256": "c9ee9ffe85ee0e57378acf19bb7cf29734db12d7dc85648eef2c7c1718e25a6f"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAdministrativeEmailComparisonHttpTests.cs",
-      "bytes": 18557,
-      "sha256": "a9cde5118f87d845d9770e9803ea410c1356623f6508303cf87d4a9c7e6705b3"
+      "bytes": 21935,
+      "sha256": "7bd2fe8e1008ab8da76c0783d3c552e49e846e0bb3cceb4efffe7f202a9ad318"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAdministrativeEmailLiteralHttpTests.cs",
-      "bytes": 14261,
-      "sha256": "fa1698387c1f78fff7c38f3b72e83e2c7b00d2544dcb7874b3d076c90cf389be"
+      "bytes": 17013,
+      "sha256": "2d2b7016e63ef840ce4c92a140b06bc799af69a7ca6ccd12f7bfb3ae83ccd969"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLifecycleHttpTests.cs",
-      "bytes": 7238,
-      "sha256": "4a384a1cf8b7c27d2f3f4420224761f8e95524ec5fd4670870eb509e65fd9575"
+      "bytes": 8846,
+      "sha256": "ad611c0c91da214c4a88d47957a84c9991c33a1aab13e48bc4e6da3b2c6025cc"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLiteralNameHttpTests.cs",
-      "bytes": 17226,
-      "sha256": "2b00d66dc6e5de061bd11f2b52b68d16e29fd08b6ca09996255d211d70336249"
+      "bytes": 19056,
+      "sha256": "8fae5c6c10715873e6d1d4a91fbe6fb5f5fee1c17a2870ec511f574f2ae379cb"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryPrimitiveHttpTests.cs",
-      "bytes": 13644,
-      "sha256": "6e8737e1afd223d643b8f05a0720d104528158639fcc34b5a858abb7c289dbd6"
+      "bytes": 15005,
+      "sha256": "a4a9b4f45aacb966479df2e3a5d9da7677e14333366188aa3bb383f714af7f0a"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyPersistenceHttpTests.cs",
-      "bytes": 8394,
-      "sha256": "1c3ec6c3404d30852724600debbf0b0de411692a5cef6624213f34d8e35f0ecd"
+      "bytes": 9376,
+      "sha256": "d8859969862abe450cf54a7a61125a4e82730d1c5eee156c547d75547a74f77d"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyPrimitiveNameHttpTests.cs",
-      "bytes": 8944,
-      "sha256": "204e952c42a4bd56d892c54f3866f9381d781953ff5e04b99e289f523c7a15ff"
+      "bytes": 9904,
+      "sha256": "e6cfed35f6da4ad2b916c6595be8f8fef92c8378621ae77bdc32d9bd04288b86"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerControllerContractTests.cs",
-      "bytes": 4811,
-      "sha256": "e2053170e1e1f487870a71b5a66119a633f7fe68a189152ac01befc897c48a22"
+      "bytes": 6117,
+      "sha256": "585e6f71d09ae11af9ec6fada5d739c2b5aae33af2ef7ac60ecceef5b9315ba1"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCrudHttpTests.cs",
-      "bytes": 8523,
-      "sha256": "bdd2883b071f697db7ee38fd5079dc35112c4275d7edce4f3e81c71e04091415"
+      "bytes": 10125,
+      "sha256": "fc2c2d8ad57e382b59a8471c106f66249324e3cc7fae54d5f120c0954984d281"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDefaultPageHttpTests.cs",
-      "bytes": 13181,
-      "sha256": "78c4e0ff951dccffe37a948713fb7e73ab5b3d7a13adb50912243d1e8dfe11c5"
+      "bytes": 27431,
+      "sha256": "a2b7474cb99627db777d3b8ec044ae27986c78833baf2e352451322cb07d9685"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDetailAuthorityFixture.cs",
-      "bytes": 10630,
-      "sha256": "a2e55bec498b515f399f0a324b4346cd775c239e0b7eb8ba025c7df022751b3b"
+      "bytes": 15413,
+      "sha256": "25ae6d6bcc8ec896e9218244a7988afdf558747d721e8df0aaa3fcbb7bf99562"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDetailAuthorityHttpTests.cs",
-      "bytes": 9724,
-      "sha256": "ee0af598d8455b513440d2874033bdca73e2fa86b380626d73af6a30ad26e618"
+      "bytes": 13082,
+      "sha256": "06bfaf293fc6ed188729dcada83557333762a454b0c9355291c4d87d0a788266"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerEmailAmbiguityHttpTests.cs",
-      "bytes": 6181,
-      "sha256": "9d01e6334dd47b5909dcd4f5684df9f291a28e5a1f098e2a988b0194bceb5fcd"
+      "bytes": 8128,
+      "sha256": "ea4633b42a774f3e3463a3f171d9d8c8833c8f6d3ec9be9ed44ca635f9d1119d"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerEmailCanonicalCaseHttpTests.cs",
-      "bytes": 17206,
-      "sha256": "c68d1de3758cf66935eb3f0f5f86758c90e69b1f83f95389ce7feccf435a9f4a"
+      "bytes": 19962,
+      "sha256": "23989479e178b0a0b5628f00578ec3ca163f6568e69ab360bb8a807be39d0483"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerInternalRemarkValidationTests.cs",
-      "bytes": 1550,
-      "sha256": "f089677531276a2a607f732ab64ad57c7a7c9750ed9feaa44e4699f2c2c78e9c"
+      "bytes": 2039,
+      "sha256": "dc5d04378aee1588b238d38456a3f10f218dc015cf1bae32903320f93c6e3bb9"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerLiteralSearchHttpTests.cs",
-      "bytes": 7646,
-      "sha256": "4b25ed7eb16b4618c70ff502264b978a0964154bc1013030dd2df2e7e07fd044"
+      "bytes": 10420,
+      "sha256": "aad7ea43c666eaebf5aa7921aac1742bb6a804785dd48cb961e8b5cc12c7439b"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerNameBoundaryHttpTests.cs",
-      "bytes": 8803,
-      "sha256": "64580a726b6ef7c8cbf3e9c1f1c27c39dde0b9cae7c7fa5349b1138e0883818b"
+      "bytes": 9566,
+      "sha256": "ed3a8bb8e2ef3698ac6fd0bab63e4830e1c591394207100a5bcb23b41b031f61"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerNameLiteralHttpTests.cs",
-      "bytes": 19601,
-      "sha256": "458ba5373b8d6581ae1ac2a21d17ee69a0e7867dfbfb88b466032d2a4b0555d5"
+      "bytes": 32296,
+      "sha256": "709f99eab651948736c7f43f5358f9da7133d19a2bbd919ee0b4a8514f2dfc98"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerProductionPipelineHttpTests.cs",
-      "bytes": 4921,
-      "sha256": "c5d3a2ea24732e95f24430dd7a426a64f93405c85a6c701bb0113456b87f01a2"
+      "bytes": 6226,
+      "sha256": "2ed778b2630eecda79bf3662bab1b7a8b35edfb0dd2c9661989a46d3d641cc36"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerProfileDeletionIsolationHttpTests.cs",
-      "bytes": 12814,
-      "sha256": "26f7a828414b2560747f7d8eb11ad2fda67c84038a96d62e5258ec91eaf9d1df"
+      "bytes": 13447,
+      "sha256": "39a5ad1c35c1afd0c3851f7bc3108cb55aaf37897a4808e4aba0a7f275692f47"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerProfileLifecycleHttpTests.cs",
-      "bytes": 11068,
-      "sha256": "00b26792c325ac9fbdd15fa485b570fad200540144888a801a9567927c1cdcf5"
+      "bytes": 12902,
+      "sha256": "778c88dc380513ba702d4e671e8c49467115004bd6b4069f865b9c9493dd8d8e"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerRelationshipFailureHttpTests.cs",
-      "bytes": 6547,
-      "sha256": "406d9d461bc34e33f325aa77ecd3dc56d3b932470245615544c8ad2bb6d9a014"
+      "bytes": 7980,
+      "sha256": "7b525d7326bbd4569820bcd4958b968b8b241ba4598ace8d7a4683902e8babbe"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScaffoldRuntimeProof.cs",
-      "bytes": 24662,
-      "sha256": "85b96d50c2591f7224e46d482192f29d14cb9f5c28d31d4aa7c202dc38b6c536"
+      "bytes": 24777,
+      "sha256": "314b8cd1ad989bba8bd2ad971aba6ca8e6e9d0dd4e7ba13ff052b18d4fd92b2a"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScopedRelationEditHttpTests.cs",
-      "bytes": 37114,
-      "sha256": "de85f9d4451ff68b88283c1e8c8d337d5b3c0433fb8e04953a21a0d8a39e38b6"
+      "bytes": 45421,
+      "sha256": "a4c5641bb67e6b45a9b4e46e17249a295228194f7e63a86acb8ff43b328df4cf"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerSharedRelationshipHttpTests.cs",
-      "bytes": 10107,
-      "sha256": "ab67507733ba4e3a948f339ea04b91767d3b3c5638f78b7e7e1494f6968ce1a4"
+      "bytes": 12399,
+      "sha256": "8b3d9afa1c3a10e52dd58022ef6531296041f6624112d26ed42f465a99ef46f6"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerSignificantSearchHttpTests.cs",
-      "bytes": 14952,
-      "sha256": "c60ad6b6ae716f2350597a68061839f44208e08af6425bc974719d0a006f9336"
+      "bytes": 17734,
+      "sha256": "fcb7999d1762b5590e3a53f92737a4bb2ef5a3abe67742399660934eb9e743a8"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerUnhealthyReadinessHttpTests.cs",
-      "bytes": 3847,
-      "sha256": "7019bb8358c5480647f5aa666ad88fe1c3c0d74372a11cf74e65785ae0148930"
+      "bytes": 4561,
+      "sha256": "5de2833c5f08afa14f3203462dee3d1ef4e96306a8b97cef1234c64d53bf3196"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerVersionedAuthorityHttpTests.cs",
-      "bytes": 5040,
-      "sha256": "aca7ac0dc7ae40b9da96b40dd4f40b39dcb56a65aa68d5a27ea9502755f1a287"
+      "bytes": 6479,
+      "sha256": "a8cf53a523d0728c9f213833c5db6b30f223530073550ca3bbf7539d094fb6ec"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/ExceptionBoundaryContractTests.cs",
-      "bytes": 2973,
-      "sha256": "463826fb48d3575c1f9b8be579d6d6ac9c4644dde155cd0d60c99a3729a74531"
+      "bytes": 3405,
+      "sha256": "e2d210551f53932d46cdca2db0b7784e56a0064bccd2d7c950932d4dba3eebaf"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/QuotationProfileCompletionHttpTests.cs",
-      "bytes": 43866,
-      "sha256": "377548beab815860a66694891bc23292fe6ee5075e72c97ef2b836d9debdf6a0"
+      "bytes": 50490,
+      "sha256": "0b3a2c6ec6642783c75c2313faba5a8bff26cec63264854ea8b77849945a43f0"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/CustomerJwtExternalizationTests.cs",
-      "bytes": 6061,
-      "sha256": "a95e925d3ec7ec915567426d7b859a9ab53157b35c6ce8c32fb8264d2df17797"
+      "bytes": 6621,
+      "sha256": "422018339d0f08c296a8cc83a011308d2b7bd7a4ac31483dba5883ea87e29afc"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerCreateReplayPostgresTests.cs",
-      "bytes": 9265,
-      "sha256": "aed7c348e0bbd9339e1b1d1f5857db23e3db14582c2ee7d58294c8189aff0d17"
+      "bytes": 11607,
+      "sha256": "6b94eca55ab2febfec822e05237de2ce2326e74e71bdca6156761de5c218caeb"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerCrudPostgresTests.cs",
-      "bytes": 9523,
-      "sha256": "79a45a7ebac611be024324332ab2484e3b88fa6aeb5086de1d2a5c47bfa521f1"
+      "bytes": 10828,
+      "sha256": "b3c89e4d8b1ef9beb0af0a07243dd81a10287ed1f63e2d927fb975bab5f572a9"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerModelCompatibilityTests.cs",
-      "bytes": 4370,
-      "sha256": "1250f5a64e9fa10f14c724f8354d4225d8873612a67be8410c632b7d1336aa78"
+      "bytes": 4872,
+      "sha256": "634d0f63ad7104142b4358a7840a8301d77bf18a3be6563003713ea5389638cd"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs",
-      "bytes": 16913,
-      "sha256": "95754ad29bd5e3e94392024d647c7ea98c3e0c67eb38a8eac93db07666fc953b"
+      "bytes": 20514,
+      "sha256": "67bc3b667fff19c59f4f1a7f0afe1239ff927160615a684c7f503342d1249285"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerRevisionPostgresTests.cs",
-      "bytes": 8700,
-      "sha256": "56deca6fd593c0e41de3d144f9ec3683b36ac35676bc291bc778ee860253f8a1"
+      "bytes": 10252,
+      "sha256": "fc061271fea46419b733a48ac0dd13c3c3fa2214c71959cad81248a517a1a5be"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Data/QuotationProfileRetryPostgresTests.cs",
-      "bytes": 9216,
-      "sha256": "7f4c4a380e1ffa53ba1a8b7ba3a7018f6c163fbe548d56368cd390ad8fa905ad"
+      "bytes": 10956,
+      "sha256": "6c0b2ae77397d87be1e1c29e23822052b5086d41076be58d847b2d3ac9faedd2"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Documentation/CustomerDocumentationHttpTests.cs",
-      "bytes": 6829,
-      "sha256": "365f21b0d2927712ab3f2129261f41fc0ca163e9ed4e3d0ebd328eab58d206e5"
+      "bytes": 8594,
+      "sha256": "b5d4fd3b71ba367286b84fd8f40dc59296e56775590d66ae80138a5d4bf96d94"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Legacy.Maliev.CustomerService.Tests.csproj",
-      "bytes": 1683,
-      "sha256": "f1ddd92dfc670c05789da0da123b8f17801b70261d9e633d161d92ffa895deac"
+      "bytes": 1747,
+      "sha256": "4f4b565bd7861f45fc390eef75d78351c9a4150a6784507202f12f4ca27e75d6"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/PublishWorkflowPermissionContractTests.cs",
-      "bytes": 2298,
-      "sha256": "e4a1286cfcaa95861735cf869bd021fbaffe680d11310f501a0ceecfd77a2002"
+      "bytes": 2550,
+      "sha256": "ba565ec6f23ad6ed92cd6ee3ed36996d2d736f6362423201353d564081296308"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Startup/CustomerStartupInterceptionTests.cs",
-      "bytes": 5321,
-      "sha256": "d68daa44a58989186a4f9de06052e289b0a115c258844428cade5e2ed7cbadf9"
+      "bytes": 6070,
+      "sha256": "e8423eef035572d99fc358080cb4a4eead8fd012b724f6cf95ec90f9c30161e4"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Startup/CustomerStartupProcess.cs",
@@ -624,28 +624,28 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Startup/CustomerStartupProcessTests.cs",
-      "bytes": 5350,
-      "sha256": "e8865634ef37a8455986c38222fe022aa8095193ffd3778f7557157271f41ef2"
+      "bytes": 6323,
+      "sha256": "0185d274fe2bd7ada453a9f1decfc95a413690d2a2be8bc74a1b3df7d64ab5af"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Workflows/CustomerRollingAvailabilityContractTests.cs",
-      "bytes": 16000,
-      "sha256": "53c04640f289d76f0b801e694286d05d851f7f185d14acfdc380f3c4bfe037dc"
+      "bytes": 17849,
+      "sha256": "2eb6eba4d2b3d95852e43065f5a9864eb88379c482cbbcd396dd322cc4582e2c"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Workflows/DependabotConfigurationContractTests.cs",
-      "bytes": 2443,
-      "sha256": "a4b84cd5a2184e1d5af118c324f81f2b6ae323d7269456506aaaf7ed8620854f"
+      "bytes": 2821,
+      "sha256": "d28e2ed7c3c39451d5f4f568c03ad1b577e5909f7a403f5402c7c99ae00da1f9"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Workflows/PublicationDependencyTests.cs",
-      "bytes": 3168,
-      "sha256": "9dc889fa3e630b62dd4d2bdf0b9cc1227e6229203d43b655d534b6a8027ca200"
+      "bytes": 3460,
+      "sha256": "3f7b38078735d98b5b35a561d3ca3237fd953e0893cc5eaa57009d3285cf7481"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Workflows/WorkflowContractTests.cs",
-      "bytes": 29764,
-      "sha256": "dd95c4fcb3215ae8fc46788cc3085dd314ae825a3d269990d23980c35777d97e"
+      "bytes": 47530,
+      "sha256": "32b0beebd58a8d9d640691206c982a079ab68da4c5f3d92637981bb5b51aab84"
     },
     {
       "path": "Legacy.Maliev.CustomerService.slnx",
@@ -1184,8 +1184,8 @@
     },
     {
       "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.Middleware.cs",
-      "bytes": 4406,
-      "sha256": "581473862acca83145d81eeb131dd842718f5955dd7b192221376d633c240683"
+      "bytes": 4847,
+      "sha256": "edb736abdd90c4dac4334781127a1a020a7c57c5b0ac8a2cb31686ca7686edef"
     },
     {
       "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.PrivateFailureObservation.cs",
@@ -1214,8 +1214,8 @@
     },
     {
       "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.cs",
-      "bytes": 13310,
-      "sha256": "645b99cdd4fca495da84f5b55ce93645b7e96641232d11ee387c9a520505c791"
+      "bytes": 13500,
+      "sha256": "73643c87d572e292a8bb5a9c29fe8476fd8ee817d74f80e1639cf3b5b707446e"
     },
     {
       "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/AuthServiceTokenExchangeHandler.cs",
@@ -1304,8 +1304,1473 @@
     },
     {
       "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Logging/PrivateFailureConsoleFormatter.cs",
-      "bytes": 3637,
-      "sha256": "ae2e9d319bef69bef1d12e46498ce76b76ed2af13ed379830bede51a7ae13cf7"
+      "bytes": 4180,
+      "sha256": "2c4c9abe7a1f00219c1d302bc0bebe4891381b3555c21edecb7e1a0f38b1dbaf"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Middleware/CorrelationIdMiddleware.cs",
+      "bytes": 2598,
+      "sha256": "a0348054276f43e5b087720ad4f3d4ae81d7b5483b18ade27fb614b6d54443ee"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Middleware/ExceptionHandlingMiddleware.cs",
+      "bytes": 8930,
+      "sha256": "874a496bd238028c25c6e449d35d1b52ea241a44b5c7bda722cc2112cb851df7"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Middleware/RequestLoggingMiddleware.cs",
+      "bytes": 2371,
+      "sha256": "764874e385000ec946dceddc7d8f1a806b5305e53e4f76100ada1f6fa20f57b6"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Middleware/RouteLogPath.cs",
+      "bytes": 542,
+      "sha256": "9fc508e9d06bd0f637ac90677c52ea41bef78257cd44192ac519a954c52dd2d3"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Middleware/SecurityHeadersMiddleware.cs",
+      "bytes": 2212,
+      "sha256": "9f6cde8cdac3ad4987b55eff6c58d4b2c3c8c24c4ddaf8801591e5e13e3cc29d"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/RateLimitPolicies.cs",
+      "bytes": 1342,
+      "sha256": "f20f6a30b15ad588a1f13cb78219c91263030ff81d63cb969cc20f4a788ea50f"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Resilience/LegacyHttpResilienceExtensions.cs",
+      "bytes": 1953,
+      "sha256": "934a9270a68ae2c9af4fd28a6f7929d104a392e81987c4f7cb41a8ad2dea1c88"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Telemetry/SafeRequestLogContextProcessor.cs",
+      "bytes": 1180,
+      "sha256": "cb76fb0692f43350c091d45a2379effbed4115ede1b9465e137cea43253744fd"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Telemetry/UrlQueryRedactionProcessor.cs",
+      "bytes": 3063,
+      "sha256": "245a698880d040a8dacc58475c8555bda4cb3fa398876f3e0f6ab935c46c39d8"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Testing/IAMTestHelpers.cs",
+      "bytes": 2582,
+      "sha256": "2f652999489bdcfb5cf33dca91467a79b589560e9ae27f59ad078b3c1ee70d8a"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj",
+      "bytes": 1105,
+      "sha256": "acc34689c4fa0bfa0ac55364ee779ac95c79d141544f6f540d7ffeb0572bb4d9"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.CompatibilityContracts/Directory.Build.props",
+      "bytes": 377,
+      "sha256": "1ed87f1b0cf8d42c77558b99547a1eb0c444f222527b6932e5586cbd3e42c2bc"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.CompatibilityContracts/Legacy.Maliev.CompatibilityContracts.slnx",
+      "bytes": 249,
+      "sha256": "f8412ccb32dbf0b0399d11fd28383028c6a1979946a87e7f71c3b874f8b55f6d"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.CompatibilityContracts/global.json",
+      "bytes": 81,
+      "sha256": "b48d6da8fa62c0da7cc8a2da4ea036ac55836660a448ba533135abb5b8451b73"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.CompatibilityContracts/nuget.config",
+      "bytes": 197,
+      "sha256": "aec93b5637ab6d62470979a008990a4a336a287ab83a3f2541849ae735674055"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.CompatibilityContracts/src/Legacy.Maliev.CompatibilityContracts/Iam/PermissionRegistrationRequest.cs",
+      "bytes": 2507,
+      "sha256": "037f981561153af4dd0d1969f98c599e4f8f013c0465732a0c45d242d6cc5bf7"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.CompatibilityContracts/src/Legacy.Maliev.CompatibilityContracts/Legacy.Maliev.CompatibilityContracts.csproj",
+      "bytes": 871,
+      "sha256": "11bdd1d8f71bafe7c49f1cb9957b6368e8a8c0af9c44e8bf5ae50af747ead005"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.CompatibilityContracts/src/Legacy.Maliev.CompatibilityContracts/Shared/MessageEnvelope.cs",
+      "bytes": 1591,
+      "sha256": "81120a5065869e23a39a8b0bd3ae5e8130eab245a106252bcf9897b54b2d75ee"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.CompatibilityContracts/tests/Legacy.Maliev.CompatibilityContracts.Tests/Legacy.Maliev.CompatibilityContracts.Tests.csproj",
+      "bytes": 810,
+      "sha256": "4765b1b02168e926034495b9e4c3fba49bb2c3bec6c47b6546186ea0c01f25c5"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCompanyMvcJsonMetadata.cs",
+      "bytes": 3497,
+      "sha256": "b30573d7cc0f3d04756384f77a09bbb52ed7d211f8cfdaab0c31f33ee5608b33"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryMvcMetadataControls.cs",
+      "bytes": 23226,
+      "sha256": "b9c897239e466f761c68f71c1575eaba51267a9135e8b1b8ff5d704441f285b3"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryDuplicateNullReferenceTests.cs",
+      "bytes": 12344,
+      "sha256": "332fc52c0024f91a336aad47f7e78aab750a8eba23a1bf70d223dd91015d10c8"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryDuplicateNullHttpTests.cs",
+      "bytes": 42436,
+      "sha256": "fb666cbf4fc75d279d543e560f215c307f29bfa0185a684632a4b76557770915"
+    },
+    {
+      "path": "docs/company-ordinary-duplicate-null-mvc-compatibility-20261011.md",
+      "bytes": 2895,
+      "sha256": "9de213d718c8f118f6790b8c5443e844c954efaf1af08f2abfcc218465021f4e"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryTaxRegistrarReferenceTests.cs",
+      "bytes": 18301,
+      "sha256": "4125b982c43d5c04847629a2660f15cff1b8a4176efd301048544d543d909d10"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryTaxRegistrarMetadataTests.cs",
+      "bytes": 35363,
+      "sha256": "8b76cff8845d02b3725f10b5ce2fac287a44e0c3fe82280ead9fe7bafc8ea695"
+    },
+    {
+      "path": "docs/company-ordinary-tax-registrar-null-mvc-compatibility-20261011.md",
+      "bytes": 3474,
+      "sha256": "a6af29a1e1ff02f0ab77def0a4f1f5fd8123810bfd6b4c79418bdf32430f29d4"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveOracleTests.cs",
+      "bytes": 24684,
+      "sha256": "f710c36d4d6d6920e62ee6893b5973e6e8f92dc61480e4c392202ea497894294"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveStorageTests.cs",
+      "bytes": 9638,
+      "sha256": "adc0161bdc0bfc9a409058f5644396405b061145fb6a406479417a80587fe770"
+    },
+    {
+      "path": "docs/company-paired-field-primitive-proof-only-20261011.md",
+      "bytes": 3204,
+      "sha256": "0ba5fb6b313c9dbe2e7f3f8db51183b2b726f4345caba40d8ca470a8c3c7921f"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCompanyFieldPrimitiveJsonConverter.cs",
+      "bytes": 1066,
+      "sha256": "755c9f223d0726766d5a5c57f4e30aa7c4e531ff3926d5946a0700332d076624"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyFieldPrimitiveHttpTests.cs",
+      "bytes": 33342,
+      "sha256": "64c88de4e5f7de4f724651e1a4eecc4635459e7a2e4eb86784797b33acba75f6"
+    },
+    {
+      "path": "docs/company-tax-registrar-primitive-mvc-20261011.md",
+      "bytes": 5720,
+      "sha256": "2d16414b3628a55841cf361e8483f9ef9028544b10d0af3136a26fd013dcb252"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/OrdinaryAddressPrimitiveMvcJsonMetadata.cs",
+      "bytes": 2220,
+      "sha256": "22b42384d4cfb3661bcd75af05752e9d099467a671b14749646a68f0bf27cf53"
+    }
+  ],
+  "futureTestIdsInvented": false,
+  "full548Accepted": false,
+  "inputSourceBase": "745fdcee8a68a82363648838e99a727aacbb1176",
+  "preDocumentationCodePins": [
+    {
+      "path": ".dockerignore",
+      "bytes": 85,
+      "sha256": "5984866d3f136fd22a64d3147c942eac8423638bf2f5703232c2d11cc1ed0db5"
+    },
+    {
+      "path": ".gitattributes",
+      "bytes": 39,
+      "sha256": "91c171a7f4e295966f6e40aba83b0a11a56b4c99b59b9c55fcf54f15df207bc0"
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "bytes": 1169,
+      "sha256": "81d84822f0121926013fb9ff5b2a7bae913d8ed833fce3a422ec2e13aa42bd61"
+    },
+    {
+      "path": ".github/workflows/_build-and-test.yml",
+      "bytes": 9493,
+      "sha256": "288cff32a5c939c76e007de5736bdb982216e7c62200594a89f77c0f66494c0d"
+    },
+    {
+      "path": ".github/workflows/ci-develop.yml",
+      "bytes": 247,
+      "sha256": "55438892e1be3a3f5ff3e3e96aa69d74fc50884f1f465ce0ef1bc7e733ff825f"
+    },
+    {
+      "path": ".github/workflows/ci-main.yml",
+      "bytes": 241,
+      "sha256": "4a5aeebe5da345b1fd15ff1a81197914a8bcd2fdb4c478bf04166ceeca273892"
+    },
+    {
+      "path": ".github/workflows/ci-staging.yml",
+      "bytes": 246,
+      "sha256": "5436292ba9523f34ca9f3801fdd674ed6e7d18b4e4d6e0b72bdb9c2d2fa1c1cd"
+    },
+    {
+      "path": ".github/workflows/customer-company-focused-proof.yml",
+      "bytes": 7598,
+      "sha256": "917175f1960b535a471d5aa835cb95580760c492ebbf2104d178c77b39bd140b"
+    },
+    {
+      "path": ".github/workflows/customer-default-page-focused-proof.yml",
+      "bytes": 4894,
+      "sha256": "6b7014bfe87165e4a941a295d64ccd836ccec1e4d4ec43d5e1d54af493e55ea5"
+    },
+    {
+      "path": ".github/workflows/customer-email-focused-proof.yml",
+      "bytes": 3723,
+      "sha256": "d90b9062c93f129bf7710391ea3225d2dcbe9c506671608296234f01a9eafb8d"
+    },
+    {
+      "path": ".github/workflows/customer-source-intake.yml",
+      "bytes": 10732,
+      "sha256": "417e78dccb9ed49e422b7125e2fe063d56ba5835cf42d61fc37c5f1bba9fec63"
+    },
+    {
+      "path": ".github/workflows/pr-validation.yml",
+      "bytes": 293,
+      "sha256": "8645e3bae51218b468c15c026360f8b2befd29813236e10d30def30bcee68cff"
+    },
+    {
+      "path": ".github/workflows/publish-image.yml",
+      "bytes": 1270,
+      "sha256": "d2744958aa04f9847a7881ee2b6ed7fb00d91f3d3087fc5094789904031921b9"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 86,
+      "sha256": "363bbccb4453446e08e3f918755199c089110fd6e784f542a12f2ec0c646330a"
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 2046,
+      "sha256": "d51551e42cbc890ba4a85327e40db07772be8500b05f03233bc0194578a5943a"
+    },
+    {
+      "path": "Directory.Build.props",
+      "bytes": 515,
+      "sha256": "b03b93e505f9bd0f5d396c5041d9b35d6cfccb454384ba8151e55e05edf45083"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Authorization/CustomerPermissions.cs",
+      "bytes": 2366,
+      "sha256": "cec08e59670526a20199b81a677fbb86a2970dea139c93ae7e42ccb0a19263a7"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Controllers/AddressesController.cs",
+      "bytes": 5773,
+      "sha256": "4e0c786744aedee3bfb4d2ac15636fb1566fd6b3ad6b7cb053234c9c99d11b92"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Controllers/CompaniesController.cs",
+      "bytes": 4165,
+      "sha256": "159245eab0708896ec81997cdddf659c318884966a3256e76b158caa66dbd918"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Controllers/CustomerRelationsController.cs",
+      "bytes": 8175,
+      "sha256": "426baa3bae42449efd77662ac6e28ddb25dfe9e276f207b39b8d3fe9ee3a5f0a"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Controllers/CustomersController.cs",
+      "bytes": 12484,
+      "sha256": "fb70eb9ca0083a80eb72c6237292d821288d30c3f30e084502f3c6bd934e9f86"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Controllers/EmailsController.cs",
+      "bytes": 1553,
+      "sha256": "ca5ac4b95b905a4b99fa2c65ad203369a0a47ff132491a52116257e3831d46e9"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Controllers/QuotationProfileCompletionController.cs",
+      "bytes": 4197,
+      "sha256": "bca5697e2aefdfc416cca26b53fd5ed20c02fa7bd67390e1cb9c0c0d46d133cb"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/CustomerCreateReplayService.cs",
+      "bytes": 4531,
+      "sha256": "13f6fd4e16add22db3f3b5719cb15e50cbc0f48ee7902c3372b64af5506737af"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Dockerfile",
+      "bytes": 1279,
+      "sha256": "5df3ccbb9b05ed5320134c032bc0321241161f4c98dd4e73c64b78262f2004d6"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Legacy.Maliev.CustomerService.Api.csproj",
+      "bytes": 2110,
+      "sha256": "9e790f3acaca923a954b8d53839d00a057bb6b6bf8ba816cab08094611c1c255"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Program.cs",
+      "bytes": 3229,
+      "sha256": "94f908f40a4ded7d3bc9dcff7617cbc2ef30264e611e5fa7cb3b40e2a57ba318"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Properties/launchSettings.json",
+      "bytes": 618,
+      "sha256": "3d5744d3d6ffce5b0a1a1b30d81543bda5ddc6146fd7ee9d1592c3b769210a40"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/appsettings.Development.json",
+      "bytes": 119,
+      "sha256": "817db0bf2ecca78364c41dbaf7949bf2504cf47a1c3d0d54f3be8178fefc030b"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/appsettings.json",
+      "bytes": 398,
+      "sha256": "d23c8ea8e5ec65dc0425ed341a99eb2d4460bc922b42a45b8201ddb6a68d3442"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Interfaces/ICustomerBoundaries.cs",
+      "bytes": 21819,
+      "sha256": "d7f42a1655c74fa99287fae2eb2965969ead275040fd04770b9f54c8aaf8bcd3"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Interfaces/ICustomerRelationEdits.cs",
+      "bytes": 1365,
+      "sha256": "b35d02e3e7f6961900b5f07e63c24e843e85ff135f9da33cac9cb5978cf27ded"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Legacy.Maliev.CustomerService.Application.csproj",
+      "bytes": 476,
+      "sha256": "316f3f7a304b3bd4ff4d02dc3ea472b04daf596d92483dabfc840e8fe4e04835"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Migration/CustomerRollingAvailabilityReview.cs",
+      "bytes": 9658,
+      "sha256": "17a45fc353f8a6a0eae0bca87a392a66e588caecb0ae44bd7ae745a8e61c486b"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/AddressCountryIdJsonConverter.cs",
+      "bytes": 1463,
+      "sha256": "feacc75443c82b6fcdbe063c13bab3cfa908d6b8e0c2fc04eedfa19be0217b62"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/AddressLine1JsonConverter.cs",
+      "bytes": 1304,
+      "sha256": "8624472452c5c24f5008c741e7a8228a123eaa1544663cefe372449a882da3cc"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/AddressLine1LengthAttribute.cs",
+      "bytes": 1495,
+      "sha256": "7ef5e02aa6d265aac60c280598eb90b6bb1745dcd9d057ba2af9d9883d859ad0"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/CompanyNameJsonConverter.cs",
+      "bytes": 911,
+      "sha256": "e85031e7eebc4481ef750e6af1e69f40478be393e5402eab074f9d60c198d9d1"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/CompanyNameLengthAttribute.cs",
+      "bytes": 1449,
+      "sha256": "bf219f1c3f4b1179444b48f4a048553d5ab95535eaec8dbd281a6cb6c5675761"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/CustomerModels.cs",
+      "bytes": 5783,
+      "sha256": "d9e8bfedf05d2d49d60386ef9588f7cf6748b0f93f418f50e9672214b1178d9a"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/CustomerRelationEdits.cs",
+      "bytes": 5187,
+      "sha256": "8ed639fc57b54f9607ef5f2468cf810727996f738c493474aa8a181c2e5964e0"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/OrdinaryCompanyNameJsonConverter.cs",
+      "bytes": 1627,
+      "sha256": "f3821876c9b64619d2213bc70cbf08f710a7ea64c9c0c1342263a82909df36e4"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Models/QuotationProfileCompletionModels.cs",
+      "bytes": 2296,
+      "sha256": "fa54e03554b4733028744dd3bd2c3dcd957852b04e44ec70a425bfad6cc39d50"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Services/CustomerApplicationService.cs",
+      "bytes": 7655,
+      "sha256": "0992f77b30e8bd3fb18123242e8bcd22c93e3292434edd50ff56aac558989028"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Application/Services/CustomerRelationService.cs",
+      "bytes": 2859,
+      "sha256": "6e86151e218985fd8f76d74926b15324515daf11c8694145bf3fba55de70f2f4"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/CustomerCreateOperation.cs",
+      "bytes": 931,
+      "sha256": "b54c497cd352e791068ed1b9f86435c7c2c32832c37f2b8ade92c77eea8329d6"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/CustomerDbContext.cs",
+      "bytes": 7144,
+      "sha256": "6e5d93ba8d385099b0d06d782db17344fe9656fc056ddeed1c00c2f07710b970"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/CustomerDbContextFactory.cs",
+      "bytes": 930,
+      "sha256": "90e9632c85633609ca6be4e66d52de7948fca76ba51025d4cd53b7011bd0ea44"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/CustomerEmailComparisonCaseFolding.cs",
+      "bytes": 24443,
+      "sha256": "47e4199b9b7370d6cebb580a0665c686e704514eb9d97416ca395a35b11bcbb2"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/CustomerRelationRepository.cs",
+      "bytes": 8618,
+      "sha256": "abe2f4a3bd5033f4c33f145ea7e3d01a8b583443389f90c023b0164c8def76cd"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/CustomerRepository.cs",
+      "bytes": 22853,
+      "sha256": "e2ded23908eaf7143806d8e551375d5f45f764d17765f2657daa17f43f0f2c8c"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/DistributedCustomerCache.cs",
+      "bytes": 2616,
+      "sha256": "87de61003e9e4acf68427265fc2b87574e4f40ceaf7a4da0f1741db30ac28744"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Legacy.Maliev.CustomerService.Data.csproj",
+      "bytes": 1170,
+      "sha256": "7e6041c2250e65fe8c4f4878cb1feda5c3f8e4e70c4a93adf2e4b300a5b32b4c"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260715040653_InitialPostgresCompatibility.Designer.cs",
+      "bytes": 9589,
+      "sha256": "0d85cb85ba1669fcd1f4f10c590f3b4d303c26b41061166937cd7e0d57c894b2"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260715040653_InitialPostgresCompatibility.cs",
+      "bytes": 6919,
+      "sha256": "c3fad934b5d92d57584936b4032c78d05d07bb7bfae0e09f55b647ab3807ce82"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260807140250_AlignUtcTimestampColumns.Designer.cs",
+      "bytes": 9713,
+      "sha256": "d7de9490db7302380c59c58299d8b1612e91b640743e0fe39bf3873b8d23e80d"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260807140250_AlignUtcTimestampColumns.cs",
+      "bytes": 4704,
+      "sha256": "27ec9b255bf432a77863549d4a5c9006b4d5b3a4e3b75ab57b8dfededbce37f0"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260901142048_AddCustomerInternalRemark.Designer.cs",
+      "bytes": 9885,
+      "sha256": "42bda16942b6d418b5515395491d0b311082a7f1a58fb685d1658054a61346a8"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260901142048_AddCustomerInternalRemark.cs",
+      "bytes": 821,
+      "sha256": "b54a58ed44c12a09f06cca834018c372deba8424837495d869bebafeb31b31dc"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260926135021_AddCustomerCreateReplay.Designer.cs",
+      "bytes": 11035,
+      "sha256": "8314e7a629e6f183079501eb6411e2781ee06c1c3b6fa974f865ffc6979e527f"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260926135021_AddCustomerCreateReplay.cs",
+      "bytes": 1553,
+      "sha256": "71c47199c53810b62e589b9776cc7429fec90d77ca4ad64d3f32bae0184b1fb9"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260927135317_MapNativeCustomerXminRevision.Designer.cs",
+      "bytes": 11242,
+      "sha256": "ad6b4df131cff1a8a03dacf78d83e0e5343b5b1bac1e62b319d21c6f9b38ddc3"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260927135317_MapNativeCustomerXminRevision.cs",
+      "bytes": 718,
+      "sha256": "01c845a1194679cfbd37ff8832d7b8039fa406a2b5f44c1c4d3c53d253831377"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260930050259_AddQuotationProfileCompletionReplay.Designer.cs",
+      "bytes": 12413,
+      "sha256": "2016a01a432b6fcc08de51832fd87e10e57027e1d5d1c4f385c27c0b913febf3"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/20260930050259_AddQuotationProfileCompletionReplay.cs",
+      "bytes": 1690,
+      "sha256": "94c7c42ee0a6c057b5f7b409fbe414ac02d6a8cec4eab6547b18282464023b17"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/Migrations/CustomerDbContextModelSnapshot.cs",
+      "bytes": 12273,
+      "sha256": "795475768f136faad32445b7eafa56d87ad6b98a58394292329b4534e450a7be"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/QuotationProfileCompletionStore.cs",
+      "bytes": 17454,
+      "sha256": "8f5fa644223f5fcb274f7fd3c37355129332482e99c343ce1ee04a113ed42972"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Data/ScaffoldCustomerContext.ps1",
+      "bytes": 2716,
+      "sha256": "44fa1a21c5884b296a8e4857ea185f8d8011290efc11cf1ebbfabaca0be7e5d8"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Domain/CustomerEntities.cs",
+      "bytes": 4984,
+      "sha256": "d191de45db4d4bba5ff5d1938a5e168f03444e99a3a3e8f365934411e27b77e8"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Domain/Legacy.Maliev.CustomerService.Domain.csproj",
+      "bytes": 327,
+      "sha256": "0aec8d23fc31d062753209091db0c1b51aef9b67e0ed3626bf0dee66e38dc118"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Domain/QuotationProfileCompletionOperation.cs",
+      "bytes": 963,
+      "sha256": "13df9031878942e1efc0e42a630db1e7f56cab61e794ed4a1ebcbd13cf062a51"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Application/CustomerApplicationServiceTests.cs",
+      "bytes": 8464,
+      "sha256": "aa58ef4f2f1e967b27a11ae69e79a10afc43968686874951b3f0552ec5b8223a"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Caching/DistributedCustomerCacheTests.cs",
+      "bytes": 4136,
+      "sha256": "6d1ae93407571ef560f84e789ffd96e699a98c59bb3da456f833153b9a999778"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryPrimitiveReferenceTests.cs",
+      "bytes": 3731,
+      "sha256": "7d0e989dc826b58ed30cdff410903cf8ac47c91e93629dc5a84fcdfa1ef2ec9e"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxOnlyHttpTests.cs",
+      "bytes": 9572,
+      "sha256": "14a8b7139444d71d9a5bf6e955876c0bcbd230a3f63bb4e1c1c08225db5cbade"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressAttachmentLifecycleHttpTests.cs",
+      "bytes": 7742,
+      "sha256": "f8bc39206c5ae56c48deef7ad3f9747eec12c9fd4140c4c44fbd884d00e9efc0"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressLiteralLineHttpTests.cs",
+      "bytes": 38370,
+      "sha256": "a8ed5e37ccc50ddb9bff19ae1054fc69e926b352e6d30f84d29ee935d26a16a0"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressOriginalNullBoundaryTests.cs",
+      "bytes": 3795,
+      "sha256": "6da0b0d6d491c3a11be405e4006b8d5824b3280c35ed0c9358665628c57128b2"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressPersistenceHttpTests.cs",
+      "bytes": 9594,
+      "sha256": "356d115ccc3f90676bf558e72a2bb0ba41590c0008c04f6cf0cbe357576b9608"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAdministrativeEmailComparisonHttpTests.cs",
+      "bytes": 18557,
+      "sha256": "a9cde5118f87d845d9770e9803ea410c1356623f6508303cf87d4a9c7e6705b3"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAdministrativeEmailLiteralHttpTests.cs",
+      "bytes": 14261,
+      "sha256": "fa1698387c1f78fff7c38f3b72e83e2c7b00d2544dcb7874b3d076c90cf389be"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLifecycleHttpTests.cs",
+      "bytes": 7238,
+      "sha256": "4a384a1cf8b7c27d2f3f4420224761f8e95524ec5fd4670870eb509e65fd9575"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLiteralNameHttpTests.cs",
+      "bytes": 17727,
+      "sha256": "4ee7555694c46b99b60f942a967cd802422c80e8d036fc23620fde3fb33e6eeb"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryPrimitiveHttpTests.cs",
+      "bytes": 13644,
+      "sha256": "6e8737e1afd223d643b8f05a0720d104528158639fcc34b5a858abb7c289dbd6"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyPersistenceHttpTests.cs",
+      "bytes": 8394,
+      "sha256": "1c3ec6c3404d30852724600debbf0b0de411692a5cef6624213f34d8e35f0ecd"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyPrimitiveNameHttpTests.cs",
+      "bytes": 8944,
+      "sha256": "204e952c42a4bd56d892c54f3866f9381d781953ff5e04b99e289f523c7a15ff"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerControllerContractTests.cs",
+      "bytes": 4811,
+      "sha256": "e2053170e1e1f487870a71b5a66119a633f7fe68a189152ac01befc897c48a22"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCrudHttpTests.cs",
+      "bytes": 8523,
+      "sha256": "bdd2883b071f697db7ee38fd5079dc35112c4275d7edce4f3e81c71e04091415"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDefaultPageHttpTests.cs",
+      "bytes": 22988,
+      "sha256": "2884283608b57c31d4ad7302094a695d372538e5746198846afa85f7c20059ec"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDetailAuthorityFixture.cs",
+      "bytes": 10630,
+      "sha256": "a2e55bec498b515f399f0a324b4346cd775c239e0b7eb8ba025c7df022751b3b"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDetailAuthorityHttpTests.cs",
+      "bytes": 9724,
+      "sha256": "ee0af598d8455b513440d2874033bdca73e2fa86b380626d73af6a30ad26e618"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerEmailAmbiguityHttpTests.cs",
+      "bytes": 6181,
+      "sha256": "9d01e6334dd47b5909dcd4f5684df9f291a28e5a1f098e2a988b0194bceb5fcd"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerEmailCanonicalCaseHttpTests.cs",
+      "bytes": 17206,
+      "sha256": "c68d1de3758cf66935eb3f0f5f86758c90e69b1f83f95389ce7feccf435a9f4a"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerInternalRemarkValidationTests.cs",
+      "bytes": 1550,
+      "sha256": "f089677531276a2a607f732ab64ad57c7a7c9750ed9feaa44e4699f2c2c78e9c"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerLiteralSearchHttpTests.cs",
+      "bytes": 7646,
+      "sha256": "4b25ed7eb16b4618c70ff502264b978a0964154bc1013030dd2df2e7e07fd044"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerNameBoundaryHttpTests.cs",
+      "bytes": 8803,
+      "sha256": "64580a726b6ef7c8cbf3e9c1f1c27c39dde0b9cae7c7fa5349b1138e0883818b"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerNameLiteralHttpTests.cs",
+      "bytes": 28478,
+      "sha256": "455f13553cacfbb3da04408c41e970fbb044f409590f81c480d817f826b2802e"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerProductionPipelineHttpTests.cs",
+      "bytes": 4921,
+      "sha256": "c5d3a2ea24732e95f24430dd7a426a64f93405c85a6c701bb0113456b87f01a2"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerProfileDeletionIsolationHttpTests.cs",
+      "bytes": 12814,
+      "sha256": "26f7a828414b2560747f7d8eb11ad2fda67c84038a96d62e5258ec91eaf9d1df"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerProfileLifecycleHttpTests.cs",
+      "bytes": 11068,
+      "sha256": "00b26792c325ac9fbdd15fa485b570fad200540144888a801a9567927c1cdcf5"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerRelationshipFailureHttpTests.cs",
+      "bytes": 6547,
+      "sha256": "406d9d461bc34e33f325aa77ecd3dc56d3b932470245615544c8ad2bb6d9a014"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScaffoldRuntimeProof.cs",
+      "bytes": 24662,
+      "sha256": "85b96d50c2591f7224e46d482192f29d14cb9f5c28d31d4aa7c202dc38b6c536"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScopedRelationEditHttpTests.cs",
+      "bytes": 37114,
+      "sha256": "de85f9d4451ff68b88283c1e8c8d337d5b3c0433fb8e04953a21a0d8a39e38b6"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerSharedRelationshipHttpTests.cs",
+      "bytes": 10107,
+      "sha256": "ab67507733ba4e3a948f339ea04b91767d3b3c5638f78b7e7e1494f6968ce1a4"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerSignificantSearchHttpTests.cs",
+      "bytes": 14952,
+      "sha256": "c60ad6b6ae716f2350597a68061839f44208e08af6425bc974719d0a006f9336"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerUnhealthyReadinessHttpTests.cs",
+      "bytes": 3847,
+      "sha256": "7019bb8358c5480647f5aa666ad88fe1c3c0d74372a11cf74e65785ae0148930"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerVersionedAuthorityHttpTests.cs",
+      "bytes": 5040,
+      "sha256": "aca7ac0dc7ae40b9da96b40dd4f40b39dcb56a65aa68d5a27ea9502755f1a287"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/ExceptionBoundaryContractTests.cs",
+      "bytes": 2973,
+      "sha256": "463826fb48d3575c1f9b8be579d6d6ac9c4644dde155cd0d60c99a3729a74531"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Controllers/QuotationProfileCompletionHttpTests.cs",
+      "bytes": 43866,
+      "sha256": "377548beab815860a66694891bc23292fe6ee5075e72c97ef2b836d9debdf6a0"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/CustomerJwtExternalizationTests.cs",
+      "bytes": 6061,
+      "sha256": "a95e925d3ec7ec915567426d7b859a9ab53157b35c6ce8c32fb8264d2df17797"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerCreateReplayPostgresTests.cs",
+      "bytes": 9265,
+      "sha256": "aed7c348e0bbd9339e1b1d1f5857db23e3db14582c2ee7d58294c8189aff0d17"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerCrudPostgresTests.cs",
+      "bytes": 9523,
+      "sha256": "79a45a7ebac611be024324332ab2484e3b88fa6aeb5086de1d2a5c47bfa521f1"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerModelCompatibilityTests.cs",
+      "bytes": 4370,
+      "sha256": "1250f5a64e9fa10f14c724f8354d4225d8873612a67be8410c632b7d1336aa78"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs",
+      "bytes": 16913,
+      "sha256": "95754ad29bd5e3e94392024d647c7ea98c3e0c67eb38a8eac93db07666fc953b"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerRevisionPostgresTests.cs",
+      "bytes": 8700,
+      "sha256": "56deca6fd593c0e41de3d144f9ec3683b36ac35676bc291bc778ee860253f8a1"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Data/QuotationProfileRetryPostgresTests.cs",
+      "bytes": 9216,
+      "sha256": "7f4c4a380e1ffa53ba1a8b7ba3a7018f6c163fbe548d56368cd390ad8fa905ad"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Documentation/CustomerDocumentationHttpTests.cs",
+      "bytes": 6829,
+      "sha256": "365f21b0d2927712ab3f2129261f41fc0ca163e9ed4e3d0ebd328eab58d206e5"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Legacy.Maliev.CustomerService.Tests.csproj",
+      "bytes": 1683,
+      "sha256": "f1ddd92dfc670c05789da0da123b8f17801b70261d9e633d161d92ffa895deac"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/PublishWorkflowPermissionContractTests.cs",
+      "bytes": 2298,
+      "sha256": "e4a1286cfcaa95861735cf869bd021fbaffe680d11310f501a0ceecfd77a2002"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Startup/CustomerStartupInterceptionTests.cs",
+      "bytes": 5321,
+      "sha256": "d68daa44a58989186a4f9de06052e289b0a115c258844428cade5e2ed7cbadf9"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Startup/CustomerStartupProcess.cs",
+      "bytes": 9945,
+      "sha256": "60c8c5f1038ab06964221c4b0f3f68be3c84ea4a2b9d01c39a1034a76067c3ea"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Startup/CustomerStartupProcessTests.cs",
+      "bytes": 5350,
+      "sha256": "e8865634ef37a8455986c38222fe022aa8095193ffd3778f7557157271f41ef2"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Workflows/CustomerRollingAvailabilityContractTests.cs",
+      "bytes": 16000,
+      "sha256": "53c04640f289d76f0b801e694286d05d851f7f185d14acfdc380f3c4bfe037dc"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Workflows/DependabotConfigurationContractTests.cs",
+      "bytes": 2443,
+      "sha256": "a4b84cd5a2184e1d5af118c324f81f2b6ae323d7269456506aaaf7ed8620854f"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Workflows/PublicationDependencyTests.cs",
+      "bytes": 3168,
+      "sha256": "e72eac56753270bfd4a5042088911470fd53e55cfe11224c2fb26d659146be13"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Workflows/WorkflowContractTests.cs",
+      "bytes": 45423,
+      "sha256": "198f6fcbd0576c370cd8888b03d66a92ccf8b37c450411850da09026b93ade6f"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.slnx",
+      "bytes": 531,
+      "sha256": "3dd9d03f4b3a0f929dce460a3dffedcfc4298eb1a4b5dcd4e88cb7b71cbdc5e8"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4092,
+      "sha256": "b9ea2c38945e726e0f524fcf64a74671d3d1d327d01a1b7eb3a2963db7887566"
+    },
+    {
+      "path": "docs/address-literal-line1-current-main-proposal.md",
+      "bytes": 5312,
+      "sha256": "284ff56440c4562c3d742cf75ec2f145e87bf230891c0534198761455160d922"
+    },
+    {
+      "path": "docs/cnc-tax-only-company-parity.md",
+      "bytes": 8508,
+      "sha256": "27ee2d83b9cdf8f0588bdd962acc0e04104f3911481c9bfa2a911221273306e9"
+    },
+    {
+      "path": "docs/company-ordinary-primitive-source-compatibility-20261011.md",
+      "bytes": 3261,
+      "sha256": "ae1a7a04b4e01a35bb5370182603c21f81442685856f8ae110003c8e1637de8b"
+    },
+    {
+      "path": "docs/company-primitive-admission-boundary-20261011.md",
+      "bytes": 2234,
+      "sha256": "5375e0be8f56d025c196d7e4a4ed92b747842264479d6eb08b08450db79993ef"
+    },
+    {
+      "path": "docs/customer-actual-scaffold-proof-20261006.md",
+      "bytes": 2880,
+      "sha256": "3b1fd4c973069d4a7785dfac9a34d42441395e1980c92462b1e78a4a13ec682b"
+    },
+    {
+      "path": "docs/customer-administrative-email-literal-source-20261011.md",
+      "bytes": 8166,
+      "sha256": "25c99c6c52262577ba1c538579590d6edc3d285f87af7af69dc53656b7d13730"
+    },
+    {
+      "path": "docs/customer-create-replay-contract.md",
+      "bytes": 1875,
+      "sha256": "db7d77a0426594cc53d860ff032fa74e0d345a07a8210c6410a3b357c25b602d"
+    },
+    {
+      "path": "docs/customer-detail-authority-design-20261001.md",
+      "bytes": 14624,
+      "sha256": "c45e9755b2c3f0324eee86d6851d942bde405d8824e0435e916dff6aa7f17087"
+    },
+    {
+      "path": "docs/customer-kernel-route.md",
+      "bytes": 6518,
+      "sha256": "7ae7cd86827a106f56a48e8f71d15dbfa780140c6736dcf9b8d67b60e2497275"
+    },
+    {
+      "path": "docs/customer-omitted-size-source-20261011.md",
+      "bytes": 3785,
+      "sha256": "eaa524e2e48d77cb0f6a0bc03fc93a45d500ab4cdb016769a530b469f4c30374"
+    },
+    {
+      "path": "docs/customer-profile-revision-contract.md",
+      "bytes": 2198,
+      "sha256": "1011c0a9191fcba57fd1e8184fbbabaebb0a63687fbbe0e7a86c8535d0c0b21b"
+    },
+    {
+      "path": "docs/customer-rolling-availability.md",
+      "bytes": 4181,
+      "sha256": "67c6e14dcd410cff2a2b7f525dfcc04f2f8d857b536cc57eaa088d889ea8fd5b"
+    },
+    {
+      "path": "docs/customer-sealed-source-intake.md",
+      "bytes": 3619,
+      "sha256": "7bf2d1d4bee6edca98e246ddaf2bfc49cb75a65dbb51afc635588d8a5e31fd76"
+    },
+    {
+      "path": "docs/customer-startup-private-boundary-design-20261002.md",
+      "bytes": 46413,
+      "sha256": "5baeb50ee20aeb6bb9c28ebe3b9fb6b5e2a0afc37533da5fcfbca4706dc3ae0c"
+    },
+    {
+      "path": "docs/licenses/Unicode-3.0.txt",
+      "bytes": 1995,
+      "sha256": "e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96"
+    },
+    {
+      "path": "docs/original-native-logging-source-cohort.json",
+      "bytes": 12064,
+      "sha256": "7ed08fa93fcfdb5df571d250c26cd4c35a8ccddb7702c0cfa4a6b0e1fde99b81"
+    },
+    {
+      "path": "docs/original-native-logging-source-cohort.md",
+      "bytes": 801,
+      "sha256": "30497becc0fa95d788cdbeb036016e4c71ce63285fd20f90cc94df0f17e0de5f"
+    },
+    {
+      "path": "docs/publisher-validation-adoption-20261001.md",
+      "bytes": 8205,
+      "sha256": "26a62d7436c425eaf15acaa8e8094924f9bf4e1cc8e6b5bd37f5988d2b23ab56"
+    },
+    {
+      "path": "docs/quotation-profile-completion.md",
+      "bytes": 10518,
+      "sha256": "be472cc6618b9b7e6d01474a82e806b48e81e9754d22dd1167fa9fe70ef269bd"
+    },
+    {
+      "path": "docs/scoped-customer-relation-edits.md",
+      "bytes": 9697,
+      "sha256": "322d112a97d8dcda829a321383f95d007ba447c76c6f31e508a1dcd3e797ad4a"
+    },
+    {
+      "path": "nuget.config",
+      "bytes": 197,
+      "sha256": "aec93b5637ab6d62470979a008990a4a336a287ab83a3f2541849ae735674055"
+    },
+    {
+      "path": "review/customer-rolling-availability.json",
+      "bytes": 321,
+      "sha256": "737577a6437e9c6fd6b3e54e335550f437407f8af6d4a510d046943285260438"
+    },
+    {
+      "path": "review/customer-source-intake.patch",
+      "bytes": 7176,
+      "sha256": "3e754d067c1b0a4493df46dfc7610be1d4cff95259fcc1cb30d1d5fbc025738a"
+    },
+    {
+      "path": "review/customer-source-intake.preimage.yml",
+      "bytes": 4622,
+      "sha256": "2fa0a51f9bf6d1273790e50c195df40527a32d3e166f2fca219ad293d3c9b741"
+    },
+    {
+      "path": "scripts/capture_customer_default_focus_resources.py",
+      "bytes": 12198,
+      "sha256": "74d736881ad7a0492e44584357f028cc570461bf2399b3fd35da68ba1d4e2aa2"
+    },
+    {
+      "path": "scripts/customer-candidate-policy.json",
+      "bytes": 250519,
+      "sha256": "ad4d2c21a3ad7c2dff819d04bac6913874d61db0bc2b410454169a583527655a"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/README.md",
+      "bytes": 7676,
+      "sha256": "1b0e6e88f2624af3bfc2cc1b29d5c569c30cdae5ad80a8ae31541e47ce864be0"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/build-stage.json",
+      "bytes": 6924,
+      "sha256": "eaec53cbe7f2744aa24aaa75a7636c6978a7bf2eafa3b1f8d85089e5ed257147"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/customer_build_admission.py",
+      "bytes": 11722,
+      "sha256": "fcbcd987bd46ba500f02a37f3a87d47cb06dd334a7324aee0ab7814a29d870b4"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/customer_build_guardian.py",
+      "bytes": 18111,
+      "sha256": "b6b4efc9416b6c416d35ad312d2c06eb15dc70b3fbbe230fba96093e76f204b2"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/customer_guardian_process.py",
+      "bytes": 13051,
+      "sha256": "b4c1aa5ccf7e44a920d63bd68d23a3645876171c0599bfb57bf1fc4c704c7489"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/customer_native_build_driver.py",
+      "bytes": 24903,
+      "sha256": "45d44931173d8d060c6c5a90ea36bad5ff4ecbfbed0fb0d6afd67b5a2e3da2a0"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/customer_owned_build.py",
+      "bytes": 31901,
+      "sha256": "ead09deb55bf1f6fa7a1076781070f612900a37899c36c2bb48fcd3c43724408"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/driver-manifest.json",
+      "bytes": 3399,
+      "sha256": "eccc5ddac7342c0297c177945030426fabca183455901021463d084d2eefe079"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/input/customer-candidate-policy.json",
+      "bytes": 290152,
+      "sha256": "e0af0d56bc14f48ec7e7e80d445283faa942d2a80c6ab8caee39d45b6937a840"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/input/customer_source_intake.py",
+      "bytes": 19391,
+      "sha256": "db52060501053e7eeec624743b040fa0aa2818e0e92fd462800a904f54a744c7"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/input/sealed_source_capsule.py",
+      "bytes": 12296,
+      "sha256": "44a8a5accac9da11422d606be02fe28487642215df511b5f1c4284296a453ee2"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/input/verify_customer_null_association.py",
+      "bytes": 4582,
+      "sha256": "ae35a1ffb0a07cb2cc79236a93cb5ea69a44e4fd21abad659bbdf9bd6ee52d08"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/supervisor.sh",
+      "bytes": 1285,
+      "sha256": "af6754f42357c98a4278a0f20b025e7f55cdf53500f92600b1062815d565be20"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/test_customer_build_admission.py",
+      "bytes": 10314,
+      "sha256": "111523a93b56167e8adbe091f9744e0704ebc461766d48798bea626025db30d7"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/test_customer_build_guardian.py",
+      "bytes": 17318,
+      "sha256": "eb714363f66956fc6263b91ea3b62e4b9f8afefad4d44122da68fd6223493d72"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/test_customer_guardian_process.py",
+      "bytes": 11198,
+      "sha256": "b4884b65047259108d0acc788bebc3b46c2ee785390bcea0d9704946cebfaeb9"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/test_customer_native_build_driver.py",
+      "bytes": 12488,
+      "sha256": "eb7352a13ff56507d6cea7a0d62079e4c9361be809c1cf6d09e78bf3f2860e15"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/test_customer_owned_build.py",
+      "bytes": 27419,
+      "sha256": "9ab66de45593728560cbac901055eb38bc3fa66963e292888a34210a516744e3"
+    },
+    {
+      "path": "scripts/customer-kernel-packet/test_customer_packet_seals.py",
+      "bytes": 3264,
+      "sha256": "d5edc69051ef8e59e080cc627fc9163f315f933e0a6d046ae63e08e288abddd7"
+    },
+    {
+      "path": "scripts/customer-kernel-source/README.md",
+      "bytes": 11781,
+      "sha256": "af5837ea57b72a0488c623ea0db7dfe1368931a2cb9402c169b6c36ec2060f3a"
+    },
+    {
+      "path": "scripts/customer-kernel-source/fault_controls.py",
+      "bytes": 38156,
+      "sha256": "92c4da3890901bc6b09b97905e2d70f34289fc245c2ac5e92253c9079867e4ae"
+    },
+    {
+      "path": "scripts/customer-kernel-source/kernel_only.py",
+      "bytes": 23431,
+      "sha256": "c61da7a397069e73b0fff919f87f9b1d944fa0a1ad8b40eb02487dfd194996a1"
+    },
+    {
+      "path": "scripts/customer-kernel-source/owned_process.py",
+      "bytes": 30161,
+      "sha256": "834cbb4f0380ef4460c9ff71b9632a952ab5a662d79074b6d35ff54484e8ce07"
+    },
+    {
+      "path": "scripts/customer-kernel-source/prepare_handoff.py",
+      "bytes": 9016,
+      "sha256": "025c28c2aa5d53e0c5da24a99f081a2ed8fb5b64e69c4f558ce3fe9f6d46a32d"
+    },
+    {
+      "path": "scripts/customer-kernel-source/repro_r3.py",
+      "bytes": 1040,
+      "sha256": "a3394cc60bd6cac5875622db2b87b9bcb35272283715c84817cc7fc8127281a7"
+    },
+    {
+      "path": "scripts/customer-kernel-source/run_source_controls.py",
+      "bytes": 2526,
+      "sha256": "afd44069abbbe3403783f448b7ebc9bcb8323c5d6f068c037dda4c790c17d561"
+    },
+    {
+      "path": "scripts/customer-source-intake.draft.yml",
+      "bytes": 10161,
+      "sha256": "4924f2e52d4c692c249d5d0fd43cb82f76bfe4422171bae2cccc686811e7e618"
+    },
+    {
+      "path": "scripts/customer-source-intake.preimage.yml",
+      "bytes": 4622,
+      "sha256": "2fa0a51f9bf6d1273790e50c195df40527a32d3e166f2fca219ad293d3c9b741"
+    },
+    {
+      "path": "scripts/customer_source_intake.py",
+      "bytes": 14434,
+      "sha256": "da3b1299a8f971db03eb712322f70b43647e8589b1fcb181c943b053eb7a42f8"
+    },
+    {
+      "path": "scripts/external_unit_owner.py",
+      "bytes": 27097,
+      "sha256": "9b1f9278beb9f9fbc6ae20fff2d356f6b588b8ebcfe905fc0faa867ef9f35162"
+    },
+    {
+      "path": "scripts/kernel_root_route.py",
+      "bytes": 45503,
+      "sha256": "9e13526b6f020b2580a632e261a50a4278099999dd96af48d76cf9618c726f5c"
+    },
+    {
+      "path": "scripts/publisher_recipe.py",
+      "bytes": 782,
+      "sha256": "466855f61134730f041d2e868ff4c24603e76a20c1769a76e49a8c66ab53defb"
+    },
+    {
+      "path": "scripts/sealed_source_capsule.py",
+      "bytes": 12296,
+      "sha256": "44a8a5accac9da11422d606be02fe28487642215df511b5f1c4284296a453ee2"
+    },
+    {
+      "path": "scripts/test_customer_company_focus.py",
+      "bytes": 9461,
+      "sha256": "b43b988dd19a6e0baf2b1d9ed8cadaba6c0bb8a4bce7fabd66bb96e17303a15d"
+    },
+    {
+      "path": "scripts/test_customer_default_focus_resources.py",
+      "bytes": 2121,
+      "sha256": "60bdfb32f21a750dcd51007a16148baca5c0a4762905ca342f1d671c40a2b0eb"
+    },
+    {
+      "path": "scripts/test_customer_default_page_focus.py",
+      "bytes": 4833,
+      "sha256": "03754bdfe386e185b827dbb6ffe6d640fb2acdc19c3f80c665c8a90090bf81fb"
+    },
+    {
+      "path": "scripts/test_customer_email_focused_validator.py",
+      "bytes": 11200,
+      "sha256": "9420b87ad2169203927ecf6ae4f940cd89a80c6b7b9dc96c4d6fa0cd084b2f9a"
+    },
+    {
+      "path": "scripts/test_customer_source_intake.py",
+      "bytes": 15530,
+      "sha256": "36d869f0ebb289a8056baa0404cbba5ba011331aeb7927f73776ca847965da4c"
+    },
+    {
+      "path": "scripts/test_external_unit_owner.py",
+      "bytes": 14525,
+      "sha256": "acbc5ee68b3cb3b592fe3f0713506d1c62a6ec6b0f5cff1448f6ebda2d49f5f4"
+    },
+    {
+      "path": "scripts/test_kernel_root_route.py",
+      "bytes": 19075,
+      "sha256": "3eca8c9466cf432a6ea7cdf7d2e29e414b34f7fe483be004885d5668a75dd789"
+    },
+    {
+      "path": "scripts/verify-runner-coverage.py",
+      "bytes": 2073,
+      "sha256": "d4dad783c83efc6c22df4abc6dacf6879456b18c9c145145d725a3da5c3753c2"
+    },
+    {
+      "path": "scripts/verify_customer_company_focus.py",
+      "bytes": 8213,
+      "sha256": "c88250b597e2a0855e10f885cb50fe5d703eca3c1a1e5aee094995f00de9dffe"
+    },
+    {
+      "path": "scripts/verify_customer_default_page_focus.py",
+      "bytes": 4386,
+      "sha256": "7780f8dc6d10a6d4ecbcb3b6b7a7150d9ffca0f888e49a615ab2a11f5e6d3505"
+    },
+    {
+      "path": "scripts/verify_customer_email_focused.py",
+      "bytes": 9463,
+      "sha256": "5ea7d087156bd3754b60ac77033ea0ac9e4b32a1bb29c704ba99b91c44153824"
+    },
+    {
+      "path": "tooling/CustomerStartupPhaseProbe/CustomerStartupPhaseProbe.csproj",
+      "bytes": 296,
+      "sha256": "25d111608dc0c1dd47702cd0501f7de2e20d67552ff7e1c3779722985c27641e"
+    },
+    {
+      "path": "tooling/CustomerStartupPhaseProbe/StartupHook.cs",
+      "bytes": 3237,
+      "sha256": "112a4b454783fa473a5734dbe95c388abfad02120f2c70850a883b0debfb751d"
+    },
+    {
+      "path": "tooling/Test-CustomerScaffoldContract.ps1",
+      "bytes": 10660,
+      "sha256": "d793ecc3fcbf592e0407dcfc704b3b3add7f2a93b6bf034c348b2312c7b8bf7a"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/Directory.Build.props",
+      "bytes": 598,
+      "sha256": "56228ebe62fe27ad7377a27dcbd954968cd05aaf8ae5a3fa113f3e1da773a8de"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/Legacy.Maliev.ServiceDefaults.slnx",
+      "bytes": 221,
+      "sha256": "27306562c9b1ca3e025a6616c2bdbcd0d201944d9fea5350772ddc9773557fb1"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/global.json",
+      "bytes": 81,
+      "sha256": "b48d6da8fa62c0da7cc8a2da4ea036ac55836660a448ba533135abb5b8451b73"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/nuget.config",
+      "bytes": 197,
+      "sha256": "aec93b5637ab6d62470979a008990a4a336a287ab83a3f2541849ae735674055"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/AssemblyInfo.cs",
+      "bytes": 102,
+      "sha256": "50b9c15ab1f0fe2def488072d2434f67f609c9bdc6c2b19358f28ed64f40f719"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Authorization/IAuthMetrics.cs",
+      "bytes": 677,
+      "sha256": "c8f92faba768eb2defaf0b17407750a6c0c6f25a9b3d2de6c4acdb0b950805ea"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Authorization/PermissionAuthorizationHandler.cs",
+      "bytes": 17197,
+      "sha256": "687d32dc8d21fc6a150a3cfd40ba332b921bac7f32ada23ec7490177a7d86d17"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Authorization/PermissionAuthorizationPolicyProvider.cs",
+      "bytes": 4626,
+      "sha256": "d28a44a4add52e11cbb54d9cb8beb273d969b52c030d7241afb12dc387a8986d"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Authorization/PermissionRequirement.cs",
+      "bytes": 2631,
+      "sha256": "aa8df5dbc098b67741f5564cf390b1a77cf2b0ca303105edd1eb2e4ffa5bcbff"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Authorization/RequirePermissionAttribute.cs",
+      "bytes": 4470,
+      "sha256": "4fa797ffcc231f5b92f916b90a0650d4f391eac5cd552c6cac9d924d82008f64"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Caching/CacheLogValue.cs",
+      "bytes": 718,
+      "sha256": "821ae5218cd3f3ef0bd54968145837660b092f8a8a976f6e0e5ed763b11344f9"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Caching/ICacheService.cs",
+      "bytes": 2576,
+      "sha256": "ca0cb9b86d92ac7b37a5cab67ad0e3e6cae35ff9695774948e795e8cc6c16123"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Caching/InMemoryCacheService.cs",
+      "bytes": 8966,
+      "sha256": "01dc21381386d0a278a17e83f968f895a783f22d76141fb6881ffba0ee7af5d8"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Caching/RedisAvailabilityHealthCheck.cs",
+      "bytes": 997,
+      "sha256": "bf34d883d56208e67962c3064780ced956824e6ab37c9cfa8ecb4f78f7411dc4"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Caching/RedisCacheService.cs",
+      "bytes": 9856,
+      "sha256": "5c9f4e8321a31a650ff08c16ea1adbc2338d50688a57a15524e8ff7134964022"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Database/SnakeCaseNamingHelper.cs",
+      "bytes": 3724,
+      "sha256": "96930338889040a674f2f4f7dcca54ae98b68dfe87c461cb28b994a1c03711f8"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Diagnostics/PrivateDependencyFailureHandler.cs",
+      "bytes": 2373,
+      "sha256": "54d7eb3498e6428f5673d62af6adce21adf68e5bf044a459615c6171d0f8153d"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Diagnostics/PrivateStartupBoundary.cs",
+      "bytes": 3486,
+      "sha256": "72487ace3b4f797f78c100afaec66018e8829e2e50853c5dbc05d07ebe90edaf"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.ApiDocumentation.cs",
+      "bytes": 5424,
+      "sha256": "e2e69acc3f6e7558074841cf06c5aafb05f2f45a41408ccc7f8c5f395022e3c6"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.ApiVersioning.cs",
+      "bytes": 1262,
+      "sha256": "d73355cae6bca988ea3cd75efeaaebf4eb4a0fbb8217198d53da0f9422c80e05"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.AuthServiceTokenExchange.cs",
+      "bytes": 9437,
+      "sha256": "b480464172e42a932637d7b87947880b1a6f8b9dc33aa7bd94d7c808beff9210"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.Authentication.Cookie.cs",
+      "bytes": 4623,
+      "sha256": "5572fdcf51a85738f8b8dc3c6c822189ded39efed0377fdcf5251ee0c9b6816e"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.Authentication.cs",
+      "bytes": 10677,
+      "sha256": "a39e5dde44a8fd406ce7aad6ea2f63b083cf7e8a2a1297af93d4e5854ebeea56"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.BackgroundServiceResilience.cs",
+      "bytes": 1737,
+      "sha256": "7a4155057807c363cca9ac21ada9c1416c2edf549f37076591ef5aceb444c238"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.Caching.cs",
+      "bytes": 7467,
+      "sha256": "94fa3177963e877451eb2c03967163e3e38ee5e62f5e22b1a1ae872cdae372ce"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.Cors.cs",
+      "bytes": 5579,
+      "sha256": "217cede0788cf8611a94052ccb3f3c26966b8b3ae6bf81cc7ba7b7b7b1dc2666"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.Database.cs",
+      "bytes": 8784,
+      "sha256": "6e01fa4212904233e62e6a258a257b84feca7f6c8ae422765a06aa22f98e9638"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.HttpClients.cs",
+      "bytes": 11977,
+      "sha256": "192c6573bfe3c0f8e026c7fc9a162ee96a4cb9c1b401c47ffc16dd21b1a7627d"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.IAM.cs",
+      "bytes": 3742,
+      "sha256": "c0f97b7347a1bf400a9aedc7527a7020720bd4047cf8c12d200781f55a91e46f"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.IAMRegistration.cs",
+      "bytes": 2024,
+      "sha256": "afd5d6831cc7f32091c1c2c5fb075bbbd563f6537e0629fda3b1d6e94931f8c1"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.LegacyServiceAuthentication.cs",
+      "bytes": 2804,
+      "sha256": "4d2cd12e93adf8436de735b37fb97413ec05eb64be5f2d5098981caa97bb60f8"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.MassTransit.cs",
+      "bytes": 9521,
+      "sha256": "d178f512edb603e1da8f97575cf46f9bbf11d0c258aff244a1b2cbf8bf232797"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.Middleware.cs",
+      "bytes": 4847,
+      "sha256": "edb736abdd90c4dac4334781127a1a020a7c57c5b0ac8a2cb31686ca7686edef"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.PrivateFailureObservation.cs",
+      "bytes": 3409,
+      "sha256": "736d8b5800e7071e2353f7b15ee0e40cab8713436d6cb7364a88cacbf83365eb"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.RateLimiting.cs",
+      "bytes": 8935,
+      "sha256": "a15a09e2c4a1f2b203e56f739c21a4d7967897ecbc325d9a21107d54e84773b3"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.Redis.cs",
+      "bytes": 7120,
+      "sha256": "ad478557399007cf4aa3850f22a42e987753223054a25855c6f0903744c37267"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.Secrets.cs",
+      "bytes": 993,
+      "sha256": "fcd6f3f4e7d14c394b22cdc5c4c052c690982b45b5e79f2ae6f9dd07db728061"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.ServiceRegistration.cs",
+      "bytes": 4914,
+      "sha256": "9ea5602e48bc033c555980f2b25892e8a49f095fd02a15e369e3a63627af36cc"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Extensions.cs",
+      "bytes": 13500,
+      "sha256": "73643c87d572e292a8bb5a9c29fe8476fd8ee817d74f80e1639cf3b5b707446e"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/AuthServiceTokenExchangeHandler.cs",
+      "bytes": 868,
+      "sha256": "510ebf95f32ab2cb64fa3918c75e9fd1486c7a469acaf70bdb5289ad467ddebe"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/AuthServiceTokenProvider.cs",
+      "bytes": 20765,
+      "sha256": "9d51ada5721927261fc276df241bc38e6685ba263f9f8dba751c91259a429702"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/BackgroundIAMRegistrationService.cs",
+      "bytes": 11366,
+      "sha256": "7c9b120870ae9b41e0223716ac7dbdfdf08fe7b7fa85ff907c444cd33bb9fe4e"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/IAMRegistrationHealthCheck.cs",
+      "bytes": 2861,
+      "sha256": "fd3a1735cbf7ca7f17f106a46edd368bd4bff2fe1803d70248e72e56bae443a8"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/IAMRegistrationService.cs",
+      "bytes": 4082,
+      "sha256": "5ba4464c409aa6b3622f4bab33316454f9cacb4b1fcb965a3bc15e2e5a1c8220"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/IIamServiceClient.cs",
+      "bytes": 4524,
+      "sha256": "62eb9950c7a8ff816f0084fdf1226f7925b727e7cf8e4a6abc0e03aafa9649fa"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/IServicePermissions.cs",
+      "bytes": 300,
+      "sha256": "2381ba0c905141c5ec7447d4d1b165b9da2fb8bc254b87a08e5bbab27b0eb064"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/IamClientRegistrationGuard.cs",
+      "bytes": 3261,
+      "sha256": "dbdb345c8a834bc6bbb813061fd8ffe6f50e349f6cb6e316d6edbb8e4789d7f7"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/IamServiceClient.cs",
+      "bytes": 15348,
+      "sha256": "c3841cb9b2a2f92840fd3a935ca5397d68f956c28b5f77bd996e90a05e655160"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/MalievIamRoles.cs",
+      "bytes": 7016,
+      "sha256": "29a5350fc2d9ffb011a36a063215320fd57d5af75e97770621f5cb58b65ce8c9"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/PermissionMatcher.cs",
+      "bytes": 4749,
+      "sha256": "eccb03922b191fcd5b1f3655127357d53c9dbab818010d5cb57ba5835d89e364"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/ServiceAccountAuthenticationHandler.cs",
+      "bytes": 5129,
+      "sha256": "d5000934d801a3d1a2ddd3a37c7675f135751c1df24a115828de43040b7e1a92"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/IAM/ServiceAccountTokenProvider.cs",
+      "bytes": 8226,
+      "sha256": "285e9278b43f9936063f462ba4a4eef3c159fd597877d11da9e6dca6db8adf36"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Legacy.Maliev.ServiceDefaults.csproj",
+      "bytes": 3216,
+      "sha256": "8938676ca6848677628fc11fccd78774c2732a991e7f8d166f8440e448093d4a"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/LegacyAuth/LegacyServiceAccessTokenProvider.cs",
+      "bytes": 8944,
+      "sha256": "9fd90711fd065f689373067e2c7b9a15607027ed293ab90b8c334842ce509c2c"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/LegacyAuth/LegacyServiceAuthenticationHandler.cs",
+      "bytes": 1232,
+      "sha256": "af65b00aeafdd6323e9446da851e10f18a2cee9494fe3715a88e2f0c40136714"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Logging/MalievCloudJsonConsoleFormatter.cs",
+      "bytes": 4448,
+      "sha256": "3000ff8e529b6a2b1f58b1ec12b816531db2f566e4657fb7a567493836c758ff"
+    },
+    {
+      "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Logging/PrivateFailureConsoleFormatter.cs",
+      "bytes": 4180,
+      "sha256": "2c4c9abe7a1f00219c1d302bc0bebe4891381b3555c21edecb7e1a0f38b1dbaf"
     },
     {
       "path": ".dependencies/Legacy.Maliev.ServiceDefaults/src/Legacy.Maliev.ServiceDefaults/Middleware/CorrelationIdMiddleware.cs",
@@ -1419,8 +2884,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryDuplicateNullHttpTests.cs",
-      "bytes": 39430,
-      "sha256": "f8a0859c64a769e3aadf832f1a96494baee49bb139018073b1f400feff1ee397"
+      "bytes": 40525,
+      "sha256": "9e9c81daaf479b4d11dc8b7a8a71f7230af3a009a082680a9fe1fd874901e2ae"
     },
     {
       "path": "docs/company-ordinary-duplicate-null-mvc-compatibility-20261011.md",
@@ -1464,8 +2929,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyFieldPrimitiveHttpTests.cs",
-      "bytes": 29932,
-      "sha256": "3262955101ecb456265adaae9d33b19814a6d055a1a6ef2b1e205d2dc248a854"
+      "bytes": 31911,
+      "sha256": "e554b1f2e142b4929d6f38a0127f61120536500782681b22fc9ec046043a40ea"
     },
     {
       "path": "docs/company-tax-registrar-primitive-mvc-20261011.md",
@@ -1478,7 +2943,1195 @@
       "sha256": "22b42384d4cfb3661bcd75af05752e9d099467a671b14749646a68f0bf27cf53"
     }
   ],
-  "futureTestIdsInvented": false,
-  "full548Accepted": false,
-  "inputSourceBase": "745fdcee8a68a82363648838e99a727aacbb1176"
+  "documentationSuccessor": {
+    "schemaVersion": 1,
+    "sourceCommit": "03dc9a1271c16e6535934445e9dd6e3f30e8fffe",
+    "predecessorHead": "cd265781de9fe4dac67571c3f2ddde5456a49cc0",
+    "documentationHead": "71c97b38fbd57a07efc85eb95d942240aa72d079",
+    "sourceProposalBlob": "6bb241d703c507b1c6b09279b5b67bd79368645d",
+    "independentReviewBlob": "78e5073497e28034dc2d9a3ae4dd978150c2a750",
+    "predecessorManifestBlob": "589979cc2c0a3d53619179efcd6dcd78f6514bfc",
+    "reviewedChanges": [
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Application/CustomerApplicationServiceTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Application/CustomerApplicationServiceTests.cs",
+          "bytes": 8464,
+          "sha256": "aa58ef4f2f1e967b27a11ae69e79a10afc43968686874951b3f0552ec5b8223a"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Application/CustomerApplicationServiceTests.cs",
+          "bytes": 10854,
+          "sha256": "fefbdbc0722e53d7ecbdb6031703ee10ceca03044b317841eb31c4e8fb811206"
+        },
+        "predecessorGitBlob": "3fb557f37a00b812e262830d847a16f77ce5a9b8",
+        "successorGitBlob": "ab139350ba26e2e0086c765b01a781f2f7e3e8e7"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Caching/DistributedCustomerCacheTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Caching/DistributedCustomerCacheTests.cs",
+          "bytes": 4136,
+          "sha256": "6d1ae93407571ef560f84e789ffd96e699a98c59bb3da456f833153b9a999778"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Caching/DistributedCustomerCacheTests.cs",
+          "bytes": 5443,
+          "sha256": "ad3a50cc0579463728227ba01b63b77cfe798ba8a08646400f3d782cef97b575"
+        },
+        "predecessorGitBlob": "ea66e18528fc050b7be1a5bcdae6e54b8ec05966",
+        "successorGitBlob": "2fb162a4a7c23d81834b51dfdf726a19db7856c6"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryDuplicateNullReferenceTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryDuplicateNullReferenceTests.cs",
+          "bytes": 11914,
+          "sha256": "5fd9d81374261836a85c04fb2c2620386f6790fdcf7599f5c05d6c62dcd7373f"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryDuplicateNullReferenceTests.cs",
+          "bytes": 12344,
+          "sha256": "332fc52c0024f91a336aad47f7e78aab750a8eba23a1bf70d223dd91015d10c8"
+        },
+        "predecessorGitBlob": "90de0f6ee622c070cfcd76a6d7e0924fde2f767f",
+        "successorGitBlob": "5ae3147c3dabf8f0ff43044d2d0b348e7d8ae971"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryMvcMetadataControls.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryMvcMetadataControls.cs",
+          "bytes": 23064,
+          "sha256": "79f642df873c4cc395a3e7415bd045ebe030f3a6eab30c5261e61c69b9b0eb3a"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryMvcMetadataControls.cs",
+          "bytes": 23226,
+          "sha256": "b9c897239e466f761c68f71c1575eaba51267a9135e8b1b8ff5d704441f285b3"
+        },
+        "predecessorGitBlob": "3864187c88015c6eb56e3d39f8fcba5b84aa9501",
+        "successorGitBlob": "2207b6fb187d0c74ac83d1a88ec14610b0da7462"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryPrimitiveReferenceTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryPrimitiveReferenceTests.cs",
+          "bytes": 3731,
+          "sha256": "7d0e989dc826b58ed30cdff410903cf8ac47c91e93629dc5a84fcdfa1ef2ec9e"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryPrimitiveReferenceTests.cs",
+          "bytes": 4156,
+          "sha256": "08dc434433b34d15921589846725f66d1fe68a95bc7af8c6e5d33e96b8291cff"
+        },
+        "predecessorGitBlob": "bd7f38b5d8c9278b492a6a99924fa88f58491825",
+        "successorGitBlob": "be7d2a029f30a395a0e48f0d6f083d9723a38bd4"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryTaxRegistrarMetadataTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryTaxRegistrarMetadataTests.cs",
+          "bytes": 35193,
+          "sha256": "70291e55b6953c58f53e82bb36ef1649cb9358562f26e133f28afb8810f60bf7"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryTaxRegistrarMetadataTests.cs",
+          "bytes": 35363,
+          "sha256": "8b76cff8845d02b3725f10b5ce2fac287a44e0c3fe82280ead9fe7bafc8ea695"
+        },
+        "predecessorGitBlob": "6c6e59cffb782b3583203087a421bf36bb90f196",
+        "successorGitBlob": "99add5a80bfc5e52f8fd5dc004930c8dbfebb68b"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryTaxRegistrarReferenceTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryTaxRegistrarReferenceTests.cs",
+          "bytes": 17815,
+          "sha256": "54ea20197ba3fe01cf631f4ea9172e2e6fc797b23aa2bf731aef273382dd9ef3"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryTaxRegistrarReferenceTests.cs",
+          "bytes": 18301,
+          "sha256": "4125b982c43d5c04847629a2660f15cff1b8a4176efd301048544d543d909d10"
+        },
+        "predecessorGitBlob": "d5f21788d3cc82522e90495f44c7b726b8f81b9b",
+        "successorGitBlob": "f6883576e5e75a2e5c48b5ab086d82b5f644918a"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOriginalNullBoundaryTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOriginalNullBoundaryTests.cs",
+          "bytes": 1257,
+          "sha256": "124832b4fcecb58c2f46b9f7cc4eedd442b7ab9bcd6d896055e873f6be8c26ec"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOriginalNullBoundaryTests.cs",
+          "bytes": 1998,
+          "sha256": "4fdc1398f53661aba5c97630af2ce9f18eedc7d0dd50cff835224ba95a59e7ab"
+        },
+        "predecessorGitBlob": "4c64a5f6506ebec2506953bbea5a3e40c3af0ec5",
+        "successorGitBlob": "a459dd132b9d38172cca7f38a06e79ba6d223262"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxOnlyHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxOnlyHttpTests.cs",
+          "bytes": 9572,
+          "sha256": "14a8b7139444d71d9a5bf6e955876c0bcbd230a3f63bb4e1c1c08225db5cbade"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxOnlyHttpTests.cs",
+          "bytes": 11640,
+          "sha256": "ee521a0794c38aa8f55197ed948e90abd2aeb195557710a9381d8f45b62d71d9"
+        },
+        "predecessorGitBlob": "46f53f94ff0f405d20ac06131119696cadd2c2c2",
+        "successorGitBlob": "cf2261f425fad278239e927b46dfeab7580adc3a"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveOracleTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveOracleTests.cs",
+          "bytes": 24177,
+          "sha256": "6e015c495dd2387d9e1d0b608b70e789c4449be764f6c53538260544f994563c"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveOracleTests.cs",
+          "bytes": 24684,
+          "sha256": "f710c36d4d6d6920e62ee6893b5973e6e8f92dc61480e4c392202ea497894294"
+        },
+        "predecessorGitBlob": "0fb6bfda4100c4e854a0b1d336d04bd7cdf62ca8",
+        "successorGitBlob": "53c5be555decd7d4f1b98fc4b2e060b03c745551"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveStorageTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveStorageTests.cs",
+          "bytes": 8959,
+          "sha256": "d9812622cce23d298c1be9c1d806dd99f90feb92924a37ee75e997648315f866"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveStorageTests.cs",
+          "bytes": 9638,
+          "sha256": "adc0161bdc0bfc9a409058f5644396405b061145fb6a406479417a80587fe770"
+        },
+        "predecessorGitBlob": "3c269a6c08acb541e541fc46f50cb884fbef0201",
+        "successorGitBlob": "f21a2af33474d70ba4b0fba315c1a38172e4f723"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressAttachmentLifecycleHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressAttachmentLifecycleHttpTests.cs",
+          "bytes": 7742,
+          "sha256": "f8bc39206c5ae56c48deef7ad3f9747eec12c9fd4140c4c44fbd884d00e9efc0"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressAttachmentLifecycleHttpTests.cs",
+          "bytes": 9523,
+          "sha256": "7ca9c16b7cd7395a124929ccf321f92f0d8aba96de387b4600647fa4cd61fbc2"
+        },
+        "predecessorGitBlob": "688a5d378d098a990571b766950218ed03015dd3",
+        "successorGitBlob": "7ef4d5e82182757d046149adae5eb75c6f507684"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressLiteralLineHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressLiteralLineHttpTests.cs",
+          "bytes": 38370,
+          "sha256": "a8ed5e37ccc50ddb9bff19ae1054fc69e926b352e6d30f84d29ee935d26a16a0"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressLiteralLineHttpTests.cs",
+          "bytes": 41935,
+          "sha256": "50b68a4cd9d4f3704fb8c80c762acd233dc9c214faff646f5a309c767edcd1f7"
+        },
+        "predecessorGitBlob": "5cafed8ce7e1410b9d211296fe8f0c6d21eca118",
+        "successorGitBlob": "99cd3274b5377e5760eba72d525e854edf79008d"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressOriginalNullBoundaryTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressOriginalNullBoundaryTests.cs",
+          "bytes": 3795,
+          "sha256": "6da0b0d6d491c3a11be405e4006b8d5824b3280c35ed0c9358665628c57128b2"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressOriginalNullBoundaryTests.cs",
+          "bytes": 5192,
+          "sha256": "050ca8e47808803a5676716e60b699099343515ff075fbd1ccdcda764c704dd7"
+        },
+        "predecessorGitBlob": "aa584331d484e949c836c7bb5bdef566e4b7b871",
+        "successorGitBlob": "a9f430174ef7840fa6e6835925cdf8a7013a3696"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressPersistenceHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressPersistenceHttpTests.cs",
+          "bytes": 9594,
+          "sha256": "356d115ccc3f90676bf558e72a2bb0ba41590c0008c04f6cf0cbe357576b9608"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAddressPersistenceHttpTests.cs",
+          "bytes": 10593,
+          "sha256": "c9ee9ffe85ee0e57378acf19bb7cf29734db12d7dc85648eef2c7c1718e25a6f"
+        },
+        "predecessorGitBlob": "13dc62bc1b9b1759bb54e2cfc30f7dc3195dda22",
+        "successorGitBlob": "53442683bd8b47965d49af62332f64bde3e8fe7f"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAdministrativeEmailComparisonHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAdministrativeEmailComparisonHttpTests.cs",
+          "bytes": 18557,
+          "sha256": "a9cde5118f87d845d9770e9803ea410c1356623f6508303cf87d4a9c7e6705b3"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAdministrativeEmailComparisonHttpTests.cs",
+          "bytes": 21935,
+          "sha256": "7bd2fe8e1008ab8da76c0783d3c552e49e846e0bb3cceb4efffe7f202a9ad318"
+        },
+        "predecessorGitBlob": "644eb26cfddfe48ff6d63dad4306eb5b0982a16d",
+        "successorGitBlob": "34c93fbad98eaa2c9437d1e41536b1a13b299a57"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAdministrativeEmailLiteralHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAdministrativeEmailLiteralHttpTests.cs",
+          "bytes": 14261,
+          "sha256": "fa1698387c1f78fff7c38f3b72e83e2c7b00d2544dcb7874b3d076c90cf389be"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAdministrativeEmailLiteralHttpTests.cs",
+          "bytes": 17013,
+          "sha256": "2d2b7016e63ef840ce4c92a140b06bc799af69a7ca6ccd12f7bfb3ae83ccd969"
+        },
+        "predecessorGitBlob": "916a66d9266ac57ff544fdbb2bf5fd950b39c9f3",
+        "successorGitBlob": "33b86a9b515195f92b1e11750cea00693e8621ff"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyFieldPrimitiveHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyFieldPrimitiveHttpTests.cs",
+          "bytes": 31911,
+          "sha256": "e554b1f2e142b4929d6f38a0127f61120536500782681b22fc9ec046043a40ea"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyFieldPrimitiveHttpTests.cs",
+          "bytes": 33342,
+          "sha256": "64c88de4e5f7de4f724651e1a4eecc4635459e7a2e4eb86784797b33acba75f6"
+        },
+        "predecessorGitBlob": "d0938653c9e82586d6a6e2bcb3a05522ae517f00",
+        "successorGitBlob": "420e3b93394100e926c1cfa10f3e469d9004dca5"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLifecycleHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLifecycleHttpTests.cs",
+          "bytes": 7238,
+          "sha256": "4a384a1cf8b7c27d2f3f4420224761f8e95524ec5fd4670870eb509e65fd9575"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLifecycleHttpTests.cs",
+          "bytes": 8846,
+          "sha256": "ad611c0c91da214c4a88d47957a84c9991c33a1aab13e48bc4e6da3b2c6025cc"
+        },
+        "predecessorGitBlob": "21e8172416c4dc2b55be31e7a3fec3ed5dab8f54",
+        "successorGitBlob": "55247140b7b1402a5e06acf617b4dab93c63b0d9"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLiteralNameHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLiteralNameHttpTests.cs",
+          "bytes": 17727,
+          "sha256": "4ee7555694c46b99b60f942a967cd802422c80e8d036fc23620fde3fb33e6eeb"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLiteralNameHttpTests.cs",
+          "bytes": 19056,
+          "sha256": "8fae5c6c10715873e6d1d4a91fbe6fb5f5fee1c17a2870ec511f574f2ae379cb"
+        },
+        "predecessorGitBlob": "e3b90c530b4d34d6c2e074457623640be77fcc62",
+        "successorGitBlob": "b6a866887938ef2e6f1e314128625e1c710551db"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryDuplicateNullHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryDuplicateNullHttpTests.cs",
+          "bytes": 40525,
+          "sha256": "9e9c81daaf479b4d11dc8b7a8a71f7230af3a009a082680a9fe1fd874901e2ae"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryDuplicateNullHttpTests.cs",
+          "bytes": 42436,
+          "sha256": "fb666cbf4fc75d279d543e560f215c307f29bfa0185a684632a4b76557770915"
+        },
+        "predecessorGitBlob": "92ef1b88bf6896e8ecdac47a3bf624aa72151c61",
+        "successorGitBlob": "3d58790cdb226bcdb6ebe26b0d68bdff63b7f805"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryPrimitiveHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryPrimitiveHttpTests.cs",
+          "bytes": 13644,
+          "sha256": "6e8737e1afd223d643b8f05a0720d104528158639fcc34b5a858abb7c289dbd6"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryPrimitiveHttpTests.cs",
+          "bytes": 15005,
+          "sha256": "a4a9b4f45aacb966479df2e3a5d9da7677e14333366188aa3bb383f714af7f0a"
+        },
+        "predecessorGitBlob": "a16add0c0a76aaabf5a2e30d3e5d3b403867a5d8",
+        "successorGitBlob": "56aab5aa87cc6c9055be8b2d512a6c8c35e6c3f5"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyPersistenceHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyPersistenceHttpTests.cs",
+          "bytes": 8394,
+          "sha256": "1c3ec6c3404d30852724600debbf0b0de411692a5cef6624213f34d8e35f0ecd"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyPersistenceHttpTests.cs",
+          "bytes": 9376,
+          "sha256": "d8859969862abe450cf54a7a61125a4e82730d1c5eee156c547d75547a74f77d"
+        },
+        "predecessorGitBlob": "7d2d85bd86d8ecfb4e1b8a189e458b9d44e9f2e0",
+        "successorGitBlob": "ebcf278447a62d127977cc4339796d08c657530d"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyPrimitiveNameHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyPrimitiveNameHttpTests.cs",
+          "bytes": 8944,
+          "sha256": "204e952c42a4bd56d892c54f3866f9381d781953ff5e04b99e289f523c7a15ff"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyPrimitiveNameHttpTests.cs",
+          "bytes": 9904,
+          "sha256": "e6cfed35f6da4ad2b916c6595be8f8fef92c8378621ae77bdc32d9bd04288b86"
+        },
+        "predecessorGitBlob": "f218d51c6b9e38f6fe60f93958f119e60193e663",
+        "successorGitBlob": "0a58f5fa0071c34787420d2e4f3a38eed9e36158"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerControllerContractTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerControllerContractTests.cs",
+          "bytes": 4811,
+          "sha256": "e2053170e1e1f487870a71b5a66119a633f7fe68a189152ac01befc897c48a22"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerControllerContractTests.cs",
+          "bytes": 6117,
+          "sha256": "585e6f71d09ae11af9ec6fada5d739c2b5aae33af2ef7ac60ecceef5b9315ba1"
+        },
+        "predecessorGitBlob": "106a0d5d84c18023efcdc600dc6102a951c68c09",
+        "successorGitBlob": "e502547f998c8d4d01ba182c66d19ea72e47c7cb"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCrudHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCrudHttpTests.cs",
+          "bytes": 8523,
+          "sha256": "bdd2883b071f697db7ee38fd5079dc35112c4275d7edce4f3e81c71e04091415"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCrudHttpTests.cs",
+          "bytes": 10125,
+          "sha256": "fc2c2d8ad57e382b59a8471c106f66249324e3cc7fae54d5f120c0954984d281"
+        },
+        "predecessorGitBlob": "0ce340f36b6fcdc1b2c21b7b50eefc1a885fad8a",
+        "successorGitBlob": "cfcc05c36547a9f1d179924896ea0276309c9b27"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDefaultPageHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDefaultPageHttpTests.cs",
+          "bytes": 22988,
+          "sha256": "2884283608b57c31d4ad7302094a695d372538e5746198846afa85f7c20059ec"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDefaultPageHttpTests.cs",
+          "bytes": 27431,
+          "sha256": "a2b7474cb99627db777d3b8ec044ae27986c78833baf2e352451322cb07d9685"
+        },
+        "predecessorGitBlob": "3b2a9cba4f51f404c67fc35af8a3e9c4e7539a7d",
+        "successorGitBlob": "cf5e0d522bbf6e14d98e5a059e6a823a4d3b55dd"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDetailAuthorityFixture.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDetailAuthorityFixture.cs",
+          "bytes": 10630,
+          "sha256": "a2e55bec498b515f399f0a324b4346cd775c239e0b7eb8ba025c7df022751b3b"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDetailAuthorityFixture.cs",
+          "bytes": 15413,
+          "sha256": "25ae6d6bcc8ec896e9218244a7988afdf558747d721e8df0aaa3fcbb7bf99562"
+        },
+        "predecessorGitBlob": "b24014342d9ddd324a2ba16e7ed29e8f6865eb95",
+        "successorGitBlob": "27ec93a00268112611980808ebcd7a59f3dd1bc9"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDetailAuthorityHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDetailAuthorityHttpTests.cs",
+          "bytes": 9724,
+          "sha256": "ee0af598d8455b513440d2874033bdca73e2fa86b380626d73af6a30ad26e618"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDetailAuthorityHttpTests.cs",
+          "bytes": 13082,
+          "sha256": "06bfaf293fc6ed188729dcada83557333762a454b0c9355291c4d87d0a788266"
+        },
+        "predecessorGitBlob": "5b9b13913b1d1eabb2bea181869a19afc5391d93",
+        "successorGitBlob": "e4e2067d0334acc337c3418772ed065cf222ffca"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerEmailAmbiguityHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerEmailAmbiguityHttpTests.cs",
+          "bytes": 6181,
+          "sha256": "9d01e6334dd47b5909dcd4f5684df9f291a28e5a1f098e2a988b0194bceb5fcd"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerEmailAmbiguityHttpTests.cs",
+          "bytes": 8128,
+          "sha256": "ea4633b42a774f3e3463a3f171d9d8c8833c8f6d3ec9be9ed44ca635f9d1119d"
+        },
+        "predecessorGitBlob": "d83894e6b261dd048bc789235ced2df60b1da8d6",
+        "successorGitBlob": "f6f223d1fcfb631499ea2bd0b0e499a07e02591b"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerEmailCanonicalCaseHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerEmailCanonicalCaseHttpTests.cs",
+          "bytes": 17206,
+          "sha256": "c68d1de3758cf66935eb3f0f5f86758c90e69b1f83f95389ce7feccf435a9f4a"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerEmailCanonicalCaseHttpTests.cs",
+          "bytes": 19962,
+          "sha256": "23989479e178b0a0b5628f00578ec3ca163f6568e69ab360bb8a807be39d0483"
+        },
+        "predecessorGitBlob": "6e0ddbc67a43d15a099b0f76aff1713d5a9ba818",
+        "successorGitBlob": "c119e0d87b8a236bd91539a004fd4229c4323188"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerInternalRemarkValidationTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerInternalRemarkValidationTests.cs",
+          "bytes": 1550,
+          "sha256": "f089677531276a2a607f732ab64ad57c7a7c9750ed9feaa44e4699f2c2c78e9c"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerInternalRemarkValidationTests.cs",
+          "bytes": 2039,
+          "sha256": "dc5d04378aee1588b238d38456a3f10f218dc015cf1bae32903320f93c6e3bb9"
+        },
+        "predecessorGitBlob": "e957e2b87fb29bf8eb3dc769ffbf4f4cd71d6ee2",
+        "successorGitBlob": "d719cc662723f4298cbfeaa6a40f62bec1edf677"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerLiteralSearchHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerLiteralSearchHttpTests.cs",
+          "bytes": 7646,
+          "sha256": "4b25ed7eb16b4618c70ff502264b978a0964154bc1013030dd2df2e7e07fd044"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerLiteralSearchHttpTests.cs",
+          "bytes": 10420,
+          "sha256": "aad7ea43c666eaebf5aa7921aac1742bb6a804785dd48cb961e8b5cc12c7439b"
+        },
+        "predecessorGitBlob": "51d1283972288dc4a5d2321a4674f50ea0135d20",
+        "successorGitBlob": "420f833c8ece6ef507e41031126c8fa8a0d211be"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerNameBoundaryHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerNameBoundaryHttpTests.cs",
+          "bytes": 8803,
+          "sha256": "64580a726b6ef7c8cbf3e9c1f1c27c39dde0b9cae7c7fa5349b1138e0883818b"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerNameBoundaryHttpTests.cs",
+          "bytes": 9566,
+          "sha256": "ed3a8bb8e2ef3698ac6fd0bab63e4830e1c591394207100a5bcb23b41b031f61"
+        },
+        "predecessorGitBlob": "cefc432500025df9fe95c6d16c20f8e908d8bbd7",
+        "successorGitBlob": "bd82117b149cdd0db2e7913748930adc377451a6"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerNameLiteralHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerNameLiteralHttpTests.cs",
+          "bytes": 28478,
+          "sha256": "455f13553cacfbb3da04408c41e970fbb044f409590f81c480d817f826b2802e"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerNameLiteralHttpTests.cs",
+          "bytes": 32296,
+          "sha256": "709f99eab651948736c7f43f5358f9da7133d19a2bbd919ee0b4a8514f2dfc98"
+        },
+        "predecessorGitBlob": "c62005881850f3ba61faa70bb70063f9753a5bd9",
+        "successorGitBlob": "749a2d4ad676ae11a9f606c0ae7d516bc14f1227"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerOptionalContactMvcBoundaryTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerOptionalContactMvcBoundaryTests.cs",
+          "bytes": 54566,
+          "sha256": "5b4d045cd5e480c76436b627dd2b90bcf051851dda356fbe1d6c8407364f3fa0"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerOptionalContactMvcBoundaryTests.cs",
+          "bytes": 57946,
+          "sha256": "4569a27baa7aa22a6e499fa5c926f240d3b04e981f481070c5594d09e4612737"
+        },
+        "predecessorGitBlob": "cb552bf4f6890104f6488ab83da194227ebe430f",
+        "successorGitBlob": "eaccfa34b2c14f0dc1f28d228c2a3468ac60087b"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerPrivateRequestObservationHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerPrivateRequestObservationHttpTests.cs",
+          "bytes": 20824,
+          "sha256": "7165c0c362f14586629ba760049232685785a072ec1b7b6660d8f0f4c97b6c30"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerPrivateRequestObservationHttpTests.cs",
+          "bytes": 22649,
+          "sha256": "a0fdbd30ea11bd99d6103dee13bc2606197e43a578f31c6ce339b564cc132e1c"
+        },
+        "predecessorGitBlob": "f452314272613a9894a2f50b0786ea16ce043546",
+        "successorGitBlob": "8549fe44d2de8f2fd4bd5b07bb78c9f44dfb71e6"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerProductionPipelineHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerProductionPipelineHttpTests.cs",
+          "bytes": 4921,
+          "sha256": "c5d3a2ea24732e95f24430dd7a426a64f93405c85a6c701bb0113456b87f01a2"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerProductionPipelineHttpTests.cs",
+          "bytes": 6226,
+          "sha256": "2ed778b2630eecda79bf3662bab1b7a8b35edfb0dd2c9661989a46d3d641cc36"
+        },
+        "predecessorGitBlob": "c292f5d5f0c797f007c17a628eef60d9f9677261",
+        "successorGitBlob": "6cd8cec6796e70d9b862ffe7bce6d25b33a00f92"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerProfileDeletionIsolationHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerProfileDeletionIsolationHttpTests.cs",
+          "bytes": 12814,
+          "sha256": "26f7a828414b2560747f7d8eb11ad2fda67c84038a96d62e5258ec91eaf9d1df"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerProfileDeletionIsolationHttpTests.cs",
+          "bytes": 13447,
+          "sha256": "39a5ad1c35c1afd0c3851f7bc3108cb55aaf37897a4808e4aba0a7f275692f47"
+        },
+        "predecessorGitBlob": "e4fd92ea13ce10648f0130bc32de713bb204fbc5",
+        "successorGitBlob": "f33786ff5f046d096a9eb7d7dd6188cdc487e5e9"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerProfileLifecycleHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerProfileLifecycleHttpTests.cs",
+          "bytes": 11068,
+          "sha256": "00b26792c325ac9fbdd15fa485b570fad200540144888a801a9567927c1cdcf5"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerProfileLifecycleHttpTests.cs",
+          "bytes": 12902,
+          "sha256": "778c88dc380513ba702d4e671e8c49467115004bd6b4069f865b9c9493dd8d8e"
+        },
+        "predecessorGitBlob": "40ed038ac517dfffeaacdd62664fbc42f80f9d4d",
+        "successorGitBlob": "132c63feca15724500c77888c5ae744dd099c911"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerRelationshipFailureHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerRelationshipFailureHttpTests.cs",
+          "bytes": 6547,
+          "sha256": "406d9d461bc34e33f325aa77ecd3dc56d3b932470245615544c8ad2bb6d9a014"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerRelationshipFailureHttpTests.cs",
+          "bytes": 7980,
+          "sha256": "7b525d7326bbd4569820bcd4958b968b8b241ba4598ace8d7a4683902e8babbe"
+        },
+        "predecessorGitBlob": "83ea573693aa184c61913ac7379519a0376b0e92",
+        "successorGitBlob": "b53975d36dc4fd85f130b39508cc9c027a421e7e"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScaffoldRuntimeProof.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScaffoldRuntimeProof.cs",
+          "bytes": 24662,
+          "sha256": "85b96d50c2591f7224e46d482192f29d14cb9f5c28d31d4aa7c202dc38b6c536"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScaffoldRuntimeProof.cs",
+          "bytes": 24777,
+          "sha256": "314b8cd1ad989bba8bd2ad971aba6ca8e6e9d0dd4e7ba13ff052b18d4fd92b2a"
+        },
+        "predecessorGitBlob": "a0232a3f3d5cf218d24675b6efe4af0b8868d538",
+        "successorGitBlob": "62ab1dc6c570227c43053139e8a416418b680750"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScopedRelationEditHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScopedRelationEditHttpTests.cs",
+          "bytes": 37114,
+          "sha256": "de85f9d4451ff68b88283c1e8c8d337d5b3c0433fb8e04953a21a0d8a39e38b6"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScopedRelationEditHttpTests.cs",
+          "bytes": 45421,
+          "sha256": "a4c5641bb67e6b45a9b4e46e17249a295228194f7e63a86acb8ff43b328df4cf"
+        },
+        "predecessorGitBlob": "af7757351bacfc3492a4f14f36cadd2b3a9cdfe2",
+        "successorGitBlob": "e1f87fec2b0e3d8ebcf241f6133770cc14d16bee"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerSharedRelationshipHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerSharedRelationshipHttpTests.cs",
+          "bytes": 10107,
+          "sha256": "ab67507733ba4e3a948f339ea04b91767d3b3c5638f78b7e7e1494f6968ce1a4"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerSharedRelationshipHttpTests.cs",
+          "bytes": 12399,
+          "sha256": "8b3d9afa1c3a10e52dd58022ef6531296041f6624112d26ed42f465a99ef46f6"
+        },
+        "predecessorGitBlob": "e263ba7a19050e5701f5315877c4a9c865e2ea39",
+        "successorGitBlob": "53a678c6cd63cb557452c71a281bb4fd041538e0"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerSignificantSearchHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerSignificantSearchHttpTests.cs",
+          "bytes": 14952,
+          "sha256": "c60ad6b6ae716f2350597a68061839f44208e08af6425bc974719d0a006f9336"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerSignificantSearchHttpTests.cs",
+          "bytes": 17734,
+          "sha256": "fcb7999d1762b5590e3a53f92737a4bb2ef5a3abe67742399660934eb9e743a8"
+        },
+        "predecessorGitBlob": "e7e897be22e803c06ec29eaf9297ae42acd8ed99",
+        "successorGitBlob": "257f81bef7e736ed2d083887c3e189418f7e46e9"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerUnhealthyReadinessHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerUnhealthyReadinessHttpTests.cs",
+          "bytes": 3847,
+          "sha256": "7019bb8358c5480647f5aa666ad88fe1c3c0d74372a11cf74e65785ae0148930"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerUnhealthyReadinessHttpTests.cs",
+          "bytes": 4561,
+          "sha256": "5de2833c5f08afa14f3203462dee3d1ef4e96306a8b97cef1234c64d53bf3196"
+        },
+        "predecessorGitBlob": "a4f797bebe8c82e5056cc9dc35bd98ce8c5f62dd",
+        "successorGitBlob": "741ff8eb259052f98d457280d25db799635e8ba8"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerVersionedAuthorityHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerVersionedAuthorityHttpTests.cs",
+          "bytes": 5040,
+          "sha256": "aca7ac0dc7ae40b9da96b40dd4f40b39dcb56a65aa68d5a27ea9502755f1a287"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerVersionedAuthorityHttpTests.cs",
+          "bytes": 6479,
+          "sha256": "a8cf53a523d0728c9f213833c5db6b30f223530073550ca3bbf7539d094fb6ec"
+        },
+        "predecessorGitBlob": "5ad49514458d134f5a2f575efaa4aef5b9ec8d6c",
+        "successorGitBlob": "5dfd266140b2c2f5a76488e1589c7b2a28abe969"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/ExceptionBoundaryContractTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/ExceptionBoundaryContractTests.cs",
+          "bytes": 2973,
+          "sha256": "463826fb48d3575c1f9b8be579d6d6ac9c4644dde155cd0d60c99a3729a74531"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/ExceptionBoundaryContractTests.cs",
+          "bytes": 3405,
+          "sha256": "e2d210551f53932d46cdca2db0b7784e56a0064bccd2d7c950932d4dba3eebaf"
+        },
+        "predecessorGitBlob": "15a09eb3d431b2825108e237782fe29e5b5bae63",
+        "successorGitBlob": "b1b0c9c0384d29d21ae4aee47cdb7de72b780b96"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/OrdinaryAddressPrimitiveMetadataTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/OrdinaryAddressPrimitiveMetadataTests.cs",
+          "bytes": 3805,
+          "sha256": "e4d45d1f446ebab99b8019bfe1e50a46d6972c63f5b09deff874320231699a15"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/OrdinaryAddressPrimitiveMetadataTests.cs",
+          "bytes": 4067,
+          "sha256": "bc8c93a152ac73e877abf9485bf80433790419a5748ae9c85edf45f84e372760"
+        },
+        "predecessorGitBlob": "9ee3c9432a87e11dde29ddf0d25aa3b53c7b1c7f",
+        "successorGitBlob": "5bd295f6807c257662ff3a683d3cfc440f1384e7"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Controllers/QuotationProfileCompletionHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/QuotationProfileCompletionHttpTests.cs",
+          "bytes": 43866,
+          "sha256": "377548beab815860a66694891bc23292fe6ee5075e72c97ef2b836d9debdf6a0"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Controllers/QuotationProfileCompletionHttpTests.cs",
+          "bytes": 50490,
+          "sha256": "0b3a2c6ec6642783c75c2313faba5a8bff26cec63264854ea8b77849945a43f0"
+        },
+        "predecessorGitBlob": "fed9c2195a56e6f9118ae2a645a47b7b79d6ac07",
+        "successorGitBlob": "6aecfc1438de1b528122089dc844354276211ed5"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/CustomerJwtExternalizationTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/CustomerJwtExternalizationTests.cs",
+          "bytes": 6061,
+          "sha256": "a95e925d3ec7ec915567426d7b859a9ab53157b35c6ce8c32fb8264d2df17797"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/CustomerJwtExternalizationTests.cs",
+          "bytes": 6621,
+          "sha256": "422018339d0f08c296a8cc83a011308d2b7bd7a4ac31483dba5883ea87e29afc"
+        },
+        "predecessorGitBlob": "3e0fa5a40a040a42db9e2b14427b9d4e34a6da72",
+        "successorGitBlob": "2d831cb5cec710372196f5eaa51c8a909924bdbb"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerCreateReplayPostgresTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerCreateReplayPostgresTests.cs",
+          "bytes": 9265,
+          "sha256": "aed7c348e0bbd9339e1b1d1f5857db23e3db14582c2ee7d58294c8189aff0d17"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerCreateReplayPostgresTests.cs",
+          "bytes": 11607,
+          "sha256": "6b94eca55ab2febfec822e05237de2ce2326e74e71bdca6156761de5c218caeb"
+        },
+        "predecessorGitBlob": "ff6e40539a1d26eafa98aad2cdd9bd844801b587",
+        "successorGitBlob": "33185cf3f53b4c4852de192261cf844b8234dcb8"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerCrudPostgresTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerCrudPostgresTests.cs",
+          "bytes": 9523,
+          "sha256": "79a45a7ebac611be024324332ab2484e3b88fa6aeb5086de1d2a5c47bfa521f1"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerCrudPostgresTests.cs",
+          "bytes": 10828,
+          "sha256": "b3c89e4d8b1ef9beb0af0a07243dd81a10287ed1f63e2d927fb975bab5f572a9"
+        },
+        "predecessorGitBlob": "0ee103352523da862b32e28e200bdcf9b4101f34",
+        "successorGitBlob": "dc2e57fb8e868274e279b8655a2edaec6b20bd4f"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerModelCompatibilityTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerModelCompatibilityTests.cs",
+          "bytes": 4370,
+          "sha256": "1250f5a64e9fa10f14c724f8354d4225d8873612a67be8410c632b7d1336aa78"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerModelCompatibilityTests.cs",
+          "bytes": 4872,
+          "sha256": "634d0f63ad7104142b4358a7840a8301d77bf18a3be6563003713ea5389638cd"
+        },
+        "predecessorGitBlob": "dd68a342742b5f9289ff3bc6a2ea7eab28ecc1b0",
+        "successorGitBlob": "19f326b6f142f0dc30459376c3cabaafb9af4966"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs",
+          "bytes": 16913,
+          "sha256": "95754ad29bd5e3e94392024d647c7ea98c3e0c67eb38a8eac93db07666fc953b"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs",
+          "bytes": 20514,
+          "sha256": "67bc3b667fff19c59f4f1a7f0afe1239ff927160615a684c7f503342d1249285"
+        },
+        "predecessorGitBlob": "68bb634fb46441da9d3eab5cd1ee21fc50add5c9",
+        "successorGitBlob": "83a6dab1bc42298bd7eb24a89aa407f16ad0bec6"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerRevisionPostgresTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerRevisionPostgresTests.cs",
+          "bytes": 8700,
+          "sha256": "56deca6fd593c0e41de3d144f9ec3683b36ac35676bc291bc778ee860253f8a1"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerRevisionPostgresTests.cs",
+          "bytes": 10252,
+          "sha256": "fc061271fea46419b733a48ac0dd13c3c3fa2214c71959cad81248a517a1a5be"
+        },
+        "predecessorGitBlob": "0bb2dbdea6ed0a6077466b0ce31b32d3fc0c922f",
+        "successorGitBlob": "c19a4e72ad845f79dee2fd12aa6a431710853550"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Data/QuotationProfileRetryPostgresTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Data/QuotationProfileRetryPostgresTests.cs",
+          "bytes": 9216,
+          "sha256": "7f4c4a380e1ffa53ba1a8b7ba3a7018f6c163fbe548d56368cd390ad8fa905ad"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Data/QuotationProfileRetryPostgresTests.cs",
+          "bytes": 10956,
+          "sha256": "6c0b2ae77397d87be1e1c29e23822052b5086d41076be58d847b2d3ac9faedd2"
+        },
+        "predecessorGitBlob": "d446ff6a5432a9378a46c82eb99f6de5f345b845",
+        "successorGitBlob": "195d7f0e20d2b1985cc83d9308e14165f0f9511c"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Documentation/CustomerDocumentationHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Documentation/CustomerDocumentationHttpTests.cs",
+          "bytes": 6829,
+          "sha256": "365f21b0d2927712ab3f2129261f41fc0ca163e9ed4e3d0ebd328eab58d206e5"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Documentation/CustomerDocumentationHttpTests.cs",
+          "bytes": 8594,
+          "sha256": "b5d4fd3b71ba367286b84fd8f40dc59296e56775590d66ae80138a5d4bf96d94"
+        },
+        "predecessorGitBlob": "156e15a9b788e84e310092fef113179b6a0c2a3b",
+        "successorGitBlob": "bcb1e1d1f56d93897d127636527bcbb660f10517"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Documentation/CustomerGeneratedDocumentationIsolationTests.cs",
+        "kind": "new-xml-output-regression",
+        "predecessor": null,
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Documentation/CustomerGeneratedDocumentationIsolationTests.cs",
+          "bytes": 3151,
+          "sha256": "a904a8a72cf551ebf4681a45294c80e4c2d8956ff6ed92abd72354f6d284fa8c"
+        },
+        "predecessorGitBlob": null,
+        "successorGitBlob": "ca1448dc4fc7caade6b3ff480edc7c3709cdcd06"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Legacy.Maliev.CustomerService.Tests.csproj",
+        "kind": "positive-xml-generation-property",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Legacy.Maliev.CustomerService.Tests.csproj",
+          "bytes": 1683,
+          "sha256": "f1ddd92dfc670c05789da0da123b8f17801b70261d9e633d161d92ffa895deac"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Legacy.Maliev.CustomerService.Tests.csproj",
+          "bytes": 1747,
+          "sha256": "4f4b565bd7861f45fc390eef75d78351c9a4150a6784507202f12f4ca27e75d6"
+        },
+        "predecessorGitBlob": "c11cdae3e0d6cc02053ae1eeb64a6d8d9065bba9",
+        "successorGitBlob": "c80f41652fdcc98e94afe94b662c57311c6090a3"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CompanyOriginalBodyReaderTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CompanyOriginalBodyReaderTests.cs",
+          "bytes": 45649,
+          "sha256": "d687150bd58498e0a57935faf35a753a2e8acf2b988201dd4cefd8c3dba48bb6"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CompanyOriginalBodyReaderTests.cs",
+          "bytes": 48983,
+          "sha256": "c36a4e17d2368b1e49f8ee30fa7e4d897e79dfb64c3f5651c220680c2c22de4c"
+        },
+        "predecessorGitBlob": "5b04308c8b93411274cd3cf50746efc4c043da7f",
+        "successorGitBlob": "e9c6703268b98c3d336fa2215261ac5288106083"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CompanyOriginalBodyResourceTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CompanyOriginalBodyResourceTests.cs",
+          "bytes": 17435,
+          "sha256": "7c930a8d2a80bdbcd12435fbbd6a9d0e30c7b9dfbd678c0d9a7aa0648d8cdafa"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CompanyOriginalBodyResourceTests.cs",
+          "bytes": 19846,
+          "sha256": "782fc453e5d2aa0e6cba760227cabfedcc380790a4a82bc7e7aaac3ea4dec52a"
+        },
+        "predecessorGitBlob": "7d081e86137e3ea28ad102dd68900f6955cd1586",
+        "successorGitBlob": "433af6f7078812da85668c4ac335a852e0c9c84f"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CompanyOriginalEnvelopeHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CompanyOriginalEnvelopeHttpTests.cs",
+          "bytes": 15105,
+          "sha256": "a831e9d49d36e0eac5540462085363897be46e58468626b8e8f74f18ab7b7108"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CompanyOriginalEnvelopeHttpTests.cs",
+          "bytes": 17583,
+          "sha256": "b080d181ae3e6931264d015d432192c8f79aaf5630fa5fdb695f6f4bc292ed4f"
+        },
+        "predecessorGitBlob": "d0a0bfd8d8b5427b71bc6e7090e71a84e330cd8a",
+        "successorGitBlob": "14a77403002818da6273927c7b4b033135ab06d2"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CustomerAddressOriginalEnvelopeHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CustomerAddressOriginalEnvelopeHttpTests.cs",
+          "bytes": 12814,
+          "sha256": "6a8f1d87fd108fa305c5037ad26676b7d4e96296e59da756daea07c228e28d0a"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CustomerAddressOriginalEnvelopeHttpTests.cs",
+          "bytes": 15012,
+          "sha256": "b0deee163727e91e5ffffb169c167917b858aadf81ad7457036340fff0c052b6"
+        },
+        "predecessorGitBlob": "9d236700c5dca5548fee180c69550fcb745dcb83",
+        "successorGitBlob": "469d0a9be749a28fbfcb2ea0c72afca3a6d23acb"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CustomerOriginalBodyReaderTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CustomerOriginalBodyReaderTests.cs",
+          "bytes": 37365,
+          "sha256": "cca5dee3d2f7d0c051a6531df9013fe4bba122a003d717b015eed77a38c43b55"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CustomerOriginalBodyReaderTests.cs",
+          "bytes": 42006,
+          "sha256": "daf44de6e1427be5570142dc3e340ea620b2ef8887bdad52cece3c561d8fc4b7"
+        },
+        "predecessorGitBlob": "2ea5441325afb0b1059ac50c5322d28ddd71c2c2",
+        "successorGitBlob": "2843af0e98778ca5489c6e033e0e853d5a689c56"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CustomerOriginalBodyResourceTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CustomerOriginalBodyResourceTests.cs",
+          "bytes": 18308,
+          "sha256": "7db2d8df934afad437a6fbd49068264feec359bc0f67e587e2f39b119e62e38d"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CustomerOriginalBodyResourceTests.cs",
+          "bytes": 21176,
+          "sha256": "4a7bd85e75ef1ad0299a586065a95e6f180f50a5f2babd72e9553e21378866ed"
+        },
+        "predecessorGitBlob": "85f4d5fda03fa4245ea6ffc8a29517618e54bb71",
+        "successorGitBlob": "43fa5051e9727535e9deca38581e5f08aea03aa9"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CustomerOriginalEnvelopeHttpTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CustomerOriginalEnvelopeHttpTests.cs",
+          "bytes": 15060,
+          "sha256": "939b165a848a4b341b6062d49194923a8f2aa177c93b993c439dc9ea972c8947"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/OriginalInput/CustomerOriginalEnvelopeHttpTests.cs",
+          "bytes": 17656,
+          "sha256": "187e791ba6aea7e497fb7374e36338674367ac157d736a9b594dc9404a0ae279"
+        },
+        "predecessorGitBlob": "88146848f2ef098bfb8e6c22c884f2676b0162a1",
+        "successorGitBlob": "56b8a7c10e1a7e1fec3d2f96e27f8f08b7c6183c"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/PublishWorkflowPermissionContractTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/PublishWorkflowPermissionContractTests.cs",
+          "bytes": 2298,
+          "sha256": "e4a1286cfcaa95861735cf869bd021fbaffe680d11310f501a0ceecfd77a2002"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/PublishWorkflowPermissionContractTests.cs",
+          "bytes": 2550,
+          "sha256": "ba565ec6f23ad6ed92cd6ee3ed36996d2d736f6362423201353d564081296308"
+        },
+        "predecessorGitBlob": "2a6868e7df7a1cbdc6a2b59a6bb19287c154671d",
+        "successorGitBlob": "7352d7340ccdf45decd6c56cf51b2d0d8428dc7c"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Startup/CustomerStartupInterceptionTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Startup/CustomerStartupInterceptionTests.cs",
+          "bytes": 5321,
+          "sha256": "d68daa44a58989186a4f9de06052e289b0a115c258844428cade5e2ed7cbadf9"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Startup/CustomerStartupInterceptionTests.cs",
+          "bytes": 6070,
+          "sha256": "e8423eef035572d99fc358080cb4a4eead8fd012b724f6cf95ec90f9c30161e4"
+        },
+        "predecessorGitBlob": "7d73fc5768d6b0f7827a27404a21bcbf31d817f2",
+        "successorGitBlob": "246a4c076c06bb447a8e528fb2893091124caea4"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Startup/CustomerStartupProcessTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Startup/CustomerStartupProcessTests.cs",
+          "bytes": 5350,
+          "sha256": "e8865634ef37a8455986c38222fe022aa8095193ffd3778f7557157271f41ef2"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Startup/CustomerStartupProcessTests.cs",
+          "bytes": 6323,
+          "sha256": "0185d274fe2bd7ada453a9f1decfc95a413690d2a2be8bc74a1b3df7d64ab5af"
+        },
+        "predecessorGitBlob": "a8221dbd4b442accceb9d99adff2443a52a062df",
+        "successorGitBlob": "5651a401f9dcb3128c42a199514423e90babe74c"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Workflows/CustomerRollingAvailabilityContractTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Workflows/CustomerRollingAvailabilityContractTests.cs",
+          "bytes": 16000,
+          "sha256": "53c04640f289d76f0b801e694286d05d851f7f185d14acfdc380f3c4bfe037dc"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Workflows/CustomerRollingAvailabilityContractTests.cs",
+          "bytes": 17849,
+          "sha256": "2eb6eba4d2b3d95852e43065f5a9864eb88379c482cbbcd396dd322cc4582e2c"
+        },
+        "predecessorGitBlob": "53494815a7c2abb8a59124738289f07292140230",
+        "successorGitBlob": "426793575ae7b41c3e279a83f6edc302c5532ef7"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Workflows/DependabotConfigurationContractTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Workflows/DependabotConfigurationContractTests.cs",
+          "bytes": 2443,
+          "sha256": "a4b84cd5a2184e1d5af118c324f81f2b6ae323d7269456506aaaf7ed8620854f"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Workflows/DependabotConfigurationContractTests.cs",
+          "bytes": 2821,
+          "sha256": "d28e2ed7c3c39451d5f4f568c03ad1b577e5909f7a403f5402c7c99ae00da1f9"
+        },
+        "predecessorGitBlob": "ea215f51d4a09c63117516300d20e5dd5eab986e",
+        "successorGitBlob": "a5f9eb5514290b672e4b6b61f354bcca46718f70"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Workflows/PublicationDependencyTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Workflows/PublicationDependencyTests.cs",
+          "bytes": 3168,
+          "sha256": "e72eac56753270bfd4a5042088911470fd53e55cfe11224c2fb26d659146be13"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Workflows/PublicationDependencyTests.cs",
+          "bytes": 3460,
+          "sha256": "3f7b38078735d98b5b35a561d3ca3237fd953e0893cc5eaa57009d3285cf7481"
+        },
+        "predecessorGitBlob": "f0d75abc573c850556b191914db15be3a3546936",
+        "successorGitBlob": "39d4868300c240bf060dfafa91227358ad44fcf1"
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Workflows/WorkflowContractTests.cs",
+        "kind": "xml-comments-only",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Workflows/WorkflowContractTests.cs",
+          "bytes": 45423,
+          "sha256": "198f6fcbd0576c370cd8888b03d66a92ccf8b37c450411850da09026b93ade6f"
+        },
+        "successor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Workflows/WorkflowContractTests.cs",
+          "bytes": 47530,
+          "sha256": "32b0beebd58a8d9d640691206c982a079ab68da4c5f3d92637981bb5b51aab84"
+        },
+        "predecessorGitBlob": "6f0524d9d576fdd352c843209c76458bfb05b510",
+        "successorGitBlob": "ec07d2b5ca2169be1acba9045de3a4a0e4a6b103"
+      }
+    ]
+  }
 }

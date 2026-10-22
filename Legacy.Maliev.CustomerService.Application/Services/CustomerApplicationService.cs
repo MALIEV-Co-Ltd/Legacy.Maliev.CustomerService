@@ -31,7 +31,7 @@ public sealed class CustomerApplicationService(
         int? index,
         int? size,
         CancellationToken cancellationToken) =>
-        repository.GetCustomersAsync(sort, search, Math.Max(index ?? 1, 1), size is null ? null : Math.Clamp(size.Value, 1, 250), cancellationToken);
+        repository.GetCustomersAsync(sort, search, Math.Max(index ?? 1, 1), size is null ? null : Math.Max(size.Value, 1), cancellationToken);
 
     /// <inheritdoc />
     public async Task<CustomerResponse> CreateCustomerAsync(UpsertCustomerRequest request, CancellationToken cancellationToken)

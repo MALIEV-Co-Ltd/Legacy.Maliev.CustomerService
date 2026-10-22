@@ -8,10 +8,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Checks Unicode email case comparison, collision behavior, excluded normalization policies, and concurrent canonical provisioning.</summary>
+/// <param name="fixture">The shared authority fixture supplying isolated customer graph setup, HTTP hosts, signed clients, and cache observations.</param>
 [Collection("Customer profile lifecycle")]
 public sealed class CustomerEmailCanonicalCaseHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Checks literal non-ASCII administrative email storage with canonical lookup and provisioning reuse.</summary>
+    /// <param name="route">The administrative write selector: create, keyed-create, ordinary update, or versioned update.</param>
+    /// <param name="supplied">The non-ASCII email spelling stored with literal padding by the selected administrative write.</param>
+    /// <param name="equivalent">The independently specified case-equivalent email spelling expected to select the same profile.</param>
+    /// <returns>A task that completes after asserting the same customer from both consumers, unchanged literal email and graph, retained cache, and keyed replay where applicable.</returns>
     [Theory]
     [InlineData("create", "École@EXAMPLE.TEST", "éCOLE@example.test")]
     [InlineData("keyed-create", "École@EXAMPLE.TEST", "éCOLE@example.test")]
@@ -82,6 +89,10 @@ public sealed class CustomerEmailCanonicalCaseHttpTests(CustomerDetailAuthorityF
         }
     }
 
+    /// <summary>Checks that Unicode case collisions fail lookup safely while provisioning selects the existing lowest-ID profile.</summary>
+    /// <param name="first">The first Unicode email spelling stored on the original customer with literal padding.</param>
+    /// <param name="second">The case-equivalent email spelling stored on a second customer to create a canonical collision.</param>
+    /// <returns>A task that completes after asserting sanitized lookup failure, reuse of customer 1, and unchanged stored rows and cache.</returns>
     [Theory]
     [InlineData("École@example.test", "école@EXAMPLE.TEST")]
     [InlineData("Σ@example.test", "ς@EXAMPLE.TEST")]
@@ -130,6 +141,10 @@ public sealed class CustomerEmailCanonicalCaseHttpTests(CustomerDetailAuthorityF
         }
     }
 
+    /// <summary>Checks that excluded Turkic folds, multi-character expansion, and Unicode normalization do not select another email profile.</summary>
+    /// <param name="stored">The literal email retained on the existing customer.</param>
+    /// <param name="distinct">The email differing under an explicitly excluded case-expansion or normalization policy.</param>
+    /// <returns>A task that completes after asserting not found for the distinct spelling, successful self lookup, and unchanged graph.</returns>
     [Theory]
     [InlineData("İ@example.test", "i@example.test")]
     [InlineData("ı@example.test", "i@example.test")]
@@ -157,6 +172,11 @@ public sealed class CustomerEmailCanonicalCaseHttpTests(CustomerDetailAuthorityF
         Assert.Equal(before, await SnapshotAsync(token));
     }
 
+    /// <summary>Checks that concurrent absent case-equivalent callers wait on the exact canonical advisory lock and create one graph.</summary>
+    /// <param name="first">The first case-equivalent email spelling submitted for provisioning.</param>
+    /// <param name="second">The second case-equivalent email spelling submitted concurrently.</param>
+    /// <param name="canonical">The independently fixed canonical email key used by the blocking PostgreSQL advisory lock.</param>
+    /// <returns>A task that completes after asserting both requests waiting before release, one creation and one reuse, a single new graph, and retained old cache bytes.</returns>
     [Theory]
     [InlineData("Σ@EXAMPLE.TEST", "ς@example.test", "σ@example.test")]
     [InlineData("École@EXAMPLE.TEST", "éCOLE@example.test", "école@example.test")]

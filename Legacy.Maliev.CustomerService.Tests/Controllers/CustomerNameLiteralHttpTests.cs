@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Checks literal customer names, keyed creation replay, provider retries, lost acknowledgments, and ordinary optional contact projections.</summary>
+/// <param name="fixture">The shared authority fixture supplying isolated customer graph setup, HTTP hosts, signed clients, and cache observations.</param>
 [Collection("Customer profile lifecycle")]
 public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
@@ -12,6 +14,9 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
     private const string First = " \tสมชาย\u00a0 ";
     private const string Last = "\u00a0 ใจดี\t ";
 
+    /// <summary>Checks literal name persistence and readback during creation and optional keyed replay.</summary>
+    /// <param name="keyed">Whether to include an Idempotency-Key and verify that a repeated create returns the same customer.</param>
+    /// <returns>A task that completes after asserting exact names and location, one durable keyed operation when applicable, and restored original state after deletion.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -63,6 +68,9 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
         Assert.Equal(before, await fixture.SnapshotAsync());
     }
 
+    /// <summary>Checks literal name updates, cache eviction, retained relations, and optional stale-version refusal.</summary>
+    /// <param name="versioned">Whether to use the versioned update route with If-Match instead of an ordinary update.</param>
+    /// <returns>A task that completes after asserting literal storage and readback, advanced revision, unchanged relations, and refusal of a stale version when applicable.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -116,6 +124,10 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
         }
     }
 
+    /// <summary>Checks that padded customer names cannot bypass authentication or write permissions.</summary>
+    /// <param name="authority">The anonymous, denied-permission, invalid-signature, or expired-token scenario used to construct the client.</param>
+    /// <param name="status">The expected unauthorized or forbidden response for the selected actor.</param>
+    /// <returns>A task that completes after asserting refused creation and update statuses, unchanged graph, and retained cache.</returns>
     [Theory]
     [InlineData("anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("denied", HttpStatusCode.Forbidden)]
@@ -137,6 +149,10 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
         Assert.True(await fixture.CacheExistsAsync());
     }
 
+    /// <summary>Checks that whitespace-only first or last names remain invalid on all customer write paths.</summary>
+    /// <param name="first">The submitted first name, containing only whitespace in the first-name rejection case.</param>
+    /// <param name="last">The submitted last name, containing only whitespace in the last-name rejection case.</param>
+    /// <returns>A task that completes after asserting bad-request responses and unchanged graph.</returns>
     [Theory]
     [InlineData(" \t\u00a0", "Valid")]
     [InlineData("Valid", " \t\u00a0")]
@@ -154,6 +170,8 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
         Assert.Equal(before, await fixture.SnapshotAsync());
     }
 
+    /// <summary>Checks keyed creation and replay through the actual host retry-enabled provider while preserving literal names.</summary>
+    /// <returns>A task that completes after asserting retry-enabled configuration, equal replay identifiers, literal names, and one durable create receipt.</returns>
     [Fact]
     public async Task KeyedCreate_RealHostRetryProvider_PreservesLiteralNamesAndReplay()
     {
@@ -193,6 +211,9 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
         Assert.Equal(1, await db.CustomerCreateOperations.CountAsync(token));
     }
 
+    /// <summary>Checks keyed create rollback and fresh-context retry for permanent and transient save failures.</summary>
+    /// <param name="transient">Whether the first saved-change fault is a transient provider exception instead of a permanent invalid-operation failure.</param>
+    /// <returns>A task that completes after asserting rollback or retry behavior, two distinct attempt contexts, one customer creation, and one durable receipt.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -230,6 +251,9 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
         Assert.Equal(1, await stored.CustomerCreateOperations.CountAsync(row => row.Key == key, token));
     }
 
+    /// <summary>Checks recovery of a keyed create after a lost commit acknowledgment and optional cancellation.</summary>
+    /// <param name="cancel">Whether the first commit acknowledgment cancels the caller instead of throwing a transient provider failure.</param>
+    /// <returns>A task that completes after asserting one commit, literal replayed names, correct receipt binding, and conflicts for a different actor or payload.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -303,6 +327,190 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
 
             return ValueTask.FromResult(result);
         }
+    }
+
+
+    /// <summary>Checks ordinary optional contact writes against the pinned public Newtonsoft comparison projection.</summary>
+    /// <param name="update">Whether to update the seeded customer with PUT instead of creating a customer with POST.</param>
+    /// <returns>A task that completes after asserting source-shaped scalar and null projections, rejected-container isolation, literal persistence and readback, and retained relations.</returns>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task SourceOptionalContact_OrdinaryCreateAndUpdateComparePinnedReference(bool update)
+    {
+        // This is an explicitly pinned comparator, not an executed historical
+        // net8/SQL Server contract or a versioned/replay adoption claim.
+        using var lifetime = new CancellationTokenSource(TimeSpan.FromSeconds(120));
+        var token = lifetime.Token;
+        await fixture.ResetAsync();
+        await using var host = fixture.Start();
+        using var client = fixture.Client(host, "customer-lifecycle");
+        var fields = new[] { "Telephone", "Mobile", "Fax" };
+        var cases = new (string Name, string? Value)[]
+        {
+            ("boolean-true", "true"),
+            ("boolean-false", "false"),
+            ("integer", "42"),
+            ("fraction", "1.5"),
+            ("exponent", "1E+03"),
+            ("fraction-padding", "1.500"),
+            ("negative-zero", "-0"),
+            ("large-integer", "9223372036854775808123456789"),
+            ("leading-zero-string", "\"001234\""),
+            ("empty-string", "\"\""),
+            ("literal-unicode", "\" \\tโทรศัพท์\\u00a0\\ud83d\\ude80 \""),
+            ("missing", (string?)null),
+            ("null", "null"),
+            ("string-then-null", "\"001234\""),
+            ("primitive-then-null", "true"),
+            ("object", "{}"),
+            ("array", "[]"),
+        };
+        foreach (var field in fields)
+        {
+            foreach (var item in cases)
+            {
+                token.ThrowIfCancellationRequested();
+                await fixture.ResetAsync();
+                await fixture.SeedOldAsync(host);
+                var fragment = item.Value is null ? string.Empty : $",\"{field}\":{item.Value}";
+                if (item.Name is "string-then-null" or "primitive-then-null")
+                    fragment += $",\"{field}\":null";
+                var body = "{\"FirstName\":\"Contact\",\"LastName\":\"Baseline\"," +
+                    "\"Email\":\"optional-reference@example.test\",\"CompanyId\":1," +
+                    "\"BillingAddressId\":1,\"ShippingAddressId\":1" + fragment + "}";
+                OptionalContactReference? reference;
+                try
+                {
+                    reference = Newtonsoft.Json.JsonConvert.DeserializeObject<OptionalContactReference>(body,
+                        new Newtonsoft.Json.JsonSerializerSettings
+                        {
+                            NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
+                            ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
+                        });
+                    Assert.NotNull(reference);
+                }
+                catch (Newtonsoft.Json.JsonException)
+                {
+                    reference = null;
+                }
+
+                using var cachedRead = await client.GetAsync("/customers/1", token);
+                Assert.Equal(HttpStatusCode.OK, cachedRead.StatusCode);
+                Assert.True(await fixture.CacheExistsAsync());
+                var before = await OptionalContactWholeStateAsync(token);
+                var relations = await RelationsAsync(token);
+                using var request = new HttpRequestMessage(update ? HttpMethod.Put : HttpMethod.Post,
+                    update ? "/customers/1" : "/customers")
+                {
+                    Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json"),
+                };
+                // One actual attempt only. No Idempotency-Key, If-Match,
+                // versioned route, retry, or identity provider is introduced.
+                using var response = await client.SendAsync(request, token);
+                if (reference is null)
+                {
+                    Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+                    Assert.Equal(before, await OptionalContactWholeStateAsync(token));
+                    Assert.True(await fixture.CacheExistsAsync());
+                    continue;
+                }
+
+                foreach (var value in new[] { reference.Telephone, reference.Mobile, reference.Fax })
+                    Assert.True(value is null || value.Length <= 256);
+                Assert.True(response.StatusCode == (update ? HttpStatusCode.NoContent : HttpStatusCode.Created),
+                    $"Comparator {field}/{item.Name}: actual HTTP {(int)response.StatusCode}; update={update}");
+                var id = 1;
+                if (update)
+                {
+                    Assert.False(await fixture.CacheExistsAsync());
+                }
+                else
+                {
+                    using var created = JsonDocument.Parse(await response.Content.ReadAsStringAsync(token));
+                    id = created.RootElement.GetProperty("Id").GetInt32();
+                    Assert.True(id > 1);
+                    Assert.NotNull(response.Headers.Location);
+                    using var namedRead = await client.GetAsync(response.Headers.Location, token);
+                    Assert.Equal(HttpStatusCode.OK, namedRead.StatusCode);
+                    using var namedJson = JsonDocument.Parse(await namedRead.Content.ReadAsStringAsync(token));
+                    Assert.Equal(id, namedJson.RootElement.GetProperty("Id").GetInt32());
+                    AssertOptionalContactWire(namedJson.RootElement, reference);
+                }
+
+                await using (var db = fixture.Context())
+                {
+                    var stored = await db.Customers.AsNoTracking().SingleAsync(row => row.Id == id, token);
+                    Assert.Equal(reference.Telephone, stored.Telephone);
+                    Assert.Equal(reference.Mobile, stored.Mobile);
+                    Assert.Equal(reference.Fax, stored.Fax);
+                    Assert.Equal("Contact", stored.FirstName);
+                    Assert.Equal("Baseline", stored.LastName);
+                    Assert.Equal("optional-reference@example.test", stored.Email);
+                    Assert.Equal(1, stored.CompanyId);
+                    Assert.Equal(1, stored.BillingAddressId);
+                    Assert.Equal(1, stored.ShippingAddressId);
+                    Assert.Equal(update ? 1 : 2, await db.Customers.CountAsync(token));
+                    Assert.Equal(0, await db.CustomerCreateOperations.CountAsync(token));
+                }
+                Assert.Equal(relations, await RelationsAsync(token));
+                using var readback = await client.GetAsync($"/customers/{id}", token);
+                Assert.Equal(HttpStatusCode.OK, readback.StatusCode);
+                using var wire = JsonDocument.Parse(await readback.Content.ReadAsStringAsync(token));
+                AssertOptionalContactWire(wire.RootElement, reference);
+            }
+        }
+    }
+
+    private static void AssertOptionalContactWire(JsonElement item, OptionalContactReference expected)
+    {
+        foreach (var (field, value) in new[]
+        {
+            ("Telephone", expected.Telephone), ("Mobile", expected.Mobile), ("Fax", expected.Fax),
+        })
+        {
+            if (value is null) Assert.False(item.TryGetProperty(field, out _));
+            else Assert.Equal(value, item.GetProperty(field).GetString());
+            Assert.False(item.TryGetProperty(char.ToLowerInvariant(field[0]) + field[1..], out _));
+        }
+    }
+
+    private async Task<string> OptionalContactWholeStateAsync(CancellationToken token)
+    {
+        await using var db = fixture.Context();
+        return JsonSerializer.Serialize(new
+        {
+            Customers = await db.Customers.AsNoTracking().OrderBy(row => row.Id).Select(row => new
+            {
+                row.Id,
+                row.FirstName,
+                row.LastName,
+                row.FullName,
+                row.Email,
+                row.Telephone,
+                row.Mobile,
+                row.Fax,
+                row.DateOfBirth,
+                row.CompanyId,
+                row.BillingAddressId,
+                row.ShippingAddressId,
+                row.CreatedDate,
+                row.ModifiedDate,
+                row.InternalRemark,
+                Revision = EF.Property<uint>(row, "xmin"),
+            }).ToArrayAsync(token),
+            Companies = await db.Companies.AsNoTracking().OrderBy(row => row.Id).ToArrayAsync(token),
+            Addresses = await db.Addresses.AsNoTracking().OrderBy(row => row.Id).ToArrayAsync(token),
+            ReplayRows = await db.CustomerCreateOperations.AsNoTracking().CountAsync(token),
+        });
+    }
+
+    private sealed class OptionalContactReference
+    {
+        public OptionalContactReference() { }
+        public string? Telephone { get; set; }
+        public string? Mobile { get; set; }
+        public string? Fax { get; set; }
     }
 
     private static object Payload(string first, string last) => new

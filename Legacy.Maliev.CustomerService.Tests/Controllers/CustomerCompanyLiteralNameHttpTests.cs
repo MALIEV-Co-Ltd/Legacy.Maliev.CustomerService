@@ -2,6 +2,7 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using Legacy.Maliev.CustomerService.Application.Models;
+using Legacy.Maliev.CustomerService.Tests.OriginalInput;
 using Legacy.Maliev.CustomerService.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -9,10 +10,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Exercises literal company names across ordinary and scoped routes with storage, shared graph, and cache checks.</summary>
+/// <param name="fixture">The shared fixture providing customer hosts and disposable persistence for these scenarios.</param>
 [Collection("Customer company lifecycle")]
 public sealed class CustomerCompanyLiteralNameHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Verifies literal company-name storage and responses or refusal before writes while preserving shared graph and cache boundaries.</summary>
+    /// <param name="route">The ordinary or scoped create or update route under test.</param>
+    /// <returns>A task representing completion of the literal company-name HTTP, storage, and graph assertions.</returns>
     [Theory]
     [InlineData("create")]
     [InlineData("update")]
@@ -47,8 +53,8 @@ public sealed class CustomerCompanyLiteralNameHttpTests(CustomerDetailAuthorityF
             ("Combining257", string.Concat(Enumerable.Repeat("ก้", 128)) + "้", false, false, null),
             ("TrailingSpace257", new string('a', 256) + " ", false, false, null),
             ("NulNotStorable", "company\0name", false, false, null),
-            ("LoneHighSurrogateJson", null, false, false, "\"\\ud800\""),
-            ("LoneLowSurrogateJson", null, false, false, "\"\\udc00\""),
+            ("LoneHighSurrogateJson", "\uFFFD", !scoped, false, "\"\\ud800\""),
+            ("LoneLowSurrogateJson", "\uFFFD", !scoped, false, "\"\\udc00\""),
             ("EmptyTaxOnly", "", true, true, null),
             ("WhitespaceTaxOnly", " \t\u00a0 ", true, true, null),
             ("NullName", null, false, true, null),
@@ -59,6 +65,13 @@ public sealed class CustomerCompanyLiteralNameHttpTests(CustomerDetailAuthorityF
             var before = await PhysicalSnapshotAsync(token);
             var cacheBefore = await PrimeAsync(cache, token);
             var versions = scoped ? await VersionsAsync(client, create ? "new" : "1", token) : default;
+            if (!scoped && item.Raw is not null)
+            {
+                // Original JSON normalizes lone escaped surrogates before storage validation.
+                var source = await CustomerOriginalInputOracle.ReadAsync("company", "{\"Name\":" + item.Raw + "}");
+                Assert.Equal("success", source.Kind);
+                Assert.Equal(item.Name, Assert.IsType<SourceCompany>(source.Model).Name);
+            }
             using var request = Request(route, item.Name, item.Raw, versions);
             using var result = await client.SendAsync(request, token);
             var accepted = item.Fits && (!scoped || !item.Blank);
@@ -135,6 +148,10 @@ public sealed class CustomerCompanyLiteralNameHttpTests(CustomerDetailAuthorityF
         }
     }
 
+    /// <summary>Verifies that invalid authority cannot write company names through any ordinary or scoped route.</summary>
+    /// <param name="authority">The authentication and permission scenario used by the test client.</param>
+    /// <param name="expected">The expected HTTP status for the supplied scenario.</param>
+    /// <returns>A task representing completion of the literal company-name HTTP, storage, and graph assertions.</returns>
     [Theory]
     [InlineData("anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("wrong-signature", HttpStatusCode.Unauthorized)]
@@ -164,6 +181,8 @@ public sealed class CustomerCompanyLiteralNameHttpTests(CustomerDetailAuthorityF
         }
     }
 
+    /// <summary>Verifies that the company-name storage guard rejects isolated UTF-16 surrogates without normalization.</summary>
+    /// <param name="high">Whether to use an isolated high surrogate; false selects an isolated low surrogate.</param>
     [Theory]
     [InlineData(true)]
     [InlineData(false)]

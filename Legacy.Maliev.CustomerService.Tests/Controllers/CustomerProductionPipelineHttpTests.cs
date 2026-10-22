@@ -7,15 +7,21 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Serializes production pipeline scenarios that share host configuration and fixture state.</summary>
 [CollectionDefinition("Customer production pipeline", DisableParallelization = true)]
 public sealed class CustomerProductionPipelineHttpTestsCollection;
 
+/// <summary>Exercises production CORS, authentication, and health response behavior through the actual application host.</summary>
+/// <param name="fixture">The shared fixture providing customer hosts and disposable persistence for these scenarios.</param>
 [Collection("Customer production pipeline")]
 public sealed class CustomerProductionPipelineHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
     private const string AllowedOrigin = "https://example.test";
 
+    /// <summary>Verifies configured-origin CORS preflight responses before protected mutation authorization.</summary>
+    /// <param name="allowed">Whether the preflight Origin matches the configured allowed origin.</param>
+    /// <returns>A task representing completion of the production pipeline HTTP response assertions.</returns>
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
@@ -46,6 +52,8 @@ public sealed class CustomerProductionPipelineHttpTests(CustomerDetailAuthorityF
         }
     }
 
+    /// <summary>Verifies that anonymous mutations return unauthorized with the configured CORS headers needed by browser callers.</summary>
+    /// <returns>A task representing completion of the production pipeline HTTP response assertions.</returns>
     [Fact]
     public async Task ProductionAnonymousMutation_ReturnsUnauthorizedWithConfiguredOriginForBrowserErrorHandling()
     {
@@ -62,6 +70,9 @@ public sealed class CustomerProductionPipelineHttpTests(CustomerDetailAuthorityF
         Assert.Equal("true", Assert.Single(response.Headers.GetValues("Access-Control-Allow-Credentials")));
     }
 
+    /// <summary>Verifies that healthy production probes remain anonymous and expose only the approved response shape.</summary>
+    /// <param name="probe">The liveness or readiness probe whose anonymous response is checked.</param>
+    /// <returns>A task representing completion of the production pipeline HTTP response assertions.</returns>
     [Theory]
     [InlineData("liveness")]
     [InlineData("readiness")]

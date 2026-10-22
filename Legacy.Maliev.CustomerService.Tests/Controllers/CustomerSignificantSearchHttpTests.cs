@@ -5,11 +5,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Exercises significant search whitespace and nullable sorting through the customer directory HTTP boundary.</summary>
+/// <param name="fixture">The shared fixture providing customer hosts and disposable persistence for these scenarios.</param>
 public sealed class CustomerSignificantSearchHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
     private const string Literal = " \u0e0a\u0e34\u0e49\u0e19 ";
 
+    /// <summary>Verifies that whitespace-only query binding retains the unfiltered customer directory.</summary>
+    /// <param name="search">The whitespace-only search term submitted through ordinary query binding.</param>
+    /// <returns>A task representing completion of the customer directory search, sort, and paging assertions.</returns>
     [Theory]
     [InlineData(" ")]
     [InlineData("\t")]
@@ -23,6 +28,9 @@ public sealed class CustomerSignificantSearchHttpTests(CustomerDetailAuthorityFi
         await AssertPageAsync(response, [1]);
     }
 
+    /// <summary>Verifies literal padded search across source fields without including a plain-text decoy.</summary>
+    /// <param name="field">The searchable customer field or related company name populated with padded and plain literals.</param>
+    /// <returns>A task representing completion of the customer directory search, sort, and paging assertions.</returns>
     [Theory]
     [InlineData("FirstName")]
     [InlineData("LastName")]
@@ -53,6 +61,9 @@ public sealed class CustomerSignificantSearchHttpTests(CustomerDetailAuthorityFi
         Assert.Equal(before, await SnapshotAsync());
     }
 
+    /// <summary>Verifies that unmatched leading or trailing spaces preserve the directory not-found response.</summary>
+    /// <param name="search">The padded term that does not occur literally in the seeded customer data.</param>
+    /// <returns>A task representing completion of the customer directory search, sort, and paging assertions.</returns>
     [Theory]
     [InlineData(" detail@example.test")]
     [InlineData("detail@example.test ")]
@@ -68,6 +79,8 @@ public sealed class CustomerSignificantSearchHttpTests(CustomerDetailAuthorityFi
         Assert.Equal(before, await SnapshotAsync());
     }
 
+    /// <summary>Verifies independent results and paging when alternating padded and plain search terms.</summary>
+    /// <returns>A task representing completion of the customer directory search, sort, and paging assertions.</returns>
     [Fact]
     public async Task AlternatingPlainAndPaddedText_PreservesIndependentResultSetsAndPaging()
     {
@@ -98,6 +111,8 @@ public sealed class CustomerSignificantSearchHttpTests(CustomerDetailAuthorityFi
         Assert.Equal(before, await SnapshotAsync());
     }
 
+    /// <summary>Verifies that padded numeric search matches an exact identifier or literal text without a plain-text decoy.</summary>
+    /// <returns>A task representing completion of the customer directory search, sort, and paging assertions.</returns>
     [Fact]
     public async Task PaddedNumericSearch_PreservesExactIdOrLiteralTextWithoutPlainDecoy()
     {
@@ -122,6 +137,10 @@ public sealed class CustomerSignificantSearchHttpTests(CustomerDetailAuthorityFi
         Assert.Equal(before, await SnapshotAsync());
     }
 
+    /// <summary>Verifies that padded directory searches still enforce normal authorization.</summary>
+    /// <param name="authority">The authentication and permission scenario used by the test client.</param>
+    /// <param name="status">The expected HTTP response status code.</param>
+    /// <returns>A task representing completion of the customer directory search, sort, and paging assertions.</returns>
     [Theory]
     [InlineData("anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("denied", HttpStatusCode.Forbidden)]
@@ -136,6 +155,11 @@ public sealed class CustomerSignificantSearchHttpTests(CustomerDetailAuthorityFi
         Assert.Equal(before, await SnapshotAsync());
     }
 
+    /// <summary>Verifies source null placement for nullable sort fields across full results and individual pages.</summary>
+    /// <param name="field">The nullable company or timestamp field used to arrange the sort cohort.</param>
+    /// <param name="sort">The source sort selector sent to the directory endpoint.</param>
+    /// <param name="descending">Whether the expected identifier order runs from highest to lowest.</param>
+    /// <returns>A task representing completion of the customer directory search, sort, and paging assertions.</returns>
     [Theory]
     [InlineData("Company", "CustomerCompany_Ascending", false)]
     [InlineData("Company", "CustomerCompany_Descending", true)]

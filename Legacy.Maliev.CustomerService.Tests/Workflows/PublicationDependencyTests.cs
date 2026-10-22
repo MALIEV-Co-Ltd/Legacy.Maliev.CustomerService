@@ -2,8 +2,10 @@ using YamlDotNet.RepresentationModel;
 
 namespace Legacy.Maliev.CustomerService.Tests.Workflows;
 
+/// <summary>Checks publication dependency pins, minimum job permissions, and the retained deployment feature gate.</summary>
 public sealed class PublicationDependencyTests
 {
+    /// <summary>Checks the exact reusable publication workflow, dependency pins, input roster, least job permissions, and both deployment-gate conditions.</summary>
     [Fact]
     public void Publisher_ProvidesExactValidationPinAndMinimumPermissions_WithoutOpeningDeploymentGate()
     {
@@ -37,7 +39,7 @@ public sealed class PublicationDependencyTests
         Assert.Equal(8, inputs.Children.Count);
         Assert.Equal("${{ vars.LEGACY_ARTIFACT_REGISTRY }}/legacy-maliev-customer-service", Value(inputs, "image"));
         Assert.Equal("Legacy.Maliev.CustomerService.Api/Dockerfile", Value(inputs, "dockerfile"));
-        Assert.Equal("086760fa0aae976a799dbcda1960d5c0981248cb", Value(inputs, "legacy-service-defaults-ref"));
+        Assert.Equal("c40a7f82cea347b949444dcd7fb730f2b8dc3c0e", Value(inputs, "legacy-service-defaults-ref"));
         Assert.Equal("78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7", Value(inputs, "compatibility-contracts-ref"));
         Assert.Equal(".", Value(inputs, "context"));
         Assert.Equal("legacy-production", Value(inputs, "environment"));

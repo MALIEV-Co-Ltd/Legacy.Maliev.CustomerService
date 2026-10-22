@@ -10,8 +10,13 @@ using Moq;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Exercises original address null-body ordering for direct controller calls and MVC permission checks.</summary>
 public sealed class CustomerAddressOriginalNullBoundaryTests
 {
+    /// <summary>Verifies that null address creation looks up the parent before returning an empty bad-request response.</summary>
+    /// <param name="customerId">The parent customer identifier supplied to direct address creation.</param>
+    /// <param name="parentExists">Whether the mocked parent lookup returns a customer.</param>
+    /// <returns>A task representing completion of the address null-input and permission-boundary assertions.</returns>
     [Theory]
     [InlineData(101, true)]
     [InlineData(int.MaxValue, false)]
@@ -33,6 +38,9 @@ public sealed class CustomerAddressOriginalNullBoundaryTests
         service.VerifyNoOtherCalls();
     }
 
+    /// <summary>Verifies that null address updates return an empty bad-request response before any service lookup.</summary>
+    /// <param name="addressId">The target address identifier supplied with a null update body.</param>
+    /// <returns>A task representing completion of the address null-input and permission-boundary assertions.</returns>
     [Theory]
     [InlineData(101)]
     [InlineData(int.MaxValue)]
@@ -47,6 +55,10 @@ public sealed class CustomerAddressOriginalNullBoundaryTests
         service.VerifyNoOtherCalls();
     }
 
+    /// <summary>Verifies MVC null-body validation and authorization on address create and update without service calls.</summary>
+    /// <param name="identity">The test identity header value; null omits the header when supported by the scenario.</param>
+    /// <param name="expected">The expected HTTP status for the supplied scenario.</param>
+    /// <returns>A task representing completion of the address null-input and permission-boundary assertions.</returns>
     [Theory]
     [InlineData("allowed", HttpStatusCode.BadRequest)]
     [InlineData(null, HttpStatusCode.Unauthorized)]

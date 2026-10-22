@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Legacy.Maliev.CustomerService.Application.Models;
+using Legacy.Maliev.CustomerService.Tests.OriginalInput;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Options;
@@ -14,16 +15,25 @@ using Xunit.Abstractions;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Verifies ordinary company duplicate-null projection and its graph, cache, authority, and scoped-policy boundaries.</summary>
+/// <param name="fixture">The shared Customer authority fixture supplying disposable PostgreSQL and Redis, production hosts, and signed request clients.</param>
+/// <param name="output">The xUnit output sink recording reader, HTTP, graph, and cache comparison evidence.</param>
 [Collection("Customer company lifecycle")]
 public sealed class CustomerCompanyOrdinaryDuplicateNullHttpTests(CustomerDetailAuthorityFixture fixture, ITestOutputHelper output)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Checks last-nonnull company names with only the intended persisted graph and cache effects.</summary>
+    /// <returns>A task that completes after verifying last-nonnull company names with only the intended persisted graph and cache effects.</returns>
     [Fact]
     public Task OrdinaryDuplicateNames_PersistLastNonNullNameAndOnlyIntendedGraphAndCacheEffects() => WriteMatrixAsync(PositiveCases());
 
+    /// <summary>Checks last-nonnull TaxNumber and Registrar strings with precise graph and cache effects.</summary>
+    /// <returns>A task that completes after verifying last-nonnull TaxNumber and Registrar strings with precise graph and cache effects.</returns>
     [Fact]
     public Task OrdinaryTaxRegistrar_PersistLastNonNullStringsAndOnlyIntendedGraphAndCacheEffects() => WriteMatrixAsync(NullablePositiveCases());
 
+    /// <summary>Checks TaxNumber and Registrar authority failures, structured-token rejection, scoped null policy, and stale-version preservation.</summary>
+    /// <returns>A task that completes after verifying TaxNumber and Registrar authority failures, structured-token rejection, scoped null policy, and stale-version preservation.</returns>
     [Fact]
     public async Task OrdinaryTaxRegistrar_InvalidAuthorityTokensAndScopedPolicyCannotMutateGraphOrCache()
     {
@@ -101,6 +111,8 @@ public sealed class CustomerCompanyOrdinaryDuplicateNullHttpTests(CustomerDetail
         await WriteMatrixAsync(PrimitiveEarlierCases());
     }
 
+    /// <summary>Checks invalid duplicate Name occurrences while retaining explicitly source-accepted text and scalar controls.</summary>
+    /// <returns>A task that completes after verifying invalid duplicate Name occurrences while retaining explicitly source-accepted text and scalar controls.</returns>
     [Fact]
     public async Task OrdinaryDuplicateNames_InvalidOccurrenceCannotHideBehindLaterValuesOrMutateGraph()
     {
@@ -117,14 +129,35 @@ public sealed class CustomerCompanyOrdinaryDuplicateNullHttpTests(CustomerDetail
             var before = await PhysicalSnapshotAsync(token);
             var cached = await PrimeAsync(cache, token);
             foreach (var item in RefusalCases())
-                if (item.Label is not ("other-field-control-33" or "other-field-control-34"))
+                if (item.Label is not ("other-field-control-33" or "other-field-control-34"
+                    or "immediate-binding-error-26" or "immediate-binding-error-27" or "immediate-binding-error-28"))
                     await RefuseAsync(client, cache, route, item.Label, item.Json, default, HttpStatusCode.BadRequest, before, cached, token);
         }
-        await WriteMatrixAsync(RefusalCases().Where(item => item.Label is "other-field-control-33" or "other-field-control-34")
-            .Select(item => new PositiveCase(item.Label, item.Json, "ok", item.Label == "other-field-control-33" ? "42" : null,
-                item.Label == "other-field-control-34" ? "true" : null)).ToArray());
+        var sourceAccepted = RefusalCases().Where(item => item.Label is "other-field-control-33" or "other-field-control-34"
+            or "immediate-binding-error-26" or "immediate-binding-error-27" or "immediate-binding-error-28")
+            .Select(item => new PositiveCase(item.Label, item.Json, item.Label switch
+            {
+                "immediate-binding-error-26" => "last",
+                "immediate-binding-error-27" => "\uFFFD",
+                "immediate-binding-error-28" => "first",
+                _ => "ok"
+            }, item.Label == "other-field-control-33" ? "42" : null,
+                item.Label == "other-field-control-34" ? "true" : null)).ToArray();
+        foreach (var item in sourceAccepted)
+        {
+            // Keep every original input; only the obsolete native-reader expectation changes.
+            var source = await CustomerOriginalInputOracle.ReadAsync("company", item.Json);
+            Assert.Equal("success", source.Kind);
+            var model = Assert.IsType<SourceCompany>(source.Model);
+            Assert.Equal(item.Name, model.Name);
+            Assert.Equal(item.Tax, model.TaxNumber);
+            Assert.Equal(item.Registrar, model.Registrar);
+        }
+        await WriteMatrixAsync(sourceAccepted);
     }
 
+    /// <summary>Checks duplicate-name authority rejection and scoped literal policy without unintended graph or cache effects.</summary>
+    /// <returns>A task that completes after verifying duplicate-name authority rejection and scoped literal policy without unintended graph or cache effects.</returns>
     [Fact]
     public async Task OrdinaryDuplicateNames_InvalidAuthorityAndScopedLiteralPolicyCannotChangeGraphOrCache()
     {

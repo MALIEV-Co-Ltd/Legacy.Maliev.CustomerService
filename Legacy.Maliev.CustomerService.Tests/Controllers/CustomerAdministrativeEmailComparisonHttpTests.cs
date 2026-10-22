@@ -8,10 +8,16 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Checks normalized email lookup and quotation-profile selection while preserving literal administrative storage and handling collisions.</summary>
+/// <param name="fixture">The shared authority fixture supplying isolated customer graph setup, HTTP hosts, signed clients, and cache observations.</param>
 [Collection("Customer profile lifecycle")]
 public sealed class CustomerAdministrativeEmailComparisonHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Checks that normalized lookup and provisioning select a literally padded profile without changing graph or cache bytes.</summary>
+    /// <param name="route">The administrative write selector: create, keyed-create, ordinary update, or versioned update.</param>
+    /// <param name="unicode">Whether to surround the mixed-case email with tabs and nonbreaking spaces instead of ordinary spaces.</param>
+    /// <returns>A task that completes after asserting the same profile identifier, literal stored email, unchanged state, and keyed replay where applicable.</returns>
     [Theory]
     [InlineData("create", false)]
     [InlineData("create", true)]
@@ -65,6 +71,10 @@ public sealed class CustomerAdministrativeEmailComparisonHttpTests(CustomerDetai
         }
     }
 
+    /// <summary>Checks that colliding padded email profiles make lookup fail safely while provisioning reuses the selected existing profile.</summary>
+    /// <param name="route">The administrative write selector: create, keyed-create, ordinary update, or versioned update.</param>
+    /// <param name="count">The number of distinct stored customer rows whose padded emails compare as the same canonical address.</param>
+    /// <returns>A task that completes after asserting sanitized lookup failure, deterministic profile reuse, unchanged graph and cache bytes, and retained replay state.</returns>
     [Theory]
     [InlineData("create", 2)]
     [InlineData("create", 3)]
@@ -117,6 +127,8 @@ public sealed class CustomerAdministrativeEmailComparisonHttpTests(CustomerDetai
         }
     }
 
+    /// <summary>Checks explicit .NET whitespace trimming for email comparison while retaining every stored padding character.</summary>
+    /// <returns>A task that completes after asserting lookup and provisioning selection for each whitespace character and unchanged stored rows and caches.</returns>
     [Fact]
     public async Task ExplicitWhitespacePolicy_MatchesAllDotNetWhitespaceWithoutChangingLiteralStorage()
     {
@@ -155,6 +167,10 @@ public sealed class CustomerAdministrativeEmailComparisonHttpTests(CustomerDetai
         }
     }
 
+    /// <summary>Checks that nonwhitespace edge characters and interior whitespace remain significant in email comparison.</summary>
+    /// <param name="character">The zero-width, byte-order-mark, or nonbreaking-space character inserted into the stored email.</param>
+    /// <param name="interior">Whether to place the character inside the email instead of at its edges.</param>
+    /// <returns>A task that completes after asserting not-found lookup for the distinct plain email and unchanged graph.</returns>
     [Theory]
     [InlineData("\u200b", false)]
     [InlineData("\ufeff", false)]
@@ -178,6 +194,8 @@ public sealed class CustomerAdministrativeEmailComparisonHttpTests(CustomerDetai
         Assert.Equal(before, await SnapshotAsync(token));
     }
 
+    /// <summary>Checks that concurrent normalized callers reuse a padded email profile without creating another graph.</summary>
+    /// <returns>A task that completes after asserting the same reused profile from both callers and unchanged persisted state.</returns>
     [Fact]
     public async Task ConcurrentNormalizedCallers_ReusePaddedProfileWithoutCreatingGraph()
     {
@@ -203,6 +221,8 @@ public sealed class CustomerAdministrativeEmailComparisonHttpTests(CustomerDetai
         Assert.Equal(before, await SnapshotAsync(token));
     }
 
+    /// <summary>Checks absent-email lookup, first provisioning creation, and later normalized reuse.</summary>
+    /// <returns>A task that completes after asserting initial not found, one created customer graph with trimmed email, and mutation-free later selection.</returns>
     [Fact]
     public async Task AbsentNormalizedEmail_PreservesLookup404AndProvisioningCreationThenSelection()
     {
@@ -233,6 +253,10 @@ public sealed class CustomerAdministrativeEmailComparisonHttpTests(CustomerDetai
         Assert.Equal(after, await SnapshotAsync(token));
     }
 
+    /// <summary>Checks that invalid authority cannot reach normalized email lookup or quotation provisioning.</summary>
+    /// <param name="authority">The anonymous, denied-permission, invalid-signature, or expired-token scenario used to construct the client.</param>
+    /// <param name="expected">The expected unauthorized or forbidden response for the selected actor.</param>
+    /// <returns>A task that completes after asserting matching authority refusals, unchanged graph, and retained cache.</returns>
     [Theory]
     [InlineData("anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("denied", HttpStatusCode.Forbidden)]

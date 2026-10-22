@@ -9,13 +9,19 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Serializes unhealthy readiness scenarios that share production host and fixture state.</summary>
 [CollectionDefinition("Customer unhealthy readiness", DisableParallelization = true)]
 public sealed class CustomerUnhealthyReadinessHttpTestsCollection;
 
+/// <summary>Exercises production readiness failure sanitization independently from liveness.</summary>
+/// <param name="fixture">The shared fixture providing customer hosts and disposable persistence for these scenarios.</param>
 [Collection("Customer unhealthy readiness")]
 public sealed class CustomerUnhealthyReadinessHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Verifies anonymous sanitized readiness failures return 503 while liveness remains healthy.</summary>
+    /// <param name="throwFailure">Whether the readiness check throws; false returns an unhealthy result carrying private diagnostics.</param>
+    /// <returns>A task representing completion of the readiness sanitization and liveness assertions.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]

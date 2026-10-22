@@ -9,10 +9,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Exercises literal address input across ordinary and scoped HTTP routes with physical graph, cache, and revision checks.</summary>
+/// <param name="fixture">The shared fixture providing customer hosts and disposable persistence for these scenarios.</param>
 [Collection("Customer address persistence")]
 public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Verifies optional address string admission and refusal boundaries without unintended graph or cache changes.</summary>
+    /// <param name="route">The ordinary or scoped create or update route under test.</param>
+    /// <returns>A task representing completion of the address HTTP, physical storage, graph, cache, and revision assertions.</returns>
     [Theory]
     [InlineData("create")]
     [InlineData("update")]
@@ -25,11 +30,16 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
         client.Timeout = TimeSpan.FromSeconds(15);
         var cache = host.Services.GetRequiredService<IDistributedCache>();
         var longNumber = new string('1', 257);
-        var cases = new[] { (Raw: "{}", Status: HttpStatusCode.BadRequest),
-            (Raw: "[]", Status: HttpStatusCode.BadRequest),
-            (Raw: longNumber, Status: HttpStatusCode.InternalServerError),
-            (Raw: JsonSerializer.Serialize(longNumber), Status: HttpStatusCode.InternalServerError),
-            (Raw: "\"\\ud800\"", Status: HttpStatusCode.BadRequest) };
+        var cases = new[]
+        {
+            (Raw: "{}", Refusal: (HttpStatusCode?)HttpStatusCode.BadRequest, Literal: (string?)null),
+            (Raw: "[]", Refusal: (HttpStatusCode?)HttpStatusCode.BadRequest, Literal: (string?)null),
+            (Raw: longNumber, Refusal: (HttpStatusCode?)HttpStatusCode.InternalServerError, Literal: (string?)null),
+            (Raw: JsonSerializer.Serialize(longNumber), Refusal: (HttpStatusCode?)HttpStatusCode.InternalServerError, Literal: (string?)null),
+            (Raw: "\"\\ud800\"", Refusal: (HttpStatusCode?)null, Literal: "\uFFFD"),
+            (Raw: "\"\\udc00\"", Refusal: (HttpStatusCode?)null, Literal: "\uFFFD"),
+            (Raw: "\"\uFFFD\"", Refusal: (HttpStatusCode?)null, Literal: "\uFFFD"),
+        };
         foreach (var field in new[] { "Building", "AddressLine2", "City", "State", "PostalCode" })
         {
             foreach (var item in cases)
@@ -37,15 +47,47 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
                 await SeedAsync(route, token);
                 var before = await PhysicalSnapshotAsync(token);
                 var cached = await PrimeAsync(cache, token);
+                var payload = "{\"AddressLine1\":\"road\",\"CountryId\":764,\"" + field + "\":" + item.Raw + "}";
                 using var request = new HttpRequestMessage(route == "create" ? HttpMethod.Post : HttpMethod.Put,
                     route == "create" ? "/customers/1/addresses" : "/customers/Addresses/1")
                 {
-                    Content = new StringContent("{\"AddressLine1\":\"road\",\"CountryId\":764,\"" + field + "\":" + item.Raw + "}", Encoding.UTF8, "application/json"),
+                    Content = new StringContent(payload, Encoding.UTF8, "application/json"),
                 };
                 using var response = await client.SendAsync(request, token);
-                Assert.Equal(item.Status, response.StatusCode);
-                Assert.Equal(before, await PhysicalSnapshotAsync(token));
-                await AssertCacheAsync(cache, cached, [], token);
+                Assert.Equal(item.Refusal ?? (route == "create" ? HttpStatusCode.Created : HttpStatusCode.NoContent), response.StatusCode);
+                if (item.Refusal.HasValue)
+                {
+                    Assert.Equal(before, await PhysicalSnapshotAsync(token));
+                    await AssertCacheAsync(cache, cached, [], token);
+                }
+                else
+                {
+                    // The original reader normalizes lone escapes before any
+                    // canonical storage guard sees the resulting valid scalar.
+                    var original = await global::Legacy.Maliev.CustomerService.Tests.OriginalInput.CustomerOriginalInputOracle
+                        .ReadAsync("address", payload);
+                    Assert.Equal("success", original.Kind);
+                    Assert.Equal(item.Literal, original.Model!.GetType().GetProperty(field)!.GetValue(original.Model));
+                    Assert.True(AddressLine1LengthAttribute.IsStorable(item.Literal));
+                    var id = 1;
+                    if (route == "create")
+                    {
+                        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync(token));
+                        id = json.RootElement.GetProperty("Id").GetInt32();
+                        Assert.Equal(item.Literal, json.RootElement.GetProperty(field).GetString());
+                        Assert.Equal("road", json.RootElement.GetProperty("AddressLine1").GetString());
+                        Assert.EndsWith($"/customers/1/addresses/{id}", response.Headers.Location!.ToString(), StringComparison.OrdinalIgnoreCase);
+                    }
+                    await using var db = fixture.Context();
+                    var stored = await db.Addresses.AsNoTracking().SingleAsync(value => value.Id == id, token);
+                    Assert.Equal(item.Literal, typeof(Address).GetProperty(field)!.GetValue(stored));
+                    Assert.Equal("road", stored.AddressLine1);
+                    Assert.Equal(764, stored.CountryId);
+                    foreach (var other in new[] { "Building", "AddressLine2", "City", "State", "PostalCode" }.Where(value => value != field))
+                        Assert.Null(typeof(Address).GetProperty(other)!.GetValue(stored));
+                    AssertGraph(before, await PhysicalSnapshotAsync(token), route, id);
+                    await AssertCacheAsync(cache, cached, route == "create" ? [1] : [1, 2], token);
+                }
             }
             await SeedAsync(route, token);
             var authorityBefore = await PhysicalSnapshotAsync(token);
@@ -63,6 +105,9 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
         }
     }
 
+    /// <summary>Verifies that optional primitive address fields retain their token spelling and match Newtonsoft string conversion.</summary>
+    /// <param name="route">The ordinary or scoped create or update route under test.</param>
+    /// <returns>A task representing completion of the address HTTP, physical storage, graph, cache, and revision assertions.</returns>
     [Theory]
     [InlineData("create")]
     [InlineData("update")]
@@ -126,6 +171,9 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
             }
     }
 
+    /// <summary>Verifies literal address storage and response values while preserving relation bindings, cache scope, and version preconditions.</summary>
+    /// <param name="route">The ordinary or scoped create or update route under test.</param>
+    /// <returns>A task representing completion of the address HTTP, physical storage, graph, cache, and revision assertions.</returns>
     [Theory]
     [InlineData("create")]
     [InlineData("update")]
@@ -162,6 +210,7 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
             ("Combining257", string.Concat(Enumerable.Repeat("ก้", 128)) + "้", false, false, null),
             ("TrailingSpace257", new string('a', 256) + " ", false, false, null),
             ("NulNotStorable", "road\0line", false, false, null),
+            ("ReplacementLiteral", "\uFFFD", true, false, null),
             ("LoneHighSurrogateJson", null, false, false, "\"\\ud800\""),
             ("LoneLowSurrogateJson", null, false, false, "\"\\udc00\""),
             ("EmptyLine", "", true, false, null),
@@ -180,18 +229,30 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
             var before = await PhysicalSnapshotAsync(token);
             var cached = await PrimeAsync(cache, token);
             var versions = scoped ? await VersionsAsync(client, route, create ? "new" : "1", token) : default;
+            var expectedLine = item.Line;
+            var accepted = item.Accepted;
+            if (!scoped && (item.Label is "LoneHighSurrogateJson" or "LoneLowSurrogateJson"))
+            {
+                var original = await global::Legacy.Maliev.CustomerService.Tests.OriginalInput.CustomerOriginalInputOracle
+                    .ReadAsync("address", "{\"AddressLine1\":" + item.Raw + ",\"CountryId\":764}");
+                Assert.Equal("success", original.Kind);
+                expectedLine = (string?)original.Model!.GetType().GetProperty("AddressLine1")!.GetValue(original.Model);
+                Assert.Equal("\uFFFD", expectedLine);
+                Assert.True(AddressLine1LengthAttribute.IsStorable(expectedLine));
+                accepted = true;
+            }
             using var request = Request(route, item.Line, item.NullOptional, item.Raw, versions);
             using var result = await client.SendAsync(request, token);
-            var expected = item.Accepted ? create && !scoped ? HttpStatusCode.Created : HttpStatusCode.NoContent : item.Label == "NullLine" ? HttpStatusCode.InternalServerError : HttpStatusCode.BadRequest;
+            var expected = accepted ? create && !scoped ? HttpStatusCode.Created : HttpStatusCode.NoContent : item.Label == "NullLine" ? HttpStatusCode.InternalServerError : HttpStatusCode.BadRequest;
             Assert.True(expected == result.StatusCode, $"{route}/{item.Label}: expected {expected}, actual {result.StatusCode}");
-            if (!item.Accepted)
+            if (!accepted)
             {
                 Assert.Equal(before, await PhysicalSnapshotAsync(token));
                 await AssertCacheAsync(cache, cached, [], token);
                 continue;
             }
 
-            Assert.True(item.Line!.Length <= 256);
+            Assert.True(expectedLine!.Length <= 256);
             var id = 1;
             if (scoped)
             {
@@ -201,13 +262,13 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
                 Assert.Equal(result.Headers.ETag, read.Headers.ETag);
                 Assert.Equal(result.Headers.GetValues("X-Customer-ETag").Single(), read.Headers.GetValues("X-Customer-ETag").Single());
                 using var readBody = JsonDocument.Parse(await read.Content.ReadAsStringAsync(token));
-                AssertLiteral(readBody.RootElement.GetProperty("Address"), item.Line!, item.NullOptional);
+                AssertLiteral(readBody.RootElement.GetProperty("Address"), expectedLine!, item.NullOptional);
             }
             else if (create)
             {
                 using var created = JsonDocument.Parse(await result.Content.ReadAsStringAsync(token));
                 id = created.RootElement.GetProperty("Id").GetInt32();
-                AssertLiteral(created.RootElement, item.Line!, item.NullOptional);
+                AssertLiteral(created.RootElement, expectedLine!, item.NullOptional);
                 Assert.EndsWith($"/customers/1/addresses/{id}", result.Headers.Location!.ToString(), StringComparison.OrdinalIgnoreCase);
                 using var unboundRead = await client.GetAsync(result.Headers.Location, token);
                 Assert.Equal(HttpStatusCode.NotFound, unboundRead.StatusCode);
@@ -215,7 +276,7 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
 
             await using var db = fixture.Context();
             var stored = await db.Addresses.AsNoTracking().SingleAsync(row => row.Id == id, token);
-            Assert.Equal(item.Line, stored.AddressLine1);
+            Assert.Equal(expectedLine, stored.AddressLine1);
             Assert.Equal(Optional("Building", item.NullOptional), stored.Building);
             Assert.Equal(Optional("AddressLine2", item.NullOptional), stored.AddressLine2);
             Assert.Equal(Optional("City", item.NullOptional), stored.City);
@@ -225,7 +286,7 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
             Assert.True(stored.ModifiedDate > new DateTime(2020, 1, 1));
             if (create) Assert.True(stored.CreatedDate > new DateTime(2020, 1, 1));
             else Assert.Equal(new DateTime(2020, 1, 1), stored.CreatedDate);
-            Assert.Equal(item.Line!.EnumerateRunes().Count(), await db.Database.SqlQuery<int>($"SELECT char_length(\"AddressLine1\") AS \"Value\" FROM \"Address\" WHERE \"ID\" = {id}").SingleAsync(token));
+            Assert.Equal(expectedLine!.EnumerateRunes().Count(), await db.Database.SqlQuery<int>($"SELECT char_length(\"AddressLine1\") AS \"Value\" FROM \"Address\" WHERE \"ID\" = {id}").SingleAsync(token));
             Assert.Equal(256, await db.Database.SqlQueryRaw<int>("SELECT character_maximum_length::integer AS \"Value\" FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'Address' AND column_name = 'AddressLine1'").SingleAsync(token));
             AssertGraph(before, await PhysicalSnapshotAsync(token), route, id);
             await AssertCacheAsync(cache, cached, create ? [1] : [1, 2], token);
@@ -235,7 +296,7 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
                 Assert.Equal(HttpStatusCode.OK, profile.StatusCode);
                 using var json = JsonDocument.Parse(await profile.Content.ReadAsStringAsync(token));
                 var property = create && route.StartsWith("billing-", StringComparison.Ordinal) ? "BillingAddress" : "ShippingAddress";
-                AssertLiteral(json.RootElement.GetProperty(property), item.Line!, item.NullOptional);
+                AssertLiteral(json.RootElement.GetProperty(property), expectedLine!, item.NullOptional);
                 Assert.False(json.RootElement.TryGetProperty("InternalRemark", out _));
             }
             if (scoped)
@@ -251,6 +312,10 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
         }
     }
 
+    /// <summary>Verifies that invalid authority cannot write addresses through ordinary or scoped routes.</summary>
+    /// <param name="authority">The authentication and permission scenario used by the test client.</param>
+    /// <param name="expected">The expected HTTP status for the supplied scenario.</param>
+    /// <returns>A task representing completion of the address HTTP, physical storage, graph, cache, and revision assertions.</returns>
     [Theory]
     [InlineData("anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("wrong-signature", HttpStatusCode.Unauthorized)]
@@ -279,6 +344,8 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
         }
     }
 
+    /// <summary>Verifies that the storage guard rejects isolated UTF-16 surrogates without replacing them.</summary>
+    /// <param name="high">Whether to use an isolated high surrogate; false selects an isolated low surrogate.</param>
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
@@ -289,6 +356,9 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
         Assert.False(new AddressLine1LengthAttribute().IsValid(value));
     }
 
+    /// <summary>Verifies that invalid JSON roots and field shapes are refused before graph, cache, or revision changes.</summary>
+    /// <param name="route">The ordinary or scoped create or update route under test.</param>
+    /// <returns>A task representing completion of the address HTTP, physical storage, graph, cache, and revision assertions.</returns>
     [Theory]
     [InlineData("create")]
     [InlineData("update")]
@@ -332,6 +402,9 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
         }
     }
 
+    /// <summary>Verifies that a missing required address line rolls back storage and leaves caches and revisions unchanged.</summary>
+    /// <param name="route">The ordinary or scoped create or update route under test.</param>
+    /// <returns>A task representing completion of the address HTTP, physical storage, graph, cache, and revision assertions.</returns>
     [Theory]
     [InlineData("create")]
     [InlineData("update")]
@@ -367,6 +440,9 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
         Assert.Equal("NO", await db.Database.SqlQueryRaw<string>("SELECT is_nullable::text AS \"Value\" FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'Address' AND column_name = 'AddressLine1'").SingleAsync(token));
     }
 
+    /// <summary>Verifies address country admission for zero, Int32 limits, numeric strings, and default-valued input.</summary>
+    /// <param name="route">The ordinary or scoped create or update route under test.</param>
+    /// <returns>A task representing completion of the address HTTP, physical storage, graph, cache, and revision assertions.</returns>
     [Theory]
     [InlineData("create")]
     [InlineData("update")]
@@ -414,6 +490,9 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
         }
     }
 
+    /// <summary>Verifies that a missing ordinary address target is reported before null-line storage is attempted.</summary>
+    /// <param name="create">Whether the request creates an address under a missing customer; false updates a missing address.</param>
+    /// <returns>A task representing completion of the address HTTP, physical storage, graph, cache, and revision assertions.</returns>
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
