@@ -56,7 +56,7 @@ def load_packet(root, expected_packet_sha):
     manifest_raw = regular(root / 'driver-manifest.json', 262144)
     need(digest(manifest_raw) == expected_packet_sha, 'Driver packet digest mismatch')
     manifest = json.loads(manifest_raw)
-    need(manifest.get('nativeExecutionGranted') is False and manifest.get('stage') == 'customer-literal-build-first',
+    need(manifest.get('nativeExecutionGranted') is False and manifest.get('stage') == 'customer-null-build-first',
          'Source-only packet required')
     captured = {}
     aliases = set()
@@ -79,9 +79,27 @@ def load_packet(root, expected_packet_sha):
     policy = intake.load_policy(captured['input/customer-candidate-policy.json'], helper)
     need(stage['nativeExecutionGranted'] is False and stage['sourcePolicySha256'] == intake.POLICY_SHA256,
          'Stage cannot confer execution authority')
+    need(stage['candidateBase'] == policy['baseCommit'] == 'b50e12d66cf0c3d4211a41febe3b01ca265a0c15'
+         and stage['transportMain'] == policy['baseCommit'], 'Current-base driver/policy join differs')
+    need(stage['sourceCounts'] == intake.COUNTS == {'source': 162, 'dependencies': 141, 'validation': 21}
+         and stage['sourceArchive']['rawFiles'] == len(policy['rawFiles']) == 324,
+         'Current-base complete source-count join differs')
+    need(stage['providerPlanSha256'] == intake.PROVIDER_PLAN_SHA256 == policy['providerPlanSha256'],
+         'Current provider-plan join differs')
+    need(stage['associationManifestSha256'] == policy['associationManifestSha256'],
+         'Reviewed association join differs')
+    need(stage['sourceArchive']['rawGraphSha256'] == digest(json.dumps(policy['rawFiles'], sort_keys=True,
+         separators=(',', ':')).encode()), 'Current raw graph seal differs')
+    verifier_raw = captured['input/verify_customer_null_association.py']
+    need(digest(verifier_raw) == stage['associationVerifierSha256']
+         == 'ae35a1ffb0a07cb2cc79236a93cb5ea69a44e4fd21abad659bbdf9bd6ee52d08',
+         'Captured association verifier seal differs')
+    intake._captured_association_verifier = captured_module('customer_captured_association_verifier',
+        root / 'input/verify_customer_null_association.py', verifier_raw)
     admission = captured_module('customer_build_admission', root / 'customer_build_admission.py', captured['customer_build_admission.py'])
     owned = captured_module('customer_owned_build', root / 'customer_owned_build.py', captured['customer_owned_build.py'])
-    need(admission.digest(admission.canonical(stage)) == admission.STAGE_CANONICAL_SHA256, 'Reviewed stage differs')
+    need(admission.digest(admission.canonical(stage)) == admission.STAGE_CANONICAL_SHA256
+         == manifest['stageCanonicalSha256'], 'Reviewed stage differs')
     guardian = captured_module('customer_build_guardian', root / 'customer_build_guardian.py', captured['customer_build_guardian.py'])
     process = captured_module('customer_guardian_process', root / 'customer_guardian_process.py', captured['customer_guardian_process.py'])
     return manifest, stage, policy, helper, intake, admission, owned, guardian, process
@@ -110,9 +128,13 @@ def source_archive(source, policy, stage, helper, intake):
                 files[name] = raw
     need(actual == set(expected) | {'metadata/intake-receipt.json'}, 'Exact materialized raw graph and receipt required')
     receipt = helper.parse_json(regular(source / 'metadata/intake-receipt.json', 65536))
-    need(receipt['policySha256'] == stage['sourcePolicySha256'] and receipt['rawFiles'] == 275
+    need(receipt['policySha256'] == stage['sourcePolicySha256'] and receipt['rawFiles'] == len(expected) == 324
+         and receipt['baseCommit'] == stage['candidateBase'] == policy['baseCommit']
+         and receipt['capsuleFileCounts'] == stage['sourceCounts']
+         and receipt['rawGraphSha256'] == stage['sourceArchive']['rawGraphSha256']
+         and receipt['forecastCases'] == 400 and receipt['actualTestsRun'] == 0
          and receipt['nativeExecutionGranted'] is False and receipt['providerPlanSha256'] == stage['providerPlanSha256'],
-         'Actual source receipt differs')
+         'Actual current-base source receipt differs')
     intake.nested_graph(policy, files, helper)
     archive = io.BytesIO()
     with tarfile.open(fileobj=archive, mode='w', format=tarfile.PAX_FORMAT) as tar:
@@ -156,7 +178,7 @@ def verify_live_archive(raw, policy, helper):
                 stream.close()
             need(len(value) == item.size and digest(value) == expected[name]['sha256'], 'Actual SDK source byte drift')
             found[name] = True
-    need(set(found) == set(expected) and len(found) == 275, 'Actual SDK incomplete raw graph')
+    need(set(found) == set(expected) and len(found) == 324, 'Actual SDK incomplete raw graph')
     return True
 
 
@@ -220,6 +242,8 @@ def threading_main():
 
 def native_context(args, root, packet):
     manifest, stage, policy, helper, intake, admission, owned, guardian, process = packet
+    need(manifest.get('runtimeQualificationAccepted') is True and stage.get('runtimeQualificationAccepted') is True,
+         'Current-base source successor is not runtime qualified; native IO forbidden')
     need(sys.platform == 'linux' and args.grant and args.handoffs and args.ledger
          and SHA.fullmatch(args.grant_sha256 or ''), 'External Root inputs and Linux host required before native IO')
     grant_raw = regular(args.grant, 65536)
@@ -259,10 +283,67 @@ def native_context(args, root, packet):
             'grant': grant, 'backend': backend, 'deadline': deadline, 'admit': admit, 'archive': archive}
 
 
+
+def semantic_joins(value):
+    """Pure source preparation; joining inputs never grants native acceptance."""
+    need(value.get('sourceOnly') is True, 'Semantic diagnostic must stay source-only')
+    historical = value['historicalBaseline']; authored = value['authoredContract']
+    expected_base = 'b50e12d66cf0c3d4211a41febe3b01ca265a0c15'
+    need(historical['baseSha'] == expected_base and historical['caseCount'] == len(historical['cases']) == 387,
+         'Exact actual historical baseline387 required')
+    def identity(case):
+        return (case['definition']['className'], case['definition']['method'], case['testName'])
+    def roster(phase, count):
+        row = value[phase]
+        need(row['baseSha'] == expected_base and row['configuration'] == 'Release'
+             and row['buildExitCode'] == row['buildWarnings'] == row['buildErrors'] == 0
+             and row['buildCompletedBeforeDiscovery'] is True, 'Build-first strict Release evidence required')
+        need(SHA.fullmatch(row.get('compiledAssemblySha256') or '')
+             and SHA.fullmatch(row.get('discoverySha256') or '')
+             and SHA.fullmatch(row.get('rawTrxSha256') or ''), 'Actual compiled/discovery/TRX byte bindings required')
+        cases = row['cases']; need(len(cases) == count and row['caseCount'] == count,
+                                   'Exact compiled roster count differs: ' + phase)
+        need(all(c['outcome'] == 'Passed' for c in cases), 'Skipped/failed/nonterminal cases refused')
+        keys = [identity(c) for c in cases]
+        need(len(set(keys)) == len(keys) and len({c['testId'] for c in cases}) == len(cases),
+             'Duplicate compiled display or test ID refused')
+        return {identity(c): c for c in cases}
+    old = {identity(c) for c in historical['cases']}
+    baseline = roster('baseline', 387); candidate = roster('candidate', 400)
+    need(value['baseline']['compiledAssemblySha256'] != value['candidate']['compiledAssemblySha256'],
+         'Baseline and changed candidate binary identities cannot be aliased')
+    need(value['baseline']['unfiltered'] is True and value['candidate']['unfiltered'] is True
+         and value['full']['unfiltered'] is True and value['focused']['filter'] == authored['filter'],
+         'Exact unfiltered discovery/full suite and focused filter required')
+    need(set(baseline) == old and old <= set(candidate), 'Actual baseline identities were dropped or changed')
+    need(all(candidate[key]['testId'] == baseline[key]['testId'] for key in baseline),
+         'Candidate changed fresh baseline actual test ID')
+    new = {key: candidate[key] for key in set(candidate) - old}
+    need(len(new) == 13 and authored['caseCount'] == 13 and len(authored['methods']) == 6,
+         'Thirteen new cases across six authored methods required')
+    expected = sorted((m['fullyQualifiedMethod'], json.dumps(row, sort_keys=True))
+                      for m in authored['methods'] for row in m['rows'])
+    observed = sorted((c['definition']['className'] + '.' + c['definition']['method'],
+                       json.dumps(c['sourceArguments'], sort_keys=True)) for c in new.values())
+    need(observed == expected, 'Exact native discovered argument binding differs from authored rows')
+    focused = roster('focused', 13); full = roster('full', 400)
+    need(set(focused) == set(new) and set(full) == set(candidate), 'Focused/full semantic roster differs')
+    for phase, rows in [('focused', focused), ('full', full)]:
+        need(value[phase]['compiledAssemblySha256'] == value['candidate']['compiledAssemblySha256'],
+             'Focused/full must use the exact discovered candidate assembly')
+        need(all(rows[key]['testId'] == candidate[key]['testId'] for key in rows),
+             'Focused/full case IDs differ from actual candidate discovery')
+    return {'semanticInputsJoined': True, 'historicalCases': 387, 'newSourceRows': 13,
+            'forecastCandidateCases': 400, 'nativeTestsAccepted': False, 'fullSuiteAccepted': False,
+            'sourceOnly': True, 'actualNativeEvidenceStillRequired': True}
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('mode', choices=('plan', 'execute-build'))
+    parser.add_argument('mode', choices=('plan', 'source-check', 'semantic-check', 'execute-build'))
     parser.add_argument('--packet-sha256', required=True)
+    parser.add_argument('--source-directory', type=Path)
+    parser.add_argument('--semantic-input', type=Path)
     parser.add_argument('--grant'); parser.add_argument('--grant-sha256')
     parser.add_argument('--handoffs'); parser.add_argument('--ledger')
     parser.add_argument('--guardian-child', action='store_true', help=argparse.SUPPRESS)
@@ -271,6 +352,24 @@ def main():
     root = Path(__file__).resolve().parent
     packet = load_packet(root, args.packet_sha256)
     manifest, stage, policy, helper, intake, admission, owned, guardian, process = packet
+    if args.mode == 'semantic-check':
+        need(args.semantic_input is not None and args.source_directory is None and not args.grant
+             and not args.grant_sha256 and not args.handoffs and not args.ledger
+             and not args.guardian_child and args.guardian_directory is None,
+             'Semantic-check cannot request native authority')
+        print(json.dumps(semantic_joins(json.loads(regular(args.semantic_input)))))
+        return 0
+    need(args.semantic_input is None, 'Semantic inputs are diagnostic only')
+    if args.mode == 'source-check':
+        need(args.source_directory is not None and not args.grant and not args.grant_sha256
+             and not args.handoffs and not args.ledger and not args.guardian_child
+             and args.guardian_directory is None, 'Source-check inputs cannot request native authority')
+        raw = source_archive(args.source_directory, policy, stage, helper, intake)
+        print(json.dumps({'sourceValidated': True, 'rawFiles': 324, 'archiveSha256': digest(raw),
+                          'archiveBytes': len(raw), 'nativeExecutionGranted': False,
+                          'sdkStarts': 0, 'providerStarts': 0}))
+        return 0
+    need(args.source_directory is None, 'Source-directory override is source-check only')
     if args.mode == 'plan':
         need(not args.guardian_child, 'Guardian requires actual Root execution inputs')
         print(json.dumps({'stage': stage['stage'], 'transportMain': stage['transportMain'],

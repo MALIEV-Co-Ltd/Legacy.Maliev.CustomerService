@@ -4,9 +4,13 @@ using System.Text.Json;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Exercises database authority for customer detail reads across mutations, cache failures, competing hosts, and cancellation.</summary>
+/// <param name="fixture">The shared fixture providing customer hosts and disposable persistence for these scenarios.</param>
 [Collection("Customer scaffold runtime")]
 public sealed class CustomerDetailAuthorityHttpTests(CustomerDetailAuthorityFixture fixture) : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Verifies the migrated owned graph through the EF scaffold runtime proof and generated queries.</summary>
+    /// <returns>A task representing completion of the database-authoritative customer detail assertions.</returns>
     [Fact]
     public async Task Scaffold_ActualEfPreviewBuildAndGeneratedQueriesPreserveMigratedOwnedGraph()
     {
@@ -14,6 +18,10 @@ public sealed class CustomerDetailAuthorityHttpTests(CustomerDetailAuthorityFixt
         await CustomerScaffoldRuntimeProof.RunAsync(fixture);
     }
 
+    /// <summary>Verifies that committed detail remains authoritative when Redis refuses cache removal after a mutation.</summary>
+    /// <param name="kind">The customer, company, or address resource mutated by the scenario.</param>
+    /// <param name="expected">The committed field value expected in both storage and customer detail.</param>
+    /// <returns>A task representing completion of the database-authoritative customer detail assertions.</returns>
     [Theory]
     [InlineData("customer", "After customer")]
     [InlineData("company", "After company")]
@@ -34,6 +42,10 @@ public sealed class CustomerDetailAuthorityHttpTests(CustomerDetailAuthorityFixt
         await AssertDetailAsync(client, kind, expected);
     }
 
+    /// <summary>Verifies that a delayed stale cache fill cannot override committed detail in either application host.</summary>
+    /// <param name="kind">The customer, company, or address resource mutated by the scenario.</param>
+    /// <param name="expected">The committed field value expected in both storage and customer detail.</param>
+    /// <returns>A task representing completion of the database-authoritative customer detail assertions.</returns>
     [Theory]
     [InlineData("customer", "After customer")]
     [InlineData("company", "After company")]
@@ -56,6 +68,10 @@ public sealed class CustomerDetailAuthorityHttpTests(CustomerDetailAuthorityFixt
         Assert.Equal(new[] { expected, expected }, new[] { firstValue, secondValue });
     }
 
+    /// <summary>Verifies that successful cache invalidation exposes the committed nested customer projection.</summary>
+    /// <param name="kind">The customer, company, or address resource mutated by the scenario.</param>
+    /// <param name="expected">The committed field value expected in both storage and customer detail.</param>
+    /// <returns>A task representing completion of the database-authoritative customer detail assertions.</returns>
     [Theory]
     [InlineData("customer", "After customer")]
     [InlineData("company", "After company")]
@@ -73,6 +89,10 @@ public sealed class CustomerDetailAuthorityHttpTests(CustomerDetailAuthorityFixt
         await AssertDetailAsync(client, kind, expected);
     }
 
+    /// <summary>Verifies that invalid authority cannot read customer detail or mutate any part of the stored graph.</summary>
+    /// <param name="authority">The authentication and permission scenario used by the test client.</param>
+    /// <param name="expected">The expected HTTP status for the supplied scenario.</param>
+    /// <returns>A task representing completion of the database-authoritative customer detail assertions.</returns>
     [Theory]
     [InlineData("anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("wrong-signature", HttpStatusCode.Unauthorized)]
@@ -96,6 +116,9 @@ public sealed class CustomerDetailAuthorityHttpTests(CustomerDetailAuthorityFixt
         Assert.False(await fixture.CacheExistsAsync());
     }
 
+    /// <summary>Verifies that invalid mutation input preserves the database and existing customer detail projection.</summary>
+    /// <param name="kind">The customer, company, or address resource targeted by the mutation.</param>
+    /// <returns>A task representing completion of the database-authoritative customer detail assertions.</returns>
     [Theory]
     [InlineData("customer")]
     [InlineData("company")]
@@ -113,6 +136,9 @@ public sealed class CustomerDetailAuthorityHttpTests(CustomerDetailAuthorityFixt
         await AssertDetailAsync(client, kind, Before(kind));
     }
 
+    /// <summary>Verifies that mutations targeting missing records leave the existing customer graph unchanged.</summary>
+    /// <param name="kind">The customer, company, or address resource targeted by the mutation.</param>
+    /// <returns>A task representing completion of the database-authoritative customer detail assertions.</returns>
     [Theory]
     [InlineData("customer")]
     [InlineData("company")]
@@ -131,6 +157,9 @@ public sealed class CustomerDetailAuthorityHttpTests(CustomerDetailAuthorityFixt
         Assert.False(await fixture.CacheExistsAsync());
     }
 
+    /// <summary>Verifies that caller cancellation before the root save preserves the previously committed graph.</summary>
+    /// <param name="kind">The customer, company, or address resource targeted by the mutation.</param>
+    /// <returns>A task representing completion of the database-authoritative customer detail assertions.</returns>
     [Theory]
     [InlineData("customer")]
     [InlineData("company")]
@@ -162,7 +191,7 @@ public sealed class CustomerDetailAuthorityHttpTests(CustomerDetailAuthorityFixt
             "company" => """{"Name":"After company","TaxNumber":"123"}""",
             _ => """{"AddressLine1":"After road","City":"Bangkok","CountryId":764}"""
         };
-        if (invalid) json = kind switch { "customer" => """{"FirstName":"","LastName":"Customer","Email":"detail@example.test"}""", "company" => """{"Name":""}""", _ => """{"AddressLine1":"","CountryId":764}""" };
+        if (invalid) json = kind switch { "customer" => """{"FirstName":"","LastName":"Customer","Email":"detail@example.test"}""", "company" => """{"Name":""}""", _ => JsonSerializer.Serialize(new { AddressLine1 = new string('a', 257), CountryId = 764 }) };
         return client.PutAsync(route, new StringContent(json, Encoding.UTF8, "application/json"), token);
     }
 

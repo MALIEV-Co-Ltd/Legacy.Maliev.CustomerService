@@ -32,6 +32,9 @@ PascalCase JSON, null omission, legacy sort names, named routes, related custome
 objects, and the pagination fields `Items`, `PageIndex`, `TotalPages`,
 `TotalRecords`, `HasNextPage`, and `HasPreviousPage` remain compatible.
 
+When `size` is omitted, the filtered count determines the page size up to the
+existing 250-record cap. Explicit sizes retain their current bounds.
+
 Security corrections intentionally bound list pages to 250 records, require
 address/customer association for customer-address reads and deletes, and remove all
 identity and credential operations from this domain boundary.

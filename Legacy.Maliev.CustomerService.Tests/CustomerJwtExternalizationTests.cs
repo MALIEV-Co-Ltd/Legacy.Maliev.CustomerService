@@ -14,12 +14,14 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Legacy.Maliev.CustomerService.Tests;
 
+/// <summary>Checks externally configured asymmetric JWT authentication and refusal of legacy symmetric-key fallback.</summary>
 public sealed class CustomerJwtExternalizationTests
 {
     private const string Issuer = "https://iam.maliev.com";
     private const string Audience = "maliev-services";
     private const string LegacyTestKey = "test-only-legacy-key-of-at-least-32-bytes"; // gitleaks:allow
 
+    /// <summary>Checks that API startup uses external public-key authentication and stores no symmetric signing key in application settings.</summary>
     [Fact]
     public void CustomerApi_RequiresExternalPublicKeyWithoutStoredSymmetricKey()
     {
@@ -37,6 +39,7 @@ public sealed class CustomerJwtExternalizationTests
         Assert.Equal(Audience, jwt.GetProperty("Audience").GetString());
     }
 
+    /// <summary>Checks that the configured customer token validator accepts only the expected RS256 key, issuer, and audience.</summary>
     [Fact]
     public void ProductionCustomerValidator_AcceptsOnlyConfiguredRs256IssuerAndAudience()
     {
@@ -79,6 +82,7 @@ public sealed class CustomerJwtExternalizationTests
             Token(rsa, SecurityAlgorithms.RsaSha256, audience: "other-services"), parameters, out _));
     }
 
+    /// <summary>Checks that an absent external public key fails authentication setup even when a legacy symmetric key is supplied.</summary>
     [Fact]
     public void ProductionCustomerValidator_DoesNotFallBackToLegacySymmetricKey()
     {

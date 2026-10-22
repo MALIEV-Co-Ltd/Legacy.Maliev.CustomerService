@@ -6,8 +6,11 @@ using Moq;
 
 namespace Legacy.Maliev.CustomerService.Tests.Caching;
 
+/// <summary>Checks customer cache serialization, scoped keys, fail-open read errors, and cancellation propagation.</summary>
 public sealed class DistributedCustomerCacheTests
 {
+    /// <summary>Checks that an underlying Redis read failure is treated as a customer cache miss.</summary>
+    /// <returns>A task that completes after asserting a null cache result after the controlled read exception.</returns>
     [Fact]
     public async Task GetAsync_RedisFailure_FailsOpen()
     {
@@ -20,6 +23,8 @@ public sealed class DistributedCustomerCacheTests
         Assert.Null(result);
     }
 
+    /// <summary>Checks a customer response round-trip through serialized bytes under its customer-specific key.</summary>
+    /// <returns>A task that completes after asserting equality of the original and retrieved customer response.</returns>
     [Fact]
     public async Task SetAndGet_RoundTripsCustomerWithScopedKey()
     {
@@ -38,6 +43,8 @@ public sealed class DistributedCustomerCacheTests
         Assert.Equal(customer, result);
     }
 
+    /// <summary>Checks that Redis read cancellation propagates to the customer cache caller.</summary>
+    /// <returns>A task that completes after asserting propagation of OperationCanceledException from the cache read.</returns>
     [Fact]
     public async Task GetAsync_WhenRedisCancels_PropagatesCancellation()
     {
@@ -51,6 +58,8 @@ public sealed class DistributedCustomerCacheTests
             cache.GetAsync(42, cancellation.Token));
     }
 
+    /// <summary>Checks that Redis write cancellation propagates to the customer cache caller.</summary>
+    /// <returns>A task that completes after asserting propagation of OperationCanceledException from the cache write.</returns>
     [Fact]
     public async Task SetAsync_WhenRedisCancels_PropagatesCancellation()
     {
@@ -69,6 +78,8 @@ public sealed class DistributedCustomerCacheTests
             cache.SetAsync(customer, cancellation.Token));
     }
 
+    /// <summary>Checks that Redis removal cancellation propagates to the customer cache caller.</summary>
+    /// <returns>A task that completes after asserting propagation of OperationCanceledException from the cache removal.</returns>
     [Fact]
     public async Task RemoveAsync_WhenRedisCancels_PropagatesCancellation()
     {

@@ -71,7 +71,8 @@ public sealed class CompaniesController(ICustomerService service) : ControllerBa
         return await service.UpdateCompanyAsync(id, item, cancellationToken) ? NoContent() : NotFound();
     }
 
-    private static bool HasCompanyDetails(UpsertCompanyRequest item) =>
-        item.Name is not null &&
+    private static bool HasCompanyDetails(UpsertCompanyRequest? item) =>
+        item is not null &&
+        CompanyNameLengthAttribute.IsStorable(item.Name) &&
         (!string.IsNullOrWhiteSpace(item.Name) || !string.IsNullOrWhiteSpace(item.TaxNumber));
 }

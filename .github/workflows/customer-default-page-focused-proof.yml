@@ -1,0 +1,101 @@
+name: Customer omitted-size focused proof
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/customer-default-page-focused-proof.yml'
+      - 'scripts/customer-default-page-focused-manifest.json'
+      - 'scripts/verify_customer_default_page_focus.py'
+      - 'scripts/test_customer_default_page_focus.py'
+      - 'scripts/capture_customer_default_focus_resources.py'
+      - 'scripts/test_customer_default_focus_resources.py'
+      - 'Legacy.Maliev.CustomerService.Application/Interfaces/ICustomerBoundaries.cs'
+      - 'Legacy.Maliev.CustomerService.Application/Services/CustomerApplicationService.cs'
+      - 'Legacy.Maliev.CustomerService.Data/CustomerRepository.cs'
+      - 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerDefaultPageHttpTests.cs'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: customer-default-page-focused-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  focused:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies
+      MSBUILDDISABLENODEREUSE: '1'
+      DOTNET_CLI_USE_MSBUILD_SERVER: '0'
+    steps:
+      - name: Check out exact Customer PR tree
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Check out frozen Defaults
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults
+          ref: c40a7f82cea347b949444dcd7fb730f2b8dc3c0e
+          path: .dependencies/Legacy.Maliev.ServiceDefaults
+          persist-credentials: false
+      - name: Check out frozen Contracts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts
+          ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
+          path: .dependencies/Legacy.Maliev.CompatibilityContracts
+          persist-credentials: false
+      - name: Set up existing SDK family
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+        with:
+          dotnet-version: 10.0.x
+      - name: Observe initial isolated focused resources
+        run: timeout --signal=TERM --kill-after=5s 35s python3 -B scripts/capture_customer_default_focus_resources.py initial
+      - name: Run pure focused evidence parser controls
+        run: |
+          python3 -B scripts/test_customer_default_page_focus.py
+          python3 -B scripts/test_customer_default_focus_resources.py
+      - name: Admitted focused restore
+        shell: bash
+        run: |
+          set -euo pipefail
+          export GITHUB_ACTIONS=false
+          mkdir -p runner-default-focused
+          python3 -B scripts/verify_customer_default_page_focus.py guard 2>&1 | tee runner-default-focused/restore-admission.log
+          set -o pipefail
+          timeout --signal=TERM --kill-after=5s 180s dotnet restore Legacy.Maliev.CustomerService.slnx
+      - name: Admitted focused Release build
+        shell: bash
+        run: |
+          set -euo pipefail
+          export GITHUB_ACTIONS=false
+          mkdir -p runner-default-focused
+          python3 -B scripts/verify_customer_default_page_focus.py guard 2>&1 | tee runner-default-focused/build-admission.log
+          mkdir -p runner-default-focused
+          set -o pipefail
+          timeout --signal=TERM --kill-after=5s 180s dotnet build Legacy.Maliev.CustomerService.slnx -c Release --no-restore -warnaserror -p:UseSharedCompilation=false | tee runner-default-focused/build.log
+      - name: Admitted exact13 focused cases
+        shell: bash
+        run: |
+          set -euo pipefail
+          export GITHUB_ACTIONS=false
+          mkdir -p runner-default-focused
+          python3 -B scripts/verify_customer_default_page_focus.py guard 2>&1 | tee runner-default-focused/test-admission.log
+          filter=$(python3 -c 'import json;print(json.load(open("scripts/customer-default-page-focused-manifest.json"))["filter"])')
+          timeout --signal=TERM --kill-after=5s 600s dotnet test Legacy.Maliev.CustomerService.slnx -c Release --no-build --no-restore --filter "$filter" --logger trx --results-directory runner-default-focused
+          python3 -B scripts/verify_customer_default_page_focus.py verify
+      - name: Observe terminal focused resource release
+        if: always()
+        run: timeout --signal=TERM --kill-after=5s 35s python3 -B scripts/capture_customer_default_focus_resources.py terminal
+      - name: Preserve original focused evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: customer-default-page-focused-${{ github.sha }}
+          path: runner-default-focused
+          if-no-files-found: error
+          retention-days: 7

@@ -139,7 +139,7 @@ public sealed class CustomersController(ICustomerService service) : ControllerBa
         CancellationToken cancellationToken)
     {
         var result = await service.GetCustomersAsync(sort, search, index, size, cancellationToken);
-        return result is null ? NotFound() : result;
+        return result is null || size == 0 ? NotFound() : result;
     }
 
     /// <summary>
@@ -194,8 +194,29 @@ public sealed class CustomersController(ICustomerService service) : ControllerBa
         await service.UpdateInternalRemarkAsync(id, request, cancellationToken) ? NoContent() : NotFound();
 
     private static bool Valid(UpsertCustomerRequest request) =>
-        !string.IsNullOrWhiteSpace(request.FirstName) && !string.IsNullOrWhiteSpace(request.LastName) &&
-        !string.IsNullOrWhiteSpace(request.Email) && request.Email.Contains('@', StringComparison.Ordinal);
+        ValidLiteralText(request.FirstName) && ValidLiteralText(request.LastName) &&
+        ValidLiteralText(request.Email) && request.Email.Contains('@', StringComparison.Ordinal);
+
+    // Preserve the original SQL Server nvarchar(256) UTF-16 capacity.
+    // Reject overlong literal names and emails before writes, including excess
+    // trailing spaces that PostgreSQL varchar assignment can silently truncate.
+    private static bool ValidLiteralText(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value) || value.Length > 256) return false;
+        var remaining = value.AsSpan();
+        while (!remaining.IsEmpty)
+        {
+            if (System.Text.Rune.DecodeFromUtf16(remaining, out var rune, out var consumed) !=
+                System.Buffers.OperationStatus.Done || rune.Value == 0)
+            {
+                return false;
+            }
+
+            remaining = remaining[consumed..];
+        }
+
+        return true;
+    }
 
     private static bool Valid(InstantQuotationCustomerProfileRequest request) =>
         !string.IsNullOrWhiteSpace(request.FirstName) &&

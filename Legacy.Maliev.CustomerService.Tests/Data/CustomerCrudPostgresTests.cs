@@ -10,8 +10,12 @@ using Testcontainers.PostgreSql;
 
 namespace Legacy.Maliev.CustomerService.Tests.Data;
 
+/// <summary>Verifies real PostgreSQL customer graph CRUD, relationship ownership, timestamps, and application cache boundaries.</summary>
+/// <param name="fixture">The shared disposable PostgreSQL fixture supplying fresh database contexts for customer graph tests.</param>
 public sealed class CustomerCrudPostgresTests(CustomerCrudPostgresFixture fixture) : IClassFixture<CustomerCrudPostgresFixture>
 {
+    /// <summary>Checks customer, company, and address CRUD with exact text, relationship ownership, timestamps, remarks, paging, and cache invalidation.</summary>
+    /// <returns>A task that completes after verifying customer, company, and address CRUD with exact text, relationship ownership, timestamps, remarks, paging, and cache invalidation.</returns>
     [Fact]
     public async Task CustomerGraph_CRUD_PreservesRelationshipsTimestampsAndCacheBoundaries()
     {
@@ -22,13 +26,16 @@ public sealed class CustomerCrudPostgresTests(CustomerCrudPostgresFixture fixtur
         var service = new CustomerApplicationService(new CustomerRepository(db, clock), cache.Object);
         var cancellation = CancellationToken.None;
         var company = await service.CreateCompanyAsync(new(" บริษัทตัวอย่าง ", "0100000000000", "Registrar"), cancellation);
-        Assert.Equal("บริษัทตัวอย่าง", company.Name);
+        Assert.Equal(" บริษัทตัวอย่าง ", company.Name);
         Assert.Equal(new DateTime(2026, 9, 1, 1, 2, 3), company.CreatedDate);
         var request = new UpsertCustomerRequest(" ทดสอบ ", " ตัวอย่าง ", "02-000-0000", "080-000-0000", "02-000-0001",
             " sample@example.test ", new DateTime(1990, 1, 2), company.Id, null, null);
         var customer = await service.CreateCustomerAsync(request, cancellation);
-        Assert.Equal("ทดสอบ ตัวอย่าง", customer.FullName);
-        Assert.Equal("sample@example.test", customer.Email);
+        Assert.Equal("ทดสอบ   ตัวอย่าง", customer.FullName);
+        Assert.Equal(request.FirstName, customer.FirstName);
+        Assert.Equal(request.LastName, customer.LastName);
+        // Original administrative writers preserve Email bytes, including padding.
+        Assert.Equal(request.Email, customer.Email);
         Assert.Equal("02-000-0001", customer.Fax);
         Assert.Equal(new DateTime(1990, 1, 2), customer.DateOfBirth);
         Assert.Equal(customer.CreatedDate, customer.ModifiedDate);
@@ -43,7 +50,7 @@ public sealed class CustomerCrudPostgresTests(CustomerCrudPostgresFixture fixtur
         var addressRequest = new UpsertAddressRequest("อาคาร", " 1 ถนนตัวอย่าง ", "ชั้น 2", "กรุงเทพมหานคร", "กรุงเทพมหานคร", "10110", 764);
         var address = await service.CreateAddressAsync(customer.Id, addressRequest, cancellation);
         Assert.NotNull(address);
-        Assert.Equal("1 ถนนตัวอย่าง", address.AddressLine1);
+        Assert.Equal(" 1 ถนนตัวอย่าง ", address.AddressLine1);
         Assert.Equal("อาคาร", address.Building);
         Assert.Equal("ชั้น 2", address.AddressLine2);
         Assert.Equal("กรุงเทพมหานคร", address.City);
@@ -58,7 +65,8 @@ public sealed class CustomerCrudPostgresTests(CustomerCrudPostgresFixture fixtur
         Assert.True(await service.UpdateCustomerAsync(customer.Id, request, cancellation));
         db.ChangeTracker.Clear();
         var updated = await service.GetCustomerAsync(customer.Id, cancellation);
-        Assert.Equal("ใหม่", updated?.FirstName);
+        Assert.Equal(" ใหม่ ", updated?.FirstName);
+        Assert.Equal(request.LastName, updated?.LastName);
         Assert.Equal(customer.CreatedDate, updated?.CreatedDate);
         Assert.Equal(new DateTime(2026, 9, 1, 2, 2, 3), updated?.ModifiedDate);
         Assert.Equal(address.Id, updated?.BillingAddress?.Id);
@@ -68,7 +76,7 @@ public sealed class CustomerCrudPostgresTests(CustomerCrudPostgresFixture fixtur
         Assert.Single(await service.GetAddressesAsync(cancellation));
         cache.Invocations.Clear();
         Assert.True(await service.UpdateAddressAsync(address.Id, addressRequest with { AddressLine1 = " 2 ถนนใหม่ " }, cancellation));
-        Assert.Equal("2 ถนนใหม่", (await service.GetAddressAsync(customer.Id, address.Id, cancellation))?.AddressLine1);
+        Assert.Equal(" 2 ถนนใหม่ ", (await service.GetAddressAsync(customer.Id, address.Id, cancellation))?.AddressLine1);
         cache.Verify(value => value.RemoveAsync(customer.Id, cancellation), Times.Once);
         cache.Invocations.Clear();
         Assert.True(await service.UpdateCompanyAsync(company.Id, new("บริษัทใหม่", "0200000000000", "Registrar updated"), cancellation));
@@ -123,12 +131,19 @@ public sealed class CustomerCrudPostgresTests(CustomerCrudPostgresFixture fixtur
     }
 }
 
+/// <summary>Owns a disposable PostgreSQL container for customer graph persistence tests.</summary>
 public sealed class CustomerCrudPostgresFixture : IAsyncLifetime
 {
     private readonly PostgreSqlContainer postgres = new PostgreSqlBuilder("postgres:18-alpine").Build();
 
+    /// <summary>Starts the PostgreSQL container owned by the customer CRUD fixture.</summary>
+    /// <returns>A task that completes when the owned PostgreSQL container has started.</returns>
     public Task InitializeAsync() => postgres.StartAsync();
+    /// <summary>Disposes the PostgreSQL container owned by the customer CRUD fixture.</summary>
+    /// <returns>A task that completes when the owned PostgreSQL container has been disposed.</returns>
     public Task DisposeAsync() => postgres.DisposeAsync().AsTask();
+    /// <summary>Creates a fresh context connected to the fixture PostgreSQL database.</summary>
+    /// <returns>A new CustomerDbContext that the caller must dispose.</returns>
     public CustomerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<CustomerDbContext>()
         .UseNpgsql(postgres.GetConnectionString()).Options);
 }

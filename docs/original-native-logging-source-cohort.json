@@ -1,0 +1,323 @@
+{
+  "schemaVersion": 1,
+  "owner": "Legacy.Maliev.CustomerService",
+  "canonicalLedgerBase": "82520210ce5a7fb4439e2553b6567b95eded5d35",
+  "currentCommittedApplicationBase": "10b9a24bc07bf91e2417310bbc9723558583501b",
+  "sourceCheckpoint": "135e526d0dab85c415b3afdcefd7b70fe2c82e2f",
+  "sourceCommits": [
+    {
+      "sourceSha": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "parents": [
+        "600e79ac9b2836f540cf1547d3efd20362912aae"
+      ],
+      "owner": "Legacy.Maliev.CustomerService",
+      "paths": [
+        {
+          "originalPath": "Maliev.CustomerService.Api/Dockerfile",
+          "originalOwners": [
+            "Legacy.Maliev.CustomerService"
+          ],
+          "originalLedgerDisposition": "migration-required",
+          "originalLedgerDecision": null,
+          "proposedSemanticDisposition": "packaging-successor-requires-owned-image-proof",
+          "targetPaths": [
+            "Legacy.Maliev.CustomerService.Api/Dockerfile"
+          ],
+          "accepted": false,
+          "runtimeParityClaimed": false
+        },
+        {
+          "originalPath": "Maliev.CustomerService.Api/Dockerfile.self-contained",
+          "originalOwners": [
+            "Legacy.Maliev.CustomerService"
+          ],
+          "originalLedgerDisposition": "migration-required",
+          "originalLedgerDecision": null,
+          "proposedSemanticDisposition": "packaging-successor-requires-owned-image-proof",
+          "targetPaths": [
+            "Legacy.Maliev.CustomerService.Api/Dockerfile"
+          ],
+          "accepted": false,
+          "runtimeParityClaimed": false
+        },
+        {
+          "originalPath": "Maliev.CustomerService.Api/Maliev.CustomerService.Api.csproj",
+          "originalOwners": [
+            "Legacy.Maliev.CustomerService"
+          ],
+          "originalLedgerDisposition": "migration-required",
+          "originalLedgerDecision": null,
+          "proposedSemanticDisposition": "native-logging-project-successor",
+          "targetPaths": [
+            "Legacy.Maliev.CustomerService.Api/Legacy.Maliev.CustomerService.Api.csproj"
+          ],
+          "accepted": false,
+          "runtimeParityClaimed": false
+        },
+        {
+          "originalPath": "Maliev.CustomerService.Api/Maliev.CustomerService.Api.xml",
+          "originalOwners": [
+            "Legacy.Maliev.CustomerService"
+          ],
+          "originalLedgerDisposition": "migration-required",
+          "originalLedgerDecision": null,
+          "proposedSemanticDisposition": "generated-docs-follow-maintained-owning-code",
+          "targetPaths": [
+            "Legacy.Maliev.CustomerService.Api/Legacy.Maliev.CustomerService.Api.csproj"
+          ],
+          "accepted": false,
+          "runtimeParityClaimed": false
+        },
+        {
+          "originalPath": "Maliev.CustomerService.Api/Program.cs",
+          "originalOwners": [
+            "Legacy.Maliev.CustomerService"
+          ],
+          "originalLedgerDisposition": "migration-required",
+          "originalLedgerDecision": null,
+          "proposedSemanticDisposition": "native-logging-and-private-failure-successor",
+          "targetPaths": [
+            "Legacy.Maliev.CustomerService.Api/Program.cs"
+          ],
+          "accepted": false,
+          "runtimeParityClaimed": false
+        },
+        {
+          "originalPath": "Maliev.CustomerService.Api/ServiceExtensions.cs",
+          "originalOwners": [
+            "Legacy.Maliev.CustomerService"
+          ],
+          "originalLedgerDisposition": "migration-required",
+          "originalLedgerDecision": null,
+          "proposedSemanticDisposition": "native-logging-and-private-failure-successor",
+          "targetPaths": [
+            "Legacy.Maliev.CustomerService.Api/Program.cs"
+          ],
+          "accepted": false,
+          "runtimeParityClaimed": false
+        },
+        {
+          "originalPath": "Maliev.CustomerService.Api/Startup.cs",
+          "originalOwners": [
+            "Legacy.Maliev.CustomerService"
+          ],
+          "originalLedgerDisposition": "migration-required",
+          "originalLedgerDecision": null,
+          "proposedSemanticDisposition": "native-logging-and-private-failure-successor",
+          "targetPaths": [
+            "Legacy.Maliev.CustomerService.Api/Program.cs"
+          ],
+          "accepted": false,
+          "runtimeParityClaimed": false
+        }
+      ],
+      "wholeSourceShaAccepted": false,
+      "currentOwnerResolution": {
+        "status": "pending",
+        "issueUrls": [],
+        "prUrls": [],
+        "mergedTargetSha": null,
+        "validationEvidenceUrls": []
+      }
+    },
+    {
+      "sourceSha": "5ac7d045c51194edd9e64d8564f1b726b001be34",
+      "parents": [
+        "03dc9a1271c16e6535934445e9dd6e3f30e8fffe"
+      ],
+      "owner": "Legacy.Maliev.CustomerService",
+      "paths": [
+        {
+          "originalPath": "Maliev.CustomerService.Api/Dockerfile",
+          "originalOwners": [
+            "Legacy.Maliev.CustomerService"
+          ],
+          "originalLedgerDisposition": "migration-required",
+          "originalLedgerDecision": null,
+          "proposedSemanticDisposition": "packaging-successor-requires-owned-image-proof",
+          "targetPaths": [
+            "Legacy.Maliev.CustomerService.Api/Dockerfile"
+          ],
+          "accepted": false,
+          "runtimeParityClaimed": false
+        },
+        {
+          "originalPath": "Maliev.CustomerService.Api/Dockerfile.self-contained",
+          "originalOwners": [
+            "Legacy.Maliev.CustomerService"
+          ],
+          "originalLedgerDisposition": "migration-required",
+          "originalLedgerDecision": null,
+          "proposedSemanticDisposition": "packaging-successor-requires-owned-image-proof",
+          "targetPaths": [
+            "Legacy.Maliev.CustomerService.Api/Dockerfile"
+          ],
+          "accepted": false,
+          "runtimeParityClaimed": false
+        },
+        {
+          "originalPath": "Maliev.CustomerService.Api/Maliev.CustomerService.Api.csproj",
+          "originalOwners": [
+            "Legacy.Maliev.CustomerService"
+          ],
+          "originalLedgerDisposition": "migration-required",
+          "originalLedgerDecision": null,
+          "proposedSemanticDisposition": "native-logging-project-successor",
+          "targetPaths": [
+            "Legacy.Maliev.CustomerService.Api/Legacy.Maliev.CustomerService.Api.csproj"
+          ],
+          "accepted": false,
+          "runtimeParityClaimed": false
+        },
+        {
+          "originalPath": "Maliev.CustomerService.Api/Program.cs",
+          "originalOwners": [
+            "Legacy.Maliev.CustomerService"
+          ],
+          "originalLedgerDisposition": "migration-required",
+          "originalLedgerDecision": null,
+          "proposedSemanticDisposition": "native-logging-and-private-failure-successor",
+          "targetPaths": [
+            "Legacy.Maliev.CustomerService.Api/Program.cs"
+          ],
+          "accepted": false,
+          "runtimeParityClaimed": false
+        },
+        {
+          "originalPath": "Maliev.CustomerService.Api/Startup.cs",
+          "originalOwners": [
+            "Legacy.Maliev.CustomerService"
+          ],
+          "originalLedgerDisposition": "migration-required",
+          "originalLedgerDecision": null,
+          "proposedSemanticDisposition": "native-logging-and-private-failure-successor",
+          "targetPaths": [
+            "Legacy.Maliev.CustomerService.Api/Program.cs"
+          ],
+          "accepted": false,
+          "runtimeParityClaimed": false
+        }
+      ],
+      "wholeSourceShaAccepted": false,
+      "currentOwnerResolution": {
+        "status": "pending",
+        "issueUrls": [],
+        "prUrls": [],
+        "mergedTargetSha": null,
+        "validationEvidenceUrls": []
+      }
+    },
+    {
+      "sourceSha": "a59193ae2ac030d0e1d373ce4ec50c1b35437391",
+      "parents": [
+        "8175e8f3383d31030de2321c480bf6f5bc0fbb2b"
+      ],
+      "owner": "Legacy.Maliev.CustomerService",
+      "paths": [
+        {
+          "originalPath": "Maliev.CustomerService.Api/Maliev.CustomerService.Api.csproj",
+          "originalOwners": [
+            "Legacy.Maliev.CustomerService"
+          ],
+          "originalLedgerDisposition": "migration-required",
+          "originalLedgerDecision": null,
+          "proposedSemanticDisposition": "native-logging-project-successor",
+          "targetPaths": [
+            "Legacy.Maliev.CustomerService.Api/Legacy.Maliev.CustomerService.Api.csproj"
+          ],
+          "accepted": false,
+          "runtimeParityClaimed": false
+        },
+        {
+          "originalPath": "Maliev.CustomerService.Api/Program.cs",
+          "originalOwners": [
+            "Legacy.Maliev.CustomerService"
+          ],
+          "originalLedgerDisposition": "migration-required",
+          "originalLedgerDecision": null,
+          "proposedSemanticDisposition": "native-logging-and-private-failure-successor",
+          "targetPaths": [
+            "Legacy.Maliev.CustomerService.Api/Program.cs"
+          ],
+          "accepted": false,
+          "runtimeParityClaimed": false
+        },
+        {
+          "originalPath": "Maliev.CustomerService.Api/Startup.cs",
+          "originalOwners": [
+            "Legacy.Maliev.CustomerService"
+          ],
+          "originalLedgerDisposition": "migration-required",
+          "originalLedgerDecision": null,
+          "proposedSemanticDisposition": "native-logging-and-private-failure-successor",
+          "targetPaths": [
+            "Legacy.Maliev.CustomerService.Api/Program.cs"
+          ],
+          "accepted": false,
+          "runtimeParityClaimed": false
+        },
+        {
+          "originalPath": "Maliev.CustomerService.Api/deploy.ps1",
+          "originalOwners": [
+            "Legacy.Maliev.CustomerService"
+          ],
+          "originalLedgerDisposition": "migration-required",
+          "originalLedgerDecision": null,
+          "proposedSemanticDisposition": "excluded-deployment-remains-pending",
+          "targetPaths": [],
+          "accepted": false,
+          "runtimeParityClaimed": false
+        }
+      ],
+      "wholeSourceShaAccepted": false,
+      "currentOwnerResolution": {
+        "status": "pending",
+        "issueUrls": [],
+        "prUrls": [],
+        "mergedTargetSha": null,
+        "validationEvidenceUrls": []
+      }
+    }
+  ],
+  "ownedPathCount": 16,
+  "deploymentPathsExcluded": 1,
+  "targetSourceEvidence": [
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Program.cs",
+      "gitBlobOid": "73b8fa6c88b39b24b40cba14145f2baf086a75ee",
+      "sha256": "d161a28da02298348d07b84e0c87e8fa104d89f792b0a952c33408d03054e227"
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Api/Legacy.Maliev.CustomerService.Api.csproj",
+      "gitBlobOid": "da25be535f3fe8409cf80f60f8a8ae66b5a194f6",
+      "sha256": "2e3761fbacb75bf275b7147006818ad54e025492e04d0ac96e578f0f9700f198"
+    }
+  ],
+  "realStartupTestSources": [
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Startup/CustomerStartupInterceptionTests.cs",
+      "sha256": "d68daa44a58989186a4f9de06052e289b0a115c258844428cade5e2ed7cbadf9",
+      "bytes": 5321
+    },
+    {
+      "path": "Legacy.Maliev.CustomerService.Tests/Startup/CustomerStartupProcessTests.cs",
+      "sha256": "e8865634ef37a8455986c38222fe022aa8095193ffd3778f7557157271f41ef2",
+      "bytes": 5350
+    }
+  ],
+  "runtimeImplementationAlreadyPresent": true,
+  "newApplicationImplementationEdits": 0,
+  "newRuntimeEvidence": null,
+  "sourceClosure": false,
+  "acceptanceRequires": [
+    "Exact PR-head hosted strict Release build with zero warnings/errors.",
+    "Existing real production entrypoint/privacy tests and full owning suite, format, package audit and raw coverage.",
+    "Independent source disposition review per SHA/path; packaging/image and deployment obligations remain pending until actual proof.",
+    "Attach exact owning issue/PR/merged target/run evidence without changing canonical tracking here."
+  ],
+  "canonicalCounts": [
+    1126,
+    204,
+    922
+  ]
+}
