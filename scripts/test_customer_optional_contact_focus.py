@@ -444,6 +444,27 @@ def doc_pin_map(rows):
         result[path] = row
     return result
 
+
+PRIVATE_CONSOLE_449_PROGRAM = "Legacy.Maliev.CustomerService.Api/Program.cs"
+PRIVATE_CONSOLE_449_PREDECESSOR_BLOB = "d59c9e563b1404de2913ec76d6123dae56764259"
+PRIVATE_CONSOLE_449_SUCCESSOR_BLOB = "92915b4d4eb431617ef74e9a0008622f7643cb8d"
+PRIVATE_CONSOLE_449_BEFORE = {"path":"Legacy.Maliev.CustomerService.Api/Program.cs","bytes":3229,"sha256":"94f908f40a4ded7d3bc9dcff7617cbc2ef30264e611e5fa7cb3b40e2a57ba318"}
+PRIVATE_CONSOLE_449_AFTER = {"path":"Legacy.Maliev.CustomerService.Api/Program.cs","bytes":3829,"sha256":"77f9d333ff5805e3518d45ee3a231849318220a8fdc7bc0396e77ea059f940e9"}
+PRIVATE_CONSOLE_449_INSERTION = "    // Keep tracing and metrics services while selecting the original private console-only log contract.\n    builder.Logging.ClearProviders();\n    builder.Logging.AddConsoleFormatter<Maliev.Aspire.ServiceDefaults.Logging.PrivateFailureConsoleFormatter,\n        Microsoft.Extensions.Logging.Console.ConsoleFormatterOptions>();\n    builder.Logging.AddConsole(options => options.FormatterName =\n        Maliev.Aspire.ServiceDefaults.Logging.PrivateFailureConsoleFormatter.FormatterName);\n    builder.Logging.AddFilter<Microsoft.Extensions.Logging.Console.ConsoleLoggerProvider>(null, LogLevel.Warning);\n".encode("utf-8")
+
+
+def private_console_449_preimage(current):
+    doc_need(type(current) is bytes and len(current) == PRIVATE_CONSOLE_449_AFTER["bytes"]
+             and hashlib.sha256(current).hexdigest() == PRIVATE_CONSOLE_449_AFTER["sha256"],
+             "Exact reviewed Customer console-only Program required")
+    doc_need(current.count(PRIVATE_CONSOLE_449_INSERTION) == 1,
+             "Exact Customer console-only insertion required")
+    previous = current.replace(PRIVATE_CONSOLE_449_INSERTION, b"", 1)
+    doc_need(len(previous) == PRIVATE_CONSOLE_449_BEFORE["bytes"]
+             and hashlib.sha256(previous).hexdigest() == PRIVATE_CONSOLE_449_BEFORE["sha256"],
+             "Customer console-only inverse must restore exact Program predecessor")
+    return previous
+
 def validate_documentation_successor(root, manifest_path, manifest):
     doc_need(manifest_path in FROZEN and type(manifest) is dict, "Known focused manifest")
     count, pins_sha, fields_sha, predecessor_blob = FROZEN[manifest_path]
@@ -480,6 +501,11 @@ def validate_documentation_successor(root, manifest_path, manifest):
     for path, row in current.items():
         if path in reviewed:
             doc_need(row == reviewed[path], "Exact reviewed documentation postimage")
+        elif path == PRIVATE_CONSOLE_449_PROGRAM:
+            doc_need(old[path] == PRIVATE_CONSOLE_449_BEFORE and row == PRIVATE_CONSOLE_449_AFTER,
+                     "Only the reviewed Customer console-only Program transition is admitted")
+            pin_validator.validate_code_pins(root, [row])
+            private_console_449_preimage((root / path).read_bytes())
         elif path in REPAIR_PATHS | PARENT_MANIFEST_PATHS:
             # This path must already have existed in the historical roster.
             # Read exact current bytes using the unchanged original primitive.
@@ -601,6 +627,57 @@ class DocumentationSuccessorControls(unittest.TestCase):
             with self.assertRaises(FileNotFoundError):
                 pin_validator.validate_code_pins(root, [pin(current)])
 
+
+
+
+class PrivateConsole449SuccessorControls(unittest.TestCase):
+    def test_actual_program_has_exact_console_only_inverse(self):
+        current = (DOC_ROOT / PRIVATE_CONSOLE_449_PROGRAM).read_bytes()
+        previous = private_console_449_preimage(current)
+        self.assertEqual(PRIVATE_CONSOLE_449_BEFORE["bytes"], len(previous))
+        self.assertEqual(PRIVATE_CONSOLE_449_BEFORE["sha256"], hashlib.sha256(previous).hexdigest())
+        self.assertEqual(current, previous.replace(
+            b'    builder.AddServiceDefaults();\n',
+            b'    builder.AddServiceDefaults();\n' + PRIVATE_CONSOLE_449_INSERTION, 1))
+        for changed in (
+            previous,
+            current + b" ",
+            current.replace(b"LogLevel.Warning", b"LogLevel.Information"),
+            current.replace(b"builder.Logging.ClearProviders();", b"// provider selection removed"),
+            current.replace(b'AddPrivateRequestObservation("customer")', b'AddPrivateRequestObservation("other")'),
+            current.replace(b"PrivateFailureConsoleFormatter", b"UnreviewedConsoleFormatter", 1),
+        ):
+            with self.subTest(sourceSha256=hashlib.sha256(changed).hexdigest()), self.assertRaises(ValueError):
+                private_console_449_preimage(changed)
+
+    def test_all_profiles_admit_only_exact_program_postimage_without_roster_changes(self):
+        for manifest_path in FROZEN:
+            manifest = json.loads((DOC_ROOT / manifest_path).read_bytes())
+            with self.subTest(manifest=manifest_path):
+                before = doc_pin_map(manifest["preDocumentationCodePins"])
+                after = doc_pin_map(manifest["codePins"])
+                self.assertEqual(list(before), list(after))
+                self.assertEqual(PRIVATE_CONSOLE_449_BEFORE, before[PRIVATE_CONSOLE_449_PROGRAM])
+                self.assertEqual(PRIVATE_CONSOLE_449_AFTER, after[PRIVATE_CONSOLE_449_PROGRAM])
+                self.assertEqual(74, len(validate_documentation_successor(DOC_ROOT, manifest_path, manifest)))
+            for mutation in ("rollback", "wrong-hash", "wrong-size", "historical", "unreviewed-source"):
+                changed = copy.deepcopy(manifest)
+                if mutation == "historical":
+                    row = next(row for row in changed["preDocumentationCodePins"]
+                               if row["path"] == PRIVATE_CONSOLE_449_PROGRAM)
+                    row["sha256"] = PRIVATE_CONSOLE_449_AFTER["sha256"]
+                else:
+                    row = next(row for row in changed["codePins"] if row["path"] ==
+                               (PRIVATE_CONSOLE_449_PROGRAM if mutation != "unreviewed-source"
+                                else "scripts/verify_customer_email_focused.py"))
+                    if mutation == "rollback":
+                        row.update(PRIVATE_CONSOLE_449_BEFORE)
+                    elif mutation == "wrong-size":
+                        row["bytes"] += 1
+                    else:
+                        row["sha256"] = "0" * 64
+                with self.subTest(manifest=manifest_path, mutation=mutation), self.assertRaises(ValueError):
+                    validate_documentation_successor(DOC_ROOT, manifest_path, changed)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

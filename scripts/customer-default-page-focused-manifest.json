@@ -149,8 +149,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Program.cs",
-      "bytes": 3229,
-      "sha256": "94f908f40a4ded7d3bc9dcff7617cbc2ef30264e611e5fa7cb3b40e2a57ba318"
+      "bytes": 3829,
+      "sha256": "77f9d333ff5805e3518d45ee3a231849318220a8fdc7bc0396e77ea059f940e9"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Properties/launchSettings.json",
