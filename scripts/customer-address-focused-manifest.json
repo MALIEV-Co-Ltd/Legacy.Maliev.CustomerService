@@ -147,8 +147,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Program.cs",
-      "bytes": 3229,
-      "sha256": "94f908f40a4ded7d3bc9dcff7617cbc2ef30264e611e5fa7cb3b40e2a57ba318"
+      "bytes": 3829,
+      "sha256": "77f9d333ff5805e3518d45ee3a231849318220a8fdc7bc0396e77ea059f940e9"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/Properties/launchSettings.json",
@@ -853,12 +853,12 @@
     {
       "path": "scripts/customer-default-page-focused-manifest.json",
       "bytes": 186217,
-      "sha256": "69179d9755612471eadf88698cf90f3140a86b8dc7e9083214875c67c005136c"
+      "sha256": "6764af9fa9e8bd7db1b1c3e252dd21618081f51b9f95260ceefee4d1bc8c8428"
     },
     {
       "path": "scripts/customer-email-focused-manifest.json",
       "bytes": 206056,
-      "sha256": "5db3ceaf446f608e342403f52dbc14badffe28000ef13fde14bc6676d2b9eeca"
+      "sha256": "8bdb009b35fd1f8ed17bb76771ce1b6987694073e6925fc046a99bb2570ec487"
     },
     {
       "path": "scripts/customer-kernel-packet/README.md",
@@ -1492,8 +1492,8 @@
     },
     {
       "path": "scripts/test_customer_optional_contact_focus.py",
-      "bytes": 29679,
-      "sha256": "4145bd7585e16ff5f10725b325662f269cc1462b70f2be7bdd1a22adb9a2a6fb"
+      "bytes": 35275,
+      "sha256": "23bf1fae78f243d7ab931812d4ff0f7d9ee3a169aaed7e9b21e4ad298b7aaf96"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCustomerContactInputFormatter.cs",
