@@ -6,13 +6,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Serializes company lifecycle scenarios that share fixture state.</summary>
 [CollectionDefinition("Customer company lifecycle", DisableParallelization = true)]
 public sealed class CustomerCompanyLifecycleCollection;
 
+/// <summary>Exercises ordinary company creation, reading, updates, deletion, and authorization against persisted customer data.</summary>
+/// <param name="fixture">The shared fixture providing customer hosts and disposable persistence for these scenarios.</param>
 [Collection("Customer company lifecycle")]
 public sealed class CustomerCompanyLifecycleHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Verifies company lifecycle fields and responses while preserving unrelated customer projections and cached data.</summary>
+    /// <param name="name">The literal company name submitted by the scenario.</param>
+    /// <param name="tax">The submitted tax number, or null when no tax number is supplied.</param>
+    /// <returns>A task representing completion of the company lifecycle, persistence, and cache assertions.</returns>
     [Theory]
     [InlineData("", "0100000000000")]
     [InlineData("บริษัท Fixture", null)]
@@ -82,6 +89,10 @@ public sealed class CustomerCompanyLifecycleHttpTests(CustomerDetailAuthorityFix
         Assert.True(await fixture.CacheExistsAsync());
     }
 
+    /// <summary>Verifies that invalid authority cannot create, read, or delete stored companies or alter existing cache entries.</summary>
+    /// <param name="authority">The authentication and permission scenario used by the test client.</param>
+    /// <param name="expected">The expected HTTP status for the supplied scenario.</param>
+    /// <returns>A task representing completion of the company lifecycle, persistence, and cache assertions.</returns>
     [Theory]
     [InlineData("anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("wrong-signature", HttpStatusCode.Unauthorized)]
@@ -106,6 +117,9 @@ public sealed class CustomerCompanyLifecycleHttpTests(CustomerDetailAuthorityFix
         Assert.True(await fixture.CacheExistsAsync());
     }
 
+    /// <summary>Verifies that invalid company input is refused before create or update without graph or cache changes.</summary>
+    /// <param name="body">The invalid JSON request body submitted to both create and update.</param>
+    /// <returns>A task representing completion of the company lifecycle, persistence, and cache assertions.</returns>
     [Theory]
     [InlineData("{}")]
     [InlineData("{\"Name\":null,\"TaxNumber\":\"0100000000000\"}")]

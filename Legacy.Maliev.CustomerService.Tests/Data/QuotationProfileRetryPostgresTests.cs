@@ -8,12 +8,19 @@ using Testcontainers.PostgreSql;
 
 namespace Legacy.Maliev.CustomerService.Tests.Data;
 
+/// <summary>Owns a PostgreSQL fixture for quotation snapshot, completion, and provisioning retry boundaries.</summary>
 public sealed class QuotationProfileRetryPostgresTests : IAsyncLifetime
 {
     private readonly PostgreSqlContainer postgres = new PostgreSqlBuilder("postgres:18-alpine").Build();
+    /// <summary>Starts the PostgreSQL container owned by these quotation retry tests.</summary>
+    /// <returns>A task that completes when the owned PostgreSQL container has started.</returns>
     public Task InitializeAsync() => postgres.StartAsync();
+    /// <summary>Releases the PostgreSQL container owned by these quotation retry tests.</summary>
+    /// <returns>A task that completes after the owned PostgreSQL container has been disposed.</returns>
     public Task DisposeAsync() => postgres.DisposeAsync().AsTask();
 
+    /// <summary>Checks whole-snapshot retries and cancellation without leaking tracked entities or creating completion receipts.</summary>
+    /// <returns>A task that completes after asserting two read attempt contexts, one controlled fault, an untracked result, cancellation propagation, and no receipts.</returns>
     [Fact]
     public async Task Read_RetriesWholeSnapshotAndHonorsCancellation()
     {
@@ -40,6 +47,9 @@ public sealed class QuotationProfileRetryPostgresTests : IAsyncLifetime
         Assert.Empty(await seed.QuotationProfileCompletionOperations.ToListAsync());
     }
 
+    /// <summary>Checks rollback or lost-acknowledgment completion retries using fresh contexts and one durable receipt.</summary>
+    /// <param name="lostCommit">Whether the injected fault occurs after commit acknowledgment instead of before the transaction commits.</param>
+    /// <returns>A task that completes after asserting successful completion, fresh attempt contexts, isolated company replacement, one durable receipt, and exact replay.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -86,6 +96,49 @@ public sealed class QuotationProfileRetryPostgresTests : IAsyncLifetime
         var replay = await new QuotationProfileCompletionStore(db).CompleteAsync(
             owner.Id, "owner-subject", key, graph.ETag, request, CancellationToken.None);
         Assert.Equal(result, replay);
+    }
+
+    /// <summary>Checks whole locked-graph provisioning retries without duplicating customer, company, or address resources.</summary>
+    /// <param name="lostCommit">Whether to lose the commit acknowledgment instead of failing before commit.</param>
+    /// <returns>A task that completes after asserting one resulting graph, two attempt contexts, retained canonical selection, no keyed-create receipt, and cancellation propagation.</returns>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Provision_RetriesWholeLockedGraphWithoutDuplicatingResources(bool lostCommit)
+    {
+        await using var seed = new CustomerDbContext(new DbContextOptionsBuilder<CustomerDbContext>()
+            .UseNpgsql(postgres.GetConnectionString()).Options);
+        await seed.Database.MigrateAsync();
+        var fault = new CommitFault(lostCommit);
+        var attempts = new AttemptProbe();
+        await using var db = new CustomerDbContext(new DbContextOptionsBuilder<CustomerDbContext>()
+            .UseNpgsql(postgres.GetConnectionString(), options => options.EnableRetryOnFailure(2, TimeSpan.Zero, null))
+            .AddInterceptors(fault, attempts).Options);
+        var request = new InstantQuotationCustomerProfileRequest(
+            "Retry", "Profile", " Σ@example.test ", null, null, "Retry company", null,
+            new InstantQuotationAddressInput(null, "Retry road", null, null, null, null, 764), null, true);
+        var repository = new CustomerRepository(db, TimeProvider.System);
+        var result = await repository.ProvisionInstantQuotationProfileAsync(request, CancellationToken.None);
+        Assert.Equal(!lostCommit, result.CustomerCreated);
+        Assert.Equal(1, fault.FaultCount);
+        Assert.Equal(2, attempts.ContextIds.Count);
+        Assert.Empty(db.ChangeTracker.Entries());
+        var stored = await seed.Customers.AsNoTracking().SingleAsync();
+        Assert.Equal(result.CustomerId, stored.Id);
+        Assert.Equal("Σ@example.test", stored.Email);
+        Assert.Equal(stored.BillingAddressId, stored.ShippingAddressId);
+        Assert.Single(await seed.Addresses.ToListAsync());
+        Assert.Single(await seed.Companies.ToListAsync());
+        Assert.Empty(await seed.CustomerCreateOperations.ToListAsync());
+        var selected = await repository.ProvisionInstantQuotationProfileAsync(
+            request with { Email = "ς@EXAMPLE.TEST" }, CancellationToken.None);
+        Assert.Equal(result.CustomerId, selected.CustomerId);
+        Assert.False(selected.CustomerCreated);
+        Assert.Single(await seed.Customers.ToListAsync());
+        using var cancelled = new CancellationTokenSource();
+        await cancelled.CancelAsync();
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
+            repository.ProvisionInstantQuotationProfileAsync(request, cancelled.Token));
     }
 
     private sealed class CommitFault(bool lostCommit) : DbTransactionInterceptor

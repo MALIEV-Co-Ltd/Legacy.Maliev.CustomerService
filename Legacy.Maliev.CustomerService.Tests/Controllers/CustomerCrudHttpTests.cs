@@ -8,8 +8,12 @@ using Moq;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Verifies controller CRUD routes, literal wire shapes, missing statuses, and validation using strict service doubles.</summary>
 public sealed class CustomerCrudHttpTests
 {
+    /// <summary>Checks customer CRUD named locations, profile and remark reads, paging, and missing-record statuses.</summary>
+    /// <param name="found">Whether the strict service returns an existing customer and successful mutations rather than missing results.</param>
+    /// <returns>A task that completes after verifying customer CRUD named locations, profile and remark reads, paging, and missing-record statuses.</returns>
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
@@ -50,6 +54,9 @@ public sealed class CustomerCrudHttpTests
         service.VerifyAll();
     }
 
+    /// <summary>Checks address and company CRUD response shapes, named locations, and missing-record statuses.</summary>
+    /// <param name="found">Whether address and company service operations find the selected resources rather than return missing results.</param>
+    /// <returns>A task that completes after verifying address and company CRUD response shapes, named locations, and missing-record statuses.</returns>
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
@@ -92,6 +99,11 @@ public sealed class CustomerCrudHttpTests
         service.VerifyAll();
     }
 
+    /// <summary>Checks invalid customer fields and oversized address lines return 400 before calling persistence services.</summary>
+    /// <param name="first">The first-name request value, empty in the invalid-first-name case.</param>
+    /// <param name="last">The last-name request value, whitespace in the invalid-last-name case.</param>
+    /// <param name="email">The email request value, malformed in the invalid-email case.</param>
+    /// <returns>A task that completes after verifying invalid customer fields and oversized address lines return 400 before calling persistence services.</returns>
     [Theory]
     [InlineData("", "Last", "sample@example.test")]
     [InlineData("First", " ", "sample@example.test")]
@@ -105,7 +117,7 @@ public sealed class CustomerCrudHttpTests
         var request = new UpsertCustomerRequest(first, last, null, null, null, email, null, null, null, null);
         using var created = await client.PostAsync("/customers", Body(request));
         using var updated = await client.PutAsync("/customers/7", Body(request));
-        var address = new UpsertAddressRequest(null, " ", null, null, null, null, 764);
+        var address = new UpsertAddressRequest(null, new string('a', 257), null, null, null, null, 764);
         using var addressCreated = await client.PostAsync("/customers/7/addresses", Body(address));
         using var addressUpdated = await client.PutAsync("/customers/addresses/13", Body(address));
         Assert.Equal(HttpStatusCode.BadRequest, created.StatusCode);

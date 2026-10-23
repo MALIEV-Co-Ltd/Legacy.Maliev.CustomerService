@@ -21,8 +21,11 @@ using Moq;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Exercises company validation, tax-only requests, response casing, and permission boundaries with a strict service mock.</summary>
 public sealed class CompanyTaxOnlyHttpTests
 {
+    /// <summary>Verifies that direct company controller calls reject a null name without relying on MVC validation.</summary>
+    /// <returns>A task representing completion of the company HTTP validation and service-call assertions.</returns>
     [Fact]
     public async Task DirectController_NullName_DoesNotDependOnMvcValidation()
     {
@@ -34,6 +37,10 @@ public sealed class CompanyTaxOnlyHttpTests
         service.VerifyNoOtherCalls();
     }
 
+    /// <summary>Verifies accepted company creation preserves PascalCase fields, omitted null values, and the named resource location.</summary>
+    /// <param name="name">The literal company name submitted by the scenario.</param>
+    /// <param name="tax">The submitted tax number, or null when no tax number is supplied.</param>
+    /// <returns>A task representing completion of the company HTTP validation and service-call assertions.</returns>
     [Theory]
     [InlineData("", "0100000000000")]
     [InlineData("  ", "0100000000000")]
@@ -59,6 +66,10 @@ public sealed class CompanyTaxOnlyHttpTests
         service.VerifyAll();
     }
 
+    /// <summary>Verifies tax-only company updates retain the service outcome as either no-content or not-found.</summary>
+    /// <param name="found">Whether the service reports the company update target as present.</param>
+    /// <param name="expected">The expected no-content or not-found response for the service outcome.</param>
+    /// <returns>A task representing completion of the company HTTP validation and service-call assertions.</returns>
     [Theory]
     [InlineData(true, HttpStatusCode.NoContent)]
     [InlineData(false, HttpStatusCode.NotFound)]
@@ -75,6 +86,9 @@ public sealed class CompanyTaxOnlyHttpTests
         service.VerifyAll();
     }
 
+    /// <summary>Verifies invalid company bodies are refused on create and update before calling the service.</summary>
+    /// <param name="json">The invalid company body submitted to both create and update.</param>
+    /// <returns>A task representing completion of the company HTTP validation and service-call assertions.</returns>
     [Theory]
     [InlineData("{\"Name\":\"\",\"TaxNumber\":null}")]
     [InlineData("{\"Name\":\"  \",\"TaxNumber\":\"  \"}")]
@@ -94,6 +108,10 @@ public sealed class CompanyTaxOnlyHttpTests
         service.VerifyNoOtherCalls();
     }
 
+    /// <summary>Verifies unauthorized company create and update requests never call the service.</summary>
+    /// <param name="identity">The test identity header value; null omits the header when supported by the scenario.</param>
+    /// <param name="expected">The expected HTTP status for the supplied scenario.</param>
+    /// <returns>A task representing completion of the company HTTP validation and service-call assertions.</returns>
     [Theory]
     [InlineData(null, HttpStatusCode.Unauthorized)]
     [InlineData("denied", HttpStatusCode.Forbidden)]

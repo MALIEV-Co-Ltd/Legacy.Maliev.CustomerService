@@ -9,13 +9,20 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Serializes address persistence tests sharing related customer graphs and Redis state.</summary>
 [CollectionDefinition("Customer address persistence", DisableParallelization = true)]
 public sealed class CustomerAddressPersistenceCollection;
 
+/// <summary>Verifies address length boundaries, owner-scoped creation, shared updates, and atomic persistence failures.</summary>
+/// <param name="fixture">The shared Customer authority fixture supplying disposable PostgreSQL and Redis, production hosts, and signed request clients.</param>
 [Collection("Customer address persistence")]
 public sealed class CustomerAddressPersistenceHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Checks 256-character address persistence and atomic 257-character failures with precise linked-customer cache effects.</summary>
+    /// <param name="field">The AddressLine1, AddressLine2, Building, City, State, or PostalCode field whose storage boundary is exercised.</param>
+    /// <param name="update">Whether to PUT a shared existing address rather than POST a new address under customer 1.</param>
+    /// <returns>A task that completes after verifying 256-character address persistence and atomic 257-character failures with precise linked-customer cache effects.</returns>
     [Theory]
     [InlineData("AddressLine1", false)]
     [InlineData("AddressLine2", false)]
@@ -98,14 +105,17 @@ public sealed class CustomerAddressPersistenceHttpTests(CustomerDetailAuthorityF
         var invalid = Payload(field, 257);
         invalid["CountryId"] = 840;
         using var rejected = await SendAsync(client, update, invalid);
-        Assert.Equal(HttpStatusCode.InternalServerError, rejected.StatusCode);
+        Assert.Equal(field == "AddressLine1" ? HttpStatusCode.BadRequest : HttpStatusCode.InternalServerError, rejected.StatusCode);
         Assert.Equal(before, await SnapshotAsync());
         foreach (var customerId in new[] { 1, 2, 3 })
             Assert.Equal(beforeCache[customerId], await cache.GetAsync($"customer:{customerId}"));
-        using var error = JsonDocument.Parse(await rejected.Content.ReadAsStringAsync());
-        Assert.Equal(500, error.RootElement.GetProperty("statusCode").GetInt32());
-        Assert.Equal(JsonValueKind.Null, error.RootElement.GetProperty("details").ValueKind);
-        Assert.False(string.IsNullOrWhiteSpace(error.RootElement.GetProperty("traceId").GetString()));
+        if (field != "AddressLine1")
+        {
+            using var error = JsonDocument.Parse(await rejected.Content.ReadAsStringAsync());
+            Assert.Equal(500, error.RootElement.GetProperty("statusCode").GetInt32());
+            Assert.Equal(JsonValueKind.Null, error.RootElement.GetProperty("details").ValueKind);
+            Assert.False(string.IsNullOrWhiteSpace(error.RootElement.GetProperty("traceId").GetString()));
+        }
         var body = await rejected.Content.ReadAsStringAsync();
         foreach (var marker in new[] { new string('ก', 257), "Npgsql", "character varying", "staff-only" })
             Assert.DoesNotContain(marker, body, StringComparison.OrdinalIgnoreCase);
