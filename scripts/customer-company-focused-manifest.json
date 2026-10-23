@@ -1068,8 +1068,8 @@
     },
     {
       "path": "scripts/kernel_root_route.py",
-      "bytes": 45503,
-      "sha256": "9e13526b6f020b2580a632e261a50a4278099999dd96af48d76cf9618c726f5c"
+      "bytes": 50648,
+      "sha256": "c59501f58a1c2ff61a2dabc148ef045e52c54e42907f0b4cc10c8d7797a0aaa5"
     },
     {
       "path": "scripts/publisher_recipe.py",
@@ -1534,12 +1534,12 @@
     {
       "path": "scripts/customer-default-page-focused-manifest.json",
       "bytes": 186217,
-      "sha256": "6764af9fa9e8bd7db1b1c3e252dd21618081f51b9f95260ceefee4d1bc8c8428"
+      "sha256": "ccb421898b7d6b9fcbb386c51fc4911adbfa107d57bd5f7724993e1f0c5d2bea"
     },
     {
       "path": "scripts/customer-email-focused-manifest.json",
       "bytes": 206056,
-      "sha256": "8bdb009b35fd1f8ed17bb76771ce1b6987694073e6925fc046a99bb2570ec487"
+      "sha256": "a3b0b84370119c412b57c81aeb7a96b95e907a01a3c3bb312389d295a1f0e3ea"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCompanyMvcJsonMetadata.cs",
@@ -1643,8 +1643,8 @@
     },
     {
       "path": "scripts/test_customer_optional_contact_focus.py",
-      "bytes": 35275,
-      "sha256": "23bf1fae78f243d7ab931812d4ff0f7d9ee3a169aaed7e9b21e4ad298b7aaf96"
+      "bytes": 39085,
+      "sha256": "55d59d705da0917084f8e86c541c9e22472af87342168badae2f0b80da0502f9"
     },
     {
       "path": "scripts/verify_customer_address_focus.py",

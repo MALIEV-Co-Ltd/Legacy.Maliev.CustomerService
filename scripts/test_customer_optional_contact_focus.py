@@ -465,6 +465,21 @@ def private_console_449_preimage(current):
              "Customer console-only inverse must restore exact Program predecessor")
     return previous
 
+HOST_STAGING_65_PATH = "scripts/kernel_root_route.py"
+HOST_STAGING_65_BEFORE = {"path":"scripts/kernel_root_route.py","bytes":45503,"sha256":"9e13526b6f020b2580a632e261a50a4278099999dd96af48d76cf9618c726f5c"}
+HOST_STAGING_65_AFTER = {"path":"scripts/kernel_root_route.py","bytes":50648,"sha256":"c59501f58a1c2ff61a2dabc148ef045e52c54e42907f0b4cc10c8d7797a0aaa5"}
+
+
+def host_staging_65_postimage(current):
+    doc_need(type(current) is bytes and len(current) == HOST_STAGING_65_AFTER["bytes"]
+             and hashlib.sha256(current).hexdigest() == HOST_STAGING_65_AFTER["sha256"],
+             "Exact independently reviewed PR65 host-staging postimage required")
+    doc_need(hashlib.sha1(b"blob " + str(len(current)).encode() + bytes([0]) + current).hexdigest()
+             == "5f12906c3e033c7453e41eefc211e0ccc2f39cfa",
+             "Exact PR65 Git blob identity required")
+    return True
+
+
 def validate_documentation_successor(root, manifest_path, manifest):
     doc_need(manifest_path in FROZEN and type(manifest) is dict, "Known focused manifest")
     count, pins_sha, fields_sha, predecessor_blob = FROZEN[manifest_path]
@@ -506,6 +521,11 @@ def validate_documentation_successor(root, manifest_path, manifest):
                      "Only the reviewed Customer console-only Program transition is admitted")
             pin_validator.validate_code_pins(root, [row])
             private_console_449_preimage((root / path).read_bytes())
+        elif path == HOST_STAGING_65_PATH:
+            doc_need(old[path] == HOST_STAGING_65_BEFORE and row == HOST_STAGING_65_AFTER,
+                     "Only the reviewed PR65 host-staging transition is admitted")
+            pin_validator.validate_code_pins(root, [row])
+            host_staging_65_postimage((root / path).read_bytes())
         elif path in REPAIR_PATHS | PARENT_MANIFEST_PATHS:
             # This path must already have existed in the historical roster.
             # Read exact current bytes using the unchanged original primitive.
@@ -672,6 +692,49 @@ class PrivateConsole449SuccessorControls(unittest.TestCase):
                                 else "scripts/verify_customer_email_focused.py"))
                     if mutation == "rollback":
                         row.update(PRIVATE_CONSOLE_449_BEFORE)
+                    elif mutation == "wrong-size":
+                        row["bytes"] += 1
+                    else:
+                        row["sha256"] = "0" * 64
+                with self.subTest(manifest=manifest_path, mutation=mutation), self.assertRaises(ValueError):
+                    validate_documentation_successor(DOC_ROOT, manifest_path, changed)
+
+
+class HostStaging65SuccessorControls(unittest.TestCase):
+    def test_actual_host_staging_source_is_exact_reviewed_postimage(self):
+        current = (DOC_ROOT / HOST_STAGING_65_PATH).read_bytes()
+        self.assertTrue(host_staging_65_postimage(current))
+        for changed in (
+            current + b" ",
+            current.replace(b"consumer-stage-source", b"unreviewed-source-mode", 1),
+            current.replace(b"4194304", b"3145728", 1),
+            current.replace(b"hostSourceReceiptSha256", b"unreviewedReceiptSha256", 1),
+        ):
+            with self.subTest(sourceSha256=hashlib.sha256(changed).hexdigest()), self.assertRaises(ValueError):
+                host_staging_65_postimage(changed)
+
+    def test_all_profiles_admit_only_exact_host_staging_tuple(self):
+        for manifest_path in FROZEN:
+            manifest = json.loads((DOC_ROOT / manifest_path).read_bytes())
+            before = doc_pin_map(manifest["preDocumentationCodePins"])
+            after = doc_pin_map(manifest["codePins"])
+            with self.subTest(manifest=manifest_path):
+                self.assertEqual(list(before), list(after))
+                self.assertEqual(HOST_STAGING_65_BEFORE, before[HOST_STAGING_65_PATH])
+                self.assertEqual(HOST_STAGING_65_AFTER, after[HOST_STAGING_65_PATH])
+                self.assertEqual(74, len(validate_documentation_successor(DOC_ROOT, manifest_path, manifest)))
+            for mutation in ("rollback", "wrong-hash", "wrong-size", "historical", "unreviewed-guard"):
+                changed = copy.deepcopy(manifest)
+                if mutation == "historical":
+                    row = next(row for row in changed["preDocumentationCodePins"]
+                               if row["path"] == HOST_STAGING_65_PATH)
+                    row.update(HOST_STAGING_65_AFTER)
+                else:
+                    target = ("scripts/verify_customer_email_focused.py"
+                              if mutation == "unreviewed-guard" else HOST_STAGING_65_PATH)
+                    row = next(row for row in changed["codePins"] if row["path"] == target)
+                    if mutation == "rollback":
+                        row.update(HOST_STAGING_65_BEFORE)
                     elif mutation == "wrong-size":
                         row["bytes"] += 1
                     else:

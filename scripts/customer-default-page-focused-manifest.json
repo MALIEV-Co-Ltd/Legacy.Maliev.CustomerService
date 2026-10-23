@@ -939,8 +939,8 @@
     },
     {
       "path": "scripts/kernel_root_route.py",
-      "bytes": 45503,
-      "sha256": "9e13526b6f020b2580a632e261a50a4278099999dd96af48d76cf9618c726f5c"
+      "bytes": 50648,
+      "sha256": "c59501f58a1c2ff61a2dabc148ef045e52c54e42907f0b4cc10c8d7797a0aaa5"
     },
     {
       "path": "scripts/publisher_recipe.py",
