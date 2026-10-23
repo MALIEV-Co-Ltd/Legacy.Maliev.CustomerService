@@ -27,7 +27,6 @@ jobs:
       MSBUILDDISABLENODEREUSE: '1'
       DOTNET_CLI_USE_MSBUILD_SERVER: '0'
       UseSharedCompilation: 'false'
-      GITHUB_ACTIONS: 'false'
     steps:
       - name: Check out exact Customer PR tree
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -57,6 +56,7 @@ jobs:
         timeout-minutes: 4
         run: |
           set -euo pipefail
+          export GITHUB_ACTIONS=false
           mkdir company-capacity-results
           python3 -B scripts/verify_customer_company_focus.py guard
           timeout --signal=TERM --kill-after=5s 180s dotnet restore Legacy.Maliev.CustomerService.slnx -p:UseLocalMalievDependencies=true
@@ -64,12 +64,14 @@ jobs:
         timeout-minutes: 4
         run: |
           set -euo pipefail
+          export GITHUB_ACTIONS=false
           python3 -B scripts/verify_customer_company_focus.py guard
           timeout --signal=TERM --kill-after=5s 180s dotnet build Legacy.Maliev.CustomerService.slnx -c Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true -p:UseSharedCompilation=false
       - name: Execute source capacity and retained literal boundaries
         timeout-minutes: 11
         run: |
           set -euo pipefail
+          export GITHUB_ACTIONS=false
           python3 -B scripts/verify_customer_company_focus.py guard
           timeout --signal=TERM --kill-after=5s 600s dotnet test Legacy.Maliev.CustomerService.slnx -c Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter 'FullyQualifiedName~CompanySourceCapacityHttpTests|FullyQualifiedName~CustomerCompanyLiteralNameHttpTests|FullyQualifiedName~CompanyTaxRegistrarPrimitiveStorageTests' --logger trx --results-directory company-capacity-results
           python3 - <<'PY'

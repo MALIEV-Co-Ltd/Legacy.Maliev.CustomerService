@@ -229,9 +229,11 @@ public sealed class CompanySourceCapacityHttpTests(CustomerDetailAuthorityFixtur
     {
         var path = route switch
         {
-            "create" => "/customers/companies/", "update" => "/customers/companies/1/",
+            "create" => "/customers/companies/",
+            "update" => "/customers/companies/1/",
             "scoped-create" => "/customers/1/relations/company/new/versioned",
-            "scoped-update" => "/customers/1/relations/company/1/versioned", _ => throw new ArgumentOutOfRangeException(nameof(route)),
+            "scoped-update" => "/customers/1/relations/company/1/versioned",
+            _ => throw new ArgumentOutOfRangeException(nameof(route)),
         };
         var request = new HttpRequestMessage(route == "create" ? HttpMethod.Post : HttpMethod.Put, path)
         { Content = new StringContent(JsonSerializer.Serialize(values), Encoding.UTF8, "application/json") };
@@ -309,13 +311,22 @@ public sealed class CompanySourceCapacityHttpTests(CustomerDetailAuthorityFixtur
         await db.QuotationProfileCompletionOperations.Where(value => value.Key == RetainedOperation).ExecuteDeleteAsync();
         db.CustomerCreateOperations.Add(new CustomerCreateOperation
         {
-            Key = RetainedOperation, ActorHash = new string('a', 64), RequestHash = new string('b', 64), CustomerId = 1,
-            ResponseJson = "{\"Id\":1,\"Name\":\"retained synthetic receipt\"}", CreatedAt = DateTime.UtcNow,
+            Key = RetainedOperation,
+            ActorHash = new string('a', 64),
+            RequestHash = new string('b', 64),
+            CustomerId = 1,
+            ResponseJson = "{\"Id\":1,\"Name\":\"retained synthetic receipt\"}",
+            CreatedAt = DateTime.UtcNow,
         });
         db.QuotationProfileCompletionOperations.Add(new QuotationProfileCompletionOperation
         {
-            CustomerId = 1, Key = RetainedOperation, ActorHash = new string('a', 64), RequestHash = new string('b', 64),
-            CompletionId = RetainedOperation, Changed = true, CreatedAt = DateTime.UtcNow,
+            CustomerId = 1,
+            Key = RetainedOperation,
+            ActorHash = new string('a', 64),
+            RequestHash = new string('b', 64),
+            CompletionId = RetainedOperation,
+            Changed = true,
+            CreatedAt = DateTime.UtcNow,
         });
         var original = await db.Companies.SingleAsync(row => row.Id == 1);
         original.CreatedDate = new DateTime(2020, 1, 1);
