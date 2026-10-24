@@ -1,5 +1,6 @@
 using System.Runtime.ExceptionServices;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Legacy.Maliev.CustomerService.Data;
 using Legacy.Maliev.CustomerService.Domain;
 using Legacy.Maliev.CustomerService.Tests.Controllers;
@@ -49,7 +50,7 @@ public sealed class CompanySourceStorageMigrationTests(CustomerDetailAuthorityFi
         });
     }
 
-    /// <summary>Verifies reversible schema changes without rewriting retained rows or leaking session settings.</summary>
+    /// <summary>Verifies reversible values and schema, explicit Company-only rollback row-version changes, and restored session settings.</summary>
     /// <returns>The exact row/schema/session checks around up, down, and repeated up.</returns>
     [Fact]
     public async Task UpDownUpPreservesRowsRelationsDefaultsAndSessionTimeouts()
@@ -67,9 +68,13 @@ public sealed class CompanySourceStorageMigrationTests(CustomerDetailAuthorityFi
             await MigrateAsync(db, Target, token);
             Assert.Equal(upgraded, await SnapshotAsync(db, token));
             await MigrateAsync(db, Previous, token);
-            Assert.Equal(before, await SnapshotAsync(db, token));
+            var downgraded = await SnapshotAsync(db, token);
+            AssertCompanyOnlyDowngradeRewrite(before, downgraded);
             await MigrateAsync(db, Target, token);
-            Assert.Equal(upgraded, await SnapshotAsync(db, token));
+            var reupgraded = await SnapshotAsync(db, token);
+            Assert.Equal(downgraded.Rows, reupgraded.Rows);
+            Assert.Equal(upgraded.Schema, reupgraded.Schema);
+            Assert.Equal(upgraded.Migrations, reupgraded.Migrations);
             Assert.Equal(lockTimeout, await ScalarAsync(db, "SHOW lock_timeout", token));
             Assert.Equal(statementTimeout, await ScalarAsync(db, "SHOW statement_timeout", token));
             Assert.Null(db.Database.CurrentTransaction);
@@ -210,6 +215,29 @@ public sealed class CompanySourceStorageMigrationTests(CustomerDetailAuthorityFi
         });
     }
 
+    private static void AssertCompanyOnlyDowngradeRewrite(Snapshot before, Snapshot after)
+    {
+        Assert.Equal(before.Schema, after.Schema);
+        Assert.Equal(before.Migrations, after.Migrations);
+        var expected = JsonNode.Parse(before.Rows!)!.AsObject();
+        var actual = JsonNode.Parse(after.Rows!)!.AsObject();
+        var companies = expected["companies"]!.AsArray();
+        var actualCompanies = actual["companies"]!.AsArray();
+        Assert.Equal(2, companies.Count);
+        Assert.Equal(companies.Count, actualCompanies.Count);
+        foreach (var entry in companies)
+        {
+            var row = Assert.IsType<JsonObject>(entry);
+            var id = row["ID"]!.GetValue<int>();
+            var current = Assert.IsType<JsonObject>(Assert.Single(actualCompanies,
+                candidate => candidate!["ID"]!.GetValue<int>() == id));
+            var originalXmin = row["xmin"]!.GetValue<string>();
+            Assert.NotEqual(originalXmin, current["xmin"]!.GetValue<string>());
+            // PG18 text-to-varchar rollback rewrites only Company row versions; preserve all other fields and row versions.
+            current["xmin"] = originalXmin;
+        }
+        Assert.True(JsonNode.DeepEquals(expected, actual));
+    }
     private async Task RunAsync(Func<CustomerDbContext, CancellationToken, Task> action, string? target = null)
     {
         await using var source = fixture.Context();
