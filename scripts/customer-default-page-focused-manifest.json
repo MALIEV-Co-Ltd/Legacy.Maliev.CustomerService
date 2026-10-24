@@ -209,8 +209,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Application/Models/CompanyNameLengthAttribute.cs",
-      "bytes": 1449,
-      "sha256": "bf219f1c3f4b1179444b48f4a048553d5ab95535eaec8dbd281a6cb6c5675761"
+      "bytes": 1536,
+      "sha256": "4f59cbd62fbe7918532049197110943ee236ac9ec6adf273de9737abdf4ef212"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Application/Models/CustomerModels.cs",
@@ -219,8 +219,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Application/Models/CustomerRelationEdits.cs",
-      "bytes": 5187,
-      "sha256": "8ed639fc57b54f9607ef5f2468cf810727996f738c493474aa8a181c2e5964e0"
+      "bytes": 5193,
+      "sha256": "a98f2e32b38ff3461acb25576eb33aab265549208769ec9a7467159f92c78876"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Application/Models/OrdinaryCompanyNameJsonConverter.cs",
@@ -249,8 +249,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Data/CustomerDbContext.cs",
-      "bytes": 7144,
-      "sha256": "6e5d93ba8d385099b0d06d782db17344fe9656fc056ddeed1c00c2f07710b970"
+      "bytes": 7590,
+      "sha256": "4f33a8c15cc5b1241ee42327a4945260c775e3c3d34939ab85f29afa8963c82f"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Data/CustomerDbContextFactory.cs",
@@ -344,8 +344,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Data/Migrations/CustomerDbContextModelSnapshot.cs",
-      "bytes": 12273,
-      "sha256": "795475768f136faad32445b7eafa56d87ad6b98a58394292329b4534e450a7be"
+      "bytes": 12917,
+      "sha256": "208f45fa79c738fed5e9b5151b92e7185342141ad96415d5e3b4213232f21750"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Data/QuotationProfileCompletionStore.cs",
@@ -429,8 +429,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLiteralNameHttpTests.cs",
-      "bytes": 19056,
-      "sha256": "8fae5c6c10715873e6d1d4a91fbe6fb5f5fee1c17a2870ec511f574f2ae379cb"
+      "bytes": 19137,
+      "sha256": "b11040ef4290dcaf8b6717ce24f4074c2fc2e73209f2b157a5076fb069f2435a"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryPrimitiveHttpTests.cs",
@@ -1414,8 +1414,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryDuplicateNullReferenceTests.cs",
-      "bytes": 12344,
-      "sha256": "332fc52c0024f91a336aad47f7e78aab750a8eba23a1bf70d223dd91015d10c8"
+      "bytes": 12333,
+      "sha256": "f020897170fc0169217d56e0bf8f96d3153ec90b8b0f809cba664c975119e517"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryDuplicateNullHttpTests.cs",
@@ -1449,8 +1449,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveStorageTests.cs",
-      "bytes": 9638,
-      "sha256": "adc0161bdc0bfc9a409058f5644396405b061145fb6a406479417a80587fe770"
+      "bytes": 9686,
+      "sha256": "fc00b482736d07170ea32120c9d9b568126d20ad82fa47a819b712b32b5083f4"
     },
     {
       "path": "docs/company-paired-field-primitive-proof-only-20261011.md",
@@ -1464,8 +1464,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyFieldPrimitiveHttpTests.cs",
-      "bytes": 33342,
-      "sha256": "64c88de4e5f7de4f724651e1a4eecc4635459e7a2e4eb86784797b33acba75f6"
+      "bytes": 34219,
+      "sha256": "8cd10f262e1d3a87b1438760b7495aae54cc6c09764614001fffb8b0d23fa6a6"
     },
     {
       "path": "docs/company-tax-registrar-primitive-mvc-20261011.md",

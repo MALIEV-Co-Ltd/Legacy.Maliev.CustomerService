@@ -52,6 +52,14 @@ public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthori
                             {
                                 var primitive = Payload(field, item.Token, item.Suffix);
                                 var literal = Payload(field, JsonSerializer.Serialize(item.Lexeme), item.Suffix);
+                                if (item.StorageRejects)
+                                {
+                                    var refused = await RollbackAsync(client, cache, route, primitive, segmented, true, token);
+                                    var refusedLiteral = await RollbackAsync(client, cache, route, literal, segmented, true, token);
+                                    Assert.Equal(refused, refusedLiteral);
+                                    Assert.True(refused.Status == 500 || refused.Shape == PostgresErrorCodes.CheckViolation);
+                                    continue;
+                                }
                                 var expected = new PositiveCase(item.Label, "", "ok", field == "TaxNumber" ? item.Final : null,
                                     field == "Registrar" ? item.Final : null);
                                 var first = await PersistAsync(client, cache, route, primitive, expected, segmented, token);
@@ -345,7 +353,9 @@ public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthori
             }
             observation = new((int)response.StatusCode, response.Content.Headers.ContentType?.MediaType, category, shape);
         }
-        catch (DbUpdateException error) when (storage && error.InnerException is PostgresException postgres && postgres.SqlState is "22001" or "22021")
+        catch (DbUpdateException error) when (storage && error.InnerException is PostgresException postgres &&
+            (postgres.SqlState is "22001" or "22021" || postgres.SqlState == PostgresErrorCodes.CheckViolation &&
+                postgres.ConstraintName is "CK_Company_TaxNumber_SourceLength" or "CK_Company_Registrar_SourceLength"))
         {
             observation = new(null, null, "DbUpdateException/PostgresException", ((PostgresException)error.InnerException!).SqlState);
         }
@@ -381,7 +391,7 @@ public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthori
             new("exponent-larger", "1e400", "1e400", "1e400", ",\"FIELD\":null"),
             new("decimal-lexical", "1.500", "1.500", "1.500", ",\"FIELD\":null"),
             new("earlier257-bounded-null", longNumber, longNumber, "bounded", ",\"FIELD\":\"bounded\",\"FIELD\":null"),
-            new("unicode129-pairs", JsonSerializer.Serialize(emoji), emoji, emoji, ",\"FIELD\":null"),
+            new("unicode129-pairs", JsonSerializer.Serialize(emoji), emoji, emoji, ",\"FIELD\":null", StorageRejects: true),
         ];
     }
 
@@ -425,7 +435,7 @@ public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthori
         }
     }
 
-    private sealed record PrimitiveCase(string Label, string Token, string Lexeme, string? Final, string Suffix);
+    private sealed record PrimitiveCase(string Label, string Token, string Lexeme, string? Final, string Suffix, bool StorageRejects = false);
     private sealed record BoundaryCase(string Label, string Token, string StringToken, bool Storage, string? SourceValue = null);
     private sealed record FailureObservation(int? Status, string? MediaType, string Category, string Shape);
 

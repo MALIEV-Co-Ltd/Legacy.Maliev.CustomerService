@@ -26,8 +26,8 @@ public sealed record CustomerRelationVersionedResponse(CustomerRelationResponse 
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record CustomerCompanyRelationRequest(
     [Required, CompanyNameLength][property: JsonConverter(typeof(CompanyNameJsonConverter))] string Name,
-    [StringLength(256)] string? TaxNumber,
-    [StringLength(256)] string? Registrar);
+    [CompanyFieldCapacity] string? TaxNumber,
+    [CompanyFieldCapacity] string? Registrar);
 
 /// <summary>Scoped address replacement; callers cannot assign relation identifiers or timestamps.</summary>
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]

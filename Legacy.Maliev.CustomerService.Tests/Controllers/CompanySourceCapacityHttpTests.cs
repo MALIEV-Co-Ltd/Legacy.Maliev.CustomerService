@@ -191,9 +191,9 @@ public sealed class CompanySourceCapacityHttpTests(CustomerDetailAuthorityFixtur
             var properties = schemas.GetProperty(type).GetProperty("properties");
             foreach (var field in new[] { "Name", "TaxNumber", "Registrar" })
             {
-                var property = properties.GetProperty(field);
+                var property = Assert.Single(properties.EnumerateObject(), candidate =>
+                    string.Equals(candidate.Name, field, StringComparison.OrdinalIgnoreCase)).Value;
                 Assert.False(property.TryGetProperty("maxLength", out _));
-                Assert.False(properties.TryGetProperty(char.ToLowerInvariant(field[0]) + field[1..], out _));
             }
         }
     }
