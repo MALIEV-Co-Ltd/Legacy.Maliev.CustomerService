@@ -89,6 +89,71 @@ public sealed class CompanySourceStorageMigrationTests(CustomerDetailAuthorityFi
         }, Previous);
     }
 
+    /// <summary>Preserves a caller-owned public table when temporary-schema lookup is explicitly ordered last.</summary>
+    /// <returns>The public object, row-version, migration, and restored session evidence.</returns>
+    [Fact]
+    public async Task DownPreservesPublicGuardCollisionWhenTemporarySchemaIsLast()
+    {
+        await RunAsync(async (db, token) =>
+        {
+            await SeedAsync(db, token);
+            await ExecuteAsync(db, """
+                CREATE TABLE public."__CompanySourceGuard" ("ID" integer PRIMARY KEY, "Sentinel" text NOT NULL);
+                INSERT INTO public."__CompanySourceGuard" VALUES (17, 'caller-owned-marker');
+                """, token);
+            const string markerSql = """
+                SELECT jsonb_build_object(
+                    'oid',c.oid,'namespace',c.relnamespace,'persistence',c.relpersistence,
+                    'columns',(SELECT jsonb_agg(jsonb_build_array(a.attnum,a.attname,
+                        format_type(a.atttypid,a.atttypmod),a.attnotnull,a.attcollation,pg_get_expr(d.adbin,d.adrelid)) ORDER BY a.attnum)
+                        FROM pg_attribute a LEFT JOIN pg_attrdef d ON d.adrelid=a.attrelid AND d.adnum=a.attnum
+                        WHERE a.attrelid=c.oid AND a.attnum>0 AND NOT a.attisdropped),
+                    'rows',(SELECT jsonb_agg(to_jsonb(m) || jsonb_build_object('xmin',m.xmin::text) ORDER BY m."ID")
+                        FROM public."__CompanySourceGuard" m))::text
+                FROM pg_class c WHERE c.oid='public."__CompanySourceGuard"'::regclass
+                """;
+            var markerOid = await ScalarAsync(db, "SELECT 'public.\"__CompanySourceGuard\"'::regclass::oid::text", token);
+            var marker = await ScalarAsync(db, markerSql, token);
+            Assert.NotNull(markerOid);
+            Assert.NotNull(marker);
+            var before = await SnapshotAsync(db, token);
+            await MigrateAsync(db, Target, token);
+            var originalPath = await ScalarAsync(db, "SHOW search_path", token);
+            Assert.NotNull(originalPath);
+            var lockTimeout = await ScalarAsync(db, "SHOW lock_timeout", token);
+            var statementTimeout = await ScalarAsync(db, "SHOW statement_timeout", token);
+            Exception? primary = null;
+            try
+            {
+                await ExecuteAsync(db, "SET search_path = public, pg_temp", token);
+                Assert.Equal("public, pg_temp", await ScalarAsync(db, "SHOW search_path", token));
+                await MigrateAsync(db, Previous, token);
+                Assert.Equal(markerOid, await ScalarAsync(db, "SELECT to_regclass('public.\"__CompanySourceGuard\"')::oid::text", token));
+                Assert.Equal(marker, await ScalarAsync(db, markerSql, token));
+                AssertCompanyOnlyDowngradeRewrite(before, await SnapshotAsync(db, token));
+                Assert.Equal("True", await ScalarAsync(db, "SELECT to_regclass('pg_temp.\"__CompanySourceGuard\"') IS NULL", token));
+                Assert.Equal(lockTimeout, await ScalarAsync(db, "SHOW lock_timeout", token));
+                Assert.Equal(statementTimeout, await ScalarAsync(db, "SHOW statement_timeout", token));
+                Assert.Null(db.Database.CurrentTransaction);
+            }
+            catch (Exception error) { primary = error; throw; }
+            finally
+            {
+                using var cleanup = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                try
+                {
+                    await using var restore = db.Database.GetDbConnection().CreateCommand();
+                    restore.CommandTimeout = 10;
+                    restore.CommandText = "SELECT set_config('search_path', @path, false)";
+                    restore.Parameters.Add(new NpgsqlParameter("path", NpgsqlDbType.Text) { Value = originalPath });
+                    Assert.Equal(originalPath, await restore.ExecuteScalarAsync(cleanup.Token));
+                    Assert.Equal(originalPath, await ScalarAsync(db, "SHOW search_path", cleanup.Token));
+                }
+                catch (Exception error) when (primary is not null) { throw new AggregateException(primary, error); }
+            }
+        }, Previous);
+    }
+
     /// <summary>Refuses incompatible retained values instead of silently normalizing existing records.</summary>
     /// <param name="field">The Company field with a retained supplementary overflow.</param>
     /// <returns>The unchanged row/schema/migration evidence after refusal.</returns>
