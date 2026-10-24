@@ -57,6 +57,14 @@ public sealed class CompanySourceStorageMigrationTests(CustomerDetailAuthorityFi
     {
         await RunAsync(async (db, token) =>
         {
+            await ExecuteAsync(db, """
+                CREATE COLLATION company_capacity_retained_icu
+                    (provider=icu,locale='und-u-ks-level2',deterministic=false);
+                ALTER TABLE public."Company"
+                    ALTER COLUMN "Name" TYPE character varying(256) COLLATE public.company_capacity_retained_icu,
+                    ALTER COLUMN "TaxNumber" TYPE character varying(256) COLLATE public.company_capacity_retained_icu,
+                    ALTER COLUMN "Registrar" TYPE character varying(256) COLLATE public.company_capacity_retained_icu;
+                """, token);
             await SeedAsync(db, token);
             await SetAsync(db, "Name", string.Concat(Enumerable.Repeat("😀", 127)) + "  ", token);
             var before = await SnapshotAsync(db, token);

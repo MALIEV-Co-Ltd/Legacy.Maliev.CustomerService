@@ -524,8 +524,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScaffoldRuntimeProof.cs",
-      "bytes": 24777,
-      "sha256": "314b8cd1ad989bba8bd2ad971aba6ca8e6e9d0dd4e7ba13ff052b18d4fd92b2a"
+      "bytes": 27895,
+      "sha256": "f19449c162600ebb3fccf2d3d5d0f778c6a6297fc1c1f4e05951631009a729f7"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScopedRelationEditHttpTests.cs",
@@ -584,8 +584,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs",
-      "bytes": 20514,
-      "sha256": "67bc3b667fff19c59f4f1a7f0afe1239ff927160615a684c7f503342d1249285"
+      "bytes": 22057,
+      "sha256": "e1e11de82bb805212726a58443f5026be17f05991b29866728004798596bef9b"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerRevisionPostgresTests.cs",

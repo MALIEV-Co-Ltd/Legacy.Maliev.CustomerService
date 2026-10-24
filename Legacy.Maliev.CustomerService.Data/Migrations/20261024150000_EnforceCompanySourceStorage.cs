@@ -67,8 +67,21 @@ public partial class EnforceCompanySourceStorage : Migration
                     RAISE EXCEPTION 'Retained Company fields exceed source capacity.';
                 END IF;
             END $guard$;
-            ALTER TABLE public."Company" ALTER COLUMN "Name" TYPE text,
-                ALTER COLUMN "TaxNumber" TYPE text, ALTER COLUMN "Registrar" TYPE text;
+            DO $types$
+            DECLARE alterations text; column_count integer;
+            BEGIN
+                SELECT string_agg(format('ALTER COLUMN %I TYPE text COLLATE %I.%I',
+                    a.attname,n.nspname,c.collname),', ' ORDER BY a.attnum),count(*)
+                INTO alterations,column_count
+                FROM pg_attribute a JOIN pg_collation c ON c.oid=a.attcollation
+                    JOIN pg_namespace n ON n.oid=c.collnamespace
+                WHERE a.attrelid='public."Company"'::regclass AND NOT a.attisdropped
+                    AND a.attname IN ('Name','TaxNumber','Registrar');
+                IF column_count <> 3 OR alterations IS NULL THEN
+                    RAISE EXCEPTION 'Company capacity collation metadata is incompatible.';
+                END IF;
+                EXECUTE 'ALTER TABLE public."Company" ' || alterations;
+            END $types$;
             ALTER TABLE public."Company" ADD CONSTRAINT "CK_Company_Name_SourceLength" CHECK
                 (char_length("Name") + char_length(regexp_replace("Name" COLLATE "C", U&'[\0001-\FFFF]', '', 'g')) <= 256) NOT VALID;
             ALTER TABLE public."Company" ADD CONSTRAINT "CK_Company_TaxNumber_SourceLength" CHECK
@@ -146,8 +159,21 @@ public partial class EnforceCompanySourceStorage : Migration
             DROP FUNCTION public."NormalizeCompanySource"();
             ALTER TABLE public."Company" DROP CONSTRAINT "CK_Company_Name_SourceLength",
                 DROP CONSTRAINT "CK_Company_TaxNumber_SourceLength", DROP CONSTRAINT "CK_Company_Registrar_SourceLength";
-            ALTER TABLE public."Company" ALTER COLUMN "Name" TYPE character varying(256),
-                ALTER COLUMN "TaxNumber" TYPE character varying(256), ALTER COLUMN "Registrar" TYPE character varying(256);
+            DO $types$
+            DECLARE alterations text; column_count integer;
+            BEGIN
+                SELECT string_agg(format('ALTER COLUMN %I TYPE character varying(256) COLLATE %I.%I',
+                    a.attname,n.nspname,c.collname),', ' ORDER BY a.attnum),count(*)
+                INTO alterations,column_count
+                FROM pg_attribute a JOIN pg_collation c ON c.oid=a.attcollation
+                    JOIN pg_namespace n ON n.oid=c.collnamespace
+                WHERE a.attrelid='public."Company"'::regclass AND NOT a.attisdropped
+                    AND a.attname IN ('Name','TaxNumber','Registrar');
+                IF column_count <> 3 OR alterations IS NULL THEN
+                    RAISE EXCEPTION 'Company capacity collation metadata is incompatible.';
+                END IF;
+                EXECUTE 'ALTER TABLE public."Company" ' || alterations;
+            END $types$;
             """);
     }
 }

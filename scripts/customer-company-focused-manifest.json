@@ -653,8 +653,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScaffoldRuntimeProof.cs",
-      "bytes": 24777,
-      "sha256": "314b8cd1ad989bba8bd2ad971aba6ca8e6e9d0dd4e7ba13ff052b18d4fd92b2a"
+      "bytes": 27895,
+      "sha256": "f19449c162600ebb3fccf2d3d5d0f778c6a6297fc1c1f4e05951631009a729f7"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScopedRelationEditHttpTests.cs",
@@ -713,8 +713,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs",
-      "bytes": 20514,
-      "sha256": "67bc3b667fff19c59f4f1a7f0afe1239ff927160615a684c7f503342d1249285"
+      "bytes": 22057,
+      "sha256": "e1e11de82bb805212726a58443f5026be17f05991b29866728004798596bef9b"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerRevisionPostgresTests.cs",
@@ -1534,12 +1534,12 @@
     {
       "path": "scripts/customer-default-page-focused-manifest.json",
       "bytes": 186217,
-      "sha256": "f4b3c8e07f955507bc38f84ec6a20e146302d1293aaee69c02d5b15d02cd6c9f"
+      "sha256": "c9aee0f3dd40de3b7c6aa3b1623177dc9b574e26f2955360f5a1507f8ac19d47"
     },
     {
       "path": "scripts/customer-email-focused-manifest.json",
       "bytes": 206056,
-      "sha256": "bccc1ec3f179c931670df02983f5338ccf8c3cce191b1ce4a724393b782499ff"
+      "sha256": "98c95c1624468c2623e519cef0bc60671b9b668cc62dbc81611bca707401f755"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCompanyMvcJsonMetadata.cs",
@@ -1643,8 +1643,8 @@
     },
     {
       "path": "scripts/test_customer_optional_contact_focus.py",
-      "bytes": 49938,
-      "sha256": "6c4152e0ee1a71bcc1e3e52732a084152a991377101af11b5d4af3f810ba533d"
+      "bytes": 51789,
+      "sha256": "4262c0b704221a9805485ce7028bc545bcd5c5529633e4c8434fd6ab7cb10268"
     },
     {
       "path": "scripts/verify_customer_address_focus.py",

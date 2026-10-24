@@ -529,7 +529,19 @@ COMPANY_CAPACITY_101 = {'Legacy.Maliev.CustomerService.Application/Models/Compan
                                                                                                           'sha256': '64c88de4e5f7de4f724651e1a4eecc4635459e7a2e4eb86784797b33acba75f6'},
                                                                                                'after': {'path': 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyFieldPrimitiveHttpTests.cs',
                                                                                                          'bytes': 34219,
-                                                                                                         'sha256': '8cd10f262e1d3a87b1438760b7495aae54cc6c09764614001fffb8b0d23fa6a6'}}}
+                                                                                                         'sha256': '8cd10f262e1d3a87b1438760b7495aae54cc6c09764614001fffb8b0d23fa6a6'}},
+ 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScaffoldRuntimeProof.cs': {'before': {'path': 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScaffoldRuntimeProof.cs',
+                                                                                                'bytes': 24777,
+                                                                                                'sha256': '314b8cd1ad989bba8bd2ad971aba6ca8e6e9d0dd4e7ba13ff052b18d4fd92b2a'},
+                                                                                     'after': {'path': 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScaffoldRuntimeProof.cs',
+                                                                                               'bytes': 27895,
+                                                                                               'sha256': 'f19449c162600ebb3fccf2d3d5d0f778c6a6297fc1c1f4e05951631009a729f7'}},
+ 'Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs': {'before': {'path': 'Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs',
+                                                                                           'bytes': 20514,
+                                                                                           'sha256': '67bc3b667fff19c59f4f1a7f0afe1239ff927160615a684c7f503342d1249285'},
+                                                                                'after': {'path': 'Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs',
+                                                                                          'bytes': 22057,
+                                                                                          'sha256': 'e1e11de82bb805212726a58443f5026be17f05991b29866728004798596bef9b'}}}
 
 
 def company_capacity_101_postimage(root, path, predecessor, successor):
@@ -813,8 +825,8 @@ class HostStaging65SuccessorControls(unittest.TestCase):
 
 
 class CompanyCapacity101Controls(unittest.TestCase):
-    def test_all_eight_exact_current_postimages(self):
-        self.assertEqual(8, len(COMPANY_CAPACITY_101))
+    def test_all_ten_exact_current_postimages(self):
+        self.assertEqual(10, len(COMPANY_CAPACITY_101))
         for path, change in COMPANY_CAPACITY_101.items():
             company_capacity_101_postimage(DOC_ROOT, path, change['before'], change['after'])
 

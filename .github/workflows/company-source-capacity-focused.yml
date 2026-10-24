@@ -11,6 +11,8 @@ on:
       - 'Legacy.Maliev.CustomerService.Data/CustomerDbContext.cs'
       - 'Legacy.Maliev.CustomerService.Data/CompanySourceConstraints.cs'
       - 'Legacy.Maliev.CustomerService.Tests/Data/CompanySourceStorageMigrationTests.cs'
+      - 'Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs'
+      - 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScaffoldRuntimeProof.cs'
       - 'Legacy.Maliev.CustomerService.Data/Migrations/**'
 
 permissions:
@@ -75,7 +77,7 @@ jobs:
           set -euo pipefail
           export GITHUB_ACTIONS=false
           python3 -B scripts/verify_customer_company_focus.py guard
-          timeout --signal=TERM --kill-after=5s 600s dotnet test Legacy.Maliev.CustomerService.slnx -c Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter 'FullyQualifiedName~CompanySourceStorageMigrationTests|FullyQualifiedName~CompanySourceCapacityHttpTests|FullyQualifiedName~CustomerCompanyLiteralNameHttpTests|FullyQualifiedName~CompanyTaxRegistrarPrimitiveStorageTests' --logger trx --results-directory company-capacity-results
+          timeout --signal=TERM --kill-after=5s 600s dotnet test Legacy.Maliev.CustomerService.slnx -c Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter 'FullyQualifiedName~CustomerPostgresMigrationTests.GetCustomersAsync_SearchesMigratedNondeterministicCollations|FullyQualifiedName~CustomerDetailAuthorityHttpTests.Scaffold_ActualEfPreviewBuildAndGeneratedQueriesPreserveMigratedOwnedGraph|FullyQualifiedName~CompanySourceStorageMigrationTests|FullyQualifiedName~CompanySourceCapacityHttpTests|FullyQualifiedName~CustomerCompanyLiteralNameHttpTests|FullyQualifiedName~CompanyTaxRegistrarPrimitiveStorageTests' --logger trx --results-directory company-capacity-results
           python3 - <<'PY'
           import pathlib, xml.etree.ElementTree as E
           files = list(pathlib.Path('company-capacity-results').rglob('*.trx'))
@@ -84,14 +86,16 @@ jobs:
           root = E.parse(files[0]).getroot()
           ns = {'t': 'http://microsoft.com/schemas/VisualStudio/TeamTest/2010'}
           rows = root.findall('t:Results/t:UnitTestResult', ns)
-          if len(rows) != 50 or any(row.get('outcome') != 'Passed' for row in rows) or len({row.get('executionId') for row in rows}) != 50:
-              raise SystemExit('Exactly fifty passing, uniquely executed source and retained cases required')
+          if len(rows) != 52 or any(row.get('outcome') != 'Passed' for row in rows) or len({row.get('executionId') for row in rows}) != 52:
+              raise SystemExit('Exactly fifty-two passing, uniquely executed source and retained cases required')
           PY
       - name: Preserve actual focused evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: company-capacity-${{ github.sha }}
-          path: company-capacity-results
+          path: |
+            company-capacity-results
+            runner-results/customer-actual-scaffold.json
           if-no-files-found: warn
           retention-days: 7
