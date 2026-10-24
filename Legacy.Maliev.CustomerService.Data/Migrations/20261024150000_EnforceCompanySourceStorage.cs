@@ -153,7 +153,7 @@ public partial class EnforceCompanySourceStorage : Migration
                         FROM pg_attribute WHERE attrelid = 'public."Company"'::regclass AND attname IN ('Name','TaxNumber','Registrar') AND NOT attisdropped)) THEN
                     RAISE EXCEPTION 'Company capacity downgrade normalizer is incompatible.';
                 END IF;
-                DROP TABLE "__CompanySourceGuard";
+                DROP TABLE pg_temp."__CompanySourceGuard";
             END $guard$;
             DROP TRIGGER "NormalizeCompanySource" ON public."Company";
             DROP FUNCTION public."NormalizeCompanySource"();
