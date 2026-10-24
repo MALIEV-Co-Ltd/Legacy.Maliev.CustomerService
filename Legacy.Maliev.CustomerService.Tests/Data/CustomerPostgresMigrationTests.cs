@@ -2,6 +2,8 @@ using Legacy.Maliev.CustomerService.Application.Models;
 using Legacy.Maliev.CustomerService.Data;
 using Legacy.Maliev.CustomerService.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Testcontainers.PostgreSql;
 
 namespace Legacy.Maliev.CustomerService.Tests.Data;
@@ -162,7 +164,7 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
     public async Task GetCustomersAsync_SearchesMigratedNondeterministicCollations()
     {
         await using var dbContext = CreateDbContext();
-        await dbContext.Database.MigrateAsync();
+        await dbContext.GetService<IMigrator>().MigrateAsync("20260930050259_AddQuotationProfileCompletionReplay");
         await dbContext.Database.ExecuteSqlRawAsync(
             """
             CREATE COLLATION customer_search_nondeterministic
@@ -171,6 +173,25 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
                 ALTER COLUMN "Name" TYPE character varying(256)
                 COLLATE customer_search_nondeterministic;
             """);
+        await dbContext.Database.MigrateAsync();
+        Assert.True(await dbContext.Database.SqlQueryRaw<bool>("""
+            SELECT a.atttypid='text'::regtype AND n.nspname='public'
+                AND c.collname='customer_search_nondeterministic' AND c.collprovider='i'
+                AND NOT c.collisdeterministic AS "Value"
+            FROM pg_attribute a JOIN pg_collation c ON c.oid=a.attcollation
+                JOIN pg_namespace n ON n.oid=c.collnamespace
+            WHERE a.attrelid='public."Company"'::regclass AND a.attname='Name' AND NOT a.attisdropped
+            """).SingleAsync());
+        Assert.Equal(3, await dbContext.Database.SqlQueryRaw<int>("""
+            SELECT count(*)::integer AS "Value" FROM pg_constraint
+            WHERE conrelid='public."Company"'::regclass AND contype='c' AND convalidated
+                AND conname IN ('CK_Company_Name_SourceLength','CK_Company_TaxNumber_SourceLength','CK_Company_Registrar_SourceLength')
+            """).SingleAsync());
+        Assert.True(await dbContext.Database.SqlQueryRaw<bool>("""
+            SELECT EXISTS (SELECT 1 FROM pg_trigger WHERE tgrelid='public."Company"'::regclass
+                AND tgname='NormalizeCompanySource' AND tgenabled='O' AND NOT tgisinternal
+                AND tgfoid=to_regprocedure('public."NormalizeCompanySource"()')) AS "Value"
+            """).SingleAsync());
 
         var company = new Company { Name = "บริษัท มาลีฟ จำกัด" };
         dbContext.Add(company);

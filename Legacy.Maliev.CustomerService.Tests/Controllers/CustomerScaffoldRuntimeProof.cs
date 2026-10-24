@@ -309,7 +309,7 @@ internal static class CustomerScaffoldRuntimeProof
         </Project>
         """;
 
-    private const string PreviewProgram = """
+    private const string PreviewProgram = """"
         using Legacy.Maliev.CustomerService.ScaffoldPreview;
         using Microsoft.EntityFrameworkCore;
         using Microsoft.EntityFrameworkCore.Metadata;
@@ -338,9 +338,35 @@ internal static class CustomerScaffoldRuntimeProof
                 Require(address.FindProperty(name) is { IsNullable: true } property && property.GetMaxLength() == 256);
             Require(!address.FindProperty("CountryId")!.IsNullable);
             var company = context.Model.FindEntityType(typeof(Company))!;
-            Require(company.FindProperty("Name") is { IsNullable: false } companyName && companyName.GetMaxLength() == 256);
+            Require(company.FindProperty("Name") is { IsNullable: false } companyName && companyName.GetMaxLength() is null && companyName.GetColumnType() == "text");
             foreach (var name in new[] { "TaxNumber", "Registrar" })
-                Require(company.FindProperty(name) is { IsNullable: true } property && property.GetMaxLength() == 256);
+                Require(company.FindProperty(name) is { IsNullable: true } property && property.GetMaxLength() is null && property.GetColumnType() == "text");
+            context.Database.SetCommandTimeout(30);
+            using (var capacityDeadline = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
+            {
+                await using var capacity = await context.Database.BeginTransactionAsync(capacityDeadline.Token);
+                try
+                {
+                    await context.Database.ExecuteSqlRawAsync("""
+                        CREATE TEMP TABLE "__CustomerCompanyCapacityScaffoldOracle" (
+                            "Name" text, "TaxNumber" text, "Registrar" text,
+                            CONSTRAINT "CK_Company_Name_SourceLength" CHECK
+                                (char_length("Name") + char_length(regexp_replace("Name" COLLATE "C", U&'[\0001-\FFFF]', '', 'g')) <= 256),
+                            CONSTRAINT "CK_Company_TaxNumber_SourceLength" CHECK
+                                (char_length("TaxNumber") + char_length(regexp_replace("TaxNumber" COLLATE "C", U&'[\0001-\FFFF]', '', 'g')) <= 256),
+                            CONSTRAINT "CK_Company_Registrar_SourceLength" CHECK
+                                (char_length("Registrar") + char_length(regexp_replace("Registrar" COLLATE "C", U&'[\0001-\FFFF]', '', 'g')) <= 256)) ON COMMIT DROP;
+                        """, capacityDeadline.Token);
+                    var expected = await CompanyChecks(context, "pg_temp.\"__CustomerCompanyCapacityScaffoldOracle\"", capacityDeadline.Token);
+                    var actual = await CompanyChecks(context, "public.\"Company\"", capacityDeadline.Token);
+                    Require(expected.Length == 3 && actual.SequenceEqual(expected));
+                }
+                finally
+                {
+                    using var rollbackDeadline = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+                    await capacity.RollbackAsync(rollbackDeadline.Token);
+                }
+            }
             foreach (var entity in context.Model.GetEntityTypes())
             {
                 Require(entity.FindPrimaryKey()!.Properties.Count == 1);
@@ -368,7 +394,21 @@ internal static class CustomerScaffoldRuntimeProof
             Console.Error.WriteLine("Generated Customer model/query proof failed; private details withheld.");
             return 1;
         }
+        static async Task<string[]> CompanyChecks(CustomerScaffoldContext context, string relation, CancellationToken token) =>
+            await context.Database.SqlQuery<string>($"""
+                SELECT c.conname || ':' || pg_get_constraintdef(c.oid) AS "Value"
+                FROM pg_constraint c
+                WHERE c.conrelid={relation}::regclass AND c.contype='c' AND c.convalidated
+                    AND c.conislocal AND c.coninhcount=0 AND NOT c.connoinherit
+                    AND c.conname IN ('CK_Company_Name_SourceLength','CK_Company_TaxNumber_SourceLength','CK_Company_Registrar_SourceLength')
+                    AND c.conkey=ARRAY[(SELECT a.attnum FROM pg_attribute a WHERE a.attrelid=c.conrelid
+                        AND a.attname=CASE c.conname WHEN 'CK_Company_Name_SourceLength' THEN 'Name'
+                            WHEN 'CK_Company_TaxNumber_SourceLength' THEN 'TaxNumber'
+                            WHEN 'CK_Company_Registrar_SourceLength' THEN 'Registrar' END
+                        AND NOT a.attisdropped)]::smallint[]
+                ORDER BY c.conname
+                """).ToArrayAsync(token);
         static void Require(bool valid) { if (!valid) throw new GeneratedContractMismatch(); }
         sealed class GeneratedContractMismatch : Exception;
-        """;
+        """";
 }

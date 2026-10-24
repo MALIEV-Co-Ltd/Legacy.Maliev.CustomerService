@@ -2,6 +2,7 @@
 import datetime as dt
 import copy
 import re
+import stat
 import verify_customer_email_focused as pin_validator
 import hashlib
 import json
@@ -480,6 +481,83 @@ def host_staging_65_postimage(current):
     return True
 
 
+# Only the reviewed Company three-field capacity transition is enrolled here.
+COMPANY_CAPACITY_101 = {'Legacy.Maliev.CustomerService.Application/Models/CompanyNameLengthAttribute.cs': {'before': {'path': 'Legacy.Maliev.CustomerService.Application/Models/CompanyNameLengthAttribute.cs',
+                                                                                               'bytes': 1449,
+                                                                                               'sha256': 'bf219f1c3f4b1179444b48f4a048553d5ab95535eaec8dbd281a6cb6c5675761'},
+                                                                                    'after': {'path': 'Legacy.Maliev.CustomerService.Application/Models/CompanyNameLengthAttribute.cs',
+                                                                                              'bytes': 1536,
+                                                                                              'sha256': '4f59cbd62fbe7918532049197110943ee236ac9ec6adf273de9737abdf4ef212'}},
+ 'Legacy.Maliev.CustomerService.Application/Models/CustomerRelationEdits.cs': {'before': {'path': 'Legacy.Maliev.CustomerService.Application/Models/CustomerRelationEdits.cs',
+                                                                                          'bytes': 5187,
+                                                                                          'sha256': '8ed639fc57b54f9607ef5f2468cf810727996f738c493474aa8a181c2e5964e0'},
+                                                                               'after': {'path': 'Legacy.Maliev.CustomerService.Application/Models/CustomerRelationEdits.cs',
+                                                                                         'bytes': 5193,
+                                                                                         'sha256': 'a98f2e32b38ff3461acb25576eb33aab265549208769ec9a7467159f92c78876'}},
+ 'Legacy.Maliev.CustomerService.Data/CustomerDbContext.cs': {'before': {'path': 'Legacy.Maliev.CustomerService.Data/CustomerDbContext.cs',
+                                                                        'bytes': 7144,
+                                                                        'sha256': '6e5d93ba8d385099b0d06d782db17344fe9656fc056ddeed1c00c2f07710b970'},
+                                                             'after': {'path': 'Legacy.Maliev.CustomerService.Data/CustomerDbContext.cs',
+                                                                       'bytes': 7590,
+                                                                       'sha256': '4f33a8c15cc5b1241ee42327a4945260c775e3c3d34939ab85f29afa8963c82f'}},
+ 'Legacy.Maliev.CustomerService.Data/Migrations/CustomerDbContextModelSnapshot.cs': {'before': {'path': 'Legacy.Maliev.CustomerService.Data/Migrations/CustomerDbContextModelSnapshot.cs',
+                                                                                                'bytes': 12273,
+                                                                                                'sha256': '795475768f136faad32445b7eafa56d87ad6b98a58394292329b4534e450a7be'},
+                                                                                     'after': {'path': 'Legacy.Maliev.CustomerService.Data/Migrations/CustomerDbContextModelSnapshot.cs',
+                                                                                               'bytes': 12917,
+                                                                                               'sha256': '208f45fa79c738fed5e9b5151b92e7185342141ad96415d5e3b4213232f21750'}},
+ 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLiteralNameHttpTests.cs': {'before': {'path': 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLiteralNameHttpTests.cs',
+                                                                                                       'bytes': 19056,
+                                                                                                       'sha256': '8fae5c6c10715873e6d1d4a91fbe6fb5f5fee1c17a2870ec511f574f2ae379cb'},
+                                                                                            'after': {'path': 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLiteralNameHttpTests.cs',
+                                                                                                      'bytes': 19137,
+                                                                                                      'sha256': 'b11040ef4290dcaf8b6717ce24f4074c2fc2e73209f2b157a5076fb069f2435a'}},
+ 'Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryDuplicateNullReferenceTests.cs': {'before': {'path': 'Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryDuplicateNullReferenceTests.cs',
+                                                                                                              'bytes': 12344,
+                                                                                                              'sha256': '332fc52c0024f91a336aad47f7e78aab750a8eba23a1bf70d223dd91015d10c8'},
+                                                                                                   'after': {'path': 'Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryDuplicateNullReferenceTests.cs',
+                                                                                                             'bytes': 12333,
+                                                                                                             'sha256': 'f020897170fc0169217d56e0bf8f96d3153ec90b8b0f809cba664c975119e517'}},
+ 'Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveStorageTests.cs': {'before': {'path': 'Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveStorageTests.cs',
+                                                                                                            'bytes': 9638,
+                                                                                                            'sha256': 'adc0161bdc0bfc9a409058f5644396405b061145fb6a406479417a80587fe770'},
+                                                                                                 'after': {'path': 'Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveStorageTests.cs',
+                                                                                                           'bytes': 9686,
+                                                                                                           'sha256': 'fc00b482736d07170ea32120c9d9b568126d20ad82fa47a819b712b32b5083f4'}},
+ 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyFieldPrimitiveHttpTests.cs': {'before': {'path': 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyFieldPrimitiveHttpTests.cs',
+                                                                                                          'bytes': 33342,
+                                                                                                          'sha256': '64c88de4e5f7de4f724651e1a4eecc4635459e7a2e4eb86784797b33acba75f6'},
+                                                                                               'after': {'path': 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyFieldPrimitiveHttpTests.cs',
+                                                                                                         'bytes': 34219,
+                                                                                                         'sha256': '8cd10f262e1d3a87b1438760b7495aae54cc6c09764614001fffb8b0d23fa6a6'}},
+ 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScaffoldRuntimeProof.cs': {'before': {'path': 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScaffoldRuntimeProof.cs',
+                                                                                                'bytes': 24777,
+                                                                                                'sha256': '314b8cd1ad989bba8bd2ad971aba6ca8e6e9d0dd4e7ba13ff052b18d4fd92b2a'},
+                                                                                     'after': {'path': 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScaffoldRuntimeProof.cs',
+                                                                                               'bytes': 27895,
+                                                                                               'sha256': 'f19449c162600ebb3fccf2d3d5d0f778c6a6297fc1c1f4e05951631009a729f7'}},
+ 'Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs': {'before': {'path': 'Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs',
+                                                                                           'bytes': 20514,
+                                                                                           'sha256': '67bc3b667fff19c59f4f1a7f0afe1239ff927160615a684c7f503342d1249285'},
+                                                                                'after': {'path': 'Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs',
+                                                                                          'bytes': 22057,
+                                                                                          'sha256': 'e1e11de82bb805212726a58443f5026be17f05991b29866728004798596bef9b'}}}
+
+
+def company_capacity_101_postimage(root, path, predecessor, successor):
+    change = COMPANY_CAPACITY_101[path]
+    doc_need(predecessor == change['before'] and successor == change['after'],
+             'Exact reviewed Company capacity transition required')
+    location = root / path
+    try:
+        mode = location.lstat().st_mode
+    except OSError as error:
+        raise ValueError('Missing Company capacity postimage') from error
+    doc_need(stat.S_ISREG(mode) and not mode & 0o111,
+             'Company capacity postimage must be regular and nonexecutable')
+    pin_validator.validate_code_pins(root, [successor])
+
+
 def validate_documentation_successor(root, manifest_path, manifest):
     doc_need(manifest_path in FROZEN and type(manifest) is dict, "Known focused manifest")
     count, pins_sha, fields_sha, predecessor_blob = FROZEN[manifest_path]
@@ -514,7 +592,9 @@ def validate_documentation_successor(root, manifest_path, manifest):
         if path in old:
             doc_need(change["predecessor"] == old[path], "Historical row matches reviewed preimage")
     for path, row in current.items():
-        if path in reviewed:
+        if path in COMPANY_CAPACITY_101:
+            company_capacity_101_postimage(root, path, reviewed.get(path, old[path]), row)
+        elif path in reviewed:
             doc_need(row == reviewed[path], "Exact reviewed documentation postimage")
         elif path == PRIVATE_CONSOLE_449_PROGRAM:
             doc_need(old[path] == PRIVATE_CONSOLE_449_BEFORE and row == PRIVATE_CONSOLE_449_AFTER,
@@ -534,7 +614,8 @@ def validate_documentation_successor(root, manifest_path, manifest):
             doc_need(row == old[path], "Unapproved source/dependency/workflow/control repinning")
     # Includes the new seven-case file and unlisted PrivateRequestObservation.
     # It adds no codePins rows and grants no focused test-roster change.
-    pin_validator.validate_code_pins(root, new_doc_rows)
+    pin_validator.validate_code_pins(root, [current[row['path']] if row['path'] in COMPANY_CAPACITY_101 else row
+                                           for row in new_doc_rows])
     return reviewed
 
 class DocumentationSuccessorControls(unittest.TestCase):
@@ -741,6 +822,42 @@ class HostStaging65SuccessorControls(unittest.TestCase):
                         row["sha256"] = "0" * 64
                 with self.subTest(manifest=manifest_path, mutation=mutation), self.assertRaises(ValueError):
                     validate_documentation_successor(DOC_ROOT, manifest_path, changed)
+
+
+class CompanyCapacity101Controls(unittest.TestCase):
+    def test_all_ten_exact_current_postimages(self):
+        self.assertEqual(10, len(COMPANY_CAPACITY_101))
+        for path, change in COMPANY_CAPACITY_101.items():
+            company_capacity_101_postimage(DOC_ROOT, path, change['before'], change['after'])
+
+    def test_changed_old_new_hash_size_or_unrelated_binding_refused(self):
+        for path, change in COMPANY_CAPACITY_101.items():
+            for side, field in [('before', 'sha256'), ('after', 'sha256'), ('after', 'bytes')]:
+                altered = copy.deepcopy(change)
+                altered[side][field] = 0 if field == 'bytes' else '0' * 64
+                with self.subTest(path=path, side=side, field=field), self.assertRaises(ValueError):
+                    company_capacity_101_postimage(DOC_ROOT, path, altered['before'], altered['after'])
+        with self.assertRaises(KeyError):
+            company_capacity_101_postimage(DOC_ROOT, 'unrelated.cs', {}, {})
+
+    def test_missing_directory_symlink_and_executable_refused(self):
+        path, change = next(iter(COMPANY_CAPACITY_101.items()))
+        with tempfile.TemporaryDirectory() as temporary:
+            with self.assertRaises(ValueError):
+                company_capacity_101_postimage(Path(temporary), path, change['before'], change['after'])
+        for mode in (stat.S_IFDIR | 0o755, stat.S_IFLNK | 0o777, stat.S_IFREG | 0o755):
+            with mock.patch.object(Path, 'lstat', return_value=type('Metadata', (), {'st_mode': mode})()):
+                with self.assertRaises(ValueError):
+                    company_capacity_101_postimage(DOC_ROOT, path, change['before'], change['after'])
+
+    def test_actual_byte_drift_refused_under_regular_file_metadata(self):
+        path, change = next(iter(COMPANY_CAPACITY_101.items()))
+        with tempfile.TemporaryDirectory() as temporary:
+            location = Path(temporary) / path
+            location.parent.mkdir(parents=True)
+            location.write_bytes(b'x' * change['after']['bytes'])
+            with self.assertRaises(ValueError):
+                company_capacity_101_postimage(Path(temporary), path, change['before'], change['after'])
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

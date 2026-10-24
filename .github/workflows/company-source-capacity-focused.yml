@@ -1,0 +1,101 @@
+name: Company source capacity focused
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/company-source-capacity-focused.yml'
+      - 'Legacy.Maliev.CustomerService.Tests/Controllers/CompanySourceCapacityHttpTests.cs'
+      - 'Legacy.Maliev.CustomerService.Application/Models/Company*'
+      - 'Legacy.Maliev.CustomerService.Application/Models/CustomerRelationEdits.cs'
+      - 'Legacy.Maliev.CustomerService.Data/CustomerDbContext.cs'
+      - 'Legacy.Maliev.CustomerService.Data/CompanySourceConstraints.cs'
+      - 'Legacy.Maliev.CustomerService.Tests/Data/CompanySourceStorageMigrationTests.cs'
+      - 'Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs'
+      - 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScaffoldRuntimeProof.cs'
+      - 'Legacy.Maliev.CustomerService.Data/Migrations/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: company-source-capacity-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  focused:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies
+      MSBUILDDISABLENODEREUSE: '1'
+      DOTNET_CLI_USE_MSBUILD_SERVER: '0'
+      UseSharedCompilation: 'false'
+    steps:
+      - name: Check out exact Customer PR tree
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Check out frozen Defaults
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults
+          ref: c40a7f82cea347b949444dcd7fb730f2b8dc3c0e
+          path: .dependencies/Legacy.Maliev.ServiceDefaults
+          persist-credentials: false
+      - name: Check out frozen Contracts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts
+          ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
+          path: .dependencies/Legacy.Maliev.CompatibilityContracts
+          persist-credentials: false
+      - name: Admit existing SDK setup
+        run: python3 -B scripts/verify_customer_company_focus.py guard
+      - name: Set up existing SDK family
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+        with:
+          dotnet-version: 10.0.x
+      - name: Restore admitted source focus
+        timeout-minutes: 4
+        run: |
+          set -euo pipefail
+          export GITHUB_ACTIONS=false
+          mkdir company-capacity-results
+          python3 -B scripts/verify_customer_company_focus.py guard
+          timeout --signal=TERM --kill-after=5s 180s dotnet restore Legacy.Maliev.CustomerService.slnx -p:UseLocalMalievDependencies=true
+      - name: Build admitted source focus
+        timeout-minutes: 4
+        run: |
+          set -euo pipefail
+          export GITHUB_ACTIONS=false
+          python3 -B scripts/verify_customer_company_focus.py guard
+          timeout --signal=TERM --kill-after=5s 180s dotnet build Legacy.Maliev.CustomerService.slnx -c Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true -p:UseSharedCompilation=false
+      - name: Execute source capacity and retained literal boundaries
+        timeout-minutes: 11
+        run: |
+          set -euo pipefail
+          export GITHUB_ACTIONS=false
+          python3 -B scripts/verify_customer_company_focus.py guard
+          timeout --signal=TERM --kill-after=5s 600s dotnet test Legacy.Maliev.CustomerService.slnx -c Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter 'FullyQualifiedName~CustomerPostgresMigrationTests.GetCustomersAsync_SearchesMigratedNondeterministicCollations|FullyQualifiedName~CustomerDetailAuthorityHttpTests.Scaffold_ActualEfPreviewBuildAndGeneratedQueriesPreserveMigratedOwnedGraph|FullyQualifiedName~CompanySourceStorageMigrationTests|FullyQualifiedName~CompanySourceCapacityHttpTests|FullyQualifiedName~CustomerCompanyLiteralNameHttpTests|FullyQualifiedName~CompanyTaxRegistrarPrimitiveStorageTests' --logger trx --results-directory company-capacity-results
+          python3 - <<'PY'
+          import pathlib, xml.etree.ElementTree as E
+          files = list(pathlib.Path('company-capacity-results').rglob('*.trx'))
+          if len(files) != 1:
+              raise SystemExit('Exactly one original focused TRX required')
+          root = E.parse(files[0]).getroot()
+          ns = {'t': 'http://microsoft.com/schemas/VisualStudio/TeamTest/2010'}
+          rows = root.findall('t:Results/t:UnitTestResult', ns)
+          if len(rows) != 52 or any(row.get('outcome') != 'Passed' for row in rows) or len({row.get('executionId') for row in rows}) != 52:
+              raise SystemExit('Exactly fifty-two passing, uniquely executed source and retained cases required')
+          PY
+      - name: Preserve actual focused evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: company-capacity-${{ github.sha }}
+          path: |
+            company-capacity-results
+            runner-results/customer-actual-scaffold.json
+          if-no-files-found: warn
+          retention-days: 7
