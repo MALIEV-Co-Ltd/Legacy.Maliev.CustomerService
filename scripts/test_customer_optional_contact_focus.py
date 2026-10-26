@@ -1,4 +1,6 @@
 """Synthetic parser/receipt controls only; never historical or C# runtime proof."""
+from customer_artifact_transport_profile import historical_view
+from test_customer_artifact_transport_profile import ArtifactTransportControls
 import datetime as dt
 import copy
 import re
@@ -559,6 +561,9 @@ def company_capacity_101_postimage(root, path, predecessor, successor):
 
 
 def validate_documentation_successor(root, manifest_path, manifest):
+    if "artifactTransportSuccessor" in manifest:
+        with historical_view(root, manifest_path, manifest) as (original_root, original_manifest):
+            return validate_documentation_successor(original_root, manifest_path, original_manifest)
     doc_need(manifest_path in FROZEN and type(manifest) is dict, "Known focused manifest")
     count, pins_sha, fields_sha, predecessor_blob = FROZEN[manifest_path]
     old_rows = manifest.get("preDocumentationCodePins")
