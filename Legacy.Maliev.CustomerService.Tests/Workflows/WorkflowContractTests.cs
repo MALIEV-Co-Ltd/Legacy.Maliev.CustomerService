@@ -15,18 +15,21 @@ public sealed class WorkflowContractTests
     private static readonly string DataProject = File.ReadAllText(
         FindRepositoryFile("Legacy.Maliev.CustomerService.Data", "Legacy.Maliev.CustomerService.Data.csproj"));
 
-    /// <summary>Checks the maintained workflow structure, admitted consumer phases, and exact address-focused evidence boundaries.</summary>
-    private static void BuildAndTest_RejectsPreviousUploadArtifactPin()
+    private static void BuildAndTest_RejectsPreviousUploadArtifactPins()
     {
-        var previousPin = Workflow.Replace("actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a", "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02", StringComparison.Ordinal);
-        Assert.NotEqual(Workflow, previousPin);
-        Assert.Throws<InvalidOperationException>(() => WorkflowContractValidator.Validate(previousPin));
+        foreach (var previousPin in new[] { "ea165f8d65b6e75b540449e92b4886f43607fa02", "043fb46d1a93c77aae656e7c1c64a875d1fc6a0a" })
+        {
+            var previous = Workflow.Replace("actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9", "actions/upload-artifact@" + previousPin, StringComparison.Ordinal);
+            Assert.NotEqual(Workflow, previous);
+            Assert.Throws<InvalidOperationException>(() => WorkflowContractValidator.Validate(previous));
+        }
     }
 
+    /// <summary>Checks the maintained workflow structure, admitted consumer phases, and exact address-focused evidence boundaries.</summary>
     [Fact]
     public void BuildAndTest_SatisfiesStructuralContract()
     {
-        BuildAndTest_RejectsPreviousUploadArtifactPin();
+        BuildAndTest_RejectsPreviousUploadArtifactPins();
         WorkflowContractValidator.Validate(Workflow);
 
         // Exercise the exact opt-in step without changing the original suite identities.
@@ -404,7 +407,7 @@ internal static partial class WorkflowContractValidator
 
         RequireScalarValue(evidence, "name", "Preserve validation evidence");
         RequireScalarValue(evidence, "if", "always()");
-        RequireScalarValue(evidence, "uses", "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a");
+        RequireScalarValue(evidence, "uses", "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9");
         var evidenceInputs = RequireMapping(evidence, "with");
         if (evidenceInputs.Children.Count != 4)
         {

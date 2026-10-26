@@ -164,7 +164,7 @@
     {
       "path": ".github/workflows/_build-and-test.yml",
       "bytes": 9493,
-      "sha256": "288cff32a5c939c76e007de5736bdb982216e7c62200594a89f77c0f66494c0d"
+      "sha256": "8a7f6a3521c81507d7a72c051e678a2194c3721ec619a4e8b90e907ddd670f3b"
     },
     {
       "path": ".github/workflows/ci-develop.yml",
@@ -338,8 +338,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Application/Models/CompanyNameLengthAttribute.cs",
-      "bytes": 1449,
-      "sha256": "bf219f1c3f4b1179444b48f4a048553d5ab95535eaec8dbd281a6cb6c5675761"
+      "bytes": 1536,
+      "sha256": "4f59cbd62fbe7918532049197110943ee236ac9ec6adf273de9737abdf4ef212"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Application/Models/CustomerModels.cs",
@@ -348,8 +348,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Application/Models/CustomerRelationEdits.cs",
-      "bytes": 5187,
-      "sha256": "8ed639fc57b54f9607ef5f2468cf810727996f738c493474aa8a181c2e5964e0"
+      "bytes": 5193,
+      "sha256": "a98f2e32b38ff3461acb25576eb33aab265549208769ec9a7467159f92c78876"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Application/Models/OrdinaryCompanyNameJsonConverter.cs",
@@ -378,8 +378,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Data/CustomerDbContext.cs",
-      "bytes": 7144,
-      "sha256": "6e5d93ba8d385099b0d06d782db17344fe9656fc056ddeed1c00c2f07710b970"
+      "bytes": 7590,
+      "sha256": "4f33a8c15cc5b1241ee42327a4945260c775e3c3d34939ab85f29afa8963c82f"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Data/CustomerDbContextFactory.cs",
@@ -473,8 +473,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Data/Migrations/CustomerDbContextModelSnapshot.cs",
-      "bytes": 12273,
-      "sha256": "795475768f136faad32445b7eafa56d87ad6b98a58394292329b4534e450a7be"
+      "bytes": 12917,
+      "sha256": "208f45fa79c738fed5e9b5151b92e7185342141ad96415d5e3b4213232f21750"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Data/QuotationProfileCompletionStore.cs",
@@ -558,8 +558,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyLiteralNameHttpTests.cs",
-      "bytes": 19056,
-      "sha256": "8fae5c6c10715873e6d1d4a91fbe6fb5f5fee1c17a2870ec511f574f2ae379cb"
+      "bytes": 19137,
+      "sha256": "b11040ef4290dcaf8b6717ce24f4074c2fc2e73209f2b157a5076fb069f2435a"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryPrimitiveHttpTests.cs",
@@ -653,8 +653,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScaffoldRuntimeProof.cs",
-      "bytes": 24777,
-      "sha256": "314b8cd1ad989bba8bd2ad971aba6ca8e6e9d0dd4e7ba13ff052b18d4fd92b2a"
+      "bytes": 27895,
+      "sha256": "f19449c162600ebb3fccf2d3d5d0f778c6a6297fc1c1f4e05951631009a729f7"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerScopedRelationEditHttpTests.cs",
@@ -713,8 +713,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs",
-      "bytes": 20514,
-      "sha256": "67bc3b667fff19c59f4f1a7f0afe1239ff927160615a684c7f503342d1249285"
+      "bytes": 22057,
+      "sha256": "e1e11de82bb805212726a58443f5026be17f05991b29866728004798596bef9b"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Data/CustomerRevisionPostgresTests.cs",
@@ -773,8 +773,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Workflows/WorkflowContractTests.cs",
-      "bytes": 47530,
-      "sha256": "32b0beebd58a8d9d640691206c982a079ab68da4c5f3d92637981bb5b51aab84"
+      "bytes": 48164,
+      "sha256": "74e6af5b741a4c29b0cfd502fbbf9c2459a0038a2ac8aa96ed7912fbf6d53061"
     },
     {
       "path": "Legacy.Maliev.CustomerService.slnx",
@@ -1068,8 +1068,8 @@
     },
     {
       "path": "scripts/kernel_root_route.py",
-      "bytes": 45503,
-      "sha256": "9e13526b6f020b2580a632e261a50a4278099999dd96af48d76cf9618c726f5c"
+      "bytes": 50648,
+      "sha256": "c59501f58a1c2ff61a2dabc148ef045e52c54e42907f0b4cc10c8d7797a0aaa5"
     },
     {
       "path": "scripts/publisher_recipe.py",
@@ -1123,18 +1123,18 @@
     },
     {
       "path": "scripts/verify_customer_company_focus.py",
-      "bytes": 8213,
-      "sha256": "c88250b597e2a0855e10f885cb50fe5d703eca3c1a1e5aee094995f00de9dffe"
+      "bytes": 8300,
+      "sha256": "3a2f5d0cd8b0f335971240d498d70628ff295d9438b1d96262161a3c7d5647d7"
     },
     {
       "path": "scripts/verify_customer_default_page_focus.py",
-      "bytes": 4386,
-      "sha256": "7780f8dc6d10a6d4ecbcb3b6b7a7150d9ffca0f888e49a615ab2a11f5e6d3505"
+      "bytes": 4473,
+      "sha256": "4795c9360b1650908b6ee2a924f5f12a910e8bdad6eb61c3c5ba2995a9475aef"
     },
     {
       "path": "scripts/verify_customer_email_focused.py",
-      "bytes": 9463,
-      "sha256": "5ea7d087156bd3754b60ac77033ea0ac9e4b32a1bb29c704ba99b91c44153824"
+      "bytes": 9688,
+      "sha256": "b8b74d94c5f866d8100c65fd60b5210be812906301d6967b2c77592f86341bd2"
     },
     {
       "path": "tooling/CustomerStartupPhaseProbe/CustomerStartupPhaseProbe.csproj",
@@ -1533,13 +1533,13 @@
     },
     {
       "path": "scripts/customer-default-page-focused-manifest.json",
-      "bytes": 186217,
-      "sha256": "6764af9fa9e8bd7db1b1c3e252dd21618081f51b9f95260ceefee4d1bc8c8428"
+      "bytes": 192203,
+      "sha256": "1bcf782c03ddc6503be86c7aaa7fa55c89ad9c011f8284b596cfaab2b0b0fbeb"
     },
     {
       "path": "scripts/customer-email-focused-manifest.json",
-      "bytes": 206056,
-      "sha256": "8bdb009b35fd1f8ed17bb76771ce1b6987694073e6925fc046a99bb2570ec487"
+      "bytes": 212225,
+      "sha256": "800fbb059ddb6e0a9020d82c99488ccafc247263c9439d014bd620e20747f79d"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Api/OrdinaryCompanyMvcJsonMetadata.cs",
@@ -1553,8 +1553,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyOrdinaryDuplicateNullReferenceTests.cs",
-      "bytes": 12344,
-      "sha256": "332fc52c0024f91a336aad47f7e78aab750a8eba23a1bf70d223dd91015d10c8"
+      "bytes": 12333,
+      "sha256": "f020897170fc0169217d56e0bf8f96d3153ec90b8b0f809cba664c975119e517"
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyOrdinaryDuplicateNullHttpTests.cs",
@@ -1588,8 +1588,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CompanyTaxRegistrarPrimitiveStorageTests.cs",
-      "bytes": 9638,
-      "sha256": "adc0161bdc0bfc9a409058f5644396405b061145fb6a406479417a80587fe770"
+      "bytes": 9686,
+      "sha256": "fc00b482736d07170ea32120c9d9b568126d20ad82fa47a819b712b32b5083f4"
     },
     {
       "path": "docs/company-paired-field-primitive-proof-only-20261011.md",
@@ -1603,8 +1603,8 @@
     },
     {
       "path": "Legacy.Maliev.CustomerService.Tests/Controllers/CustomerCompanyFieldPrimitiveHttpTests.cs",
-      "bytes": 33342,
-      "sha256": "64c88de4e5f7de4f724651e1a4eecc4635459e7a2e4eb86784797b33acba75f6"
+      "bytes": 34219,
+      "sha256": "8cd10f262e1d3a87b1438760b7495aae54cc6c09764614001fffb8b0d23fa6a6"
     },
     {
       "path": "docs/company-tax-registrar-primitive-mvc-20261011.md",
@@ -1643,13 +1643,13 @@
     },
     {
       "path": "scripts/test_customer_optional_contact_focus.py",
-      "bytes": 35275,
-      "sha256": "23bf1fae78f243d7ab931812d4ff0f7d9ee3a169aaed7e9b21e4ad298b7aaf96"
+      "bytes": 52181,
+      "sha256": "b731c2ef009121207ff5cdd5069a415298f4b96655a20ed00039e1855d40cbbf"
     },
     {
       "path": "scripts/verify_customer_address_focus.py",
-      "bytes": 7226,
-      "sha256": "3ae7e0deffdafe4aeb38870dade604067db0394b1e2797d6de29c836557f78f8"
+      "bytes": 7370,
+      "sha256": "9228ed865e2988b2c99079333afa4f779a3002169ed19b78ffe7f52bd316bab4"
     },
     {
       "path": "scripts/verify_customer_optional_contact_boundary_focus.py",
@@ -4775,6 +4775,194 @@
         },
         "predecessorGitBlob": "6f0524d9d576fdd352c843209c76458bfb05b510",
         "successorGitBlob": "ec07d2b5ca2169be1acba9045de3a4a0e4a6b103"
+      }
+    ]
+  },
+  "artifactTransportSuccessor": {
+    "schemaVersion": 1,
+    "scope": "customer-artifact-transport-v7.0.2-main944",
+    "predecessorMain": "944eac71234ba0f3d0181d97e6ba32d0acfbe8ce",
+    "predecessorManifestBlob": "738d4b3cd5c19ff5a01ebe089110cb06e6d258b2",
+    "predecessorManifestSha256": "ed1f5aa91e86af0533b1b335ec2a63ccacbc23b1f9b1bafc15130e902e290633",
+    "reviewedChanges": [
+      {
+        "path": ".github/workflows/_build-and-test.yml",
+        "predecessor": {
+          "path": ".github/workflows/_build-and-test.yml",
+          "bytes": 9493,
+          "sha256": "288cff32a5c939c76e007de5736bdb982216e7c62200594a89f77c0f66494c0d"
+        },
+        "current": {
+          "path": ".github/workflows/_build-and-test.yml",
+          "bytes": 9493,
+          "sha256": "8a7f6a3521c81507d7a72c051e678a2194c3721ec619a4e8b90e907ddd670f3b"
+        }
+      },
+      {
+        "path": "Legacy.Maliev.CustomerService.Tests/Workflows/WorkflowContractTests.cs",
+        "predecessor": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Workflows/WorkflowContractTests.cs",
+          "bytes": 47530,
+          "sha256": "32b0beebd58a8d9d640691206c982a079ab68da4c5f3d92637981bb5b51aab84"
+        },
+        "current": {
+          "path": "Legacy.Maliev.CustomerService.Tests/Workflows/WorkflowContractTests.cs",
+          "bytes": 48164,
+          "sha256": "74e6af5b741a4c29b0cfd502fbbf9c2459a0038a2ac8aa96ed7912fbf6d53061"
+        }
+      },
+      {
+        "path": "scripts/verify_customer_company_focus.py",
+        "predecessor": {
+          "path": "scripts/verify_customer_company_focus.py",
+          "bytes": 8213,
+          "sha256": "c88250b597e2a0855e10f885cb50fe5d703eca3c1a1e5aee094995f00de9dffe"
+        },
+        "current": {
+          "path": "scripts/verify_customer_company_focus.py",
+          "bytes": 8300,
+          "sha256": "3a2f5d0cd8b0f335971240d498d70628ff295d9438b1d96262161a3c7d5647d7"
+        }
+      },
+      {
+        "path": "scripts/verify_customer_default_page_focus.py",
+        "predecessor": {
+          "path": "scripts/verify_customer_default_page_focus.py",
+          "bytes": 4386,
+          "sha256": "7780f8dc6d10a6d4ecbcb3b6b7a7150d9ffca0f888e49a615ab2a11f5e6d3505"
+        },
+        "current": {
+          "path": "scripts/verify_customer_default_page_focus.py",
+          "bytes": 4473,
+          "sha256": "4795c9360b1650908b6ee2a924f5f12a910e8bdad6eb61c3c5ba2995a9475aef"
+        }
+      },
+      {
+        "path": "scripts/verify_customer_email_focused.py",
+        "predecessor": {
+          "path": "scripts/verify_customer_email_focused.py",
+          "bytes": 9463,
+          "sha256": "5ea7d087156bd3754b60ac77033ea0ac9e4b32a1bb29c704ba99b91c44153824"
+        },
+        "current": {
+          "path": "scripts/verify_customer_email_focused.py",
+          "bytes": 9688,
+          "sha256": "b8b74d94c5f866d8100c65fd60b5210be812906301d6967b2c77592f86341bd2"
+        }
+      },
+      {
+        "path": "scripts/customer-default-page-focused-manifest.json",
+        "predecessor": {
+          "path": "scripts/customer-default-page-focused-manifest.json",
+          "bytes": 186217,
+          "sha256": "c9aee0f3dd40de3b7c6aa3b1623177dc9b574e26f2955360f5a1507f8ac19d47"
+        },
+        "current": {
+          "path": "scripts/customer-default-page-focused-manifest.json",
+          "bytes": 192203,
+          "sha256": "1bcf782c03ddc6503be86c7aaa7fa55c89ad9c011f8284b596cfaab2b0b0fbeb"
+        }
+      },
+      {
+        "path": "scripts/customer-email-focused-manifest.json",
+        "predecessor": {
+          "path": "scripts/customer-email-focused-manifest.json",
+          "bytes": 206056,
+          "sha256": "98c95c1624468c2623e519cef0bc60671b9b668cc62dbc81611bca707401f755"
+        },
+        "current": {
+          "path": "scripts/customer-email-focused-manifest.json",
+          "bytes": 212225,
+          "sha256": "800fbb059ddb6e0a9020d82c99488ccafc247263c9439d014bd620e20747f79d"
+        }
+      },
+      {
+        "path": "scripts/test_customer_optional_contact_focus.py",
+        "predecessor": {
+          "path": "scripts/test_customer_optional_contact_focus.py",
+          "bytes": 51789,
+          "sha256": "4262c0b704221a9805485ce7028bc545bcd5c5529633e4c8434fd6ab7cb10268"
+        },
+        "current": {
+          "path": "scripts/test_customer_optional_contact_focus.py",
+          "bytes": 52181,
+          "sha256": "b731c2ef009121207ff5cdd5069a415298f4b96655a20ed00039e1855d40cbbf"
+        }
+      },
+      {
+        "path": "scripts/verify_customer_address_focus.py",
+        "predecessor": {
+          "path": "scripts/verify_customer_address_focus.py",
+          "bytes": 7226,
+          "sha256": "3ae7e0deffdafe4aeb38870dade604067db0394b1e2797d6de29c836557f78f8"
+        },
+        "current": {
+          "path": "scripts/verify_customer_address_focus.py",
+          "bytes": 7370,
+          "sha256": "9228ed865e2988b2c99079333afa4f779a3002169ed19b78ffe7f52bd316bab4"
+        }
+      }
+    ],
+    "additionalInputs": [
+      {
+        "path": "scripts/artifact-transport-predecessors/WorkflowContractTests.cs.txt",
+        "bytes": 47530,
+        "sha256": "32b0beebd58a8d9d640691206c982a079ab68da4c5f3d92637981bb5b51aab84"
+      },
+      {
+        "path": "scripts/artifact-transport-predecessors/customer-address-focused-manifest.json",
+        "bytes": 220763,
+        "sha256": "ffc4243e594a47320a97200be172d2898e8e1e5a474f004346f7380d590545d5"
+      },
+      {
+        "path": "scripts/artifact-transport-predecessors/customer-company-focused-manifest.json",
+        "bytes": 217999,
+        "sha256": "ed1f5aa91e86af0533b1b335ec2a63ccacbc23b1f9b1bafc15130e902e290633"
+      },
+      {
+        "path": "scripts/artifact-transport-predecessors/customer-default-page-focused-manifest.json",
+        "bytes": 186217,
+        "sha256": "c9aee0f3dd40de3b7c6aa3b1623177dc9b574e26f2955360f5a1507f8ac19d47"
+      },
+      {
+        "path": "scripts/artifact-transport-predecessors/customer-email-focused-manifest.json",
+        "bytes": 206056,
+        "sha256": "98c95c1624468c2623e519cef0bc60671b9b668cc62dbc81611bca707401f755"
+      },
+      {
+        "path": "scripts/artifact-transport-predecessors/test_customer_optional_contact_focus.py.txt",
+        "bytes": 51789,
+        "sha256": "4262c0b704221a9805485ce7028bc545bcd5c5529633e4c8434fd6ab7cb10268"
+      },
+      {
+        "path": "scripts/artifact-transport-predecessors/verify_customer_address_focus.py.txt",
+        "bytes": 7226,
+        "sha256": "3ae7e0deffdafe4aeb38870dade604067db0394b1e2797d6de29c836557f78f8"
+      },
+      {
+        "path": "scripts/artifact-transport-predecessors/verify_customer_company_focus.py.txt",
+        "bytes": 8213,
+        "sha256": "c88250b597e2a0855e10f885cb50fe5d703eca3c1a1e5aee094995f00de9dffe"
+      },
+      {
+        "path": "scripts/artifact-transport-predecessors/verify_customer_default_page_focus.py.txt",
+        "bytes": 4386,
+        "sha256": "7780f8dc6d10a6d4ecbcb3b6b7a7150d9ffca0f888e49a615ab2a11f5e6d3505"
+      },
+      {
+        "path": "scripts/artifact-transport-predecessors/verify_customer_email_focused.py.txt",
+        "bytes": 9463,
+        "sha256": "5ea7d087156bd3754b60ac77033ea0ac9e4b32a1bb29c704ba99b91c44153824"
+      },
+      {
+        "path": "scripts/customer_artifact_transport_profile.py",
+        "bytes": 23120,
+        "sha256": "f4ab5bcccedffcbc56697eee6fe45f420c4be4a7cd8bc39e2b3312455666c449"
+      },
+      {
+        "path": "scripts/test_customer_artifact_transport_profile.py",
+        "bytes": 7759,
+        "sha256": "4f7ec70aef84cb8892cb0c896e8ffab9692ff75b6eca90f79246a2e2eb286dc0"
       }
     ]
   }
