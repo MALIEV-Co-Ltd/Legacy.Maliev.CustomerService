@@ -2199,13 +2199,13 @@
     },
     {
       "path": "docs/original-native-logging-source-cohort.json",
-      "bytes": 12064,
-      "sha256": "7ed08fa93fcfdb5df571d250c26cd4c35a8ccddb7702c0cfa4a6b0e1fde99b81"
+      "bytes": 11184,
+      "sha256": "2213325da9cba36b25ec01c19d3df772ad2ab52ee101809d8b1da0b47cf9d64a"
     },
     {
       "path": "docs/original-native-logging-source-cohort.md",
-      "bytes": 801,
-      "sha256": "30497becc0fa95d788cdbeb036016e4c71ce63285fd20f90cc94df0f17e0de5f"
+      "bytes": 759,
+      "sha256": "71f0f0dbb386da9beddbcd155dc84ed32599b871d3a96ffd28d8877a62548020"
     },
     {
       "path": "docs/publisher-validation-adoption-20261001.md",
