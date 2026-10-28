@@ -101,7 +101,7 @@ jobs:
           timeout --signal=TERM --kill-after=5s 20s python3 -B scripts/customer-kernel-packet/customer_native_build_driver.py source-check --packet-sha256 eccc5ddac7342c0297c177945030426fabca183455901021463d084d2eefe079 --source-directory /work/customer-source
       - name: Preserve actual source evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: customer-source-intake-${{ github.sha }}-${{ github.run_attempt }}
           path: |
@@ -162,7 +162,7 @@ jobs:
           ulimit -t 25
           timeout --signal=TERM --kill-after=5s 30s python3 -B scripts/kernel_root_route.py observe --nonce "$ROOT_DISPATCH_NONCE" --packet scripts/customer-kernel-packet --output "$RUNNER_TEMP/customer-kernel-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
       - name: Publish immutable machine observation for external Root review
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: customer-kernel-observation-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
@@ -192,7 +192,7 @@ jobs:
           fi
       - name: Preserve actual authority/kernel/cleanup evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: customer-kernel-evidence-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/customer-kernel-${{ github.run_id }}-${{ github.run_attempt }}/
