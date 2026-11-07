@@ -314,8 +314,9 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
         Assert.Equal(1, await verification.Addresses.CountAsync());
     }
 
-    /// <summary>Checks that provisioning selects the lowest legacy duplicate-email identifier without creating replacement resources.</summary>
-    /// <returns>A task that completes after asserting the lowest customer identifier, a reused-profile outcome, and no new addresses or companies.</returns>
+    /// <summary>Checks that provisioning refuses legacy duplicate emails without creating replacement resources.</summary>
+    /// <returns>A task that completes after asserting ambiguity and no new addresses or companies.</returns>
+    // Retain the historical test identity required by the frozen evidence roster.
     [Fact]
     public async Task ProvisionInstantQuotationProfile_LegacyDuplicateEmail_SelectsLowestIdWithoutCreatingResources()
     {
@@ -327,7 +328,7 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
         await dbContext.SaveChangesAsync();
         var repository = new CustomerRepository(dbContext, TimeProvider.System);
 
-        var result = await repository.ProvisionInstantQuotationProfileAsync(
+        await Assert.ThrowsAsync<System.Data.DataException>(() => repository.ProvisionInstantQuotationProfileAsync(
             new InstantQuotationCustomerProfileRequest(
                 "Ignored",
                 "Input",
@@ -339,10 +340,7 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
                 new InstantQuotationAddressInput(null, "1 Should Not Persist", null, null, null, null, 764),
                 null,
                 true),
-            CancellationToken.None);
-
-        Assert.Equal(17, result.CustomerId);
-        Assert.False(result.CustomerCreated);
+            CancellationToken.None));
         Assert.Equal(2, await dbContext.Customers.CountAsync());
         Assert.Empty(await dbContext.Addresses.ToListAsync());
         Assert.Empty(await dbContext.Companies.ToListAsync());

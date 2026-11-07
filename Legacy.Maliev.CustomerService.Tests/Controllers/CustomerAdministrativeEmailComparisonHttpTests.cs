@@ -71,10 +71,10 @@ public sealed class CustomerAdministrativeEmailComparisonHttpTests(CustomerDetai
         }
     }
 
-    /// <summary>Checks that colliding padded email profiles make lookup fail safely while provisioning reuses the selected existing profile.</summary>
+    /// <summary>Checks that colliding padded email profiles make both lookup and provisioning fail safely.</summary>
     /// <param name="route">The administrative write selector: create, keyed-create, ordinary update, or versioned update.</param>
     /// <param name="count">The number of distinct stored customer rows whose padded emails compare as the same canonical address.</param>
-    /// <returns>A task that completes after asserting sanitized lookup failure, deterministic profile reuse, unchanged graph and cache bytes, and retained replay state.</returns>
+    /// <returns>A task that completes after asserting sanitized failures, unchanged graph and cache bytes, and retained replay state.</returns>
     [Theory]
     [InlineData("create", 2)]
     [InlineData("create", 3)]
@@ -114,7 +114,7 @@ public sealed class CustomerAdministrativeEmailComparisonHttpTests(CustomerDetai
             using var lookup = await reader.GetAsync("/customers/emails/" + Uri.EscapeDataString(caller), token);
             await AssertRefusalAsync(lookup, core, token);
             using var provision = await writer.PostAsJsonAsync("/customers/instant-quotation-profile", ProvisionPayload(caller), token);
-            await AssertSelectedAsync(provision, id, token);
+            await AssertRefusalAsync(provision, core, token);
             Assert.Equal(before, await SnapshotAsync(token));
             Assert.Equal(cacheBefore, await cache.GetAsync($"customer:{id}", token));
         }

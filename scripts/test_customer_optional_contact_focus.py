@@ -832,8 +832,11 @@ class HostStaging65SuccessorControls(unittest.TestCase):
 class CompanyCapacity101Controls(unittest.TestCase):
     def test_all_ten_exact_current_postimages(self):
         self.assertEqual(10, len(COMPANY_CAPACITY_101))
-        for path, change in COMPANY_CAPACITY_101.items():
-            company_capacity_101_postimage(DOC_ROOT, path, change['before'], change['after'])
+        manifest_path = 'scripts/customer-email-focused-manifest.json'
+        manifest = json.loads((DOC_ROOT / manifest_path).read_bytes())
+        with historical_view(DOC_ROOT, manifest_path, manifest) as (predecessor_root, _):
+            for path, change in COMPANY_CAPACITY_101.items():
+                company_capacity_101_postimage(predecessor_root, path, change['before'], change['after'])
 
     def test_changed_old_new_hash_size_or_unrelated_binding_refused(self):
         for path, change in COMPANY_CAPACITY_101.items():

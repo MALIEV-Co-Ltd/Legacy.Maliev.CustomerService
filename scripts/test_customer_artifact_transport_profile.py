@@ -16,6 +16,10 @@ class ArtifactTransportControls(unittest.TestCase):
         self.root = Path(self.temporary.name)
         paths = set(profile.MANIFESTS) | set(profile.SOURCE_EDITS) | {profile.WORKFLOW, profile.HELPER, profile.CONTROLS}
         paths.update(row['archive'] for row in profile.ARCHIVES.values())
+        for path in profile.MANIFESTS:
+            manifest = json.loads(profile.read(REAL_ROOT, path))
+            paths.update(row['path'] for row in manifest['codePins'])
+            paths.update(row['path'] for row in manifest[profile.ambiguity_FIELD]['additionalInputs'])
         for path in paths:
             destination = self.root / path
             destination.parent.mkdir(parents=True, exist_ok=True)
@@ -57,6 +61,90 @@ class ArtifactTransportControls(unittest.TestCase):
     def test_missing_successor_is_refused(self):
         manifest = self.manifest();manifest.pop(profile.FIELD);self.write(manifest)
         with self.assertRaises(ValueError):self.check()
+
+    def test_missing_ambiguity_successor_is_refused(self):
+        manifest = self.manifest()
+        manifest.pop(profile.ambiguity_FIELD)
+        self.write(manifest)
+        with self.assertRaises(ValueError):
+            self.check()
+
+    def test_each_ambiguity_postimage_mutation_is_refused(self):
+        for path in profile.ambiguity_POST:
+            with self.subTest(path=path):
+                target = self.root / path
+                original = target.read_bytes()
+                target.write_bytes(original + b' ')
+                with self.assertRaises(ValueError):self.check()
+                target.write_bytes(original)
+
+    def test_each_ambiguity_preimage_omission_is_refused(self):
+        for path in profile.ambiguity_PRE:
+            with self.subTest(path=path):
+                target = self.root / profile.ambiguity_ROOT / (Path(path).name + '.txt')
+                original = target.read_bytes()
+                target.unlink()
+                with self.assertRaises(FileNotFoundError):self.check()
+                target.write_bytes(original)
+
+    def test_ambiguity_repin_cannot_admit_unreviewed_source(self):
+        path = 'Legacy.Maliev.CustomerService.Data/CustomerRepository.cs'
+        target = self.root / path
+        target.write_bytes(target.read_bytes() + b' ')
+        manifest = self.manifest()
+        next(row for row in manifest['codePins'] if row['path'] == path).update(profile.pin(path, target.read_bytes()))
+        self.write(manifest)
+        with self.assertRaises(ValueError):self.check()
+
+    def test_ambiguity_preimage_cannot_be_resealed(self):
+        path = next(iter(profile.ambiguity_PRE))
+        archive = profile.ambiguity_ROOT + Path(path).name + '.txt'
+        target = self.root / archive
+        target.write_bytes(target.read_bytes() + b' ')
+        manifest = self.manifest()
+        next(row for row in manifest[profile.ambiguity_FIELD]['additionalInputs'] if row['path'] == archive).update(profile.pin(archive, target.read_bytes()))
+        self.write(manifest)
+        with self.assertRaises(ValueError):self.check()
+
+    def test_every_reviewed_new_input_rejects_mutation_repin_and_reseal(self):
+        paths = list(profile.ambiguity_POST) + [profile.ambiguity_ROOT + Path(path).name + '.txt' for path in profile.ambiguity_PRE]
+        for path in paths:
+            with self.subTest(path=path):
+                target = self.root / path
+                original = target.read_bytes()
+                manifest = self.manifest()
+                target.write_bytes(original + b' ')
+                changed = profile.pin(path, target.read_bytes())
+                for section in (manifest['codePins'], manifest[profile.ambiguity_FIELD]['additionalInputs']):
+                    for row in section:
+                        if row['path'] == path:
+                            row.update(changed)
+                self.write(manifest)
+                with self.assertRaises(ValueError):
+                    self.check()
+                target.write_bytes(original)
+                self.write(json.loads(profile.read(REAL_ROOT, profile.MANIFESTS[0])))
+
+    def test_every_reviewed_postimage_omission_is_refused(self):
+        for path in profile.ambiguity_POST:
+            with self.subTest(path=path):
+                target = self.root / path
+                original = target.read_bytes()
+                target.unlink()
+                with self.assertRaises((ValueError, FileNotFoundError)):
+                    self.check()
+                target.write_bytes(original)
+
+    def test_every_successor_additional_input_omission_is_refused(self):
+        original = self.manifest()
+        for index, row in enumerate(original[profile.ambiguity_FIELD]['additionalInputs']):
+            with self.subTest(path=row['path']):
+                changed = copy.deepcopy(original)
+                changed[profile.ambiguity_FIELD]['additionalInputs'].pop(index)
+                self.write(changed)
+                with self.assertRaises(ValueError):
+                    self.check()
+        self.write(original)
 
     def test_historical_policy_change_is_refused(self):
         manifest = self.manifest();manifest['requiredFocusedCount'] -= 1;self.write(manifest)
