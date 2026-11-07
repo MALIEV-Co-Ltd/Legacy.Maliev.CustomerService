@@ -89,10 +89,10 @@ public sealed class CustomerEmailCanonicalCaseHttpTests(CustomerDetailAuthorityF
         }
     }
 
-    /// <summary>Checks that Unicode case collisions fail lookup safely while provisioning selects the existing lowest-ID profile.</summary>
+    /// <summary>Checks that Unicode case collisions fail lookup and provisioning safely.</summary>
     /// <param name="first">The first Unicode email spelling stored on the original customer with literal padding.</param>
     /// <param name="second">The case-equivalent email spelling stored on a second customer to create a canonical collision.</param>
-    /// <returns>A task that completes after asserting sanitized lookup failure, reuse of customer 1, and unchanged stored rows and cache.</returns>
+    /// <returns>A task that completes after asserting sanitized failures and unchanged stored rows and cache.</returns>
     [Theory]
     [InlineData("École@example.test", "école@EXAMPLE.TEST")]
     [InlineData("Σ@example.test", "ς@EXAMPLE.TEST")]
@@ -124,7 +124,7 @@ public sealed class CustomerEmailCanonicalCaseHttpTests(CustomerDetailAuthorityF
         {
             using var lookup = await reader.GetAsync("/customers/emails/" + Uri.EscapeDataString(caller), token);
             using var provision = await writer.PostAsJsonAsync("/customers/instant-quotation-profile", ProvisionPayload(caller), token);
-            foreach (var failure in new[] { lookup })
+            foreach (var failure in new[] { lookup, provision })
             {
                 Assert.Equal(HttpStatusCode.InternalServerError, failure.StatusCode);
                 var body = await failure.Content.ReadAsStringAsync(token);
@@ -133,9 +133,6 @@ public sealed class CustomerEmailCanonicalCaseHttpTests(CustomerDetailAuthorityF
                 Assert.DoesNotContain("ambiguous", body, StringComparison.OrdinalIgnoreCase);
                 Assert.DoesNotContain("CustomerId", body, StringComparison.Ordinal);
             }
-            var provisioned = await ReadProvisionAsync(provision, token);
-            Assert.Equal(1, provisioned.Id);
-            Assert.False(provisioned.Created);
             Assert.Equal(before, await SnapshotAsync(token));
             Assert.Equal(cacheBefore, await cache.GetAsync("customer:1", token));
         }

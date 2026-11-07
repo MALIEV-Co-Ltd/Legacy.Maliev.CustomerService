@@ -1,6 +1,7 @@
 """Authenticate the reviewed ordinary transport delta; no execution authority is granted."""
 import contextlib
 import hashlib
+import importlib.util
 import json
 from pathlib import Path
 import re
@@ -242,6 +243,8 @@ def rows_by_path(rows):
     return result
 
 def authenticate_profile(root, manifest_path, manifest, _stack=()):
+    if 'ambiguitySuccessor' in manifest:
+        return ambiguity_authenticate(root, manifest_path, manifest)
     need(manifest_path in MANIFESTS and manifest_path not in _stack, 'Closed acyclic focused profile')
     need(type(manifest) is dict and FIELD in manifest, 'Reviewed current transport profile required')
     need(same(manifest, parse(read(root, manifest_path))), 'Actual current manifest bytes required')
@@ -282,6 +285,10 @@ def authenticate_profile(root, manifest_path, manifest, _stack=()):
 @contextlib.contextmanager
 def historical_view(root, manifest_path, manifest):
     """Provide authenticated old bytes to unchanged pure historical assertions only."""
+    if 'ambiguitySuccessor' in manifest:
+        with ambiguity_historical_view(root, manifest_path, manifest) as result:
+            yield result
+        return
     old = authenticate_profile(root, manifest_path, manifest)
     originals = {}
     for row in old['codePins']:
@@ -312,3 +319,137 @@ def historical_view(root, manifest_path, manifest):
             destination.parent.mkdir(parents=True, exist_ok=True)
             destination.write_bytes(data)
         yield target, old
+
+
+# Versioned ambiguity successor; this reviewed verifier remains the trust root.
+ambiguity_SCOPE = 'customer-ambiguity-successor-v1'
+ambiguity_FIELD = 'ambiguitySuccessor'
+ambiguity_ROOT = 'scripts/ambiguity-predecessors/'
+ambiguity_MANIFESTS = MANIFESTS
+ambiguity_POST = {
+    'scripts/test_customer_artifact_transport_profile.py': (12113, '2bd8c6c5d833099473b5532d40a38617cda92ad9e4adba5cd006b2799fdb650f'),
+    'Legacy.Maliev.CustomerService.Data/CustomerRepository.cs': (22861, '64a9fc86d4525e6f52fd5ab925dd7b8dee71d70cc67601e7242543a01c08367b'),
+    'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAdministrativeEmailComparisonHttpTests.cs': (21867, 'c8863374d5013b5d0ce83c1af693ac2717e64bed6cfa3060f72f85cb735c80af'),
+    'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerEmailCanonicalCaseHttpTests.cs': (19738, '7990448bba4134e3f32754fab4f8c0736a49db819e152a66f46d1f6ea3c447f9'),
+    'Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs': (22019, 'ecd30822655e1a767100969e2aac7f9505f863c38d9ca1ee1e80223fc275ba0a'),
+    'scripts/test_customer_optional_contact_focus.py': (52429, '2e7e3ac5bd677a430ac1cdfb67d01d3a87717f244f74c04c78c3052e18852649'),
+}
+ambiguity_PRE = {
+    'Legacy.Maliev.CustomerService.Data/CustomerRepository.cs': (22853, 'e2ded23908eaf7143806d8e551375d5f45f764d17765f2657daa17f43f0f2c8c'),
+    'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerAdministrativeEmailComparisonHttpTests.cs': (21935, '7bd2fe8e1008ab8da76c0783d3c552e49e846e0bb3cceb4efffe7f202a9ad318'),
+    'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerEmailCanonicalCaseHttpTests.cs': (19962, '23989479e178b0a0b5628f00578ec3ca163f6568e69ab360bb8a807be39d0483'),
+    'Legacy.Maliev.CustomerService.Tests/Data/CustomerPostgresMigrationTests.cs': (22057, 'e1e11de82bb805212726a58443f5026be17f05991b29866728004798596bef9b'),
+    'scripts/test_customer_optional_contact_focus.py': (52181, 'b731c2ef009121207ff5cdd5069a415298f4b96655a20ed00039e1855d40cbbf'),
+    'scripts/customer_artifact_transport_profile.py': (23120, 'f4ab5bcccedffcbc56697eee6fe45f420c4be4a7cd8bc39e2b3312455666c449'),
+    'scripts/test_customer_artifact_transport_profile.py': (7759, '4f7ec70aef84cb8892cb0c896e8ffab9692ff75b6eca90f79246a2e2eb286dc0'),
+    'scripts/customer-email-focused-manifest.json': (212225, '800fbb059ddb6e0a9020d82c99488ccafc247263c9439d014bd620e20747f79d'),
+    'scripts/customer-default-page-focused-manifest.json': (192203, '1bcf782c03ddc6503be86c7aaa7fa55c89ad9c011f8284b596cfaab2b0b0fbeb'),
+    'scripts/customer-company-focused-manifest.json': (225651, '6677650da29c41f1b7260b3523a13bcf39417249f1217e549788e05b3a4ebf1d'),
+    'scripts/customer-address-focused-manifest.json': (228415, 'c4a3a38969826f5b112b522b7ec9481c33495cab794e8162eefb695ead828818'),
+}
+ambiguity_EXTRAS = ['scripts/customer_artifact_transport_profile.py', 'scripts/test_customer_artifact_transport_profile.py', 'scripts/test_customer_optional_contact_focus.py']
+
+
+def ambiguity_archived(root, path):
+    size, digest = ambiguity_PRE[path]
+    name = ambiguity_ROOT + Path(path).name + '.txt'
+    data = read(root, name)
+    need(len(data) == size and hashlib.sha256(data).hexdigest() == digest, 'Exact ambiguity predecessor required')
+    return data
+
+
+def ambiguity_old_module(root):
+    data = ambiguity_archived(root, 'scripts/customer_artifact_transport_profile.py')
+    spec = importlib.util.spec_from_loader('frozen_customer_transport', loader=None)
+    module = importlib.util.module_from_spec(spec)
+    exec(compile(data, '<frozen-customer-transport>', 'exec'), module.__dict__)
+    return module
+
+
+def ambiguity_old_manifests(root, paths=None):
+    return {path: parse(ambiguity_archived(root, path)) for path in (ambiguity_MANIFESTS if paths is None else paths)}
+
+
+def ambiguity_expected_metadata(root, path, current, old):
+    before = rows_by_path(old['codePins'])
+    after = rows_by_path(current['codePins'])
+    need(list(before) == list(after), 'Original source pin roster and order required')
+    changes = []
+    for name, previous in before.items():
+        expected = previous
+        if name in ambiguity_POST:
+            data = read(root, name)
+            size, digest = ambiguity_POST[name]
+            need(len(data) == size and hashlib.sha256(data).hexdigest() == digest, 'Exact ambiguity postimage required')
+            need(same(pin(name, ambiguity_archived(root, name)), previous), 'Exact previous source pin required')
+            expected = pin(name, data)
+        elif name in ambiguity_MANIFESTS:
+            need(name in PARENTS[path], 'Declared focused parent required')
+            data = read(root, name)
+            ambiguity_validate_current(root, name, parse(data))
+            expected = pin(name, data)
+        need(same(after[name], expected), 'Unapproved current source or dependency pin')
+        if not same(previous, expected):
+            changes.append(dict(path=name, predecessor=previous, current=expected))
+    extras = set(ambiguity_EXTRAS) | set(ambiguity_POST) | {ambiguity_ROOT + Path(name).name + '.txt' for name in ambiguity_PRE}
+    return dict(schemaVersion=1, scope=ambiguity_SCOPE, predecessorMain='b12f18aa3c07f9839473f22b7eeb5a48221dd5f4',
+                predecessorManifest=pin(path, ambiguity_archived(root, path)), reviewedChanges=changes,
+                additionalInputs=[pin(name, read(root, name)) for name in sorted(extras)])
+
+
+@contextlib.contextmanager
+def ambiguity_predecessor_view(root, path):
+    files = set(ambiguity_PRE)
+    required = {path}
+    for selected in tuple(required):
+        required.update(PARENTS[selected])
+    old = ambiguity_old_manifests(root, required)
+    for selected in required:
+        manifest = old[selected]
+        files.update(row['path'] for row in manifest['codePins'])
+        files.update(row['path'] for row in manifest[FIELD]['additionalInputs'])
+        files.update(row['successor']['path'] for row in manifest['documentationSuccessor']['reviewedChanges'])
+    parent = Path(root).resolve().parent
+    with tempfile.TemporaryDirectory(prefix='.customer-ambiguity-history-', dir=parent) as temp:
+        target = Path(temp)
+        need(target.resolve().parent == parent, 'Owned predecessor view required')
+        for path in files:
+            data = ambiguity_archived(root, path) if path in ambiguity_PRE else read(root, path)
+            destination = target / path
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(data)
+        yield target, old
+
+
+def ambiguity_validate_current(root, path, manifest):
+    need(path in ambiguity_MANIFESTS, 'Known current manifest required')
+    actual = parse(read(root, path))
+    need(manifest == actual and same(manifest, actual), 'Exact current manifest required')
+    old = ambiguity_old_manifests(root, [path])[path]
+    need(same({k: v for k, v in manifest.items() if k not in ('codePins', ambiguity_FIELD)},
+                                  {k: v for k, v in old.items() if k != 'codePins'}), 'Prior profile and policy fields must remain exact')
+    for name in ambiguity_PRE:
+        ambiguity_archived(root, name)
+    for name, (size, digest) in ambiguity_POST.items():
+        data = read(root, name)
+        need(len(data) == size and hashlib.sha256(data).hexdigest() == digest, 'Exact reviewed current postimage required')
+    need(same(manifest.get(ambiguity_FIELD), ambiguity_expected_metadata(root, path, manifest, old)), 'Exact ambiguity successor metadata required')
+    for row in manifest['codePins']:
+        data = read(root, row['path'])
+        need(same(pin(row['path'], data), row), 'Actual current source and dependency pin required')
+
+
+def ambiguity_authenticate(root, path, manifest):
+    ambiguity_validate_current(root, path, manifest)
+    module = ambiguity_old_module(root)
+    with ambiguity_predecessor_view(root, path) as (previous_root, old):
+        return module.authenticate_profile(previous_root, path, old[path])
+
+
+@contextlib.contextmanager
+def ambiguity_historical_view(root, path, manifest):
+    ambiguity_validate_current(root, path, manifest)
+    module = ambiguity_old_module(root)
+    with ambiguity_predecessor_view(root, path) as (previous_root, old):
+        with module.historical_view(previous_root, path, old[path]) as result:
+            yield result

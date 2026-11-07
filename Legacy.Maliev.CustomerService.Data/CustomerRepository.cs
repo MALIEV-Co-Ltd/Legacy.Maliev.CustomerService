@@ -145,7 +145,7 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
         {
             // Each retry owns its context so rollback or a lost commit acknowledgement
             // cannot replay an earlier attempt's tracked graph. The email lock and
-            // lowest-ID lookup run again before any graph is created.
+            // ambiguity check run again before any graph is created.
             await using var attempt = new CustomerDbContext(
                 (DbContextOptions<CustomerDbContext>)dbContext.GetService<IDbContextOptions>());
             return await new CustomerRepository(attempt, timeProvider)
@@ -167,18 +167,22 @@ public sealed class CustomerRepository(CustomerDbContext dbContext, TimeProvider
             $"SELECT pg_advisory_xact_lock(hashtextextended({normalizedEmail} COLLATE \"C\", 0))",
             cancellationToken);
 
-        // Provisioning preserves the accepted migration's deterministic lowest-ID
-        // selection for imported duplicates. Staff email lookup separately refuses
-        // ambiguity; both consumers use the same comparison relation.
-        var existingCustomerId = await FindMatchingCustomers(normalizedEmail)
+        // Refuse imported duplicates before selecting a profile or creating a graph.
+        var matchingCustomerIds = await FindMatchingCustomers(normalizedEmail)
             .AsNoTracking()
             .OrderBy(customer => customer.Id)
-            .Select(customer => (int?)customer.Id)
-            .FirstOrDefaultAsync(cancellationToken);
-        if (existingCustomerId.HasValue)
+            .Select(customer => customer.Id)
+            .Take(2)
+            .ToListAsync(cancellationToken);
+        if (matchingCustomerIds.Count > 1)
+        {
+            throw new System.Data.DataException("Customer email lookup is ambiguous.");
+        }
+
+        if (matchingCustomerIds.Count == 1)
         {
             await transaction.CommitAsync(cancellationToken);
-            return new InstantQuotationCustomerProfileResult(existingCustomerId.Value, CustomerCreated: false);
+            return new InstantQuotationCustomerProfileResult(matchingCustomerIds[0], CustomerCreated: false);
         }
 
         var now = UtcWallClockNow();
