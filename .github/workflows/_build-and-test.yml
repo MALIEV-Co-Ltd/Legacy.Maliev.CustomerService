@@ -60,7 +60,7 @@ jobs:
           python3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/sdk-admission.log
       - name: Set up optional contact focused SDK
         timeout-minutes: 4
-        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73
         with:
           dotnet-version: 10.0.x
       - name: Restore optional contact focused baseline
