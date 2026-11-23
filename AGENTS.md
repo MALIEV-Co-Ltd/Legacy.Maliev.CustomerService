@@ -1,6 +1,6 @@
 # Legacy.Maliev.CustomerService
 
-This public repository is the sanitized .NET 10 compatibility extraction of the
+This public repository is the sanitized .NET 11 compatibility extraction of the
 customer domain from the private `R:\maliev-web` monorepo.
 
 ## Non-negotiable boundaries
@@ -19,7 +19,7 @@ customer domain from the private `R:\maliev-web` monorepo.
 
 ## Service conventions
 
-- Runtime: .NET 10; Scalar/OpenAPI, not Swashbuckle.
+- Runtime: .NET 11; Scalar/OpenAPI, not Swashbuckle.
 - Logging: built-in `ILogger<T>` for actionable failures; never log PII or secrets.
 - Data: PostgreSQL projections and bounded queries; no N+1 loading.
 - Cache: `legacy:customer:` Redis prefix, short customer-by-id TTL, explicit mutation

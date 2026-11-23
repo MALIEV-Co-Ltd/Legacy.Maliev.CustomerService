@@ -32,7 +32,7 @@ public sealed class CustomerDocumentationHttpTests
         var root = document.RootElement;
         Assert.StartsWith("3.", root.GetProperty("openapi").GetString());
         Assert.Equal("Legacy MALIEV Customer Service API", root.GetProperty("info").GetProperty("title").GetString());
-        Assert.Equal("Temporary .NET 10 compatibility service preserving legacy customer, company, address, and email contracts.",
+        Assert.Equal("Temporary .NET 11 compatibility service preserving legacy customer, company, address, and email contracts.",
             root.GetProperty("info").GetProperty("description").GetString());
         var paths = root.GetProperty("paths");
         Assert.True(paths.TryGetProperty("/customers", out _));

@@ -46,7 +46,7 @@ public sealed class WorkflowContractTests
         AssertMutationRejected("scripts/kernel_root_route.py consumer-phases", "scripts/kernel_root_route.py source-check");
         AssertMutationRejected("            ${{ runner.temp }}/customer-consumer-phases", "            /work/discarded-results");
         AssertMutationRejected("dotnet-validate@e5732037fe94b7ed6e5be2cd4c23dbf6ef5e2617", "dotnet-validate@e3a6093324a24968876782153286f52db8b29fd8");
-        AssertMutationRejected("ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7", "ref: main");
+        AssertMutationRejected("ref: fe17b8cea8ace3eef5434f8b29c9038f5c975613", "ref: main");
 
         var consumer = ReadWorkflowStep("Run exact separately admitted Customer consumer phases", "Validate safe scaffold orchestration");
         var scaffold = ReadWorkflowStep("Validate safe scaffold orchestration", "Gate owned production coverage");
@@ -137,7 +137,7 @@ public sealed class WorkflowContractTests
             AssertMutationRejected(stage, stage.Replace("export GITHUB_ACTIONS=false", "export OTHER_GITHUB_ACTIONS=false", StringComparison.Ordinal));
         }
 
-        AssertMutationRejected("dotnet-version: 10.0.x", "dotnet-version: 11.0.x");
+        AssertMutationRejected("dotnet-version: 11.0.100", "dotnet-version: 11.0.x");
         AssertMutationRejected("setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68", "setup-dotnet@main");
         AssertMutationRejected("timeout-minutes: 4", "timeout-minutes: 5");
         AssertMutationRejected("timeout-minutes: 2", "timeout-minutes: 3");
@@ -187,8 +187,8 @@ public sealed class WorkflowContractTests
     public void BuildAndTest_RejectsCommentedDependencySha()
     {
         AssertMutationRejected(
-            "ref: c40a7f82cea347b949444dcd7fb730f2b8dc3c0e",
-            "ref: main # c40a7f82cea347b949444dcd7fb730f2b8dc3c0e");
+            "ref: 173d63218d9142b34075bca87f5c6d933bcbdfb6",
+            "ref: main # 173d63218d9142b34075bca87f5c6d933bcbdfb6");
     }
 
     /// <summary>Checks that the API references legacy ServiceDefaults without the retired Aspire project dependency.</summary>
@@ -211,7 +211,7 @@ public sealed class WorkflowContractTests
         var reference = Assert.Single(project.Descendants("PackageReference"),
             element => (string?)element.Attribute("Include") == "Microsoft.EntityFrameworkCore.Design");
         Assert.Equal("'$(EnableCustomerScaffoldDesignTime)' == 'true'", reference.Attribute("Condition")?.Value);
-        Assert.Equal("10.0.12", reference.Attribute("Version")?.Value);
+        Assert.Equal("10.0.15", reference.Attribute("Version")?.Value);
         Assert.Equal("all", reference.Element("PrivateAssets")?.Value);
         Assert.Contains("Microsoft.EntityFrameworkCore.Design", DataProject, StringComparison.Ordinal);
     }
@@ -436,7 +436,7 @@ internal static partial class WorkflowContractValidator
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 ["repository"] = "MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults",
-                ["ref"] = "c40a7f82cea347b949444dcd7fb730f2b8dc3c0e",
+                ["ref"] = "173d63218d9142b34075bca87f5c6d933bcbdfb6",
                 ["path"] = ".dependencies/Legacy.Maliev.ServiceDefaults",
                 ["persist-credentials"] = "false",
             });
@@ -446,7 +446,7 @@ internal static partial class WorkflowContractValidator
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 ["repository"] = "MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts",
-                ["ref"] = "78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7",
+                ["ref"] = "fe17b8cea8ace3eef5434f8b29c9038f5c975613",
                 ["path"] = ".dependencies/Legacy.Maliev.CompatibilityContracts",
                 ["persist-credentials"] = "false",
             });
@@ -456,6 +456,7 @@ internal static partial class WorkflowContractValidator
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 ["solution"] = "Legacy.Maliev.CustomerService.slnx",
+                ["dotnet-version"] = "11.0.100",
                 ["use-local-maliev-dependencies"] = "true",
             });
     }
@@ -491,7 +492,7 @@ internal static partial class WorkflowContractValidator
             throw new InvalidOperationException("Focused SDK setup must contain one exact version input.");
         }
 
-        RequireScalarValue(sdkInputs, "dotnet-version", "10.0.x");
+        RequireScalarValue(sdkInputs, "dotnet-version", "11.0.100");
         ValidateOptionalContactRun(steps.Children[3], "Guard optional contact focused SDK setup", "2",
             "set -euo pipefail\ntest ! -e runner-optional-contact-focused\nmkdir runner-optional-contact-focused\npython3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/controls-admission.log\n(ulimit -v 262144; timeout --signal=TERM --kill-after=5s 60s python3 -B scripts/test_customer_optional_contact_focus.py) 2>&1 | tee runner-optional-contact-focused/controls.log\npython3 -B scripts/verify_customer_optional_contact_focus.py guard 2>&1 | tee runner-optional-contact-focused/sdk-admission.log",
             new Dictionary<string, string>(StringComparer.Ordinal));

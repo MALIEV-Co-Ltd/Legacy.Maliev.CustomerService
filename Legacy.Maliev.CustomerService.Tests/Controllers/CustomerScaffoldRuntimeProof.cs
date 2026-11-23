@@ -64,7 +64,7 @@ internal static class CustomerScaffoldRuntimeProof
         Directory.CreateDirectory(temporary);
         try
         {
-            await ExecuteAsync("dotnet", ["tool", "install", "dotnet-ef", "--version", "10.0.12", "--tool-path", tools], "exact-tool-install", repository, environment, phases);
+            await ExecuteAsync("dotnet", ["tool", "install", "dotnet-ef", "--version", "10.0.15", "--tool-path", tools], "exact-tool-install", repository, environment, phases);
             environment["PATH"] = tools + Path.PathSeparator + Environment.GetEnvironmentVariable("PATH");
             var build = await ExecuteAsync("dotnet", ["build", Path.Combine(repository, "Legacy.Maliev.CustomerService.Api/Legacy.Maliev.CustomerService.Api.csproj"), "-c", "Release", "--disable-build-servers", "-p:UseSharedCompilation=false", "-nodeReuse:false"], "isolated-design-startup-build", repository, environment, phases);
             RequireStrictBuild(build);
@@ -86,7 +86,7 @@ internal static class CustomerScaffoldRuntimeProof
             previewEnvironment.Remove("EnableCustomerScaffoldDesignTime");
             var previewBuild = await ExecuteAsync("dotnet", ["build", Path.Combine(output, "Preview.csproj"), "-c", "Release", "--disable-build-servers", "-p:UseSharedCompilation=false", "-nodeReuse:false"], "generated-preview-build", repository, previewEnvironment, phases);
             RequireStrictBuild(previewBuild);
-            var query = await ExecuteAsync("dotnet", [Path.Combine(output, "bin/Release/net10.0/Preview.dll")], "generated-model-and-query-proof", repository, previewEnvironment, phases);
+            var query = await ExecuteAsync("dotnet", [Path.Combine(output, "bin/Release/net11.0/Preview.dll")], "generated-model-and-query-proof", repository, previewEnvironment, phases);
             Assert.Contains("GENERATED_CUSTOMER_PROOF_OK", query, StringComparison.Ordinal);
             Assert.Equal(before, await SnapshotAsync(context));
             for (var index = 0; index < protectedPaths.Length; index++)
@@ -299,12 +299,12 @@ internal static class CustomerScaffoldRuntimeProof
 
     private const string PreviewProject = """
         <Project Sdk="Microsoft.NET.Sdk">
-          <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><Nullable>enable</Nullable><ImplicitUsings>enable</ImplicitUsings><TreatWarningsAsErrors>true</TreatWarningsAsErrors></PropertyGroup>
+          <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net11.0</TargetFramework><Nullable>enable</Nullable><ImplicitUsings>enable</ImplicitUsings><TreatWarningsAsErrors>true</TreatWarningsAsErrors></PropertyGroup>
           <ItemGroup>
             <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
-            <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />
-            <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.12" />
-            <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="10.0.12" />
+            <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.15" />
+            <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.15" />
+            <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="10.0.15" />
           </ItemGroup>
         </Project>
         """;

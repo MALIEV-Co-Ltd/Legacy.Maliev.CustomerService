@@ -40,7 +40,7 @@ internal sealed class CustomerStartupProcess : IDisposable
     internal async Task<ProcessResult> RunAsync(string contentRoot, bool failHostStart, Action<ProcessResult>? timeoutDiagnostics = null)
     {
         var directory = RepositoryRoot();
-        var apiDirectory = Path.Combine(directory, "Legacy.Maliev.CustomerService.Api", "bin", "Release", "net10.0");
+        var apiDirectory = Path.Combine(directory, "Legacy.Maliev.CustomerService.Api", "bin", "Release", "net11.0");
         var dll = Path.Combine(apiDirectory, "Legacy.Maliev.CustomerService.Api.dll");
         var runtime = Path.Combine(apiDirectory, "Legacy.Maliev.CustomerService.Api.runtimeconfig.json");
         var deps = Path.Combine(apiDirectory, "Legacy.Maliev.CustomerService.Api.deps.json");
@@ -69,7 +69,7 @@ internal sealed class CustomerStartupProcess : IDisposable
         var phaseFile = Path.Combine(ContentRoot, "startup-phase-codes.txt");
         if (phaseProbe)
         {
-            var hook = Path.GetFullPath(Path.Combine(directory, "tooling", "CustomerStartupPhaseProbe", "bin", "Release", "net10.0", "CustomerStartupPhaseProbe.dll"));
+            var hook = Path.GetFullPath(Path.Combine(directory, "tooling", "CustomerStartupPhaseProbe", "bin", "Release", "net11.0", "CustomerStartupPhaseProbe.dll"));
             Assert.True(hook.StartsWith(Path.GetFullPath(directory) + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
                 && File.Exists(hook), "Build the isolated private Release phase probe before an explicit diagnostic run.");
             File.WriteAllText(phaseFile, string.Empty);

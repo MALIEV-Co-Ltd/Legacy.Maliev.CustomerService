@@ -39,7 +39,7 @@ static async Task RunHostAsync(string[] startupArgs)
     builder.AddStandardMiddleware(options => options.EnableRequestLogging = true);
     builder.AddStandardOpenApi(
         title: "Legacy MALIEV Customer Service API",
-        description: "Temporary .NET 10 compatibility service preserving legacy customer, company, address, and email contracts.");
+        description: "Temporary .NET 11 compatibility service preserving legacy customer, company, address, and email contracts.");
     builder.Services.AddOpenApi("v1");
 
     builder.Services.AddControllers().AddJsonOptions(options =>
