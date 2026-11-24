@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using Legacy.Maliev.CustomerService.Api.Controllers;
 using Legacy.Maliev.CustomerService.Application.Models;
+using Legacy.Maliev.CustomerService.Tests.OriginalInput;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
@@ -72,17 +73,26 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
     {
         var (_, _, adapter) = Formatters();
         var oldCulture = CultureInfo.CurrentCulture;
+        var cultures = new[] { "en-US", "de-DE", "th-TH" };
+        var fields = new[] { "Telephone", "Mobile", "Fax" };
+        var values = new[] { "true", "false", "42", "1.500", "1E+03", "-0", "9223372036854775808123456789", "\"00123\"", "\" ก้ 😀 \\t \"", "\"\"", "null" };
+        var cases = cultures.SelectMany(culture => fields.SelectMany(field => values.Select(raw =>
+            new CustomerOriginalOracleProcess.PrimitiveCase(Valid + $",\"{field}\":{raw},\"{field}\":null}}", culture)))).ToArray();
+        var references = await CustomerOriginalOracleProcess.ReadContactsAsync(cases);
+        Assert.Equal(cases.Length, references.Length);
+        var cursor = 0;
         try
         {
-            foreach (var culture in new[] { "en-US", "de-DE", "th-TH" })
+            foreach (var culture in cultures)
             {
                 CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(culture);
-                foreach (var field in new[] { "Telephone", "Mobile", "Fax" })
-                    foreach (var raw in new[] { "true", "false", "42", "1.500", "1E+03", "-0", "9223372036854775808123456789", "\"00123\"", "\" ก้ 😀 \\t \"", "\"\"", "null" })
+                foreach (var field in fields)
+                    foreach (var raw in values)
                     {
                         var body = Valid + $",\"{field}\":{raw},\"{field}\":null}}";
-                        var reference = Newtonsoft.Json.JsonConvert.DeserializeObject<ReferenceContact>(body,
-                            new Newtonsoft.Json.JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore })!;
+                        var reference = references[cursor++];
+                        Assert.False(reference.IsJsonException);
+                        Assert.True(reference.ModelPresent);
                         var result = await adapter.ReadAsync(Context(body, "create"));
                         Assert.False(result.HasError);
                         var model = Assert.IsType<UpsertCustomerRequest>(result.Model);
@@ -169,10 +179,7 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
                     var actualContext = Context(body, "create", encoding);
                     var expected = await native.ReadAsync(expectedContext);
                     var actual = await adapter.ReadAsync(actualContext);
-                    var original = await global::Legacy.Maliev.CustomerService.Tests.OriginalInput.CustomerOriginalInputOracle
-                        .ReadBytesAsync(global::Legacy.Maliev.CustomerService.Tests.OriginalInput.CustomerOriginalInputOracle.Formatter(),
-                            global::Legacy.Maliev.CustomerService.Tests.OriginalInput.CustomerOriginalInputOracle.SourceType("customer"),
-                            new EmptyModelMetadataProvider(), encoding.GetBytes(body), expectedContext.HttpContext.Request.ContentType!);
+                    var original = await CustomerOriginalOracleProcess.ReadAsync("customer", encoding.GetBytes(body), expectedContext.HttpContext.Request.ContentType!);
                     Assert.Equal(original.Kind == "failure", actual.HasError);
                     Assert.Equal(original.Kind == "success", actual.IsModelSet);
                     Assert.Equal(expected.HasError, expectedContext.ModelState.ErrorCount > 0);
@@ -850,7 +857,6 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
     private static string[] Errors(InputFormatterContext context) => context.ModelState.OrderBy(pair => pair.Key, StringComparer.Ordinal)
         .SelectMany(pair => pair.Value!.Errors.Select(error => pair.Key + "|" + error.ErrorMessage + "|" + error.Exception?.GetType().FullName)).ToArray();
     private sealed record BodyFeature(bool CanHaveBody) : IHttpRequestBodyDetectionFeature;
-    private sealed class ReferenceContact { public string? Telephone { get; set; } public string? Mobile { get; set; } public string? Fax { get; set; } }
     private sealed class CustomString : JsonConverter<string>
     {
         public override string Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => "custom";

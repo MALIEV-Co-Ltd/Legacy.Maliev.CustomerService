@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using Legacy.Maliev.CustomerService.Api.Controllers;
 using Legacy.Maliev.CustomerService.Application.Models;
+using Legacy.Maliev.CustomerService.Tests.OriginalInput;
 using Microsoft.AspNetCore.Mvc;
 using Xunit.Abstractions;
 
@@ -18,7 +19,7 @@ public sealed class CompanyOrdinaryDuplicateNullReferenceTests(ITestOutputHelper
 {
     /// <summary>Verifies ordered duplicate-null and escaped-name behavior against a pinned Newtonsoft 13 reference without claiming original-runtime equivalence.</summary>
     [Fact]
-    public void OrdinaryDuplicateNames_MatchPinnedReferenceForOrderedNullAndEscapedCaseVariants()
+    public async Task OrdinaryDuplicateNames_MatchPinnedReferenceForOrderedNullAndEscapedCaseVariants()
     {
         var previousCulture = CultureInfo.CurrentCulture;
         var previousUiCulture = CultureInfo.CurrentUICulture;
@@ -72,12 +73,24 @@ public sealed class CompanyOrdinaryDuplicateNullReferenceTests(ITestOutputHelper
                 var candidateOptions = MvcOptions();
                 ComposeCandidate(candidateOptions);
                 Assert.NotSame(baselineOptions, candidateOptions);
+                var invalidJson = new[] { "{}", "[]" }.SelectMany(invalid => new[]
+                {
+                    "\"Name\":" + invalid + ",\"Name\":\"later-valid\"",
+                    "\"Name\":\"earlier-valid\",\"name\":" + invalid + ",\"Name\":null,\"Name\":\"later-valid\"",
+                    "\"Name\":null,\"\\u004Eame\":" + invalid + ",\"Name\":null",
+                }).Select(members => Body(members, null));
+                var referenceCases = cases.Select(item => new CustomerOriginalOracleProcess.PrimitiveCase(Body(item.Members, item.TaxNumber), culture))
+                    .Concat(invalidJson.Select(json => new CustomerOriginalOracleProcess.PrimitiveCase(json, culture, false))).ToArray();
+                var references = await CustomerOriginalOracleProcess.ReadPrimitivesAsync(referenceCases);
+                Assert.Equal(referenceCases.Length, references.Length);
+                var referenceIndex = 0;
 
                 foreach (var item in cases)
                 {
                     var json = Body(item.Members, item.TaxNumber);
-                    var reference = Newtonsoft.Json.JsonConvert.DeserializeObject<MutableReference>(json,
-                        new Newtonsoft.Json.JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore })!;
+                    var reference = references[referenceIndex++];
+                    Assert.False(reference.IsJsonException);
+                    Assert.True(reference.ModelPresent);
                     Assert.Equal(item.Name, reference.Name);
                     var referenceRequest = new UpsertCompanyRequest(reference.Name!, reference.TaxNumber, reference.Registrar);
                     foreach (var segmented in new[] { false, true })
@@ -126,8 +139,7 @@ public sealed class CompanyOrdinaryDuplicateNullReferenceTests(ITestOutputHelper
                         }
                         // Newtonsoft comparisons are limited to valid Unicode tokens, not malformed-surrogate parity.
                         if (invalid is "{}" or "[]")
-                            Assert.ThrowsAny<Newtonsoft.Json.JsonException>(() =>
-                                Newtonsoft.Json.JsonConvert.DeserializeObject<MutableReference>(json));
+                            Assert.True(references[referenceIndex++].IsJsonException);
                     }
                 }
             }
@@ -175,13 +187,6 @@ public sealed class CompanyOrdinaryDuplicateNullReferenceTests(ITestOutputHelper
 
     private sealed record NameCase(string Label, string Members, string? Name, string? BaselineName,
         bool Storable, bool HasDetails, string? TaxNumber = null);
-
-    private sealed class MutableReference
-    {
-        public string? Name { get; set; }
-        public string? TaxNumber { get; set; }
-        public string? Registrar { get; set; }
-    }
 
     private sealed class Segment : ReadOnlySequenceSegment<byte>
     {

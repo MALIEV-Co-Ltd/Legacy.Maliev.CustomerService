@@ -1,14 +1,8 @@
-using System.Buffers;
 using System.Text;
 using Legacy.Maliev.CustomerService.Application.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.ObjectPool;
-using Newtonsoft.Json;
 using Stj = System.Text.Json.JsonSerializer;
 
 namespace Legacy.Maliev.CustomerService.Tests.OriginalInput;
@@ -18,23 +12,6 @@ internal sealed record CustomerBodyRead(string Kind, object? Model, string[] Key
 
 internal static class CustomerOriginalInputOracle
 {
-    // Frozen source declarations: Address/Customer/Company at 5fac, 72eb and 770cb.
-    // This independent graph is an input oracle, never an EF or identity object.
-    internal static MvcNewtonsoftJsonOptions OriginalOptions()
-    {
-        var options = new MvcNewtonsoftJsonOptions();
-        options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-        options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-        return options;
-    }
-
-    internal static NewtonsoftJsonInputFormatter Formatter()
-    {
-        var original = OriginalOptions();
-        return new NewtonsoftJsonInputFormatter(NullLogger.Instance, original.SerializerSettings,
-            ArrayPool<char>.Shared, new DefaultObjectPoolProvider(), new MvcOptions(), original);
-    }
-
     internal static Type SourceType(string kind) => kind switch
     {
         "address" => typeof(SourceAddress),
@@ -52,22 +29,7 @@ internal static class CustomerOriginalInputOracle
 
     internal static Task<CustomerBodyRead> ReadAsync(string kind, string json, string contentType = "application/json",
         string prefix = "", int maxErrors = 200) =>
-        ReadBytesAsync(Formatter(), SourceType(kind), new EmptyModelMetadataProvider(),
-            Encoding.UTF8.GetBytes(json), contentType, prefix, maxErrors);
-
-    internal static async Task<CustomerBodyRead> ReadBytesAsync(IInputFormatter formatter, Type modelType,
-        IModelMetadataProvider metadataProvider, byte[] bytes, string contentType, string prefix = "", int maxErrors = 200)
-    {
-        var http = new DefaultHttpContext();
-        using var input = new MemoryStream(bytes, writable: false);
-        http.Request.Body = input;
-        http.Request.ContentType = contentType;
-        http.Request.ContentLength = bytes.LongLength;
-        var state = new ModelStateDictionary { MaxAllowedErrors = maxErrors };
-        var context = new InputFormatterContext(http, prefix, state, metadataProvider.GetMetadataForType(modelType),
-            static (stream, encoding) => new HttpRequestStreamReader(stream, encoding), false);
-        return await ObserveAsync(formatter, context);
-    }
+        CustomerOriginalOracleProcess.ReadAsync(kind, Encoding.UTF8.GetBytes(json), contentType, prefix, maxErrors);
 
     internal static async Task<CustomerBodyRead> ObserveAsync(IInputFormatter formatter, InputFormatterContext context)
     {

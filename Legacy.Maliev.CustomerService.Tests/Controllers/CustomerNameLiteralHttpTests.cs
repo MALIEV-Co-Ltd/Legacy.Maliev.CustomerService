@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Legacy.Maliev.CustomerService.Tests.OriginalInput;
 using Microsoft.EntityFrameworkCore;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
@@ -366,6 +367,19 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
             ("object", "{}"),
             ("array", "[]"),
         };
+        static string ReferenceBody(string field, (string Name, string? Value) item)
+        {
+            var fragment = item.Value is null ? string.Empty : $",\"{field}\":{item.Value}";
+            if (item.Name is "string-then-null" or "primitive-then-null") fragment += $",\"{field}\":null";
+            return "{\"FirstName\":\"Contact\",\"LastName\":\"Baseline\"," +
+                "\"Email\":\"optional-reference@example.test\",\"CompanyId\":1," +
+                "\"BillingAddressId\":1,\"ShippingAddressId\":1" + fragment + "}";
+        }
+        var referenceCases = fields.SelectMany(field => cases.Select(item =>
+            new CustomerOriginalOracleProcess.PrimitiveCase(ReferenceBody(field, item), System.Globalization.CultureInfo.CurrentCulture.Name))).ToArray();
+        var references = await CustomerOriginalOracleProcess.ReadContactsAsync(referenceCases);
+        Assert.Equal(referenceCases.Length, references.Length);
+        var referenceIndex = 0;
         foreach (var field in fields)
         {
             foreach (var item in cases)
@@ -373,27 +387,10 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
                 token.ThrowIfCancellationRequested();
                 await fixture.ResetAsync();
                 await fixture.SeedOldAsync(host);
-                var fragment = item.Value is null ? string.Empty : $",\"{field}\":{item.Value}";
-                if (item.Name is "string-then-null" or "primitive-then-null")
-                    fragment += $",\"{field}\":null";
-                var body = "{\"FirstName\":\"Contact\",\"LastName\":\"Baseline\"," +
-                    "\"Email\":\"optional-reference@example.test\",\"CompanyId\":1," +
-                    "\"BillingAddressId\":1,\"ShippingAddressId\":1" + fragment + "}";
-                OptionalContactReference? reference;
-                try
-                {
-                    reference = Newtonsoft.Json.JsonConvert.DeserializeObject<OptionalContactReference>(body,
-                        new Newtonsoft.Json.JsonSerializerSettings
-                        {
-                            NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
-                            ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
-                        });
-                    Assert.NotNull(reference);
-                }
-                catch (Newtonsoft.Json.JsonException)
-                {
-                    reference = null;
-                }
+                var body = ReferenceBody(field, item);
+                var observedReference = references[referenceIndex++];
+                if (!observedReference.IsJsonException) Assert.True(observedReference.ModelPresent);
+                var reference = observedReference.IsJsonException ? null : observedReference;
 
                 using var cachedRead = await client.GetAsync("/customers/1", token);
                 Assert.Equal(HttpStatusCode.OK, cachedRead.StatusCode);
@@ -462,7 +459,7 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
         }
     }
 
-    private static void AssertOptionalContactWire(JsonElement item, OptionalContactReference expected)
+    private static void AssertOptionalContactWire(JsonElement item, CustomerOriginalOracleProcess.ContactObservation expected)
     {
         foreach (var (field, value) in new[]
         {
@@ -503,14 +500,6 @@ public sealed class CustomerNameLiteralHttpTests(CustomerDetailAuthorityFixture 
             Addresses = await db.Addresses.AsNoTracking().OrderBy(row => row.Id).ToArrayAsync(token),
             ReplayRows = await db.CustomerCreateOperations.AsNoTracking().CountAsync(token),
         });
-    }
-
-    private sealed class OptionalContactReference
-    {
-        public OptionalContactReference() { }
-        public string? Telephone { get; set; }
-        public string? Mobile { get; set; }
-        public string? Fax { get; set; }
     }
 
     private static object Payload(string first, string last) => new

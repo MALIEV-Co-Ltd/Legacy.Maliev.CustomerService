@@ -236,8 +236,7 @@ public sealed class CompanyOriginalBodyReaderTests(CustomerDetailAuthorityFixtur
     public async Task CompanyStockMediaCharsetAndSafeFailure_AreRetained(string contentType, bool unicode, string expected)
     {
         var bytes = (unicode ? Encoding.Unicode : Encoding.UTF8).GetBytes(CompanyOriginalBodyHarness.Standard);
-        var source = await CustomerOriginalInputOracle.ReadBytesAsync(CustomerOriginalInputOracle.Formatter(),
-            typeof(SourceCompany), new EmptyModelMetadataProvider(), bytes, contentType);
+        var source = await CustomerOriginalOracleProcess.ReadAsync("company", bytes, contentType);
         Assert.Equal(expected, source.Kind);
         await using var host = fixture.Start();
         var candidate = await CompanyOriginalBodyHarness.ReadAsync(host.Services,

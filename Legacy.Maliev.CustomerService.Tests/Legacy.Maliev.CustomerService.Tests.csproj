@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../tools/CustomerOriginalOracle/CustomerOriginalOracle.csproj" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\Legacy.Maliev.CustomerService.Api\Legacy.Maliev.CustomerService.Api.csproj" />
     <ProjectReference Include="..\Legacy.Maliev.CustomerService.Application\Legacy.Maliev.CustomerService.Application.csproj" />
     <ProjectReference Include="..\Legacy.Maliev.CustomerService.Data\Legacy.Maliev.CustomerService.Data.csproj" />

@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using Legacy.Maliev.CustomerService.Api.Controllers;
 using Legacy.Maliev.CustomerService.Application.Models;
+using Legacy.Maliev.CustomerService.Tests.OriginalInput;
 using Microsoft.AspNetCore.Mvc;
 using Xunit.Abstractions;
 
@@ -18,7 +19,7 @@ public sealed class CompanyTaxRegistrarPrimitiveOracleTests(ITestOutputHelper ou
 {
     /// <summary>Checks scalar and Unicode projections, segmented input, converter precedence, controller decisions, and unchanged writers without historical provider-equivalence claims.</summary>
     [Fact]
-    public void PairedFields_RecordPinnedPrimitiveOracleAndFreezeCurrentReadControllerWriteBoundaries()
+    public async Task PairedFields_RecordPinnedPrimitiveOracleAndFreezeCurrentReadControllerWriteBoundaries()
     {
         var culture = CultureInfo.CurrentCulture;
         var uiCulture = CultureInfo.CurrentUICulture;
@@ -32,16 +33,25 @@ public sealed class CompanyTaxRegistrarPrimitiveOracleTests(ITestOutputHelper ou
                 {
                     var cases = Cases(field).ToArray();
                     Assert.Equal(27, cases.Length);
+                    var referenceInputs = cases.Select(item => "{\"Name\":\"ok\"" + (item.Members.Length == 0 ? "" : "," + item.Members) + "}").ToArray();
+                    var references = await CustomerOriginalOracleProcess.ReadPrimitivesAsync(referenceInputs
+                        .Select(json => new CustomerOriginalOracleProcess.PrimitiveCase(json, language)).ToArray());
+                    Assert.Equal(cases.Length, references.Length);
+                    var referenceIndex = 0;
                     foreach (var item in cases)
                     {
                         var json = "{\"Name\":\"ok\"" + (item.Members.Length == 0 ? "" : "," + item.Members) + "}";
-                        MutableReference? reference = null;
+                        var reference = references[referenceIndex++];
                         string? referenceError = null;
                         if (item.ReferenceRejects)
-                            referenceError = Assert.ThrowsAny<Newtonsoft.Json.JsonException>(() => Reference(json)).GetType().FullName;
+                        {
+                            Assert.True(reference.IsJsonException);
+                            referenceError = reference.ExceptionType;
+                        }
                         else
                         {
-                            reference = Reference(json);
+                            Assert.False(reference.IsJsonException);
+                            Assert.True(reference.ModelPresent);
                             Assert.Equal("ok", reference.Name);
                             Assert.Equal(item.Expected, field == "TaxNumber" ? reference.TaxNumber : reference.Registrar);
                             Assert.Null(field == "TaxNumber" ? reference.Registrar : reference.TaxNumber);
@@ -281,9 +291,6 @@ public sealed class CompanyTaxRegistrarPrimitiveOracleTests(ITestOutputHelper ou
         return JsonSerializer.Deserialize<UpsertCompanyRequest>(ref reader, options);
     }
 
-    private static MutableReference Reference(string json) => Newtonsoft.Json.JsonConvert.DeserializeObject<MutableReference>(json,
-        new Newtonsoft.Json.JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore })!;
-
     private static string Fields(UpsertCompanyRequest value) => string.Join(";", new[] { value.Name, value.TaxNumber, value.Registrar }
         .Select(text => text is null ? "null" : string.Concat(text.Select(character => ((int)character).ToString("X4", CultureInfo.InvariantCulture)))));
 
@@ -324,12 +331,6 @@ public sealed class CompanyTaxRegistrarPrimitiveOracleTests(ITestOutputHelper ou
 
     private sealed record Case(string Label, string Members, string? Expected, bool CurrentRejects, bool ReferenceRejects = false);
     private sealed record Observation(string? ReadError, string? ReadPath, string? Decoded, bool? ControllerDetails, string? WriteError, string? Written);
-    private sealed class MutableReference
-    {
-        public string? Name { get; set; }
-        public string? TaxNumber { get; set; }
-        public string? Registrar { get; set; }
-    }
     private sealed class ProbeStringConverter(bool handleNull) : JsonConverter<string>
     {
         public override bool HandleNull => handleNull;

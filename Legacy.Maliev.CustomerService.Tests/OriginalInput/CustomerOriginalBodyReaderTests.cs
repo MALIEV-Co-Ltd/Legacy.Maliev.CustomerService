@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging.Abstractions;
-using Newtonsoft.Json;
 using Stj = System.Text.Json.JsonSerializer;
 
 namespace Legacy.Maliev.CustomerService.Tests.OriginalInput;
@@ -354,8 +353,7 @@ public sealed class CustomerOriginalBodyReaderTests(CustomerDetailAuthorityFixtu
     public async Task StockMediaEncodingAndSafeUnsupportedCharset_ArePreserved(string kind, string contentType, bool unicode, string expected)
     {
         var bytes = (unicode ? Encoding.Unicode : Encoding.UTF8).GetBytes(Body(kind));
-        var source = await CustomerOriginalInputOracle.ReadBytesAsync(CustomerOriginalInputOracle.Formatter(),
-            CustomerOriginalInputOracle.SourceType(kind), new EmptyModelMetadataProvider(), bytes, contentType);
+        var source = await CustomerOriginalOracleProcess.ReadAsync(kind, bytes, contentType);
         Assert.Equal(expected, source.Kind);
         await using var host = fixture.Start();
         var candidate = await CustomerOriginalBodyNative.ReadAsync(host.Services,
@@ -419,8 +417,8 @@ public sealed class CustomerOriginalBodyReaderTests(CustomerDetailAuthorityFixtu
             {
                 Assert.True(property.CanRead && property.CanWrite);
                 Assert.Empty(property.GetCustomAttributes<ValidationAttribute>());
-                Assert.Empty(property.GetCustomAttributes<JsonPropertyAttribute>());
-                Assert.Empty(property.GetCustomAttributes<JsonIgnoreAttribute>());
+                Assert.Empty(property.GetCustomAttributes<Newtonsoft.Json.JsonPropertyAttribute>());
+                Assert.Empty(property.GetCustomAttributes<Newtonsoft.Json.JsonIgnoreAttribute>());
                 if (!property.PropertyType.IsValueType)
                 {
                     Assert.Equal(NullabilityState.Unknown, nullable.Create(property).ReadState);
@@ -462,18 +460,18 @@ public sealed class CustomerOriginalBodyReaderTests(CustomerDetailAuthorityFixtu
 
     /// <summary>Verifies source-shaped MVC serializer defaults, depth, buffering, and additional-content behavior.</summary>
     [Fact]
-    public void OfficialMvcSettings_RetainSourceDefaultsWithoutJsonConvertAdditionalContentBehavior()
+    public async Task OfficialMvcSettings_RetainSourceDefaultsWithoutJsonConvertAdditionalContentBehavior()
     {
-        var options = CustomerOriginalInputOracle.OriginalOptions();
-        Assert.Equal(NullValueHandling.Ignore, options.SerializerSettings.NullValueHandling);
-        Assert.Equal(ReferenceLoopHandling.Ignore, options.SerializerSettings.ReferenceLoopHandling);
-        Assert.Equal(TypeNameHandling.None, options.SerializerSettings.TypeNameHandling);
-        Assert.Equal(DefaultValueHandling.Include, options.SerializerSettings.DefaultValueHandling);
-        Assert.Equal(ObjectCreationHandling.Auto, options.SerializerSettings.ObjectCreationHandling);
-        Assert.Equal(MetadataPropertyHandling.Default, options.SerializerSettings.MetadataPropertyHandling);
-        Assert.Equal(DateParseHandling.DateTime, options.SerializerSettings.DateParseHandling);
-        Assert.Equal(32, options.SerializerSettings.MaxDepth);
-        Assert.False(options.SerializerSettings.CheckAdditionalContent);
+        var options = await CustomerOriginalOracleProcess.ReadSettingsAsync();
+        Assert.Equal("Ignore", options.NullValueHandling);
+        Assert.Equal("Ignore", options.ReferenceLoopHandling);
+        Assert.Equal("None", options.TypeNameHandling);
+        Assert.Equal("Include", options.DefaultValueHandling);
+        Assert.Equal("Auto", options.ObjectCreationHandling);
+        Assert.Equal("Default", options.MetadataPropertyHandling);
+        Assert.Equal("DateTime", options.DateParseHandling);
+        Assert.Equal(32, options.MaxDepth);
+        Assert.False(options.CheckAdditionalContent);
         Assert.False(options.ReadJsonWithRequestCulture);
         Assert.Equal(30 * 1024, options.InputFormatterMemoryBufferThreshold);
     }

@@ -4,4 +4,5 @@
   <Project Path="Legacy.Maliev.CustomerService.Data/Legacy.Maliev.CustomerService.Data.csproj" />
   <Project Path="Legacy.Maliev.CustomerService.Domain/Legacy.Maliev.CustomerService.Domain.csproj" />
   <Project Path="Legacy.Maliev.CustomerService.Tests/Legacy.Maliev.CustomerService.Tests.csproj" />
+  <Project Path="tools/CustomerOriginalOracle/CustomerOriginalOracle.csproj" />
 </Solution>

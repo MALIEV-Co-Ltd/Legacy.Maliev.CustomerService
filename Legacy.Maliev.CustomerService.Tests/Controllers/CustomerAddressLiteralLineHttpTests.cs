@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using Legacy.Maliev.CustomerService.Application.Models;
 using Legacy.Maliev.CustomerService.Domain;
+using Legacy.Maliev.CustomerService.Tests.OriginalInput;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
@@ -123,6 +124,11 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
         var primitives = new[] { (Token: "42", Literal: "42"), (Token: "-0", Literal: "-0"),
             (Token: "1.50", Literal: "1.50"), (Token: "1e+2", Literal: "1e+2"),
             (Token: "true", Literal: "true"), (Token: "false", Literal: "false") };
+        var referenceCases = fields.SelectMany(field => primitives.Select(item =>
+            new CustomerOriginalOracleProcess.PrimitiveCase("{\"" + field + "\":" + item.Token + "}", System.Globalization.CultureInfo.CurrentCulture.Name))).ToArray();
+        var references = await CustomerOriginalOracleProcess.ReadDictionariesAsync(referenceCases);
+        Assert.Equal(referenceCases.Length, references.Length);
+        var referenceIndex = 0;
         var baselineOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web)
         {
             DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
@@ -132,7 +138,7 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
         foreach (var field in fields)
             foreach (var item in primitives)
             {
-                var reference = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string?>>("{\"" + field + "\":" + item.Token + "}");
+                var reference = references[referenceIndex++];
                 Assert.Equal(item.Literal, reference![field]);
                 var primitivePayload = "{\"AddressLine1\":\"  Fixture road  \",\"CountryId\":764,\"" + field + "\":" + item.Token + "}";
                 Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<UpsertAddressRequest>(primitivePayload, baselineOptions));

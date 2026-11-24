@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using Legacy.Maliev.CustomerService.Api.Controllers;
 using Legacy.Maliev.CustomerService.Application.Models;
+using Legacy.Maliev.CustomerService.Tests.OriginalInput;
 using Microsoft.AspNetCore.Mvc;
 using Xunit.Abstractions;
 
@@ -18,7 +19,7 @@ public sealed class CompanyOrdinaryTaxRegistrarReferenceTests(ITestOutputHelper 
 {
     /// <summary>Checks ordered nulls, escaped property names, primitive text, segmentation, and malformed UTF-16 read and write outcomes against explicit controls.</summary>
     [Fact]
-    public void OrdinaryTaxRegistrar_MatchPinnedReferenceForOrderedNullStringsAndEscapedCaseVariants()
+    public async Task OrdinaryTaxRegistrar_MatchPinnedReferenceForOrderedNullStringsAndEscapedCaseVariants()
     {
         var previousCulture = CultureInfo.CurrentCulture;
         var previousUiCulture = CultureInfo.CurrentUICulture;
@@ -48,13 +49,23 @@ public sealed class CompanyOrdinaryTaxRegistrarReferenceTests(ITestOutputHelper 
                 InstallFrozenNameOnlyBaseline(baseline);
                 var candidate = MvcOptions();
                 ComposeCandidate(candidate);
+                var referenceInputs = cases.Select(item => "{" + item.Members + "}")
+                    .Concat(new[] { "TaxNumber", "Registrar" }.SelectMany(field => new[] { "true", "false", "42", "1e309" }
+                        .SelectMany(value => Occurrences(field, value)).Select(members => "{\"Name\":\"ok\"," + members + "}")))
+                    .Distinct(StringComparer.Ordinal).ToArray();
+                var observed = await CustomerOriginalOracleProcess.ReadPrimitivesAsync(referenceInputs
+                    .Select(json => new CustomerOriginalOracleProcess.PrimitiveCase(json, culture)).ToArray());
+                Assert.Equal(referenceInputs.Length, observed.Length);
+                var references = referenceInputs.Select((json, index) => (json, value: observed[index]))
+                    .ToDictionary(item => item.json, item => item.value, StringComparer.Ordinal);
                 foreach (var item in cases)
                 {
                     var json = "{" + item.Members + "}";
                     var expected = new UpsertCompanyRequest(item.Name!, item.TaxNumber, item.Registrar);
                     var accepted = new UpsertCompanyRequest(item.BaselineName!, item.BaselineTax, item.BaselineRegistrar);
-                    var reference = Newtonsoft.Json.JsonConvert.DeserializeObject<MutableReference>(json,
-                        new Newtonsoft.Json.JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore })!;
+                    var reference = references[json];
+                    Assert.False(reference.IsJsonException);
+                    Assert.True(reference.ModelPresent);
                     Assert.Equal(expected, new UpsertCompanyRequest(reference.Name!, reference.TaxNumber, reference.Registrar));
                     foreach (var segmented in new[] { false, true })
                     {
@@ -89,8 +100,9 @@ public sealed class CompanyOrdinaryTaxRegistrarReferenceTests(ITestOutputHelper 
                                     Assert.Throws<JsonException>(() => Read(json, candidate, segmented));
                                 else
                                 {
-                                    var reference = Newtonsoft.Json.JsonConvert.DeserializeObject<MutableReference>(json,
-                                        new Newtonsoft.Json.JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore })!;
+                                    var reference = references[json];
+                                    Assert.False(reference.IsJsonException);
+                                    Assert.True(reference.ModelPresent);
                                     var expected = new UpsertCompanyRequest(reference.Name!, reference.TaxNumber, reference.Registrar);
                                     var actual = Read(json, candidate, segmented);
                                     Assert.Equal(expected, actual);
@@ -240,12 +252,6 @@ public sealed class CompanyOrdinaryTaxRegistrarReferenceTests(ITestOutputHelper 
     private sealed record Case(string Label, string Members, string? Name, string? TaxNumber, string? Registrar,
         string? BaselineName, string? BaselineTax, string? BaselineRegistrar, bool HasDetails);
     private sealed record FieldCase(string Label, string Members, string? Value, string? BaselineValue);
-    private sealed class MutableReference
-    {
-        public string? Name { get; set; }
-        public string? TaxNumber { get; set; }
-        public string? Registrar { get; set; }
-    }
     private sealed class Segment : ReadOnlySequenceSegment<byte>
     {
         public Segment(ReadOnlyMemory<byte> memory) { Memory = memory; }

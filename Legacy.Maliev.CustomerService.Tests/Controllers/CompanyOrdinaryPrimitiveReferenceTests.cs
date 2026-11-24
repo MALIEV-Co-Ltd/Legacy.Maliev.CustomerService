@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using Legacy.Maliev.CustomerService.Application.Models;
-using Newtonsoft.Json;
+using Legacy.Maliev.CustomerService.Tests.OriginalInput;
 using Xunit.Abstractions;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
@@ -14,18 +14,28 @@ public sealed class CompanyOrdinaryPrimitiveReferenceTests(ITestOutputHelper out
 {
     /// <summary>Verifies primitive token spelling and string conversion across cultures and segmented reads against the pinned Newtonsoft 13 reference.</summary>
     [Fact]
-    public void OrdinaryNameConverter_MatchesPinnedReferenceLexemesAcrossCulturesAndSegmentedInput()
+    public async Task OrdinaryNameConverter_MatchesPinnedReferenceLexemesAcrossCulturesAndSegmentedInput()
     {
+        var cultures = new[] { "en-US", "de-DE", "th-TH" };
+        var rawValues = new[] { "true", "false", "42", "1.5", "1e3", "1e309", "-1e309", "1e400", "-0", "1E+03", "1.500", "9223372036854775808123456789", new string('1', 256), new string('1', 257), "\" ก้ 😀 \\t \"" };
+        var cases = cultures.SelectMany(culture => rawValues.Select(raw => new CustomerOriginalOracleProcess.PrimitiveCase("{\"Name\":" + raw + "}", culture))
+            .Concat(new[] { "{}", "[]" }.Select(raw => new CustomerOriginalOracleProcess.PrimitiveCase("{\"Name\":" + raw + "}", culture, false)))
+            .Concat(new[] { "{}", "{\"Name\":null}" }.Select(json => new CustomerOriginalOracleProcess.PrimitiveCase(json, culture)))).ToArray();
+        var observations = await CustomerOriginalOracleProcess.ReadPrimitivesAsync(cases);
+        Assert.Equal(cases.Length, observations.Length);
+        var cursor = 0;
         var previous = CultureInfo.CurrentCulture;
         try
         {
-            foreach (var culture in new[] { "en-US", "de-DE", "th-TH" })
+            foreach (var culture in cultures)
             {
                 CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(culture);
-                foreach (var raw in new[] { "true", "false", "42", "1.5", "1e3", "1e309", "-1e309", "1e400", "-0", "1E+03", "1.500", "9223372036854775808123456789", new string('1', 256), new string('1', 257), "\" ก้ 😀 \\t \"" })
+                foreach (var raw in rawValues)
                 {
                     var json = "{\"Name\":" + raw + "}";
-                    var reference = JsonConvert.DeserializeObject<ReferenceShape>(json, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore })!;
+                    var reference = observations[cursor++];
+                    Assert.False(reference.IsJsonException);
+                    Assert.True(reference.ModelPresent);
                     var ordinary = System.Text.Json.JsonSerializer.Deserialize<UpsertCompanyRequest>(json)!;
                     Assert.Equal(reference.Name, ordinary.Name);
                     Assert.Equal(raw.StartsWith('"') ? System.Text.Json.JsonSerializer.Deserialize<string>(raw) : raw, ordinary.Name);
@@ -41,22 +51,20 @@ public sealed class CompanyOrdinaryPrimitiveReferenceTests(ITestOutputHelper out
                 foreach (var raw in new[] { "{}", "[]" })
                 {
                     var json = "{\"Name\":" + raw + "}";
-                    Assert.ThrowsAny<Newtonsoft.Json.JsonException>(() => JsonConvert.DeserializeObject<ReferenceShape>(json));
+                    Assert.True(observations[cursor++].IsJsonException);
                     Assert.Throws<System.Text.Json.JsonException>(() => System.Text.Json.JsonSerializer.Deserialize<UpsertCompanyRequest>(json));
                 }
                 foreach (var json in new[] { "{}", "{\"Name\":null}" })
                 {
-                    Assert.Null(JsonConvert.DeserializeObject<ReferenceShape>(json, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore })!.Name);
+                    var reference = observations[cursor++];
+                    Assert.False(reference.IsJsonException);
+                    Assert.True(reference.ModelPresent);
+                    Assert.Null(reference.Name);
                     Assert.Null(System.Text.Json.JsonSerializer.Deserialize<UpsertCompanyRequest>(json)!.Name);
                 }
             }
         }
         finally { CultureInfo.CurrentCulture = previous; }
-    }
-
-    private sealed class ReferenceShape
-    {
-        public string? Name { get; set; }
     }
 
     private sealed class Segment : ReadOnlySequenceSegment<byte>

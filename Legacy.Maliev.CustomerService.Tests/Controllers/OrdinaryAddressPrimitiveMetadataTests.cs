@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using Legacy.Maliev.CustomerService.Application.Models;
+using Legacy.Maliev.CustomerService.Tests.OriginalInput;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
@@ -10,15 +11,20 @@ public sealed class OrdinaryAddressPrimitiveMetadataTests
 {
     /// <summary>Checks default address text conversion while preserving owned converters, scoped policy, duplicate nulls, and native writes.</summary>
     [Fact]
-    public void OrdinaryDefaultSlots_PreserveOwnedConvertersScopedPolicyNullsAndWrites()
+    public async Task OrdinaryDefaultSlots_PreserveOwnedConvertersScopedPolicyNullsAndWrites()
     {
         var baseline = Options(false);
         var current = Options(true);
-        foreach (var field in new[] { "Building", "AddressLine2", "City", "State", "PostalCode" })
+        var fields = new[] { "Building", "AddressLine2", "City", "State", "PostalCode" };
+        var references = await CustomerOriginalOracleProcess.ReadDictionariesAsync(fields.Select(field =>
+            new CustomerOriginalOracleProcess.PrimitiveCase("{\"" + field + "\":true}", System.Globalization.CultureInfo.CurrentCulture.Name)).ToArray());
+        Assert.Equal(fields.Length, references.Length);
+        var index = 0;
+        foreach (var field in fields)
         {
             var payload = "{\"AddressLine1\":\"road\",\"CountryId\":764,\"" + field + "\":true}";
             Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<UpsertAddressRequest>(payload, baseline));
-            var reference = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string?>>("{\"" + field + "\":true}");
+            var reference = references[index++];
             var request = JsonSerializer.Deserialize<UpsertAddressRequest>(payload, current)!;
             Assert.Equal(reference![field], typeof(UpsertAddressRequest).GetProperty(field)!.GetValue(request));
             Assert.Equal(JsonSerializer.Serialize(request, baseline), JsonSerializer.Serialize(request, current));

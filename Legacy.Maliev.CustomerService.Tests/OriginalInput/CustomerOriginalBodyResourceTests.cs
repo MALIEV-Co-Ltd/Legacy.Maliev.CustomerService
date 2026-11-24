@@ -36,6 +36,7 @@ public sealed class CustomerOriginalBodyResourceTests(CustomerDetailAuthorityFix
     [InlineData("address", true)]
     public async Task FragmentedSpill_PreservesProjectionAndReleasesOnlyOwnedBuffer(string lane, bool candidate)
     {
+        if (!candidate) { await CustomerOriginalOracleProcess.AssertResourceAsync(lane, "fragmented"); return; }
         await using var factory = postgres.Start();
         using var body = new FragmentedInput(LargeBody(lane));
         var environment = new ReadEnvironment(body, ModelType(lane, candidate), Metadata(factory.Services, candidate), lane);
@@ -91,6 +92,7 @@ public sealed class CustomerOriginalBodyResourceTests(CustomerDetailAuthorityFix
     [InlineData("address", true)]
     public async Task CanceledRequest_PinsIntentionalOwnedDrainDifferenceWithoutOwningCaller(string lane, bool candidate)
     {
+        if (!candidate) { await CustomerOriginalOracleProcess.AssertResourceAsync(lane, "canceled"); return; }
         await using var factory = postgres.Start();
         using var cancellation = new CancellationTokenSource();
         cancellation.Cancel();
@@ -221,6 +223,7 @@ public sealed class CustomerOriginalBodyResourceTests(CustomerDetailAuthorityFix
         await using var factory = postgres.Start();
         foreach (var candidate in new[] { false, true })
         {
+            if (!candidate) { await CustomerOriginalOracleProcess.AssertResourceAsync(lane, "invalid-utf8"); continue; }
             using var body = new FragmentedInput([0xff]);
             var environment = new ReadEnvironment(body, ModelType(lane, candidate), Metadata(factory.Services, candidate), lane);
             try
@@ -249,7 +252,7 @@ public sealed class CustomerOriginalBodyResourceTests(CustomerDetailAuthorityFix
     private static IInputFormatter Formatter(IServiceProvider services, bool candidate) => candidate
         ? services.GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters
             .Single(value => value.GetType().FullName == "Legacy.Maliev.CustomerService.Api.OrdinaryCustomerContactInputFormatter")
-        : CustomerOriginalInputOracle.Formatter();
+        : throw new InvalidOperationException("Original formatter resource cases run in the isolated oracle.");
 
     private sealed class ReadEnvironment
     {
