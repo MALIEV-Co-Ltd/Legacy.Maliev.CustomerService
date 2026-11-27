@@ -12,8 +12,11 @@ using Xunit.Abstractions;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Compares ordinary company tax and registrar projection with a pinned public Newtonsoft reference and a frozen name-only native control.</summary>
+/// <param name="output">The test output sink recording culture, segmentation, field projections, and explicit current-runtime reference scope.</param>
 public sealed class CompanyOrdinaryTaxRegistrarReferenceTests(ITestOutputHelper output)
 {
+    /// <summary>Checks ordered nulls, escaped property names, primitive text, segmentation, and malformed UTF-16 read and write outcomes against explicit controls.</summary>
     [Fact]
     public void OrdinaryTaxRegistrar_MatchPinnedReferenceForOrderedNullStringsAndEscapedCaseVariants()
     {

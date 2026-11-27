@@ -9,10 +9,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Legacy.Maliev.CustomerService.Tests.OriginalInput;
 
+/// <summary>Checks complete ordinary address envelopes before consumed scalar projection while preserving graph, cache, validation, and authority boundaries.</summary>
+/// <param name="fixture">The shared authority fixture supplying isolated customer graph setup, HTTP hosts, signed clients, and cache observations.</param>
 [Collection("Customer original body")]
 public sealed class CustomerAddressOriginalEnvelopeHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Checks that invalid typed fields and nested navigation values are rejected before ordinary address graph or cache writes.</summary>
+    /// <param name="update">Whether to update the existing address with PUT instead of creating an unattached address through the customer route.</param>
+    /// <returns>A task that completes after asserting bad-request responses and unchanged whole graph and cache bytes for each invalid envelope.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -47,6 +52,9 @@ public sealed class CustomerAddressOriginalEnvelopeHttpTests(CustomerDetailAutho
         }
     }
 
+    /// <summary>Checks that valid address envelopes project consumed scalars without writing submitted graph identifiers or attaching navigation collections.</summary>
+    /// <param name="update">Whether to update the existing address with PUT instead of creating an unattached address through the customer route.</param>
+    /// <returns>A task that completes after asserting exact address persistence, timestamps, scoped cache eviction, retained unrelated rows, and not found for a newly unattached address.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -119,6 +127,9 @@ public sealed class CustomerAddressOriginalEnvelopeHttpTests(CustomerDetailAutho
         }
     }
 
+    /// <summary>Checks that address-envelope support retains scalar-type and address-line length validation.</summary>
+    /// <param name="update">Whether to update the existing address with PUT instead of creating an unattached address through the customer route.</param>
+    /// <returns>A task that completes after asserting bad-request responses and unchanged graph and caches for malformed or oversized consumed values.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -147,6 +158,10 @@ public sealed class CustomerAddressOriginalEnvelopeHttpTests(CustomerDetailAutho
         }
     }
 
+    /// <summary>Checks that address-envelope processing does not bypass authentication or permission checks.</summary>
+    /// <param name="authority">The anonymous or denied-permission client scenario.</param>
+    /// <param name="status">The expected unauthorized or forbidden response for the selected actor.</param>
+    /// <returns>A task that completes after asserting authority refusal before mutation on both create and update routes.</returns>
     [Theory]
     [InlineData("anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("denied", HttpStatusCode.Forbidden)]

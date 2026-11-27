@@ -7,10 +7,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Verifies literal customer-name limits across ordinary, keyed, and versioned writes without trimming stored names.</summary>
+/// <param name="fixture">The shared Customer authority fixture supplying disposable PostgreSQL and Redis, production hosts, and signed request clients.</param>
 [Collection("Customer profile lifecycle")]
 public sealed class CustomerNameBoundaryHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Checks literal name storage boundaries before writes while preserving exact accepted bytes, replay, and cache behavior.</summary>
+    /// <param name="route">The create, keyed-create, update, or versioned-update lane selecting idempotency and If-Match controls.</param>
+    /// <returns>A task that completes after verifying literal name storage boundaries before writes while preserving exact accepted bytes, replay, and cache behavior.</returns>
     [Theory]
     [InlineData("create")]
     [InlineData("keyed-create")]

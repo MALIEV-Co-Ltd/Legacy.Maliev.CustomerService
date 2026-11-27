@@ -4,9 +4,13 @@ using System.Text.Json;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Exercises real authentication and permission enforcement around versioned customer writes across application hosts.</summary>
+/// <param name="fixture">The shared fixture providing customer hosts and disposable persistence for these scenarios.</param>
 public sealed class CustomerVersionedAuthorityHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Verifies that two production hosts reject stale writes and preserve the winning committed graph.</summary>
+    /// <returns>A task representing completion of the versioned customer authorization and concurrency assertions.</returns>
     [Fact]
     public async Task Two_production_hosts_with_real_permissions_reject_stale_write_and_preserve_committed_graph()
     {
@@ -41,6 +45,10 @@ public sealed class CustomerVersionedAuthorityHttpTests(CustomerDetailAuthorityF
         Assert.Equal("Fresh", await fixture.StoredAsync("customer"));
     }
 
+    /// <summary>Verifies that authentication and resource permissions are checked before version preconditions.</summary>
+    /// <param name="authority">The authentication and permission scenario used by the test client.</param>
+    /// <param name="expected">The expected HTTP status for the supplied scenario.</param>
+    /// <returns>A task representing completion of the versioned customer authorization and concurrency assertions.</returns>
     [Theory]
     [InlineData("anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("wrong-signature", HttpStatusCode.Unauthorized)]
@@ -61,6 +69,10 @@ public sealed class CustomerVersionedAuthorityHttpTests(CustomerDetailAuthorityF
         Assert.Equal(snapshot, await fixture.SnapshotAsync());
     }
 
+    /// <summary>Verifies that authorized requests with missing or invalid version preconditions cannot mutate the graph.</summary>
+    /// <param name="revision">The malformed If-Match value, or null to omit the required precondition.</param>
+    /// <param name="status">The expected rejection status for the supplied version precondition.</param>
+    /// <returns>A task representing completion of the versioned customer authorization and concurrency assertions.</returns>
     [Theory]
     [InlineData(null, 428)]
     [InlineData("W/\"00000001\"", 400)]

@@ -11,7 +11,8 @@ import uuid
 import xml.etree.ElementTree as E
 SOURCE_PATH = 'Legacy.Maliev.CustomerService.Tests/Controllers/CustomerOptionalContactMvcBoundaryTests.cs'
 MANIFEST_PATH = 'scripts/customer-address-focused-manifest.json'
-REVIEWED_SOURCE_SHA256 = '5b4d045cd5e480c76436b627dd2b90bcf051851dda356fbe1d6c8407364f3fa0'
+PRE_DOCUMENTATION_SOURCE_SHA256 = '5b4d045cd5e480c76436b627dd2b90bcf051851dda356fbe1d6c8407364f3fa0'
+REVIEWED_SOURCE_SHA256 = '4569a27baa7aa22a6e499fa5c926f240d3b04e981f481070c5594d09e4612737'
 NS = 'http://microsoft.com/schemas/VisualStudio/TeamTest/2010'
 CLASS = 'Legacy.Maliev.CustomerService.Tests.Controllers.CustomerOptionalContactMvcBoundaryTests'
 METHODS = ['DescriptorAndHeaderSelection_PreserveStrictRoutesAndUnknownEndpoints', 'OrdinaryFields_MatchReferenceAndIgnoreOnlyContactDuplicateNulls', 'CustomPoliciesConvertersResolversFactories_FallThroughWithoutMutation', 'DifferentialBodies_KeepEncodingEmptyMalformedAndPrivacyBehavior', 'DifferentialExceptionalConverters_KeepFormatOverflowAndCancellation', 'ConcurrentReads_IsolateOrdinaryVersionedReplayAndDefaultSerialization', 'RealHttp_OrdinaryCreateAndUpdatePreserveLiteralContactsAndState', 'RealHttp_ReplayVersionedAndDeniedWritesStayStrictAndUnchanged', 'FormattersAndGlobalOptions_RemainUnmodifiedAcrossReads', 'StreamAndPipeSwitch_DifferentialReaderLeavesRequestBodyOpen']

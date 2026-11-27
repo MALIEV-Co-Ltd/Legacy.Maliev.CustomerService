@@ -8,8 +8,13 @@ using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Checks retained customer controller route, permission, authentication, and public API surface contracts.</summary>
 public sealed class CustomerControllerContractTests
 {
+    /// <summary>Checks company mutation permissions and resource-path templates.</summary>
+    /// <param name="methodName">The company create or update action inspected for its permission attribute.</param>
+    /// <param name="expected">The exact permission identifier required for that company mutation.</param>
+    /// <param name="resource">The expected resource-path template, or null for an unscoped create permission.</param>
     [Theory]
     [InlineData(nameof(CompaniesController.CreateCompanyAsync), CustomerPermissions.CompaniesCreate, null)]
     [InlineData(nameof(CompaniesController.UpdateCompanyAsync), CustomerPermissions.CompaniesUpdate, "/companies/{id}")]
@@ -20,6 +25,9 @@ public sealed class CustomerControllerContractTests
         Assert.Equal(resource, permission.ResourcePathTemplate);
     }
 
+    /// <summary>Checks that customer resource controllers retain their legacy base route and require authentication.</summary>
+    /// <param name="controller">The controller type whose base route and authorization attribute are inspected.</param>
+    /// <param name="route">The exact legacy route template expected on that controller.</param>
     [Theory]
     [InlineData(typeof(CustomersController), "customers")]
     [InlineData(typeof(AddressesController), "customers/[controller]")]
@@ -31,6 +39,7 @@ public sealed class CustomerControllerContractTests
         Assert.NotNull(controller.GetCustomAttribute<AuthorizeAttribute>());
     }
 
+    /// <summary>Checks retained HTTP verbs, route templates, and permission attributes for customer lifecycle and remark actions.</summary>
     [Fact]
     public void CustomerActions_PreserveAllLegacyTemplates()
     {
@@ -44,6 +53,7 @@ public sealed class CustomerControllerContractTests
         AssertAction<CustomersController>("UpdateInternalRemarkAsync", "{id:int}/internal-remark", typeof(HttpPutAttribute));
     }
 
+    /// <summary>Checks that declared customer actions expose no identity, credential, password, or validation operations.</summary>
     [Fact]
     public void CustomerApi_DoesNotExposeIdentityOrCredentialOperations()
     {
@@ -58,6 +68,7 @@ public sealed class CustomerControllerContractTests
                 || attribute.Template?.Contains("validate", StringComparison.OrdinalIgnoreCase) == true));
     }
 
+    /// <summary>Checks that internal remark actions reuse resource-scoped customer read and update permissions.</summary>
     [Fact]
     public void InternalRemarkActions_ReuseResourceScopedCustomerReadAndUpdatePermissions()
     {

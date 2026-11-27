@@ -363,6 +363,28 @@ def validate_consumer_host_source(source,owner,policy_sha):
     need(receipt.get('policySha256')==policy_sha and receipt.get('rawFiles')==324 and receipt.get('nativeExecutionGranted') is False and receipt.get('actualTestsRun')==0,'Actual current324 unqualified host intake receipt required')
     return receipt
 
+def stage_original_consumer_host_source(source,owner,policy_raw,capsules,driver,stage,policy,helper,intake,preflight):
+    """Source staging only, within the already admitted outside owner's job/SDK."""
+    source=Path(source)
+    need(source==CONSUMER_SOURCE_ROOT and not source.exists(),'Fresh exact original consumer host source required; reentry forbidden')
+    helper.reject_links(source)
+    marker=source.parent/'.customer-source-owner'
+    need(marker.is_file() and not marker.is_symlink(),'Actual original custodian host marker required before staging')
+    job=owner['consumerJob']
+    need(regular(marker,256).decode()==job['runId']+'-'+job['runAttempt'],'Actual same-job original custodian marker differs')
+    need(isinstance(owner.get('hostSourceReceiptSha256'),str) and re.fullmatch('[a-f0-9]{64}',owner['hostSourceReceiptSha256']),'Original independent host receipt SHA required before staging')
+    # Validate every captured ZIP, input byte and nested graph before mkdir.
+    intake.validate_inputs(policy_raw,capsules,helper)
+    preflight()
+    intake.materialize(policy_raw,capsules,source,helper)
+    receipt=validate_consumer_host_source(source,owner,intake.POLICY_SHA256)
+    archive=driver.source_archive(source,policy,stage,helper,intake)
+    preflight()
+    return {'status':'actual-host-source-staged-runtime-unqualified','rawFiles':receipt['rawFiles'],
+            'hostSourceReceiptSha256':digest(regular(source/'metadata/intake-receipt.json',65536)),
+            'sourceArchiveSha256':digest(archive),'nativeTestsAccepted':False,'sdkAllocated':False,
+            'originalOutsideCustodianCleanupStillRequired':True}
+
 def consumer_caller(args):
     """Opt-in caller bridge; never borrows a BUILD-only or kernel-only SDK."""
     need(sys.platform=='linux' and os.environ.get('GITHUB_REPOSITORY')==REPOSITORY and os.environ.get('GITHUB_JOB')=='validate','Existing original GitHub validation caller required')
@@ -389,9 +411,30 @@ def consumer_caller(args):
     need(len(driver_rows)==1 and digest(data)==driver_rows[0]['sha256'] and len(data)==driver_rows[0]['bytes'],'Capture and seal the driver bytes before execution')
     exec(compile(data,driver.__file__,'exec'),driver.__dict__)
     packet=driver.load_packet(args.packet,PACKET_SHA256);manifest,stage,policy,helper,intake,admission,*_=packet
-    source=Path(args.source_directory);validate_consumer_host_source(source,owner,intake.POLICY_SHA256)
-    driver.source_archive(source,policy,stage,helper,intake)
-    plan=parse(regular(source/'metadata/provider-plan.json',1048576))
+    source=Path(args.source_directory)
+    staging=args.mode=='consumer-stage-source'
+    if staging:
+        need(source==CONSUMER_SOURCE_ROOT and not source.exists(),'Fresh original consumer host staging target required')
+        need(isinstance(owner.get('hostSourceReceiptSha256'),str) and re.fullmatch('[a-f0-9]{64}',owner['hostSourceReceiptSha256']),'Independent original host source receipt SHA cannot be missing')
+        try:
+            host=admission.linux_host_snapshot()
+            need(host['hostBootId']==owner['hostBootId'] and host['freePhysicalKiB']>=4194304 and host['nativeProcesses']==[],'Fresh original host floor/census/boot required before source fetch')
+            need((utc(owner['expiresUtc'])-now()).total_seconds()>210,'Original source fetch plus cleanup reserve exhausted')
+            outside=owner.get('outsideOwner');reader=capture_identity(args.packet)
+            need(isinstance(outside,dict) and reader(outside['pid'])==outside,'Actual original outside custodian identity required before source fetch')
+            policy_raw=regular(Path(args.packet)/'input/customer-candidate-policy.json',1048576)
+            capsules=intake.fetch_inputs(policy_raw,helper)
+            _,preview=intake.validate_inputs(policy_raw,capsules,helper)
+            plan=parse(preview['metadata/provider-plan.json'])
+        except BaseException:
+            primary=sys.exc_info()
+            consumer_failure_evidence(output/'host-source-staging-failure.json',{'failureType':type(primary[1]).__name__,'failureIsBehavioralRed':False,'nativeTestsAccepted':False,'originalOutsideCustodianCleanupStillRequired':True},primary)
+            consumer_failure_evidence(output/'original-owner-continuation.json',{'containerId':cid,'actualCreatedRaw':owner['actualCreatedRaw'],'custodySha256':args.consumer_custody_sha256,'expiresUtc':owner['expiresUtc'],'sourceFetchFailed':True,'originalOwnerCleanupRequired':True,'nativeTestsAccepted':False},primary)
+            raise
+    else:
+        validate_consumer_host_source(source,owner,intake.POLICY_SHA256)
+        driver.source_archive(source,policy,stage,helper,intake)
+        plan=parse(regular(source/'metadata/provider-plan.json',1048576))
     deadline=time.monotonic()+(utc(owner['expiresUtc'])-now()).total_seconds()
     backend=driver.DockerAPI(lambda:deadline)
     identity_reader=capture_identity(args.packet)
@@ -410,6 +453,23 @@ def consumer_caller(args):
             image=plan['images'][role];actual_image=backend.json('GET','/images/'+image['imageId']+'/json')
             need(actual_image['Id']==image['imageId'] and image['reference'] in actual_image['RepoDigests'],'Fresh exact original SDK/provider image pin required')
         return actual
+    if staging:
+        def staging_preflight():
+            host=admission.linux_host_snapshot()
+            need(host['hostBootId']==owner['hostBootId'] and host['freePhysicalKiB']>=4194304 and host['nativeProcesses']==[],'Fresh original host staging floor/census/boot required')
+            need(0<=(now()-utc(owner['issuedUtc'])).total_seconds() and (utc(owner['expiresUtc'])-now()).total_seconds()>210,'Original staging90s plus cleanup120s reserve required')
+            inspect()
+        try:
+            result=stage_original_consumer_host_source(source,owner,policy_raw,capsules,driver,stage,policy,helper,intake,staging_preflight)
+            (output/'host-source-staging.json').write_bytes(canonical(result))
+            return 0
+        except BaseException:
+            primary=sys.exc_info()
+            consumer_failure_evidence(output/'host-source-staging-failure.json',{'failureType':type(primary[1]).__name__,'failureIsBehavioralRed':False,'nativeTestsAccepted':False,'originalOutsideCustodianCleanupStillRequired':True},primary)
+            raise
+        finally:
+            primary=sys.exc_info()
+            consumer_failure_evidence(output/'original-owner-continuation.json',{'containerId':cid,'actualCreatedRaw':owner['actualCreatedRaw'],'custodySha256':args.consumer_custody_sha256,'expiresUtc':owner['expiresUtc'],'sourceStagingFinished':True,'originalOwnerCleanupRequired':True,'nativeTestsAccepted':False},primary if primary[1] is not None else None)
     def admit(phase):
         host=admission.linux_host_snapshot()
         need(host['hostBootId']==owner['hostBootId'] and host['freePhysicalKiB']>=4194304 and host['nativeProcesses']==[],'Fresh original physical floor/native census required before every phase')
@@ -516,10 +576,10 @@ def consumer_caller(args):
             if primary is None:raise
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('mode',choices=['observe','receive','source-check','consumer-phases']);parser.add_argument('--output',type=Path);parser.add_argument('--nonce');parser.add_argument('--observation',type=Path);parser.add_argument('--harness',type=Path);parser.add_argument('--packet',type=Path)
+    parser=argparse.ArgumentParser();parser.add_argument('mode',choices=['observe','receive','source-check','consumer-phases','consumer-stage-source']);parser.add_argument('--output',type=Path);parser.add_argument('--nonce');parser.add_argument('--observation',type=Path);parser.add_argument('--harness',type=Path);parser.add_argument('--packet',type=Path)
     parser.add_argument('--consumer-custody');parser.add_argument('--consumer-custody-sha256');parser.add_argument('--source-directory',type=Path)
     args=parser.parse_args()
-    if args.mode=='consumer-phases':return consumer_caller(args)
+    if args.mode in ('consumer-phases','consumer-stage-source'):return consumer_caller(args)
     if args.mode=='source-check':
         need(args.packet and args.harness and args.output is None and args.nonce is None
              and args.observation is None, 'Source check cannot request allocation/authority')

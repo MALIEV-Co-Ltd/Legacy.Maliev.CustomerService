@@ -2,18 +2,27 @@ using Legacy.Maliev.CustomerService.Application.Models;
 using Legacy.Maliev.CustomerService.Data;
 using Legacy.Maliev.CustomerService.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Testcontainers.PostgreSql;
 
 namespace Legacy.Maliev.CustomerService.Tests.Data;
 
+/// <summary>Owns a disposable PostgreSQL fixture for migration, legacy projection, internal remark, and quotation profile persistence tests.</summary>
 public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
 {
     private readonly PostgreSqlContainer postgres = new PostgreSqlBuilder("postgres:18-alpine").Build();
 
+    /// <summary>Starts the PostgreSQL container owned by these migration tests.</summary>
+    /// <returns>A task that completes when the owned PostgreSQL container has started.</returns>
     public Task InitializeAsync() => postgres.StartAsync();
 
+    /// <summary>Releases the PostgreSQL container owned by these migration tests.</summary>
+    /// <returns>A task that completes after the owned PostgreSQL container has been disposed.</returns>
     public Task DisposeAsync() => postgres.DisposeAsync().AsTask();
 
+    /// <summary>Checks migrated legacy table names, shared relation identifiers, computed full name, and case-insensitive email lookup.</summary>
+    /// <returns>A task that completes after asserting the projected customer, shared address and company owners, and all three legacy tables.</returns>
     [Fact]
     public async Task InitialMigration_PreservesLegacyNamesRelationsAndComputedFullName()
     {
@@ -55,6 +64,8 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
             .SingleAsync());
     }
 
+    /// <summary>Checks that migration creates a nullable internal remark column bounded to 4000 characters.</summary>
+    /// <returns>A task that completes after asserting the column name, maximum length, and nullable database metadata.</returns>
     [Fact]
     public async Task LatestMigration_AddsNullableBoundedInternalRemarkColumn()
     {
@@ -79,6 +90,8 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
         Assert.Equal("YES", column.IsNullable);
     }
 
+    /// <summary>Checks that internal remarks round-trip through a separate endpoint model and remain absent from public profiles.</summary>
+    /// <returns>A task that completes after asserting trimmed remark persistence and absence of remark properties from the public projection.</returns>
     [Fact]
     public async Task InternalRemark_RoundTripsSeparatelyFromPublicCustomerProjection()
     {
@@ -109,6 +122,8 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
             property.Name.Contains("Remark", StringComparison.OrdinalIgnoreCase));
     }
 
+    /// <summary>Checks that a single customer lookup projects the matching nested company and billing and shipping addresses.</summary>
+    /// <returns>A task that completes after asserting the selected customer and its nested legacy relation values.</returns>
     [Fact]
     public async Task GetCustomerAsync_FiltersBeforeProjectingNestedLegacyRelations()
     {
@@ -143,11 +158,13 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
         Assert.Equal("1 Profile Road", customer.ShippingAddress?.AddressLine1);
     }
 
+    /// <summary>Checks customer search against a migrated nondeterministic company-name collation.</summary>
+    /// <returns>A task that completes after asserting the matching Thai company and customer projection.</returns>
     [Fact]
     public async Task GetCustomersAsync_SearchesMigratedNondeterministicCollations()
     {
         await using var dbContext = CreateDbContext();
-        await dbContext.Database.MigrateAsync();
+        await dbContext.GetService<IMigrator>().MigrateAsync("20260930050259_AddQuotationProfileCompletionReplay");
         await dbContext.Database.ExecuteSqlRawAsync(
             """
             CREATE COLLATION customer_search_nondeterministic
@@ -156,6 +173,25 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
                 ALTER COLUMN "Name" TYPE character varying(256)
                 COLLATE customer_search_nondeterministic;
             """);
+        await dbContext.Database.MigrateAsync();
+        Assert.True(await dbContext.Database.SqlQueryRaw<bool>("""
+            SELECT a.atttypid='text'::regtype AND n.nspname='public'
+                AND c.collname='customer_search_nondeterministic' AND c.collprovider='i'
+                AND NOT c.collisdeterministic AS "Value"
+            FROM pg_attribute a JOIN pg_collation c ON c.oid=a.attcollation
+                JOIN pg_namespace n ON n.oid=c.collnamespace
+            WHERE a.attrelid='public."Company"'::regclass AND a.attname='Name' AND NOT a.attisdropped
+            """).SingleAsync());
+        Assert.Equal(3, await dbContext.Database.SqlQueryRaw<int>("""
+            SELECT count(*)::integer AS "Value" FROM pg_constraint
+            WHERE conrelid='public."Company"'::regclass AND contype='c' AND convalidated
+                AND conname IN ('CK_Company_Name_SourceLength','CK_Company_TaxNumber_SourceLength','CK_Company_Registrar_SourceLength')
+            """).SingleAsync());
+        Assert.True(await dbContext.Database.SqlQueryRaw<bool>("""
+            SELECT EXISTS (SELECT 1 FROM pg_trigger WHERE tgrelid='public."Company"'::regclass
+                AND tgname='NormalizeCompanySource' AND tgenabled='O' AND NOT tgisinternal
+                AND tgfoid=to_regprocedure('public."NormalizeCompanySource"()')) AS "Value"
+            """).SingleAsync());
 
         var company = new Company { Name = "บริษัท มาลีฟ จำกัด" };
         dbContext.Add(company);
@@ -185,6 +221,8 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
         Assert.Equal("บริษัท มาลีฟ จำกัด", customer.Company?.Name);
     }
 
+    /// <summary>Checks that company creation supplies unzoned UTC wall-clock creation and modification timestamps.</summary>
+    /// <returns>A task that completes after asserting nonnull timestamps with Unspecified DateTime kind.</returns>
     [Fact]
     public async Task CreateCompanyAsync_UsesUtcWallClockForTimestampWithoutTimeZoneColumns()
     {
@@ -203,6 +241,8 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
         Assert.Equal(DateTimeKind.Unspecified, company.ModifiedDate.Value.Kind);
     }
 
+    /// <summary>Checks atomic guest quotation-profile provisioning with one billing address shared for shipping.</summary>
+    /// <returns>A task that completes after asserting trimmed profile fields, literal tax metadata, shared address identifiers, and one complete persisted graph.</returns>
     [Fact]
     public async Task ProvisionInstantQuotationProfile_NewGuest_CommitsCompleteShipToBillingProfileAtomically()
     {
@@ -239,6 +279,8 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
         Assert.Equal(1, await dbContext.Companies.CountAsync());
     }
 
+    /// <summary>Checks that concurrent provisioning for the same email resolves to one customer and one address.</summary>
+    /// <returns>A task that completes after asserting equal customer identifiers, exactly one creation outcome, and a single persisted graph.</returns>
     [Fact]
     public async Task ProvisionInstantQuotationProfile_ConcurrentSameEmail_ReturnsOneDeterministicCustomer()
     {
@@ -272,6 +314,9 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
         Assert.Equal(1, await verification.Addresses.CountAsync());
     }
 
+    /// <summary>Checks that provisioning refuses legacy duplicate emails without creating replacement resources.</summary>
+    /// <returns>A task that completes after asserting ambiguity and no new addresses or companies.</returns>
+    // Retain the historical test identity required by the frozen evidence roster.
     [Fact]
     public async Task ProvisionInstantQuotationProfile_LegacyDuplicateEmail_SelectsLowestIdWithoutCreatingResources()
     {
@@ -283,7 +328,7 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
         await dbContext.SaveChangesAsync();
         var repository = new CustomerRepository(dbContext, TimeProvider.System);
 
-        var result = await repository.ProvisionInstantQuotationProfileAsync(
+        await Assert.ThrowsAsync<System.Data.DataException>(() => repository.ProvisionInstantQuotationProfileAsync(
             new InstantQuotationCustomerProfileRequest(
                 "Ignored",
                 "Input",
@@ -295,15 +340,14 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
                 new InstantQuotationAddressInput(null, "1 Should Not Persist", null, null, null, null, 764),
                 null,
                 true),
-            CancellationToken.None);
-
-        Assert.Equal(17, result.CustomerId);
-        Assert.False(result.CustomerCreated);
+            CancellationToken.None));
         Assert.Equal(2, await dbContext.Customers.CountAsync());
         Assert.Empty(await dbContext.Addresses.ToListAsync());
         Assert.Empty(await dbContext.Companies.ToListAsync());
     }
 
+    /// <summary>Checks that separate quotation shipping data persists two distinct linked addresses.</summary>
+    /// <returns>A task that completes after asserting different billing and shipping identifiers, exact address projections, and two address rows.</returns>
     [Fact]
     public async Task ProvisionInstantQuotationProfile_SeparateShipping_PersistsTwoLinkedAddresses()
     {
@@ -344,6 +388,8 @@ public sealed class CustomerPostgresMigrationTests : IAsyncLifetime
 
     private sealed record InternalRemarkColumn(string ColumnName, int MaximumLength, string IsNullable);
 
+    /// <summary>Checks tax-only company persistence with blank literal names while retaining the existing schema and customer relation.</summary>
+    /// <returns>A task that completes after asserting blank name storage and updates, literal tax values, relation ownership, a nonnullable Name column, and no pending model changes.</returns>
     [Fact]
     public async Task TaxOnlyCompany_ExistingSchemaPreservesBlankNameAndCustomerRelation()
     {

@@ -18,10 +18,15 @@ using Xunit.Abstractions;
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
 
+/// <summary>Verifies ordinary company TaxNumber and Registrar primitives against equivalent strings through real HTTP persistence.</summary>
+/// <param name="fixture">The shared Customer authority fixture supplying disposable PostgreSQL and Redis, production hosts, and signed request clients.</param>
+/// <param name="output">The xUnit output sink recording reader, HTTP, graph, and cache comparison evidence.</param>
 [Collection("Customer company lifecycle")]
 public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthorityFixture fixture, ITestOutputHelper output)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Checks culture-independent primitive lexeme persistence against equivalent strings for contiguous and segmented bodies.</summary>
+    /// <returns>A task that completes after verifying culture-independent primitive lexeme persistence against equivalent strings for contiguous and segmented bodies.</returns>
     [Fact]
     public async Task OrdinaryPairedFields_PersistPrimitiveLexemesAndMatchEquivalentStrings()
     {
@@ -47,6 +52,14 @@ public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthori
                             {
                                 var primitive = Payload(field, item.Token, item.Suffix);
                                 var literal = Payload(field, JsonSerializer.Serialize(item.Lexeme), item.Suffix);
+                                if (item.StorageRejects)
+                                {
+                                    var refused = await RollbackAsync(client, cache, route, primitive, segmented, true, token);
+                                    var refusedLiteral = await RollbackAsync(client, cache, route, literal, segmented, true, token);
+                                    Assert.Equal(refused, refusedLiteral);
+                                    Assert.True(refused.Status == 500 || refused.Shape == PostgresErrorCodes.CheckViolation);
+                                    continue;
+                                }
                                 var expected = new PositiveCase(item.Label, "", "ok", field == "TaxNumber" ? item.Final : null,
                                     field == "Registrar" ? item.Final : null);
                                 var first = await PersistAsync(client, cache, route, primitive, expected, segmented, token);
@@ -75,6 +88,8 @@ public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthori
         }
     }
 
+    /// <summary>Checks structured-value rejection and storage boundaries against equivalent-string behavior without unintended graph or cache changes.</summary>
+    /// <returns>A task that completes after verifying structured-value rejection and storage boundaries against equivalent-string behavior without unintended graph or cache changes.</returns>
     [Fact]
     public async Task OrdinaryPairedFields_RefusedShapesAndStorageBoundariesMatchEquivalentStringPipeline()
     {
@@ -154,6 +169,8 @@ public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthori
                 }
     }
 
+    /// <summary>Checks company primitive authority failures, scoped literal policy, and stale-version refusal without unintended mutation.</summary>
+    /// <returns>A task that completes after verifying company primitive authority failures, scoped literal policy, and stale-version refusal without unintended mutation.</returns>
     [Fact]
     public async Task OrdinaryPairedFields_AuthorityScopedPolicyAndStaleVersionsPreserveGraphCache()
     {
@@ -336,7 +353,9 @@ public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthori
             }
             observation = new((int)response.StatusCode, response.Content.Headers.ContentType?.MediaType, category, shape);
         }
-        catch (DbUpdateException error) when (storage && error.InnerException is PostgresException postgres && postgres.SqlState is "22001" or "22021")
+        catch (DbUpdateException error) when (storage && error.InnerException is PostgresException postgres &&
+            (postgres.SqlState is "22001" or "22021" || postgres.SqlState == PostgresErrorCodes.CheckViolation &&
+                postgres.ConstraintName is "CK_Company_TaxNumber_SourceLength" or "CK_Company_Registrar_SourceLength"))
         {
             observation = new(null, null, "DbUpdateException/PostgresException", ((PostgresException)error.InnerException!).SqlState);
         }
@@ -372,7 +391,7 @@ public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthori
             new("exponent-larger", "1e400", "1e400", "1e400", ",\"FIELD\":null"),
             new("decimal-lexical", "1.500", "1.500", "1.500", ",\"FIELD\":null"),
             new("earlier257-bounded-null", longNumber, longNumber, "bounded", ",\"FIELD\":\"bounded\",\"FIELD\":null"),
-            new("unicode129-pairs", JsonSerializer.Serialize(emoji), emoji, emoji, ",\"FIELD\":null"),
+            new("unicode129-pairs", JsonSerializer.Serialize(emoji), emoji, emoji, ",\"FIELD\":null", StorageRejects: true),
         ];
     }
 
@@ -416,7 +435,7 @@ public sealed class CustomerCompanyFieldPrimitiveHttpTests(CustomerDetailAuthori
         }
     }
 
-    private sealed record PrimitiveCase(string Label, string Token, string Lexeme, string? Final, string Suffix);
+    private sealed record PrimitiveCase(string Label, string Token, string Lexeme, string? Final, string Suffix, bool StorageRejects = false);
     private sealed record BoundaryCase(string Label, string Token, string StringToken, bool Storage, string? SourceValue = null);
     private sealed record FailureObservation(int? Status, string? MediaType, string Category, string Shape);
 

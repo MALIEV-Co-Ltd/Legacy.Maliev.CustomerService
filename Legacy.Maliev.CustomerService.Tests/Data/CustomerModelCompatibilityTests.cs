@@ -6,8 +6,10 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Legacy.Maliev.CustomerService.Tests.Data;
 
+/// <summary>Verifies legacy customer model mappings, internal-field exclusion, and explicit UTC timestamp migration semantics.</summary>
 public sealed class CustomerModelCompatibilityTests
 {
+    /// <summary>Checks legacy table and column names, field lengths, xmin metadata, foreign keys, and UTC timestamp defaults.</summary>
     [Fact]
     public void Model_PreservesLegacyTablesColumnsLengthsAndRelationships()
     {
@@ -50,6 +52,7 @@ public sealed class CustomerModelCompatibilityTests
         }
     }
 
+    /// <summary>Checks that ordinary public customer request and response contracts expose no internal remarks.</summary>
     [Fact]
     public void PublicCustomerContracts_DoNotExposeInternalRemark()
     {
@@ -59,6 +62,7 @@ public sealed class CustomerModelCompatibilityTests
             property.Name.Contains("Remark", StringComparison.OrdinalIgnoreCase));
     }
 
+    /// <summary>Checks explicit UTC conversion clauses in the timestamp alignment migration.</summary>
     [Fact]
     public void TimestampMigration_UsesExplicitUtcConversions()
     {

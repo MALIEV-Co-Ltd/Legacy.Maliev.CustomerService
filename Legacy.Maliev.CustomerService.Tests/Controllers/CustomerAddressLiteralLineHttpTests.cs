@@ -9,10 +9,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Exercises literal address input across ordinary and scoped HTTP routes with physical graph, cache, and revision checks.</summary>
+/// <param name="fixture">The shared fixture providing customer hosts and disposable persistence for these scenarios.</param>
 [Collection("Customer address persistence")]
 public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Verifies optional address string admission and refusal boundaries without unintended graph or cache changes.</summary>
+    /// <param name="route">The ordinary or scoped create or update route under test.</param>
+    /// <returns>A task representing completion of the address HTTP, physical storage, graph, cache, and revision assertions.</returns>
     [Theory]
     [InlineData("create")]
     [InlineData("update")]
@@ -100,6 +105,9 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
         }
     }
 
+    /// <summary>Verifies that optional primitive address fields retain their token spelling and match Newtonsoft string conversion.</summary>
+    /// <param name="route">The ordinary or scoped create or update route under test.</param>
+    /// <returns>A task representing completion of the address HTTP, physical storage, graph, cache, and revision assertions.</returns>
     [Theory]
     [InlineData("create")]
     [InlineData("update")]
@@ -163,6 +171,9 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
             }
     }
 
+    /// <summary>Verifies literal address storage and response values while preserving relation bindings, cache scope, and version preconditions.</summary>
+    /// <param name="route">The ordinary or scoped create or update route under test.</param>
+    /// <returns>A task representing completion of the address HTTP, physical storage, graph, cache, and revision assertions.</returns>
     [Theory]
     [InlineData("create")]
     [InlineData("update")]
@@ -301,6 +312,10 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
         }
     }
 
+    /// <summary>Verifies that invalid authority cannot write addresses through ordinary or scoped routes.</summary>
+    /// <param name="authority">The authentication and permission scenario used by the test client.</param>
+    /// <param name="expected">The expected HTTP status for the supplied scenario.</param>
+    /// <returns>A task representing completion of the address HTTP, physical storage, graph, cache, and revision assertions.</returns>
     [Theory]
     [InlineData("anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("wrong-signature", HttpStatusCode.Unauthorized)]
@@ -329,6 +344,8 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
         }
     }
 
+    /// <summary>Verifies that the storage guard rejects isolated UTF-16 surrogates without replacing them.</summary>
+    /// <param name="high">Whether to use an isolated high surrogate; false selects an isolated low surrogate.</param>
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
@@ -339,6 +356,9 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
         Assert.False(new AddressLine1LengthAttribute().IsValid(value));
     }
 
+    /// <summary>Verifies that invalid JSON roots and field shapes are refused before graph, cache, or revision changes.</summary>
+    /// <param name="route">The ordinary or scoped create or update route under test.</param>
+    /// <returns>A task representing completion of the address HTTP, physical storage, graph, cache, and revision assertions.</returns>
     [Theory]
     [InlineData("create")]
     [InlineData("update")]
@@ -382,6 +402,9 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
         }
     }
 
+    /// <summary>Verifies that a missing required address line rolls back storage and leaves caches and revisions unchanged.</summary>
+    /// <param name="route">The ordinary or scoped create or update route under test.</param>
+    /// <returns>A task representing completion of the address HTTP, physical storage, graph, cache, and revision assertions.</returns>
     [Theory]
     [InlineData("create")]
     [InlineData("update")]
@@ -417,6 +440,9 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
         Assert.Equal("NO", await db.Database.SqlQueryRaw<string>("SELECT is_nullable::text AS \"Value\" FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'Address' AND column_name = 'AddressLine1'").SingleAsync(token));
     }
 
+    /// <summary>Verifies address country admission for zero, Int32 limits, numeric strings, and default-valued input.</summary>
+    /// <param name="route">The ordinary or scoped create or update route under test.</param>
+    /// <returns>A task representing completion of the address HTTP, physical storage, graph, cache, and revision assertions.</returns>
     [Theory]
     [InlineData("create")]
     [InlineData("update")]
@@ -464,6 +490,9 @@ public sealed class CustomerAddressLiteralLineHttpTests(CustomerDetailAuthorityF
         }
     }
 
+    /// <summary>Verifies that a missing ordinary address target is reported before null-line storage is attempted.</summary>
+    /// <param name="create">Whether the request creates an address under a missing customer; false updates a missing address.</param>
+    /// <returns>A task representing completion of the address HTTP, physical storage, graph, cache, and revision assertions.</returns>
     [Theory]
     [InlineData(true)]
     [InlineData(false)]

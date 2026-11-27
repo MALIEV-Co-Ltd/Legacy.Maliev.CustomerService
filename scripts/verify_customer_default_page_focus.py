@@ -57,6 +57,7 @@ def guard():
 
 def verify():
     manifest = json.loads(MANIFEST.read_bytes())
+    shared.authenticate_profile(ROOT, MANIFEST.relative_to(ROOT).as_posix(), manifest)
     folder = ROOT / 'runner-default-focused'
     files = list(folder.rglob('*.trx'))
     need(len(files) == 1, 'One original focused TRX required')

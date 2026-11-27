@@ -2,8 +2,10 @@ using YamlDotNet.RepresentationModel;
 
 namespace Legacy.Maliev.CustomerService.Tests.Workflows;
 
+/// <summary>Checks publication dependency pins, minimum job permissions, and the retained deployment feature gate.</summary>
 public sealed class PublicationDependencyTests
 {
+    /// <summary>Checks the exact reusable publication workflow, dependency pins, input roster, least job permissions, and both deployment-gate conditions.</summary>
     [Fact]
     public void Publisher_ProvidesExactValidationPinAndMinimumPermissions_WithoutOpeningDeploymentGate()
     {

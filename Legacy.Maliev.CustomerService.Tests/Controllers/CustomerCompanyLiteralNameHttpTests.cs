@@ -10,10 +10,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Exercises literal company names across ordinary and scoped routes with storage, shared graph, and cache checks.</summary>
+/// <param name="fixture">The shared fixture providing customer hosts and disposable persistence for these scenarios.</param>
 [Collection("Customer company lifecycle")]
 public sealed class CustomerCompanyLiteralNameHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Verifies literal company-name storage and responses or refusal before writes while preserving shared graph and cache boundaries.</summary>
+    /// <param name="route">The ordinary or scoped create or update route under test.</param>
+    /// <returns>A task representing completion of the literal company-name HTTP, storage, and graph assertions.</returns>
     [Theory]
     [InlineData("create")]
     [InlineData("update")]
@@ -46,7 +51,7 @@ public sealed class CustomerCompanyLiteralNameHttpTests(CustomerDetailAuthorityF
             ("Supplementary257", string.Concat(Enumerable.Repeat("😀", 257)), false, false, null),
             ("Combining256", string.Concat(Enumerable.Repeat("ก้", 128)), true, false, null),
             ("Combining257", string.Concat(Enumerable.Repeat("ก้", 128)) + "้", false, false, null),
-            ("TrailingSpace257", new string('a', 256) + " ", false, false, null),
+            ("TrailingSpace257", new string('a', 256) + " ", true, false, null),
             ("NulNotStorable", "company\0name", false, false, null),
             ("LoneHighSurrogateJson", "\uFFFD", !scoped, false, "\"\\ud800\""),
             ("LoneLowSurrogateJson", "\uFFFD", !scoped, false, "\"\\udc00\""),
@@ -79,7 +84,8 @@ public sealed class CustomerCompanyLiteralNameHttpTests(CustomerDetailAuthorityF
                 continue;
             }
 
-            Assert.True(item.Name!.Length <= 256);
+            var storedName = item.Label == "TrailingSpace257" ? new string('a', 256) : item.Name!;
+            Assert.True(storedName.Length <= 256);
             var id = 1;
             if (scoped)
             {
@@ -90,7 +96,7 @@ public sealed class CustomerCompanyLiteralNameHttpTests(CustomerDetailAuthorityF
                 Assert.Equal(result.Headers.ETag, fresh.Headers.ETag);
                 Assert.Equal(result.Headers.GetValues("X-Customer-ETag").Single(), fresh.Headers.GetValues("X-Customer-ETag").Single());
                 using var projection = JsonDocument.Parse(await fresh.Content.ReadAsStringAsync(token));
-                AssertLiteral(projection.RootElement.GetProperty("Company"), item.Name!);
+                AssertLiteral(projection.RootElement.GetProperty("Company"), storedName);
             }
             else if (create)
             {
@@ -102,7 +108,7 @@ public sealed class CustomerCompanyLiteralNameHttpTests(CustomerDetailAuthorityF
 
             await using var db = fixture.Context();
             var saved = await db.Companies.AsNoTracking().SingleAsync(row => row.Id == id, token);
-            Assert.Equal(item.Name, saved.Name);
+            Assert.Equal(storedName, saved.Name);
             Assert.Equal(" 0100000000000 ", saved.TaxNumber);
             Assert.Equal("\tSynthetic registrar\t", saved.Registrar);
             Assert.True(saved.ModifiedDate > new DateTime(2020, 1, 1));
@@ -112,21 +118,21 @@ public sealed class CustomerCompanyLiteralNameHttpTests(CustomerDetailAuthorityF
                 Assert.True(saved.CreatedDate > new DateTime(2020, 1, 1));
                 Assert.True(id > 2);
             }
-            Assert.Equal(item.Name!.EnumerateRunes().Count(), await db.Database.SqlQuery<int>($"SELECT char_length(\"Name\") AS \"Value\" FROM \"Company\" WHERE \"ID\" = {id}").SingleAsync(token));
-            Assert.Equal(256, await db.Database.SqlQueryRaw<int>("SELECT character_maximum_length::integer AS \"Value\" FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'Company' AND column_name = 'Name'").SingleAsync(token));
+            Assert.Equal(storedName.EnumerateRunes().Count(), await db.Database.SqlQuery<int>($"SELECT char_length(\"Name\") AS \"Value\" FROM \"Company\" WHERE \"ID\" = {id}").SingleAsync(token));
+            Assert.Equal("text", await db.Database.SqlQueryRaw<string>("SELECT data_type AS \"Value\" FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'Company' AND column_name = 'Name'").SingleAsync(token));
             var after = await PhysicalSnapshotAsync(token);
             AssertPreservedGraph(before, after, id, scoped, create);
             await AssertCacheAsync(cache, cacheBefore, create ? scoped ? [1] : [] : [1, 2], token);
             using var read = await client.GetAsync($"/customers/companies/{id}", token);
             Assert.Equal(HttpStatusCode.OK, read.StatusCode);
             using var body = JsonDocument.Parse(await read.Content.ReadAsStringAsync(token));
-            AssertLiteral(body.RootElement, item.Name!);
+            AssertLiteral(body.RootElement, storedName);
             foreach (var customerId in scoped && create ? new[] { 1 } : !create ? new[] { 1, 2 } : Array.Empty<int>())
             {
                 using var customer = await client.GetAsync($"/customers/{customerId}", token);
                 Assert.Equal(HttpStatusCode.OK, customer.StatusCode);
                 using var customerBody = JsonDocument.Parse(await customer.Content.ReadAsStringAsync(token));
-                AssertLiteral(customerBody.RootElement.GetProperty("Company"), item.Name!);
+                AssertLiteral(customerBody.RootElement.GetProperty("Company"), storedName);
                 Assert.False(customerBody.RootElement.TryGetProperty("InternalRemark", out _));
             }
 
@@ -143,6 +149,10 @@ public sealed class CustomerCompanyLiteralNameHttpTests(CustomerDetailAuthorityF
         }
     }
 
+    /// <summary>Verifies that invalid authority cannot write company names through any ordinary or scoped route.</summary>
+    /// <param name="authority">The authentication and permission scenario used by the test client.</param>
+    /// <param name="expected">The expected HTTP status for the supplied scenario.</param>
+    /// <returns>A task representing completion of the literal company-name HTTP, storage, and graph assertions.</returns>
     [Theory]
     [InlineData("anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("wrong-signature", HttpStatusCode.Unauthorized)]
@@ -172,6 +182,8 @@ public sealed class CustomerCompanyLiteralNameHttpTests(CustomerDetailAuthorityF
         }
     }
 
+    /// <summary>Verifies that the company-name storage guard rejects isolated UTF-16 surrogates without normalization.</summary>
+    /// <param name="high">Whether to use an isolated high surrogate; false selects an isolated low surrogate.</param>
     [Theory]
     [InlineData(true)]
     [InlineData(false)]

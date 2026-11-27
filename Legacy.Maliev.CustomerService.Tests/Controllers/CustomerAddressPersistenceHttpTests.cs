@@ -9,13 +9,20 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Serializes address persistence tests sharing related customer graphs and Redis state.</summary>
 [CollectionDefinition("Customer address persistence", DisableParallelization = true)]
 public sealed class CustomerAddressPersistenceCollection;
 
+/// <summary>Verifies address length boundaries, owner-scoped creation, shared updates, and atomic persistence failures.</summary>
+/// <param name="fixture">The shared Customer authority fixture supplying disposable PostgreSQL and Redis, production hosts, and signed request clients.</param>
 [Collection("Customer address persistence")]
 public sealed class CustomerAddressPersistenceHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Checks 256-character address persistence and atomic 257-character failures with precise linked-customer cache effects.</summary>
+    /// <param name="field">The AddressLine1, AddressLine2, Building, City, State, or PostalCode field whose storage boundary is exercised.</param>
+    /// <param name="update">Whether to PUT a shared existing address rather than POST a new address under customer 1.</param>
+    /// <returns>A task that completes after verifying 256-character address persistence and atomic 257-character failures with precise linked-customer cache effects.</returns>
     [Theory]
     [InlineData("AddressLine1", false)]
     [InlineData("AddressLine2", false)]

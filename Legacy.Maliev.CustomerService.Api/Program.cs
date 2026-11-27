@@ -23,6 +23,13 @@ static async Task RunHostAsync(string[] startupArgs)
     var builder = WebApplication.CreateBuilder(startupArgs);
 
     builder.AddServiceDefaults();
+    // Keep tracing and metrics services while selecting the original private console-only log contract.
+    builder.Logging.ClearProviders();
+    builder.Logging.AddConsoleFormatter<Maliev.Aspire.ServiceDefaults.Logging.PrivateFailureConsoleFormatter,
+        Microsoft.Extensions.Logging.Console.ConsoleFormatterOptions>();
+    builder.Logging.AddConsole(options => options.FormatterName =
+        Maliev.Aspire.ServiceDefaults.Logging.PrivateFailureConsoleFormatter.FormatterName);
+    builder.Logging.AddFilter<Microsoft.Extensions.Logging.Console.ConsoleLoggerProvider>(null, LogLevel.Warning);
     builder.AddPrivateRequestObservation("customer");
     builder.AddDefaultApiVersioning();
     builder.AddPostgresDbContext<CustomerDbContext>(connectionName: "CustomerDbContext");

@@ -9,13 +9,19 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Legacy.Maliev.CustomerService.Tests.OriginalInput;
 
+/// <summary>Serializes original-body HTTP and resource tests that share customer state.</summary>
 [CollectionDefinition("Customer original body", DisableParallelization = true)]
 public sealed class CustomerOriginalBodyCollection;
 
+/// <summary>Verifies ordinary typed-envelope validation and scalar-only writes while retaining scoped native behavior.</summary>
+/// <param name="fixture">The shared Customer authority fixture supplying disposable PostgreSQL and Redis, production hosts, and signed request clients.</param>
 [Collection("Customer original body")]
 public sealed class CustomerOriginalEnvelopeHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Checks that invalid recognized ignored envelopes fail before graph mutation or cache eviction.</summary>
+    /// <param name="update">Whether to PUT the seeded customer rather than POST an ordinary new customer.</param>
+    /// <returns>A task that completes after verifying that invalid recognized ignored envelopes fail before graph mutation or cache eviction.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -53,6 +59,9 @@ public sealed class CustomerOriginalEnvelopeHttpTests(CustomerDetailAuthorityFix
         }
     }
 
+    /// <summary>Checks that valid submitted envelopes persist only approved scalars without writing forged identity, audits, remarks, or navigation graphs.</summary>
+    /// <param name="update">Whether to PUT the seeded customer rather than POST an ordinary new customer.</param>
+    /// <returns>A task that completes after verifying that valid submitted envelopes persist only approved scalars without writing forged identity, audits, remarks, or navigation graphs.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -127,6 +136,9 @@ public sealed class CustomerOriginalEnvelopeHttpTests(CustomerDetailAuthorityFix
         Assert.DoesNotContain("forged", item.GetRawText(), StringComparison.Ordinal);
     }
 
+    /// <summary>Checks that keyed create and versioned update keep native ignored-envelope behavior outside ordinary formatter scope.</summary>
+    /// <param name="versioned">Whether to issue a versioned PUT with If-Match rather than an idempotency-keyed POST.</param>
+    /// <returns>A task that completes after verifying that keyed create and versioned update keep native ignored-envelope behavior outside ordinary formatter scope.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -169,6 +181,9 @@ public sealed class CustomerOriginalEnvelopeHttpTests(CustomerDetailAuthorityFix
         Assert.Equal(versioned ? 0 : 1, await db.CustomerCreateOperations.CountAsync(token));
     }
 
+    /// <summary>Checks that original envelopes retain existing required-field and controller validation before writes.</summary>
+    /// <param name="update">Whether to PUT the seeded customer rather than POST an ordinary new customer.</param>
+    /// <returns>A task that completes after verifying that original envelopes retain existing required-field and controller validation before writes.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -198,6 +213,10 @@ public sealed class CustomerOriginalEnvelopeHttpTests(CustomerDetailAuthorityFix
         }
     }
 
+    /// <summary>Checks that envelope binding cannot bypass request authority before customer mutation.</summary>
+    /// <param name="authority">The anonymous, denied, wrong-signature, or expired authority scenario.</param>
+    /// <param name="status">The expected Unauthorized or Forbidden response for that request authority.</param>
+    /// <returns>A task that completes after verifying that envelope binding cannot bypass request authority before customer mutation.</returns>
     [Theory]
     [InlineData("anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("denied", HttpStatusCode.Forbidden)]

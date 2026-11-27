@@ -128,19 +128,24 @@ namespace Legacy.Maliev.CustomerService.Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Registrar")
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                        .HasColumnType("text");
 
                     b.Property<string>("TaxNumber")
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Company", (string)null);
+                    b.ToTable("Company", (string)null, table =>
+                        {
+                            table.HasCheckConstraint("CK_Company_Name_SourceLength", "char_length(\"Name\") + char_length(regexp_replace(\"Name\" COLLATE \"C\", U&'[\\0001-\\FFFF]', '', 'g')) <= 256");
+                            table.HasCheckConstraint("CK_Company_TaxNumber_SourceLength", "char_length(\"TaxNumber\") + char_length(regexp_replace(\"TaxNumber\" COLLATE \"C\", U&'[\\0001-\\FFFF]', '', 'g')) <= 256");
+                            table.HasCheckConstraint("CK_Company_Registrar_SourceLength", "char_length(\"Registrar\") + char_length(regexp_replace(\"Registrar\" COLLATE \"C\", U&'[\\0001-\\FFFF]', '', 'g')) <= 256");
+                        });
                 });
 
             modelBuilder.Entity("Legacy.Maliev.CustomerService.Domain.Customer", b =>

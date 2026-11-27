@@ -5,13 +5,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Serializes customer relationship failure tests that share database and cache state.</summary>
 [CollectionDefinition("Customer relationship failures", DisableParallelization = true)]
 public sealed class CustomerRelationshipFailureCollection;
 
+/// <summary>Verifies relationship constraint failures and explicit company detachment through authenticated HTTP.</summary>
+/// <param name="fixture">The shared Customer authority fixture supplying disposable PostgreSQL and Redis, production hosts, and signed request clients.</param>
 [Collection("Customer relationship failures")]
 public sealed class CustomerRelationshipFailureHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Checks missing related identifiers cause private create and update failures without partial customers or cache eviction.</summary>
+    /// <param name="relationship">The company, billing, or shipping relationship assigned a missing foreign-key identifier.</param>
+    /// <returns>A task that completes after verifying missing related identifiers cause private create and update failures without partial customers or cache eviction.</returns>
     [Theory]
     [InlineData("company")]
     [InlineData("billing")]
@@ -50,6 +56,8 @@ public sealed class CustomerRelationshipFailureHttpTests(CustomerDetailAuthority
         Assert.Equal("Before road", json.RootElement.GetProperty("ShippingAddress").GetProperty("AddressLine1").GetString());
     }
 
+    /// <summary>Checks that deleting a referenced company fails without changing its customer graph or cache.</summary>
+    /// <returns>A task that completes after verifying that deleting a referenced company fails without changing its customer graph or cache.</returns>
     [Fact]
     public async Task ReferencedCompany_DeleteFailsWithoutDeletingCustomerOrChangingItsGraphAndCache()
     {
@@ -68,6 +76,8 @@ public sealed class CustomerRelationshipFailureHttpTests(CustomerDetailAuthority
         Assert.Equal("Before company", json.RootElement.GetProperty("Name").GetString());
     }
 
+    /// <summary>Checks that explicit customer detachment permits company deletion while preserving the customer and addresses.</summary>
+    /// <returns>A task that completes after verifying that explicit customer detachment permits company deletion while preserving the customer and addresses.</returns>
     [Fact]
     public async Task ExplicitCustomerDetach_AllowsCompanyDeleteAndKeepsCustomerAndAddresses()
     {

@@ -11,10 +11,15 @@ using Xunit.Abstractions;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Separates company tax and registrar deserialization, controller validation, and disposable PostgreSQL storage observations.</summary>
+/// <param name="fixture">The shared fixture providing customer hosts and disposable persistence for these scenarios.</param>
+/// <param name="output">The xUnit output sink for recording comparison or process diagnostics.</param>
 [Collection("Customer company lifecycle")]
 public sealed class CompanyTaxRegistrarPrimitiveStorageTests(CustomerDetailAuthorityFixture fixture, ITestOutputHelper output)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Verifies tax and registrar primitive and length cases at separate deserialize, controller, and disposable PostgreSQL storage stages.</summary>
+    /// <returns>A task representing completion of the separate company deserialize, validation, and PostgreSQL storage assertions.</returns>
     [Fact]
     public async Task PairedFields_SeparateCurrentDeserializeControllerAndDisposablePostgreSqlStorageOutcomes()
     {
@@ -82,7 +87,7 @@ public sealed class CompanyTaxRegistrarPrimitiveStorageTests(CustomerDetailAutho
                     else
                     {
                         Assert.Equal(typeof(DbUpdateException).FullName, storageError);
-                        Assert.Equal(item.Label == "literal-nul" ? "22021" : "22001", sqlState);
+                        Assert.Equal(item.Label == "literal-nul" ? "22021" : PostgresErrorCodes.CheckViolation, sqlState);
                     }
                     Assert.Equal(before, await SnapshotAsync(token));
                 }
@@ -128,7 +133,7 @@ public sealed class CompanyTaxRegistrarPrimitiveStorageTests(CustomerDetailAutho
             yield return new("literal-length/" + length, $"\"{field}\":" + JsonSerializer.Serialize(new string('x', length)), new string('x', length), StorageRejects: length == 257);
         yield return new("literal-nul", $"\"{field}\":\"\\u0000\"", "\0", StorageRejects: true);
         var emoji = string.Concat(Enumerable.Repeat("😀", 129));
-        yield return new("literal-129-pairs", $"\"{field}\":" + JsonSerializer.Serialize(emoji), emoji);
+        yield return new("literal-129-pairs", $"\"{field}\":" + JsonSerializer.Serialize(emoji), emoji, StorageRejects: true);
         yield return new("long-literal-bounded-null", $"\"{field}\":" + JsonSerializer.Serialize(new string('x', 257)) + $",\"{field}\":\"bounded\",\"{field}\":null", "bounded");
         yield return new("integer-token", $"\"{field}\":42", "42", ReadRejects: true);
         yield return new("long-numeric-bounded-null", $"\"{field}\":" + new string('1', 257) + $",\"{field}\":\"bounded\",\"{field}\":null", "bounded", ReadRejects: true);

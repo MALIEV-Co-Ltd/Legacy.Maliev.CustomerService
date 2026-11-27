@@ -47,12 +47,17 @@ public sealed class CustomerDbContext(DbContextOptions<CustomerDbContext> option
         ConfigureDates(address);
 
         var company = modelBuilder.Entity<Company>();
-        company.ToTable("Company");
+        company.ToTable("Company", table =>
+        {
+            table.HasCheckConstraint("CK_Company_Name_SourceLength", CompanySourceConstraints.NameLengthSql);
+            table.HasCheckConstraint("CK_Company_TaxNumber_SourceLength", CompanySourceConstraints.TaxNumberLengthSql);
+            table.HasCheckConstraint("CK_Company_Registrar_SourceLength", CompanySourceConstraints.RegistrarLengthSql);
+        });
         company.HasKey(value => value.Id);
         company.Property(value => value.Id).HasColumnName("ID").ValueGeneratedOnAdd();
-        company.Property(value => value.Name).HasMaxLength(256).IsRequired();
-        company.Property(value => value.Registrar).HasMaxLength(256);
-        company.Property(value => value.TaxNumber).HasMaxLength(256);
+        company.Property(value => value.Name).HasMaxLength(256).IsRequired().HasColumnType("text");
+        company.Property(value => value.Registrar).HasMaxLength(256).HasColumnType("text");
+        company.Property(value => value.TaxNumber).HasMaxLength(256).HasColumnType("text");
         ConfigureDates(company);
 
         var customer = modelBuilder.Entity<Customer>();

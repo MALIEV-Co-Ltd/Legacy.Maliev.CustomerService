@@ -6,9 +6,12 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Legacy.Maliev.CustomerService.Tests.Documentation;
 
+/// <summary>Verifies the served Customer OpenAPI document and its existing business operation descriptions.</summary>
 [Collection("Customer startup process state")]
 public sealed class CustomerDocumentationHttpTests
 {
+    /// <summary>Checks that production does not expose the development OpenAPI document.</summary>
+    /// <returns>A task that completes after verifying that production does not expose the development OpenAPI document.</returns>
     [Fact]
     public async Task Production_does_not_serve_the_development_document()
     {
@@ -18,6 +21,8 @@ public sealed class CustomerDocumentationHttpTests
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
+    /// <summary>Checks the development document title, version, and customer business paths without identity or credential operations.</summary>
+    /// <returns>A task that completes after verifying the development document title, version, and customer business paths without identity or credential operations.</returns>
     [Fact]
     public async Task Development_serves_the_registered_customer_document_without_identity_operations()
     {
@@ -42,6 +47,8 @@ public sealed class CustomerDocumentationHttpTests
         }
     }
 
+    /// <summary>Checks that the existing customer-create profile operation exposes its source summary and request body.</summary>
+    /// <returns>A task that completes after verifying that the existing customer-create profile operation exposes its source summary and request body.</returns>
     [Fact]
     public async Task Customer_create_documents_its_existing_profile_operation()
     {
@@ -53,6 +60,8 @@ public sealed class CustomerDocumentationHttpTests
         Assert.True(operation.TryGetProperty("requestBody", out _));
     }
 
+    /// <summary>Checks documentation of the existing customer-list query contract and parameter descriptions.</summary>
+    /// <returns>A task that completes after verifying documentation of the existing customer-list query contract and parameter descriptions.</returns>
     [Fact]
     public async Task Customer_list_documents_the_existing_query_contract()
     {
@@ -67,6 +76,8 @@ public sealed class CustomerDocumentationHttpTests
         AssertParameter(operation, "size", "query", "The optional maximum number of profiles returned per page.");
     }
 
+    /// <summary>Checks documentation of both customer and address ownership identifiers on nested address reads.</summary>
+    /// <returns>A task that completes after verifying documentation of both customer and address ownership identifiers on nested address reads.</returns>
     [Fact]
     public async Task Nested_address_read_documents_both_ownership_identifiers()
     {
@@ -79,6 +90,8 @@ public sealed class CustomerDocumentationHttpTests
         AssertParameter(operation, "addressId", "path", "The unique identifier of the address to retrieve.");
     }
 
+    /// <summary>Checks documentation of the existing email lookup operation and email parameter.</summary>
+    /// <returns>A task that completes after verifying documentation of the existing email lookup operation and email parameter.</returns>
     [Fact]
     public async Task Email_lookup_documents_the_existing_lookup_parameter()
     {

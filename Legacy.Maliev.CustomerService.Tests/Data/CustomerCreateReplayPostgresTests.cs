@@ -14,10 +14,13 @@ using System.Text.Json;
 
 namespace Legacy.Maliev.CustomerService.Tests.Data;
 
+/// <summary>Owns disposable PostgreSQL tests for idempotent customer creation, replay, and authorization.</summary>
 public sealed class CustomerCreateReplayPostgresTests : IAsyncLifetime
 {
     private readonly PostgreSqlContainer postgres = new PostgreSqlBuilder("postgres:18-alpine").Build();
 
+    /// <summary>Starts the owned PostgreSQL container and applies the customer schema for replay tests.</summary>
+    /// <returns>A task that completes when the replay-test database is started and migrated.</returns>
     public async Task InitializeAsync()
     {
         await postgres.StartAsync();
@@ -25,8 +28,12 @@ public sealed class CustomerCreateReplayPostgresTests : IAsyncLifetime
         await db.Database.MigrateAsync();
     }
 
+    /// <summary>Disposes the PostgreSQL container owned by the replay test instance.</summary>
+    /// <returns>A task that completes when the owned PostgreSQL container has been disposed.</returns>
     public Task DisposeAsync() => postgres.DisposeAsync().AsTask();
 
+    /// <summary>Checks that the same idempotency key, actor, and payload replay the original customer without another row.</summary>
+    /// <returns>A task that completes after verifying that the same idempotency key, actor, and payload replay the original customer without another row.</returns>
     [Fact]
     public async Task SameKeyAndPayload_ReplaysOriginalResponseWithoutCreatingAnotherRow()
     {
@@ -42,6 +49,8 @@ public sealed class CustomerCreateReplayPostgresTests : IAsyncLifetime
         Assert.Single(await replayDb.CustomerCreateOperations.ToListAsync());
     }
 
+    /// <summary>Checks that failed customer creation rolls back its key reservation and permits a safe retry.</summary>
+    /// <returns>A task that completes after verifying that failed customer creation rolls back its key reservation and permits a safe retry.</returns>
     [Fact]
     public async Task FailedCreate_RollsBackKeyAndAllowsSafeRetry()
     {
@@ -61,6 +70,8 @@ public sealed class CustomerCreateReplayPostgresTests : IAsyncLifetime
         Assert.Single(await retryDb.CustomerCreateOperations.ToListAsync());
     }
 
+    /// <summary>Checks that changing the payload or actor under a committed key returns conflict without another customer.</summary>
+    /// <returns>A task that completes after verifying that changing the payload or actor under a committed key returns conflict without another customer.</returns>
     [Fact]
     public async Task SameKeyWithDifferentPayloadOrActor_IsConflictWithoutAnotherRow()
     {
@@ -78,6 +89,8 @@ public sealed class CustomerCreateReplayPostgresTests : IAsyncLifetime
         Assert.Single(await replayDb.Customers.ToListAsync());
     }
 
+    /// <summary>Checks that concurrent matching keys across database contexts commit exactly one customer and replay record.</summary>
+    /// <returns>A task that completes after verifying that concurrent matching keys across database contexts commit exactly one customer and replay record.</returns>
     [Fact]
     public async Task ConcurrentSameKeyAcrossContexts_CommitsExactlyOneCustomer()
     {
@@ -94,6 +107,8 @@ public sealed class CustomerCreateReplayPostgresTests : IAsyncLifetime
         Assert.Single(await verifyDb.CustomerCreateOperations.ToListAsync());
     }
 
+    /// <summary>Checks keyed POST wire casing, replayed Location and body, key validation, and create-permission enforcement.</summary>
+    /// <returns>A task that completes after verifying keyed POST wire casing, replayed Location and body, key validation, and create-permission enforcement.</returns>
     [Fact]
     public async Task KeyedPost_PreservesLegacyJsonAndPermissionBoundary()
     {
@@ -129,6 +144,8 @@ public sealed class CustomerCreateReplayPostgresTests : IAsyncLifetime
         Assert.Single(await db.Customers.ToListAsync());
     }
 
+    /// <summary>Checks that committed replay still requires authentication and create permission before returning the original response.</summary>
+    /// <returns>A task that completes after verifying that committed replay still requires authentication and create permission before returning the original response.</returns>
     [Fact]
     public async Task CommittedKeyReplay_StillRequiresAuthenticationAndCreatePermission()
     {

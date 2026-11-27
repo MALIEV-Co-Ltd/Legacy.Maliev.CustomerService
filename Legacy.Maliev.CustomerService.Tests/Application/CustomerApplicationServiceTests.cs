@@ -6,8 +6,11 @@ using Moq;
 
 namespace Legacy.Maliev.CustomerService.Tests.Application;
 
+/// <summary>Checks application-service persistence outcomes, current repository projection, and precisely scoped customer cache invalidation.</summary>
 public sealed class CustomerApplicationServiceTests
 {
+    /// <summary>Checks that updating a tax-only company invalidates every customer referencing that company.</summary>
+    /// <returns>A task that completes after asserting a successful update and exactly one invalidation for each linked customer.</returns>
     [Fact]
     public async Task UpdateCompanyAsync_TaxOnlyCompany_InvalidatesAllReferencingCustomers()
     {
@@ -24,6 +27,8 @@ public sealed class CustomerApplicationServiceTests
         repository.VerifyAll();
     }
 
+    /// <summary>Checks that the current repository customer projection is returned without consulting or rewriting stale cache entries.</summary>
+    /// <returns>A task that completes after asserting the current response instance, one repository read, and no cache reads or writes.</returns>
     [Fact]
     public async Task GetCustomerAsync_StaleCacheCannotOverrideCurrentPostgreSqlProjection()
     {
@@ -45,6 +50,8 @@ public sealed class CustomerApplicationServiceTests
         cache.Verify(value => value.SetAsync(It.IsAny<CustomerResponse>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
+    /// <summary>Checks that a successful customer update removes its cached projection.</summary>
+    /// <returns>A task that completes after asserting a successful result and one invalidation for the updated customer.</returns>
     [Fact]
     public async Task UpdateCustomerAsync_Success_InvalidatesCustomerCache()
     {
@@ -59,6 +66,10 @@ public sealed class CustomerApplicationServiceTests
         cache.Verify(value => value.RemoveAsync(7, It.IsAny<CancellationToken>()), Times.Once);
     }
 
+    /// <summary>Checks that versioned updates invalidate the cache only for a confirmed persisted update.</summary>
+    /// <param name="outcome">The repository result selecting updated, stale, or missing-customer behavior.</param>
+    /// <param name="invalidations">The expected cache removal count: one after an update or zero after stale and not-found outcomes.</param>
+    /// <returns>A task that completes after asserting the returned repository outcome and exact cache invalidation count.</returns>
     [Theory]
     [InlineData(CustomerRevisionUpdateResult.Updated, 1)]
     [InlineData(CustomerRevisionUpdateResult.Stale, 0)]
@@ -82,6 +93,8 @@ public sealed class CustomerApplicationServiceTests
         cache.VerifyNoOtherCalls();
     }
 
+    /// <summary>Checks that updating an internal remark invalidates the corresponding customer cache.</summary>
+    /// <returns>A task that completes after asserting a successful remark update and one customer cache removal.</returns>
     [Fact]
     public async Task UpdateInternalRemarkAsync_Success_InvalidatesCustomerCache()
     {
@@ -103,6 +116,8 @@ public sealed class CustomerApplicationServiceTests
         cache.Verify(value => value.RemoveAsync(7, It.IsAny<CancellationToken>()), Times.Once);
     }
 
+    /// <summary>Checks that a successful shared address update invalidates every referencing customer.</summary>
+    /// <returns>A task that completes after asserting the successful update and exactly one removal for each linked customer.</returns>
     [Fact]
     public async Task UpdateAddressAsync_Success_InvalidatesEveryReferencingCustomer()
     {
@@ -124,6 +139,8 @@ public sealed class CustomerApplicationServiceTests
         cache.Verify(value => value.RemoveAsync(8, It.IsAny<CancellationToken>()), Times.Once);
     }
 
+    /// <summary>Checks that a failed company update leaves all referencing customer caches intact.</summary>
+    /// <returns>A task that completes after asserting a false update result and no cache removals.</returns>
     [Fact]
     public async Task UpdateCompanyAsync_Failure_DoesNotInvalidateReferencingCustomers()
     {
@@ -144,6 +161,8 @@ public sealed class CustomerApplicationServiceTests
         cache.Verify(value => value.RemoveAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
+    /// <summary>Checks that deleting a company invalidates every previously referencing customer.</summary>
+    /// <returns>A task that completes after asserting successful deletion and one removal for each linked customer.</returns>
     [Fact]
     public async Task DeleteCompanyAsync_Success_InvalidatesEveryReferencingCustomer()
     {

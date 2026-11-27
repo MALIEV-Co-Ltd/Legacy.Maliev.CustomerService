@@ -7,9 +7,12 @@ using Microsoft.Extensions.Hosting;
 
 namespace Legacy.Maliev.CustomerService.Tests.Startup;
 
+/// <summary>Checks actual API host startup and tooling interception while preserving process output and exit-code state.</summary>
 [Collection("Customer startup process state")]
 public sealed class CustomerStartupInterceptionTests
 {
+    /// <summary>Checks that a real factory host serves liveness and authentication controls without corrupting the caller exit code.</summary>
+    /// <returns>A task that completes after asserting healthy liveness, an anonymous unauthorized response, retained exit code, and absence of startup-failure output.</returns>
     [Fact]
     public async Task Actual_factory_host_serves_controls_without_corrupting_exit_code()
     {
@@ -47,6 +50,8 @@ public sealed class CustomerStartupInterceptionTests
         }
     }
 
+    /// <summary>Checks that the real API entry point lets the owned HostBuilt abort escape for tooling interception.</summary>
+    /// <returns>A task that completes after asserting one interception, the same public abort exception, retained exit code, and no startup-failure output.</returns>
     [Fact]
     public async Task Actual_entrypoint_preserves_public_host_abort_for_tool_interception()
     {

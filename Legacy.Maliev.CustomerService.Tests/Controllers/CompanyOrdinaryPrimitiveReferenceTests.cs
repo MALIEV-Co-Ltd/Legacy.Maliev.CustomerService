@@ -8,8 +8,11 @@ using Xunit.Abstractions;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Compares ordinary company-name primitive conversion with a pinned Newtonsoft 13 reference under multiple cultures and segmented input.</summary>
+/// <param name="output">The xUnit output sink for recording comparison or process diagnostics.</param>
 public sealed class CompanyOrdinaryPrimitiveReferenceTests(ITestOutputHelper output)
 {
+    /// <summary>Verifies primitive token spelling and string conversion across cultures and segmented reads against the pinned Newtonsoft 13 reference.</summary>
     [Fact]
     public void OrdinaryNameConverter_MatchesPinnedReferenceLexemesAcrossCulturesAndSegmentedInput()
     {

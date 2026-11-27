@@ -12,8 +12,11 @@ using Xunit.Abstractions;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Compares ordinary duplicate company-name binding with a pinned Newtonsoft 13 reference shape across cultures and segmented input.</summary>
+/// <param name="output">The xUnit output sink for recording comparison or process diagnostics.</param>
 public sealed class CompanyOrdinaryDuplicateNullReferenceTests(ITestOutputHelper output)
 {
+    /// <summary>Verifies ordered duplicate-null and escaped-name behavior against a pinned Newtonsoft 13 reference without claiming original-runtime equivalence.</summary>
     [Fact]
     public void OrdinaryDuplicateNames_MatchPinnedReferenceForOrderedNullAndEscapedCaseVariants()
     {
@@ -54,7 +57,7 @@ public sealed class CompanyOrdinaryDuplicateNullReferenceTests(ITestOutputHelper
                 new NameCase("final-numeric257-null", "\"Name\":\"bounded\",\"Name\":" + numeric257 + ",\"Name\":null", numeric257, null, false, false),
                 new NameCase("utf16-256-null", "\"Name\":" + quoted256 + ",\"Name\":null", utf16Name256, null, true, true),
                 new NameCase("earlier-utf16-257-bounded", "\"Name\":" + quoted257 + ",\"Name\":\"bounded\"", "bounded", "bounded", true, true),
-                new NameCase("final-utf16-257-null", "\"Name\":\"bounded\",\"Name\":" + quoted257 + ",\"Name\":null", utf16Name256 + " ", null, false, false),
+                new NameCase("final-utf16-257-null", "\"Name\":\"bounded\",\"Name\":" + quoted257 + ",\"Name\":null", utf16Name256 + " ", null, true, true),
                 new NameCase("empty-value-null", "\"Name\":\"\",\"Name\":null", "", null, true, false),
                 new NameCase("whitespace-value-null", "\"Name\":\" \\t \",\"Name\":null", " \t ", null, true, false),
                 new NameCase("whitespace-with-tax", "\"Name\":\" \\t \",\"Name\":null", " \t ", null, true, true, "tax"),
@@ -85,7 +88,7 @@ public sealed class CompanyOrdinaryDuplicateNullReferenceTests(ITestOutputHelper
                         Assert.Equal(item.BaselineName, baseline.Name);
                         Assert.Equal(referenceRequest, candidate);
                         Assert.Equal(item.Storable, CompanyNameLengthAttribute.IsStorable(candidate.Name));
-                        // The 256-unit final guard remains the real controller guard, outside the converter.
+                        // The qualified final storage-capacity guard remains outside the converter.
                         Assert.Equal(item.HasDetails, validateDetails(candidate));
                         Assert.Equal(validateDetails(referenceRequest), validateDetails(candidate));
 

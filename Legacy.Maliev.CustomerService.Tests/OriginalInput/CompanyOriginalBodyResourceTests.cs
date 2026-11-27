@@ -15,6 +15,8 @@ using Microsoft.Extensions.Options;
 
 namespace Legacy.Maliev.CustomerService.Tests.OriginalInput;
 
+/// <summary>Exercises company body-reader buffering, cancellation, failures, and caller stream ownership.</summary>
+/// <param name="postgres">The shared fixture providing a host for company formatter services.</param>
 [Collection("Customer original body")]
 public sealed class CompanyOriginalBodyResourceTests(CustomerDetailAuthorityFixture postgres)
     : IClassFixture<CustomerDetailAuthorityFixture>
@@ -22,6 +24,10 @@ public sealed class CompanyOriginalBodyResourceTests(CustomerDetailAuthorityFixt
     private static byte[] LargeBody(string lane) => Encoding.UTF8.GetBytes(
         "{\"Name\":\"N\",\"TaxNumber\":\"" + new string('ก', 40000) + "\"}");
 
+    /// <summary>Verifies fragmented input projection and spill cleanup while leaving the caller-owned body open.</summary>
+    /// <param name="lane">The body model lane; these cases exercise company input.</param>
+    /// <param name="candidate">Whether to use the candidate reader; false selects the source-shaped stock Newtonsoft reader.</param>
+    /// <returns>A task representing completion of the body-reader stream ownership and resource cleanup assertions.</returns>
     [Theory]
     [InlineData("company", false)]
     [InlineData("company", true)]
@@ -71,6 +77,10 @@ public sealed class CompanyOriginalBodyResourceTests(CustomerDetailAuthorityFixt
         }
     }
 
+    /// <summary>Verifies the deliberate cancellation difference between stock and candidate drains without transferring caller stream ownership.</summary>
+    /// <param name="lane">The body model lane; these cases exercise company input.</param>
+    /// <param name="candidate">Whether to use the candidate reader; false selects the source-shaped stock Newtonsoft reader.</param>
+    /// <returns>A task representing completion of the body-reader stream ownership and resource cleanup assertions.</returns>
     [Theory]
     [InlineData("company", false)]
     [InlineData("company", true)]
@@ -114,6 +124,10 @@ public sealed class CompanyOriginalBodyResourceTests(CustomerDetailAuthorityFixt
         }
     }
 
+    /// <summary>Verifies that drain faults and size limits release owned spill files, restore the request body, and remain I/O failures.</summary>
+    /// <param name="lane">The body model lane; these cases exercise company input.</param>
+    /// <param name="fault">Whether the caller stream raises an I/O fault; false enforces the request body size limit.</param>
+    /// <returns>A task representing completion of the body-reader stream ownership and resource cleanup assertions.</returns>
     [Theory]
     [InlineData("company", true)]
     [InlineData("company", false)]
@@ -140,6 +154,9 @@ public sealed class CompanyOriginalBodyResourceTests(CustomerDetailAuthorityFixt
         }
     }
 
+    /// <summary>Verifies that charset failure precedes body reading and that successful seekable input restores the caller position.</summary>
+    /// <param name="lane">The body model lane; these cases exercise company input.</param>
+    /// <returns>A task representing completion of the body-reader stream ownership and resource cleanup assertions.</returns>
     [Theory]
     [InlineData("company")]
     public async Task CharsetFailurePrecedesBodyRead_AndSuccessfulSeekableInputReturnsToCallerPosition(string lane)
@@ -185,6 +202,9 @@ public sealed class CompanyOriginalBodyResourceTests(CustomerDetailAuthorityFixt
         }
     }
 
+    /// <summary>Verifies that invalid UTF-8 preserves decoder failure and owned-buffer cleanup for both body readers.</summary>
+    /// <param name="lane">The body model lane; these cases exercise company input.</param>
+    /// <returns>A task representing completion of the body-reader stream ownership and resource cleanup assertions.</returns>
     [Theory]
     [InlineData("company")]
     public async Task InvalidUtf8_PreservesUnexpectedDecoderFaultAndOwnedCleanupOnBothReaders(string lane)

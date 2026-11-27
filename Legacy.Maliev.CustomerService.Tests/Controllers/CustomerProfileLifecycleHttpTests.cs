@@ -6,13 +6,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Serializes customer profile lifecycle scenarios that share fixture state.</summary>
 [CollectionDefinition("Customer profile lifecycle", DisableParallelization = true)]
 public sealed class CustomerProfileLifecycleCollection;
 
+/// <summary>Exercises customer profile creation, reading, updates, deletion, and authorization against persisted relations.</summary>
+/// <param name="fixture">The shared fixture providing customer hosts and disposable persistence for these scenarios.</param>
 [Collection("Customer profile lifecycle")]
 public sealed class CustomerProfileLifecycleHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Verifies nullable profile persistence and lifecycle responses while deleting only the newly created customer.</summary>
+    /// <param name="related">Whether the created profile includes optional contact fields and references existing company and address records.</param>
+    /// <returns>A task representing completion of the customer lifecycle, persistence, and authorization assertions.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -129,6 +135,10 @@ public sealed class CustomerProfileLifecycleHttpTests(CustomerDetailAuthorityFix
         Assert.True(await fixture.CacheExistsAsync());
     }
 
+    /// <summary>Verifies that invalid authority cannot create, read, or delete a customer or alter its cache.</summary>
+    /// <param name="authority">The authentication and permission scenario used by the test client.</param>
+    /// <param name="expected">The expected HTTP status for the supplied scenario.</param>
+    /// <returns>A task representing completion of the customer lifecycle, persistence, and authorization assertions.</returns>
     [Theory]
     [InlineData("anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("wrong-signature", HttpStatusCode.Unauthorized)]
@@ -153,6 +163,8 @@ public sealed class CustomerProfileLifecycleHttpTests(CustomerDetailAuthorityFix
         Assert.True(await fixture.CacheExistsAsync());
     }
 
+    /// <summary>Verifies that customer read and update permissions do not grant create or delete access.</summary>
+    /// <returns>A task representing completion of the customer lifecycle, persistence, and authorization assertions.</returns>
     [Fact]
     public async Task ReadUpdateAuthority_DoesNotGrantCreateOrDelete()
     {
@@ -171,6 +183,9 @@ public sealed class CustomerProfileLifecycleHttpTests(CustomerDetailAuthorityFix
         Assert.True(await fixture.CacheExistsAsync());
     }
 
+    /// <summary>Verifies that invalid profile input is refused before create or update without changing stored data or cache.</summary>
+    /// <param name="body">The invalid JSON request body submitted to both create and update.</param>
+    /// <returns>A task representing completion of the customer lifecycle, persistence, and authorization assertions.</returns>
     [Theory]
     [InlineData("{\"FirstName\":\"Fixture\",\"LastName\":\"Profile\",\"Email\":\"invalid\"}")]
     [InlineData("{\"FirstName\":\"\",\"LastName\":\"Profile\",\"Email\":\"fixture@example.test\"}")]

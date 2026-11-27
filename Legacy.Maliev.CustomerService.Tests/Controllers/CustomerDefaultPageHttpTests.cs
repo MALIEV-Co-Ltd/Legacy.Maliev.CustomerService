@@ -7,11 +7,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Verifies ordinary directory paging, authorization, filtering, and read-only persistence behavior.</summary>
+/// <param name="fixture">The shared Customer authority fixture supplying disposable PostgreSQL and Redis, production hosts, and signed request clients.</param>
 public sealed class CustomerDefaultPageHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
     private const string Needle = "default-page-match";
 
+    /// <summary>Checks that omitted page size returns the whole filtered cohort while explicit paging remains unchanged.</summary>
+    /// <param name="matchCount">The number of matching customers seeded for the directory cohort.</param>
+    /// <param name="distractorCount">The number of additional nonmatching customers seeded to verify filtering and total counts.</param>
+    /// <returns>A task that completes after verifying that omitted page size returns the whole filtered cohort while explicit paging remains unchanged.</returns>
     [Theory]
     [InlineData(60, 100)]
     [InlineData(100, 900)]
@@ -119,6 +125,10 @@ public sealed class CustomerDefaultPageHttpTests(CustomerDetailAuthorityFixture 
         Assert.Equal(cachedBefore, await cache.GetAsync("customer:1", cancellation));
     }
 
+    /// <summary>Checks that invalid directory authority cannot read omitted-size results or mutate stored profiles.</summary>
+    /// <param name="authority">The anonymous, full-without-directory-permission, wrong-signature, or expired request authority.</param>
+    /// <param name="expected">The expected Unauthorized or Forbidden status for the selected authority.</param>
+    /// <returns>A task that completes after verifying that invalid directory authority cannot read omitted-size results or mutate stored profiles.</returns>
     [Theory]
     [InlineData("anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("full", HttpStatusCode.Forbidden)]
@@ -147,6 +157,10 @@ public sealed class CustomerDefaultPageHttpTests(CustomerDetailAuthorityFixture 
         Assert.Equal(cachedBefore, await cache.GetAsync("customer:1", cancellation));
     }
 
+    /// <summary>Checks distant page exhaustion without offset overflow or changes to the stored graph.</summary>
+    /// <param name="index">The distant page index, including values whose offset calculation could overflow a 32-bit integer.</param>
+    /// <param name="size">The requested page size, or null to exercise ordinary omitted-size behavior.</param>
+    /// <returns>A task that completes after verifying distant page exhaustion without offset overflow or changes to the stored graph.</returns>
     [Theory]
     [InlineData(int.MaxValue, null)]
     [InlineData(int.MaxValue - 1, null)]
@@ -188,6 +202,11 @@ public sealed class CustomerDefaultPageHttpTests(CustomerDetailAuthorityFixture 
 
     // Source-parity cases retain the reviewed hosted RED witnesses alongside the
     // original paging inputs, authority checks, and distant-page controls above.
+    /// <summary>Checks whole-cohort source paging for omitted or empty size with filtering and both identifier sort directions.</summary>
+    /// <param name="filtered">Whether to request only the matching search cohort rather than all seeded customers.</param>
+    /// <param name="emptySize">Whether to send an empty size query value rather than omit the size parameter.</param>
+    /// <param name="descending">Whether to request descending customer identifiers rather than ascending order.</param>
+    /// <returns>A task that completes after verifying whole-cohort source paging for omitted or empty size with filtering and both identifier sort directions.</returns>
     [Theory]
     [InlineData(false, false, false)]
     [InlineData(false, false, true)]
@@ -220,6 +239,10 @@ public sealed class CustomerDefaultPageHttpTests(CustomerDetailAuthorityFixture 
         }, cancellation);
     }
 
+    /// <summary>Checks that ordinary positive page sizes remain uncapped and enumerate the exact matching cohort.</summary>
+    /// <param name="filtered">Whether to filter the directory to the matching cohort rather than request all customers.</param>
+    /// <param name="size">The explicit 251, 1000, or int.MaxValue page size used to verify absence of an upper clamp.</param>
+    /// <returns>A task that completes after verifying that ordinary positive page sizes remain uncapped and enumerate the exact matching cohort.</returns>
     [Theory]
     [InlineData(false, 251)]
     [InlineData(false, 1000)]
@@ -252,6 +275,10 @@ public sealed class CustomerDefaultPageHttpTests(CustomerDetailAuthorityFixture 
         }, cancellation);
     }
 
+    /// <summary>Checks that zero page size returns 404 for matching and nonmatching directories.</summary>
+    /// <param name="index">The zero, one, or int.MaxValue page index sent with size zero.</param>
+    /// <param name="noMatch">Whether to include a search term absent from all stored customer fields.</param>
+    /// <returns>A task that completes after verifying that zero page size returns 404 for matching and nonmatching directories.</returns>
     [Theory]
     [InlineData(0, false)]
     [InlineData(1, false)]
@@ -273,6 +300,10 @@ public sealed class CustomerDefaultPageHttpTests(CustomerDetailAuthorityFixture 
         }, cancellation);
     }
 
+    /// <summary>Checks that source-compatible ordinary paging cannot bypass directory authentication or permission checks.</summary>
+    /// <param name="authority">The anonymous, full-without-directory-permission, wrong-signature, or expired request authority.</param>
+    /// <param name="expected">The expected Unauthorized or Forbidden status across the paging query variants.</param>
+    /// <returns>A task that completes after verifying that source-compatible ordinary paging cannot bypass directory authentication or permission checks.</returns>
     [Theory]
     [InlineData("anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("full", HttpStatusCode.Forbidden)]
@@ -298,6 +329,9 @@ public sealed class CustomerDefaultPageHttpTests(CustomerDetailAuthorityFixture 
         }, cancellation, authority);
     }
 
+    /// <summary>Checks the accepted lower clamp for negative page sizes and nonpositive page indices.</summary>
+    /// <param name="size">The -1 or int.MinValue page size expected to clamp to one record.</param>
+    /// <returns>A task that completes after verifying the accepted lower clamp for negative page sizes and nonpositive page indices.</returns>
     [Theory]
     [InlineData(-1)]
     [InlineData(int.MinValue)]

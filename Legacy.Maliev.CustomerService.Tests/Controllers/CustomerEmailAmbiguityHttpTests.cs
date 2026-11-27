@@ -5,9 +5,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Verifies email lookup ambiguity, normalization, authorization, and complete public profile output.</summary>
+/// <param name="fixture">The shared Customer authority fixture supplying disposable PostgreSQL and Redis, production hosts, and signed request clients.</param>
 public sealed class CustomerEmailAmbiguityHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Checks that duplicate exact emails produce a private server failure without selecting an arbitrary customer or changing data.</summary>
+    /// <param name="matches">The two or three customers seeded with the same exact email to create lookup ambiguity.</param>
+    /// <returns>A task that completes after verifying that duplicate exact emails produce a private server failure without selecting an arbitrary customer or changing data.</returns>
     [Theory]
     [InlineData(2)]
     [InlineData(3)]
@@ -32,6 +37,9 @@ public sealed class CustomerEmailAmbiguityHttpTests(CustomerDetailAuthorityFixtu
         Assert.True(await fixture.CacheExistsAsync());
     }
 
+    /// <summary>Checks unique email lookup with case and surrounding-space normalization and complete related profile output.</summary>
+    /// <param name="lookup">The original, uppercase, or space-padded email path value used to retrieve the same unique customer.</param>
+    /// <returns>A task that completes after verifying unique email lookup with case and surrounding-space normalization and complete related profile output.</returns>
     [Theory]
     [InlineData("detail@example.test")]
     [InlineData("DETAIL@EXAMPLE.TEST")]
@@ -59,6 +67,10 @@ public sealed class CustomerEmailAmbiguityHttpTests(CustomerDetailAuthorityFixtu
         Assert.Equal(before, await SnapshotAsync());
     }
 
+    /// <summary>Checks that invalid or read-only authority is refused before ambiguous email lookup.</summary>
+    /// <param name="authority">The anonymous, wrong-signature, expired, denied, or full-without-directory-permission authority.</param>
+    /// <param name="expected">The expected Unauthorized or Forbidden response for that authority.</param>
+    /// <returns>A task that completes after verifying that invalid or read-only authority is refused before ambiguous email lookup.</returns>
     [Theory]
     [InlineData("anonymous", HttpStatusCode.Unauthorized)]
     [InlineData("wrong-signature", HttpStatusCode.Unauthorized)]
@@ -80,6 +92,8 @@ public sealed class CustomerEmailAmbiguityHttpTests(CustomerDetailAuthorityFixtu
         Assert.False(await fixture.CacheExistsAsync());
     }
 
+    /// <summary>Checks that an absent email returns 404 without modifying the existing customer graph.</summary>
+    /// <returns>A task that completes after verifying that an absent email returns 404 without modifying the existing customer graph.</returns>
     [Fact]
     public async Task AbsentEmail_RemainsNotFoundWithoutMutatingTheExistingGraph()
     {

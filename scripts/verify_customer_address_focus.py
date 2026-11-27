@@ -108,6 +108,8 @@ def main():
         shared.MANIFEST = MANIFEST
         shared.guard()
     elif sys.argv[1] == 'verify':
+        manifest = json.loads(MANIFEST.read_bytes())
+        shared.authenticate_profile(ROOT, MANIFEST.relative_to(ROOT).as_posix(), manifest)
         files = list((ROOT / 'runner-address-focused').rglob('*.trx'))
         need(len(files) == 1, 'One independently executed Address focus TRX')
         result = validate_trx(files[0].read_bytes(), json.loads(MANIFEST.read_bytes()))

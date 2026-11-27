@@ -19,6 +19,8 @@ using Microsoft.Extensions.Time.Testing;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Verifies production health identity and private request observations without changing customer or cache state.</summary>
+/// <param name="fixture">The shared Customer authority fixture supplying disposable PostgreSQL and Redis, production hosts, and signed request clients.</param>
 [Collection("Customer production pipeline")]
 public sealed class CustomerPrivateRequestObservationHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
@@ -27,6 +29,8 @@ public sealed class CustomerPrivateRequestObservationHttpTests(CustomerDetailAut
     private const string NonceHeader = "X-Maliev-Diagnostic-Id";
     private const string DiagnosticPath = "/internal/diagnostics/observability";
 
+    /// <summary>Checks quiet stable per-host health identifiers only on registered GET endpoints with sanitized readiness output.</summary>
+    /// <returns>A task that completes after verifying quiet stable per-host health identifiers only on registered GET endpoints with sanitized readiness output.</returns>
     [Fact]
     public async Task ProductionHealth_UsesStablePrivateIdentityOnlyForRegisteredGetEndpoints()
     {
@@ -92,6 +96,8 @@ public sealed class CustomerPrivateRequestObservationHttpTests(CustomerDetailAut
         Assert.Equal(cacheBefore, await CacheAsync(first.Factory));
     }
 
+    /// <summary>Checks private probe denial, nonce canonicalization, and exact one-minute throttling without consuming budget on rejected requests.</summary>
+    /// <returns>A task that completes after verifying private probe denial, nonce canonicalization, and exact one-minute throttling without consuming budget on rejected requests.</returns>
     [Fact]
     public async Task ProductionDiagnostic_RejectsSpoofedPeersAndInvalidNoncesWithoutConsumingTheMinute()
     {
@@ -183,6 +189,8 @@ public sealed class CustomerPrivateRequestObservationHttpTests(CustomerDetailAut
         Assert.Equal(cacheBefore, await CacheAsync(host.Factory));
     }
 
+    /// <summary>Checks authorization and private returned or thrown failure observations without probe headers or physical state changes.</summary>
+    /// <returns>A task that completes after verifying authorization and private returned or thrown failure observations without probe headers or physical state changes.</returns>
     [Fact]
     public async Task ProductionOrdinaryFailures_PreserveAuthorizationPrivateErrorsAndPhysicalState()
     {
@@ -381,13 +389,18 @@ public sealed class CustomerPrivateRequestObservationHttpTests(CustomerDetailAut
     }
 }
 
+/// <summary>Exposes controlled returned and thrown failures for production observation tests.</summary>
 [ApiController]
 [AllowAnonymous]
 [Route("/__fixture/customer-observation")]
 public sealed class CustomerObservationFailureController : ControllerBase
 {
+    /// <summary>Returns a controlled service-unavailable response for completed-request observation tests.</summary>
+    /// <returns>A 503 response containing the fixed fixture-returned-failure error marker.</returns>
     [HttpGet("returned")]
     public IActionResult Returned() => StatusCode(StatusCodes.Status503ServiceUnavailable, new { error = "fixture-returned-failure" });
+    /// <summary>Throws a controlled private exception for production unhandled-failure observation tests.</summary>
+    /// <returns>No action result; the method throws the controlled fixture exception.</returns>
     [HttpGet("throw")]
     public IActionResult Throw() => throw new Exception("fixture-private-error-sentinel");
 }

@@ -10,6 +10,7 @@ namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 /// <summary>Concrete source-design controls; compilation and execution are not yet admitted.</summary>
 public sealed class CompanyOrdinaryMvcMetadataControls
 {
+    /// <summary>Verifies duplicate company-name handling while preserving other fields, public record behavior, resolver scope, and serialized output.</summary>
     [Fact]
     public void OrdinaryDuplicateNames_PreserveOtherFieldsAndPublicRecordAndWireContracts()
     {

@@ -7,6 +7,7 @@ using YamlDotNet.RepresentationModel;
 
 namespace Legacy.Maliev.CustomerService.Tests.Workflows;
 
+/// <summary>Verifies dormant rollout-review input contracts without activating runtime rollout or consumer acceptance.</summary>
 public sealed class CustomerRollingAvailabilityContractTests
 {
     private const string Source = "94808c01016acde41a7f264f95b8ee6b95573691";
@@ -15,6 +16,7 @@ public sealed class CustomerRollingAvailabilityContractTests
     private static readonly CustomerRolloutReviewBinding Binding = new(
         Source, ProposedImage, "controlled-customer-fixture", "original-uid", OriginalImage, "service-uid", "123", [80]);
 
+    /// <summary>Checks read-only review of exact dormant files without runtime or consumer-adoption acceptance.</summary>
     [Fact]
     public void ExactDormantFiles_AreConsumedWithoutRuntimeOrConsumerAcceptance()
     {
@@ -44,6 +46,7 @@ public sealed class CustomerRollingAvailabilityContractTests
         }
     }
 
+    /// <summary>Checks refusal of positive or missing unavailable-replica budgets.</summary>
     [Fact]
     public void UnavailableBudget_RejectsPositiveOrMissing()
     {
@@ -57,6 +60,7 @@ public sealed class CustomerRollingAvailabilityContractTests
         Refused(Contract(), input);
     }
 
+    /// <summary>Checks refusal of altered surge limits or unproved replica capacity and reservations.</summary>
     [Fact]
     public void SurgeAndReservation_RejectAlteredOrUnprovedCapacity()
     {
@@ -75,6 +79,7 @@ public sealed class CustomerRollingAvailabilityContractTests
         Refused(Contract(), absent);
     }
 
+    /// <summary>Checks refusal of missing readiness timing or insufficient readiness and observation durations.</summary>
     [Fact]
     public void ReadyAndObservation_RejectInsufficientOrMissing()
     {
@@ -88,6 +93,7 @@ public sealed class CustomerRollingAvailabilityContractTests
         Refused(Contract(), input);
     }
 
+    /// <summary>Checks refusal of any change to source drain and termination-grace timings.</summary>
     [Fact]
     public void DrainAndGrace_RejectAnyChangedSourceTiming()
     {
@@ -102,6 +108,7 @@ public sealed class CustomerRollingAvailabilityContractTests
         }
     }
 
+    /// <summary>Checks strict rollout JSON types, unique known fields, and bounded input size.</summary>
     [Fact]
     public void ParsedSchema_RejectsCoercionDuplicatesUnknownFieldsAndOversizedInputs()
     {
@@ -121,6 +128,7 @@ public sealed class CustomerRollingAvailabilityContractTests
         Assert.Throws<InvalidOperationException>(() => CustomerRollingAvailabilityReview.Review(new string('x', 16385), "{}", Binding));
     }
 
+    /// <summary>Checks refusal of activation requests and runtime or consumer acceptance claims.</summary>
     [Fact]
     public void ActiveRequestsOrAcceptanceClaims_AreAlwaysRefused()
     {
@@ -138,6 +146,7 @@ public sealed class CustomerRollingAvailabilityContractTests
         }
     }
 
+    /// <summary>Checks exact artifact, namespace, deployment, service, selector, and port bindings.</summary>
     [Fact]
     public void Topology_RejectsForeignArtifactNamespaceUidSelectorOrPorts()
     {
@@ -161,6 +170,7 @@ public sealed class CustomerRollingAvailabilityContractTests
         Refused(Contract(), Receipt(), Binding with { Namespace = "" });
     }
 
+    /// <summary>Checks immutable source and image bindings against exact caller-supplied review identities.</summary>
     [Fact]
     public void SourceAndImage_FenceExactCallerBindings()
     {
@@ -176,6 +186,7 @@ public sealed class CustomerRollingAvailabilityContractTests
         Refused(Contract(), Receipt(), Binding with { CustomerSourceCommit = new string('a', 40) });
     }
 
+    /// <summary>Checks healthy retained backends with unchanged identities and exact ready and desired replica counts.</summary>
     [Fact]
     public void HealthyOriginalAndCurrent_RequireExactUnchangedBackendAndReplicaCounts()
     {
@@ -202,6 +213,7 @@ public sealed class CustomerRollingAvailabilityContractTests
         Refused(Contract(), mismatch);
     }
 
+    /// <summary>Checks preservation of a controlled failure exit code only while the original backend remains retained.</summary>
     [Fact]
     public void ControlledFailure_PreservesExitOnlyWhenOriginalIsStillRetained()
     {
@@ -219,6 +231,7 @@ public sealed class CustomerRollingAvailabilityContractTests
         Refused(Contract(), input);
     }
 
+    /// <summary>Checks that parsed publisher gates leave rollout review dormant and reject activation.</summary>
     [Fact]
     public void CurrentParsedPublisherGate_DoesNotActivateDormantReview()
     {
@@ -237,6 +250,7 @@ public sealed class CustomerRollingAvailabilityContractTests
         Refused(contract, Receipt());
     }
 
+    /// <summary>Checks oversized review-file rejection without disclosure or mutation of remaining evidence.</summary>
     [Fact]
     public void ReviewFiles_RejectsOversizedValidContractAndReceiptWithoutDisclosureOrMutation()
     {
@@ -248,6 +262,7 @@ public sealed class CustomerRollingAvailabilityContractTests
         });
     }
 
+    /// <summary>Checks invalid UTF-8 review-file rejection without exposing decoder details.</summary>
     [Fact]
     public void ReviewFiles_RejectsInvalidUtf8ContractAndReceiptWithoutDecoderDisclosure()
     {
@@ -263,6 +278,7 @@ public sealed class CustomerRollingAvailabilityContractTests
         });
     }
 
+    /// <summary>Checks missing review-file rejection without path disclosure or recreating deleted evidence.</summary>
     [Fact]
     public void ReviewFiles_RejectsMissingContractAndReceiptWithoutPathDisclosureOrRecreation()
     {

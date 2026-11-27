@@ -8,8 +8,12 @@ using Moq;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Verifies controller CRUD routes, literal wire shapes, missing statuses, and validation using strict service doubles.</summary>
 public sealed class CustomerCrudHttpTests
 {
+    /// <summary>Checks customer CRUD named locations, profile and remark reads, paging, and missing-record statuses.</summary>
+    /// <param name="found">Whether the strict service returns an existing customer and successful mutations rather than missing results.</param>
+    /// <returns>A task that completes after verifying customer CRUD named locations, profile and remark reads, paging, and missing-record statuses.</returns>
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
@@ -50,6 +54,9 @@ public sealed class CustomerCrudHttpTests
         service.VerifyAll();
     }
 
+    /// <summary>Checks address and company CRUD response shapes, named locations, and missing-record statuses.</summary>
+    /// <param name="found">Whether address and company service operations find the selected resources rather than return missing results.</param>
+    /// <returns>A task that completes after verifying address and company CRUD response shapes, named locations, and missing-record statuses.</returns>
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
@@ -92,6 +99,11 @@ public sealed class CustomerCrudHttpTests
         service.VerifyAll();
     }
 
+    /// <summary>Checks invalid customer fields and oversized address lines return 400 before calling persistence services.</summary>
+    /// <param name="first">The first-name request value, empty in the invalid-first-name case.</param>
+    /// <param name="last">The last-name request value, whitespace in the invalid-last-name case.</param>
+    /// <param name="email">The email request value, malformed in the invalid-email case.</param>
+    /// <returns>A task that completes after verifying invalid customer fields and oversized address lines return 400 before calling persistence services.</returns>
     [Theory]
     [InlineData("", "Last", "sample@example.test")]
     [InlineData("First", " ", "sample@example.test")]

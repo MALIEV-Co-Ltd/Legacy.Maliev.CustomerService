@@ -5,8 +5,10 @@ using Legacy.Maliev.CustomerService.Application.Models;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Verifies scope and converter ownership for ordinary address primitive text adaptation.</summary>
 public sealed class OrdinaryAddressPrimitiveMetadataTests
 {
+    /// <summary>Checks default address text conversion while preserving owned converters, scoped policy, duplicate nulls, and native writes.</summary>
     [Fact]
     public void OrdinaryDefaultSlots_PreserveOwnedConvertersScopedPolicyNullsAndWrites()
     {

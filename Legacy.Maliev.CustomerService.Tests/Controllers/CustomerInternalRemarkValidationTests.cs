@@ -9,8 +9,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Checks internal remark validation for nullable, empty, maximum-length, and oversized record inputs.</summary>
 public sealed class CustomerInternalRemarkValidationTests
 {
+    /// <summary>Checks that MVC accepts remarks through 4000 characters and records one error for 4001 characters without throwing.</summary>
+    /// <param name="length">The remark length to generate, or null to validate a null remark.</param>
+    /// <param name="expectedValid">Whether MVC model state should remain valid for the selected remark length.</param>
     [Theory]
     [InlineData(null, true)]
     [InlineData(0, true)]

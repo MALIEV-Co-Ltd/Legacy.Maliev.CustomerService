@@ -23,15 +23,20 @@ using Xunit.Abstractions;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Serializes optional contact formatter boundary tests sharing HTTP fixture state.</summary>
 [CollectionDefinition("Customer optional contact boundaries", DisableParallelization = true)]
 public sealed class CustomerOptionalContactBoundaryCollection;
 
+/// <summary>Checks ordinary contact input selection, source-shaped coercion, strict controls, concurrency isolation, and unchanged global serializer behavior.</summary>
+/// <param name="fixture">The shared authority fixture supplying isolated customer graph setup, HTTP hosts, signed clients, and cache observations.</param>
+/// <param name="output">The test output sink used for bounded structural diagnostics when HTTP or formatter assertions fail.</param>
 [Collection("Customer optional contact boundaries")]
 public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthorityFixture fixture, ITestOutputHelper output)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
     private const string Valid = "{\"FirstName\":\"Contact\",\"LastName\":\"Boundary\",\"Email\":\"contact@example.test\",\"CompanyId\":1,\"BillingAddressId\":1,\"ShippingAddressId\":1";
 
+    /// <summary>Checks that only owned ordinary actions without replay headers select the adapter, while versioned, unknown, mismatched, and non-JSON requests fall through.</summary>
     [Fact]
     public void DescriptorAndHeaderSelection_PreserveStrictRoutesAndUnknownEndpoints()
     {
@@ -60,6 +65,8 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
         Assert.False(adapter.CanRead(media));
     }
 
+    /// <summary>Checks source-shaped contact scalar coercion and null-ignore ordering across cultures while rejecting container values.</summary>
+    /// <returns>A task that completes after asserting literal Telephone, Mobile, and Fax projections, reset isolation, and rejection of objects and arrays.</returns>
     [Fact]
     public async Task OrdinaryFields_MatchReferenceAndIgnoreOnlyContactDuplicateNulls()
     {
@@ -108,6 +115,7 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
         }
     }
 
+    /// <summary>Checks that custom serializer policies, converters, resolvers, factories, and altered versioning registrations revoke adapter ownership without mutation.</summary>
     [Fact]
     public void CustomPoliciesConvertersResolversFactories_FallThroughWithoutMutation()
     {
@@ -145,6 +153,8 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
         Assert.False(customFactory.CanRead(Context("{}", "create")));
     }
 
+    /// <summary>Checks empty, malformed, encoded, and charset input against source-shaped and native controls while retaining sanitized owned errors.</summary>
+    /// <returns>A task that completes after asserting reader outcomes, safe model-state errors, empty-body parity, unsupported charset handling, and open request bodies.</returns>
     [Fact]
     public async Task DifferentialBodies_KeepEncodingEmptyMalformedAndPrivacyBehavior()
     {
@@ -193,6 +203,8 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
             error => error.Exception is UnsupportedContentTypeException);
     }
 
+    /// <summary>Checks that custom converter exceptions and request cancellation retain native formatter behavior.</summary>
+    /// <returns>A task that completes after asserting native-equivalent format and overflow outcomes and propagation of cancellation.</returns>
     [Fact]
     public async Task DifferentialExceptionalConverters_KeepFormatOverflowAndCancellation()
     {
@@ -211,6 +223,8 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() => candidate.ReadAsync(actual));
     }
 
+    /// <summary>Checks concurrent ordinary, versioned, and replay reads for isolated selection, null state, and unchanged default serialization.</summary>
+    /// <returns>A task that completes after asserting eligible ordinary projections, strict control failures, settled workers, and unchanged direct serialization.</returns>
     [Fact]
     public async Task ConcurrentReads_IsolateOrdinaryVersionedReplayAndDefaultSerialization()
     {
@@ -278,6 +292,8 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
         Assert.Equal(before, JsonSerializer.Serialize(record));
     }
 
+    /// <summary>Checks actual ordinary HTTP creation and update for literal optional contact persistence and response casing.</summary>
+    /// <returns>A task that completes after asserting successful writes and exact Telephone, Mobile, and Fax readback.</returns>
     [Fact]
     public async Task RealHttp_OrdinaryCreateAndUpdatePreserveLiteralContactsAndState()
     {
@@ -311,6 +327,8 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
         }
     }
 
+    /// <summary>Checks that replay, versioned, anonymous, and denied writes retain strict refusals without changing state.</summary>
+    /// <returns>A task that completes after asserting bad-request control outcomes, authority refusals, and unchanged database snapshots.</returns>
     [Fact]
     public async Task RealHttp_ReplayVersionedAndDeniedWritesStayStrictAndUnchanged()
     {
@@ -353,6 +371,8 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
         }
     }
 
+    /// <summary>Checks that body reads retain native formatter option identity, resolver and converter state, and versioned member behavior.</summary>
+    /// <returns>A task that completes after asserting unchanged global options, strict direct deserialization, and isolated constructor and writer behavior.</returns>
     [Fact]
     public async Task FormattersAndGlobalOptions_RemainUnmodifiedAcrossReads()
     {
@@ -369,6 +389,8 @@ public sealed class CustomerOptionalContactMvcBoundaryTests(CustomerDetailAuthor
         AssertPrivateContactConvertersPreserveConstructorAndWrites(source);
     }
 
+    /// <summary>Checks retained JSON media handling under the current process parsing switch without changing that switch or closing the request body.</summary>
+    /// <returns>A task that completes after asserting native-equivalent selection and models, open request bodies, and unchanged process switch state.</returns>
     [Fact]
     public async Task StreamAndPipeSwitch_DifferentialReaderLeavesRequestBodyOpen()
     {

@@ -8,9 +8,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Exercises customer deletion isolation for shared relations and cached survivors across application hosts.</summary>
+/// <param name="fixture">The shared fixture providing customer hosts and disposable persistence for these scenarios.</param>
 public sealed class CustomerProfileDeletionIsolationHttpTests(CustomerDetailAuthorityFixture fixture)
     : IClassFixture<CustomerDetailAuthorityFixture>
 {
+    /// <summary>Verifies deletion preserves surviving graph and cache entries and prevents stale cache fills from resurrecting the deleted customer.</summary>
+    /// <param name="denyRemoval">Whether Redis refuses cache removal during deletion.</param>
+    /// <returns>A task representing completion of the deletion, survivor isolation, and stale-cache assertions.</returns>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]

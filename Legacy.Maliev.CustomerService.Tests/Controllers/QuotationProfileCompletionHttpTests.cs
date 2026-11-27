@@ -29,14 +29,23 @@ using Npgsql;
 
 namespace Legacy.Maliev.CustomerService.Tests.Controllers;
 
+/// <summary>Exercises quotation profile completion over HTTP with PostgreSQL persistence, ownership checks, and durable replay receipts.</summary>
 public sealed class QuotationProfileCompletionHttpTests : IAsyncLifetime
 {
     private readonly PostgreSqlContainer postgres = new PostgreSqlBuilder("postgres:18-alpine").Build();
     private readonly Mock<ICustomerCache> cache = new();
+    /// <summary>Starts the disposable PostgreSQL database used by the completion scenarios.</summary>
+    /// <returns>A task that completes when the disposable PostgreSQL database is running.</returns>
     public Task InitializeAsync() => postgres.StartAsync();
+    /// <summary>Releases the disposable PostgreSQL database after the completion scenarios.</summary>
+    /// <returns>A task that completes after the disposable PostgreSQL container has been released.</returns>
     public Task DisposeAsync() => postgres.DisposeAsync().AsTask();
     private CustomerDbContext Db() => new(new DbContextOptionsBuilder<CustomerDbContext>().UseNpgsql(postgres.GetConnectionString()).Options);
 
+    /// <summary>Verifies that identities other than the unique customer owner are refused before graph access.</summary>
+    /// <param name="identity">The non-owner identity scenario used by the completion client.</param>
+    /// <param name="expected">The expected denial status before customer graph access.</param>
+    /// <returns>A task representing completion of the quotation completion HTTP, ownership, persistence, and replay assertions.</returns>
     [Theory]
     [InlineData("employee", HttpStatusCode.Forbidden)]
     [InlineData("service", HttpStatusCode.Forbidden)]
@@ -51,6 +60,8 @@ public sealed class QuotationProfileCompletionHttpTests : IAsyncLifetime
         Assert.Equal(expected, result.StatusCode);
     }
 
+    /// <summary>Verifies that completion fills missing values, preserves populated relations, and replays the original receipt after a host restart.</summary>
+    /// <returns>A task representing completion of the quotation completion HTTP, ownership, persistence, and replay assertions.</returns>
     [Fact]
     public async Task Complete_PreservesPopulatedGraphAndReplaysAfterRestart()
     {
@@ -112,6 +123,11 @@ public sealed class QuotationProfileCompletionHttpTests : IAsyncLifetime
         return client.SendAsync(request);
     }
 
+    /// <summary>Verifies canonical Thai tax branch storage and replay equivalence after branch normalization.</summary>
+    /// <param name="branch">The submitted tax branch kind, or null for an undesignated tax number.</param>
+    /// <param name="code">The five-digit branch code, or null when the branch kind does not require one.</param>
+    /// <param name="expected">The canonical tax number and Thai branch designation expected in storage.</param>
+    /// <returns>A task representing completion of the quotation completion HTTP, ownership, persistence, and replay assertions.</returns>
     [Theory]
     [InlineData(null, null, "0100000000000")]
     [InlineData("head-office", null, "0100000000000 (สำนักงานใหญ่)")]
@@ -138,6 +154,8 @@ public sealed class QuotationProfileCompletionHttpTests : IAsyncLifetime
         Assert.Single(await db.QuotationProfileCompletionOperations.ToListAsync());
     }
 
+    /// <summary>Verifies that malformed tax and branch combinations leave the customer graph, receipt journal, and cache unchanged.</summary>
+    /// <returns>A task representing completion of the quotation completion HTTP, ownership, persistence, and replay assertions.</returns>
     [Fact]
     public async Task Complete_RejectsMalformedTaxCombinationsWithoutMutationOrReceipt()
     {
@@ -172,6 +190,9 @@ public sealed class QuotationProfileCompletionHttpTests : IAsyncLifetime
         cache.Verify(x => x.RemoveAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
+    /// <summary>Verifies that an existing company tax designation takes precedence over submitted completion values.</summary>
+    /// <param name="stored">The existing company tax designation that submitted completion values must preserve.</param>
+    /// <returns>A task representing completion of the quotation completion HTTP, ownership, persistence, and replay assertions.</returns>
     [Theory]
     [InlineData("0100000000000")]
     [InlineData("0100000000000 (สำนักงานใหญ่)")]
@@ -189,6 +210,8 @@ public sealed class QuotationProfileCompletionHttpTests : IAsyncLifetime
         db.ChangeTracker.Clear(); Assert.Equal(stored, (await db.Companies.SingleAsync()).TaxNumber);
     }
 
+    /// <summary>Verifies that only a signed owner email fills a blank email field and that its value participates in new receipt replay matching.</summary>
+    /// <returns>A task representing completion of the quotation completion HTTP, ownership, persistence, and replay assertions.</returns>
     [Fact]
     public async Task Complete_FillsBlankEmailFromRealOwnerJwtOnlyAndBindsNewReplayMeaning()
     {
@@ -214,6 +237,8 @@ public sealed class QuotationProfileCompletionHttpTests : IAsyncLifetime
         db.ChangeTracker.Clear(); Assert.Equal("trusted@example.test", (await db.Customers.SingleAsync()).Email);
     }
 
+    /// <summary>Verifies that ambiguous or malformed signed email claims are denied before persistence access.</summary>
+    /// <returns>A task representing completion of the quotation completion HTTP, ownership, persistence, and replay assertions.</returns>
     [Fact]
     public async Task Complete_RejectsAmbiguousOrMalformedSignedEmailBeforeDatabase()
     {
@@ -234,6 +259,8 @@ public sealed class QuotationProfileCompletionHttpTests : IAsyncLifetime
         cache.Verify(x => x.RemoveAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
+    /// <summary>Verifies that replaying a legacy completion receipt preserves its identity without applying the new email fallback.</summary>
+    /// <returns>A task representing completion of the quotation completion HTTP, ownership, persistence, and replay assertions.</returns>
     [Fact]
     public async Task Complete_LegacyReceiptReplayReturnsOriginalWithoutNewEmailMutation()
     {
@@ -268,6 +295,8 @@ public sealed class QuotationProfileCompletionHttpTests : IAsyncLifetime
         using var after = await client.GetAsync(route); Assert.Equal(read.Headers.ETag, after.Headers.ETag);
     }
 
+    /// <summary>Verifies that a missing signed email claim does not allow the submitted email to become a fallback.</summary>
+    /// <returns>A task representing completion of the quotation completion HTTP, ownership, persistence, and replay assertions.</returns>
     [Fact]
     public async Task Complete_MissingEmailClaimDoesNotInventFallbackFromPostedEmail()
     {
@@ -282,6 +311,9 @@ public sealed class QuotationProfileCompletionHttpTests : IAsyncLifetime
         db.ChangeTracker.Clear(); Assert.Equal(" ", (await db.Customers.SingleAsync()).Email);
     }
 
+    /// <summary>Verifies that incompatible receipt storage disables completion without modifying customer data or exposing capability headers.</summary>
+    /// <param name="drift">The receipt schema or privilege incompatibility introduced before probing completion capability.</param>
+    /// <returns>A task representing completion of the quotation completion HTTP, ownership, persistence, and replay assertions.</returns>
     [Theory]
     [InlineData("missing")]
     [InlineData("column")]
@@ -340,6 +372,8 @@ public sealed class QuotationProfileCompletionHttpTests : IAsyncLifetime
         cache.Verify(x => x.RemoveAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
+    /// <summary>Verifies that an ordinary nonunique receipt index does not disable the completion capability.</summary>
+    /// <returns>A task representing completion of the quotation completion HTTP, ownership, persistence, and replay assertions.</returns>
     [Fact]
     public async Task CompletionCapability_AllowsOrdinaryNonuniquePerformanceIndex()
     {
@@ -354,6 +388,8 @@ public sealed class QuotationProfileCompletionHttpTests : IAsyncLifetime
         using var result = await Send(client, route, Guid.NewGuid().ToString(), read.Headers.ETag!.ToString(), "{}"); Assert.Equal(HttpStatusCode.OK, result.StatusCode);
     }
 
+    /// <summary>Verifies that completion authenticates the unique customer owner before probing receipt storage.</summary>
+    /// <returns>A task representing completion of the quotation completion HTTP, ownership, persistence, and replay assertions.</returns>
     [Fact]
     public async Task CompletionCapability_RequiresRealOwnerBeforeAnySchemaProbe()
     {
@@ -372,6 +408,8 @@ public sealed class QuotationProfileCompletionHttpTests : IAsyncLifetime
         cache.Verify(x => x.RemoveAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
+    /// <summary>Verifies that completion copies shared company and address records while preserving the other owner and billing-shipping alias.</summary>
+    /// <returns>A task representing completion of the quotation completion HTTP, ownership, persistence, and replay assertions.</returns>
     [Fact]
     public async Task Complete_SharedRecordsCopyOnWritePreservesOtherOwnerAndAddressAlias()
     {
@@ -400,6 +438,8 @@ public sealed class QuotationProfileCompletionHttpTests : IAsyncLifetime
         cache.Verify(x => x.RemoveAsync(other.Id, It.IsAny<CancellationToken>()), Times.Never);
     }
 
+    /// <summary>Verifies that completion creates missing relations, ignores posted identity values, and preserves the revision for a no-op.</summary>
+    /// <returns>A task representing completion of the quotation completion HTTP, ownership, persistence, and replay assertions.</returns>
     [Fact]
     public async Task Complete_CreatesOnlyMissingGraphIgnoresPostedIdentityAndNoOpKeepsRevision()
     {
@@ -429,6 +469,8 @@ public sealed class QuotationProfileCompletionHttpTests : IAsyncLifetime
         cache.Verify(x => x.RemoveAsync(owner.Id, It.IsAny<CancellationToken>()), Times.Once);
     }
 
+    /// <summary>Verifies atomic rejection of stale linked revisions and incomplete address input without retaining receipts.</summary>
+    /// <returns>A task representing completion of the quotation completion HTTP, ownership, persistence, and replay assertions.</returns>
     [Fact]
     public async Task Complete_StaleLinkedVersionRollsBackReceiptAndMissingAddressRejectsAtomically()
     {
@@ -452,6 +494,8 @@ public sealed class QuotationProfileCompletionHttpTests : IAsyncLifetime
         cache.Verify(x => x.RemoveAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
+    /// <summary>Verifies that concurrent equivalent requests share one receipt and can retry a committed operation after cache failure.</summary>
+    /// <returns>A task representing completion of the quotation completion HTTP, ownership, persistence, and replay assertions.</returns>
     [Fact]
     public async Task Complete_ConcurrentExactReplayCommitsOnceAndCacheFailureRemainsRetryable()
     {
@@ -482,6 +526,8 @@ public sealed class QuotationProfileCompletionHttpTests : IAsyncLifetime
         Assert.Single(receipts.Distinct()); Assert.Equal(2, await db.QuotationProfileCompletionOperations.CountAsync());
     }
 
+    /// <summary>Verifies RS256 token validation and unique customer ownership on completion reads and writes.</summary>
+    /// <returns>A task representing completion of the quotation completion HTTP, ownership, persistence, and replay assertions.</returns>
     [Fact]
     public async Task Routes_RequireRealRs256CustomerOwnerAndRejectWrongExpiredOrWrongIssuerTokens()
     {
@@ -519,6 +565,11 @@ public sealed class QuotationProfileCompletionHttpTests : IAsyncLifetime
             now.AddHours(-2), expired ? now.AddHours(-1) : now.AddMinutes(5), new SigningCredentials(new RsaSecurityKey(key), SecurityAlgorithms.RsaSha256)));
     }
 
+    /// <summary>Verifies that absent or malformed concurrency and idempotency headers are rejected before database access.</summary>
+    /// <param name="etag">The If-Match header value, or null to omit the required precondition.</param>
+    /// <param name="key">The Idempotency-Key header value submitted with the request.</param>
+    /// <param name="expected">The expected refusal status for the invalid header combination.</param>
+    /// <returns>A task representing completion of the quotation completion HTTP, ownership, persistence, and replay assertions.</returns>
     [Theory]
     [InlineData(null, "00000000-0000-0000-0000-000000000001", HttpStatusCode.PreconditionRequired)]
     [InlineData("bad", "00000000-0000-0000-0000-000000000001", HttpStatusCode.BadRequest)]
